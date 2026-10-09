@@ -130,6 +130,8 @@ test.describe( 'post tones', () => {
 	} );
 
 	test( 'an unknown tone or icon is rejected', async ( { requestUtils } ) => {
+		// Sent as an update: a create stores the post before rejecting its meta.
+		const id = await create( requestUtils, 'event', { status: 'draft' } );
 		for ( const value of [
 			{ tekseries_tone: 'green' },
 			{ tekseries_icon: 'not_an_icon' },
@@ -137,8 +139,8 @@ test.describe( 'post tones', () => {
 			await expect(
 				requestUtils.rest( {
 					method: 'POST',
-					path: '/wp/v2/event',
-					data: { title: 'E2E Bad Tone', meta: value },
+					path: `/wp/v2/event/${ id }`,
+					data: { meta: value },
 				} )
 			).rejects.toMatchObject( { code: 'rest_not_in_enum' } );
 		}
