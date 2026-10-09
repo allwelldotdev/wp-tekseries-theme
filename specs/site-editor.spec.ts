@@ -1,40 +1,38 @@
 import { test, expect } from '@wordpress/e2e-test-utils-playwright';
+import { invalidBlocks } from './utils/blocks';
 
-type BlockEditorStore = {
-	getClientIdsWithDescendants: () => string[];
-	getBlock: ( clientId: string ) => { name: string; isValid: boolean } | null;
-};
+type Template = { id: string };
 
 test.describe( 'site editor', () => {
-	test( 'opens the index template with valid header and footer blocks', async ( {
+	test( 'opens every theme template with valid blocks', async ( {
 		admin,
 		editor,
 		page,
+		requestUtils,
 	} ) => {
-		await admin.visitSiteEditor( {
-			postId: 'tekseries//index',
-			postType: 'wp_template',
-			canvas: 'edit',
-		} );
+		const templates = (
+			await requestUtils.rest< Template[] >( {
+				path: '/wp/v2/templates',
+			} )
+		).filter( ( template ) => template.id.startsWith( 'tekseries//' ) );
+		expect( templates.length ).toBeGreaterThan( 5 );
 
-		await expect( editor.canvas.locator( '.ts-header' ) ).toBeVisible();
-		await expect(
-			editor.canvas.locator( '.ts-footer__panel' )
-		).toBeVisible();
+		for ( const { id } of templates ) {
+			await admin.visitSiteEditor( {
+				postId: id,
+				postType: 'wp_template',
+				canvas: 'edit',
+			} );
+			await expect( editor.canvas.locator( '.ts-header' ) ).toBeVisible();
+			await expect(
+				editor.canvas.locator( '.ts-footer__panel' )
+			).toBeVisible();
 
-		// Every block, including template part and pattern content, must parse
-		// as valid, or the editor shows "This block contains unexpected content".
-		const invalid = await page.evaluate( () => {
-			const { wp } = window as unknown as {
-				wp: { data: { select: ( name: string ) => BlockEditorStore } };
-			};
-			const store = wp.data.select( 'core/block-editor' );
-			return store
-				.getClientIdsWithDescendants()
-				.map( ( clientId ) => store.getBlock( clientId ) )
-				.filter( ( block ) => block?.isValid === false )
-				.map( ( block ) => block?.name );
-		} );
-		expect( invalid ).toEqual( [] );
+			// Every block, including template part and pattern content, must
+			// parse as valid.
+			expect( { [ id ]: await invalidBlocks( page ) } ).toEqual( {
+				[ id ]: [],
+			} );
+		}
 	} );
 } );

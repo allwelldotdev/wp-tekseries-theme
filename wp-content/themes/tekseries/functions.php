@@ -116,3 +116,17 @@ function tekseries_enqueue_block_styles(): void {
 }
 add_action( 'init', 'tekseries_enqueue_block_styles' );
 
+/**
+ * Registers the inserter categories for the theme's patterns.
+ */
+function tekseries_register_pattern_categories(): void {
+	register_block_pattern_category(
+		'tekseries-home',
+		array( 'label' => __( 'TekSeries: Home', 'tekseries' ) )
+	);
+	register_block_pattern_category(
+		'tekseries-pages',
+		array( 'label' => __( 'TekSeries: Pages', 'tekseries' ) )
+	);
+}
+add_action( 'init', 'tekseries_register_pattern_categories' );

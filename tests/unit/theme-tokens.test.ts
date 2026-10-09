@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 // theme.json must implement the design system's tokens. When a design pull
@@ -17,7 +17,10 @@ function readJson< T >( relativePath: string ): T {
 const theme = readJson< {
 	settings: {
 		viewport: Record< string, string >;
-		color: { palette: ( Preset & { color: string } )[] };
+		color: {
+			palette: ( Preset & { color: string } )[];
+			gradients: Preset[];
+		};
 		typography: {
 			fontFamilies: ( Preset & {
 				fontFace?: { fontFamily: string; src: string[] }[];
@@ -51,6 +54,16 @@ const typeStyle = ( name: string ) =>
 const rem = ( px: string | undefined ) => `${ parseFloat( px ?? '' ) / 16 }rem`;
 // The largest value in a size or clamp(), in rem: the desktop end.
 const clampMax = ( size: string ) => size.match( /([\d.]+rem)\)$/ )?.[ 1 ];
+
+const THEME = new URL( '../../wp-content/themes/tekseries/', import.meta.url );
+const presets: Record< string, string[] > = {
+	color: settings.color.palette.map( ( p ) => p.slug ),
+	gradient: settings.color.gradients.map( ( p ) => p.slug ),
+	'font-family': settings.typography.fontFamilies.map( ( p ) => p.slug ),
+	'font-size': settings.typography.fontSizes.map( ( p ) => p.slug ),
+	spacing: settings.spacing.spacingSizes.map( ( p ) => p.slug ),
+	'border-radius': settings.border.radiusSizes.map( ( p ) => p.slug ),
+};
 
 describe( 'theme.json tokens', () => {
 	it( 'has every solid design-system colour with its exact value', () => {
@@ -163,15 +176,6 @@ describe( 'theme.json tokens', () => {
 	} );
 
 	it( 'only references presets that exist', () => {
-		const presets: Record< string, string[] > = {
-			color: settings.color.palette.map( ( p ) => p.slug ),
-			'font-family': settings.typography.fontFamilies.map(
-				( p ) => p.slug
-			),
-			'font-size': settings.typography.fontSizes.map( ( p ) => p.slug ),
-			spacing: settings.spacing.spacingSizes.map( ( p ) => p.slug ),
-			'border-radius': settings.border.radiusSizes.map( ( p ) => p.slug ),
-		};
 		const refs = [
 			...JSON.stringify( theme.styles ).matchAll(
 				/var:preset\|([a-z-]+)\|([a-z0-9-]+)/g
@@ -182,6 +186,40 @@ describe( 'theme.json tokens', () => {
 			expect( { [ ref ]: presets[ type ] ?? [] } ).toEqual( {
 				[ ref ]: expect.arrayContaining( [ slug ] ),
 			} );
+		}
+	} );
+
+	it( 'has block markup that only uses presets that exist', () => {
+		const attributes: Record< string, string > = {
+			textColor: 'color',
+			backgroundColor: 'color',
+			gradient: 'gradient',
+			fontSize: 'font-size',
+			fontFamily: 'font-family',
+		};
+		for ( const dir of [ 'patterns', 'parts', 'templates' ] ) {
+			for ( const file of readdirSync( new URL( dir, THEME ) ) ) {
+				const markup = readFileSync(
+					new URL( `${ dir }/${ file }`, THEME ),
+					'utf8'
+				);
+				const refs = [
+					...markup.matchAll(
+						/var:preset\|([a-z-]+)\|([a-z0-9-]+)/g
+					),
+					...markup.matchAll(
+						/"(textColor|backgroundColor|gradient|fontSize|fontFamily)":"([a-z0-9-]+)"/g
+					),
+				];
+				for ( const [ ref, type = '', slug ] of refs ) {
+					const key = `${ dir }/${ file } ${ ref }`;
+					expect( {
+						[ key ]: presets[ attributes[ type ] ?? type ] ?? [],
+					} ).toEqual( {
+						[ key ]: expect.arrayContaining( [ slug ] ),
+					} );
+				}
+			}
 		}
 	} );
 } );
