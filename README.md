@@ -18,7 +18,15 @@ localwp composer install
 localwp wp plugin activate tekseries-blocks
 ```
 
-The site runs at `tekseriescomnew.local`, or whichever domain Local shows. Divi stays active there until Phase 2 switches the site to the `tekseries` theme.
+The site runs at `https://tekseriescomnew.local`, or whichever domain Local shows, with the `tekseries` theme active. Pages that still hold Divi shortcodes show them as raw text until Phase 3 re-authors them.
+
+For theme work, set development mode once, or WordPress serves a cached pattern list and new theme patterns don't appear. wp-env already sets it in `.wp-env.json`.
+
+```bash
+localwp wp config set WP_DEVELOPMENT_MODE theme --type=constant
+```
+
+Set the site logo in the Site Editor or Settings, not in code.
 
 ## Commands
 
@@ -31,6 +39,7 @@ The site runs at `tekseriescomnew.local`, or whichever domain Local shows. Divi 
 | `npm run typecheck` | `tsc --noEmit` over the plugin source, tests and config files. |
 | `npm run test:unit` | Vitest unit tests. |
 | `npm run test:e2e` | Playwright e2e tests on wp-env. |
+| `npm run test:e2e:install` | Installs Playwright's Chromium once. |
 | `npm run build` / `npm run start` | Builds the plugin's blocks into its `build/` folder, or watches and rebuilds. Nothing to build until the first block lands. |
 | `npm run plugin-zip` | Zips the plugin for release. |
 | `npm run wp-env <cmd>` | Runs wp-env, e.g. `npm run wp-env start` or `stop`. |
@@ -41,18 +50,19 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 
 ## Tests
 
-- `npm run test:unit` runs Vitest on `tests/unit/` and any `*.test.ts(x)` under the plugin's `src/`.
-- `npm run test:e2e` runs Playwright in Chromium against wp-env on `http://localhost:8890`, the port in `.wp-env.json`. It starts wp-env itself if it isn't running (ADR-002).
+- `npm run test:unit` runs Vitest on `tests/unit/`, including design-token checks against the design reference and template-wiring checks.
+- `npm run test:e2e` runs Playwright against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). It covers the header menu, Site Editor block validity, global styles, fonts and event URLs.
+- Run `npm run test:e2e:install` once to get the browser. The e2e script doesn't install it.
 - The first `npm run wp-env start` pulls Docker images and takes several minutes, longer than Playwright's 120-second start timeout. Run it once by hand before your first e2e run.
-- The e2e script installs Playwright's browser itself, but not the system libraries it needs. Install those once per machine with `sudo npx playwright install-deps chromium`.
+- Install Chromium's system libraries once per machine with `sudo npx playwright install-deps chromium`.
 - `localwp composer run lint` checks the theme's and plugin's PHP with PHPCS.
 
 ## Repo layout
 
 ```text
 .                                          # WordPress root and git root
-├── wp-content/themes/tekseries/           # block theme: theme.json, templates, functions.php
-├── wp-content/plugins/tekseries-blocks/   # blocks plugin, the only npm workspace with a build
+├── wp-content/themes/tekseries/           # block theme: theme.json, templates, parts, patterns, assets
+├── wp-content/plugins/tekseries-blocks/   # blocks plugin (event post type and taxonomy so far)
 ├── specs/                                 # Playwright e2e specs
 ├── tests/unit/                            # Vitest unit tests
 ├── types/                                 # TypeScript declarations
@@ -60,11 +70,13 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 └── package.json, composer.json, phpcs.xml.dist, .wp-env.json and other root config
 ```
 
+The theme has design tokens in `theme.json`, self-hosted fonts, header and footer parts whose content lives in PHP patterns (for translation), base templates, block style variations and per-block CSS in `assets/css/blocks`.
+
 The repo root is the WordPress root. `.gitignore` is a whitelist, so WordPress core, uploads and other plugins and themes are never tracked (ADR-001).
 
 ## Design reference
 
-`docs/design-reference/` holds the Claude Design page boards at desktop, tablet and mobile widths, plus the design system's tokens and components. It's reference material: don't edit it by hand, because later pulls diff against it. From Phase 2, the theme's `theme.json` implements its tokens.
+`docs/design-reference/` holds the Claude Design page boards at desktop, tablet and mobile widths, plus the design system's tokens and components. It's reference material: don't edit it by hand, because later pulls diff against it. The theme's `theme.json` implements its tokens.
 
 ## Status
 
@@ -72,7 +84,7 @@ The repo root is the WordPress root. `.gitignore` is a whitelist, so WordPress c
 |---|---|---|
 | 0 | Repo prep and design pull | done |
 | 1 | Environment | done |
-| 2 | Design tokens and theme shell | not started |
+| 2 | Design tokens and theme shell | done |
 | 3 | Pages from core blocks | not started |
 | 4 | Blocks plugin scaffold | not started |
 | 5 | Custom blocks | not started |

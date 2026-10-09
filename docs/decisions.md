@@ -47,7 +47,7 @@ This file records the significant architecture and design decisions for the TekS
 
 ## ADR-004: Pin the JavaScript toolchain to Node 24 LTS, TypeScript 6.0 and wp-prettier
 
-**Status:** Accepted
+**Status:** Superseded by ADR-016 (e2e runner only)
 
 **Context:** `@wordpress/scripts` drives the build, linting, unit tests (Vitest) and e2e tests (Playwright). Some newer releases of its dependencies break it.
 
@@ -112,7 +112,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-008: Self-host fonts and icons, and add a darker coral for small text
 
-**Status:** Accepted
+**Status:** Superseded by ADR-021 (font subsets only)
 
 **Context:** The design system (`docs/design-reference/design-system/tekseries/`) loads Schibsted Grotesk, Onest and the Material Symbols icon font from Google Fonts, and the boards draw social icons from Font Awesome on jsDelivr. Its coral `#E76F51` is 3.09:1 on white. The design system allows it at 14px bold, but WCAG AA counts only 18.66px bold and larger as large text.
 
@@ -132,7 +132,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-009: Style with plain CSS from theme.json tokens, light-only, with fluid sizes
 
-**Status:** Accepted
+**Status:** Superseded by ADR-021 (radii only)
 
 **Context:** The design system defines one light theme (`tokens.json`) and three sizes: desktop above 1100px, tablet 641–1100px and mobile 640px and below. Editors change global colours in the Site Editor. In WordPress 7.1, responsive `@tablet` and `@mobile` styles are documented only under `styles.blocks`, not for root spacing or elements.
 
@@ -191,7 +191,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-013: Collapse the header at 1100px with two core Navigation blocks
 
-**Status:** Accepted
+**Status:** Superseded by ADR-018 (compact menu overlay only)
 
 **Context:** The boards collapse the header at 1100px into an inline panel below the header bar. Core Navigation collapses at a hard-coded 600px into an overlay, and core navigation overlays are always full-screen.
 
@@ -233,10 +233,101 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Rationale:** It keeps the designed features and works without JavaScript. The year comes from the album, not the upload date. Tagging excludes the WP Job Manager logos by construction.
 
+## ADR-016: Run e2e tests with Playwright directly
+
+**Status:** Accepted
+
+**Context:** ADR-002 runs e2e tests on wp-env, and ADR-004 pinned `wp-scripts test-e2e` as the runner. Before any test, that runner made two network calls: a `playwright install` check, and a wp-env config load that asks api.wordpress.org for the latest WordPress version even with core pinned. Both flaked with `ERR_SOCKET_CLOSED_BEFORE_CONNECTION`. The root `playwright.config.ts` already sets the base URL, reads the port and starts wp-env, which is all the runner added.
+
+**Options:**
+- Keep `wp-scripts test-e2e` and retry on failure.
+- Run `playwright test` directly.
+
+**Decision:** `npm run test:e2e` is `playwright test`. Browsers install once with `npm run test:e2e:install` (`playwright install chromium`). Playwright itself stays at the version ADR-004 pins.
+
+**Rationale:** Tests no longer depend on network calls that have nothing to do with the code under test. Test runs behave the same offline and on a flaky connection.
+
+## ADR-017: Keep theme strings in PHP patterns, and leave parts and templates as references
+
+**Status:** Accepted
+
+**Context:** HTML template parts and templates cannot call gettext, so strings in them are not translatable (ADR-006). The header, footer, 404 page and empty-results message all contain user-facing text.
+
+**Options:**
+- Hard-code English in `parts/*.html` and `templates/*.html`.
+- Put the markup in PHP patterns with gettext calls, and have the parts and templates reference the patterns.
+
+**Decision:** `parts/header.html` and `parts/footer.html` each hold only a `wp:pattern` block. `patterns/header.php`, `footer.php`, `404.php` and `no-results.php` hold the markup, with `tekseries` gettext calls. The templates reference the 404 and no-results patterns the same way. The block markup comes from the editor's serializer, so it validates in the Site Editor. The footer copyright year is computed with `wp_date( 'Y' )`. Once an editor saves the footer part in the Site Editor, the pattern is expanded into the stored part and the year becomes static text.
+
+**Rationale:** The theme's strings stay translatable while editors can still edit the parts. The cost is that a saved footer no longer updates its year, so editors must change it by hand.
+
+## ADR-018: Restyle core's navigation overlay for the compact header menu
+
+**Status:** Accepted
+
+**Context:** ADR-013 left the compact menu's overlay open ("styled as the board's inline panel"). Core's overlay already provides the toggle, focus trap, Escape handling and ARIA state through the Interactivity API. WordPress 7.1's custom overlay template part was considered, but core's navigation render code still renders it inside the full-screen modal container.
+
+**Options:**
+- A custom overlay template part.
+- Core's overlay, restyled with CSS.
+
+**Decision:** The compact Navigation block (1100px and below) keeps core's overlay and restyles it with CSS into a panel under the header bar, with the close button placed over the menu button. Its accessible name is "Menu", because core renames a second "Main" navigation to "Main 2". Desktop navigation links are 44px-high pills to meet the touch-target rule in ADR-005.
+
+**Rationale:** Core keeps ownership of focus and keyboard behaviour, so no custom script is added (ADR-005). CSS alone gives the board's layout. The restyle depends on core's overlay class names, so core updates need a visual check.
+
+## ADR-019: Define block style variation data in theme.json and register only the names in PHP
+
+**Status:** Accepted
+
+**Context:** The design needs named variations: button soft, dark and accent; group card, card-plum, card-saffron and card-lilac; paragraph eyebrow. Core's outline button must work on light and plum surfaces. WordPress 7.1 supports block-level `:hover` in `theme.json`. Core drops `theme.json` variation data for variations that are not registered, and responsive keys do not apply in standalone `styles/*.json` partials (Trac #65992).
+
+**Options:**
+- Standalone `styles/blocks/*.json` partials.
+- `register_block_style()` with inline CSS.
+- Data in `theme.json` `styles.blocks.*.variations`, names registered in PHP.
+
+**Decision:** Style data lives in `theme.json` under `styles.blocks.*.variations`. `tekseries_register_block_styles()` in `functions.php` registers the names and labels only. Core's outline button is restyled with `inherit` and `currentColor`, so it follows the surface. The focus ring colour also follows the surface.
+
+**Rationale:** One file holds all the values and editors can change them in the Styles panel (ADR-009). Registering names satisfies core's filter without duplicating the styles. Partials would lose the responsive keys.
+
+## ADR-020: Run WordPress in theme development mode
+
+**Status:** Accepted
+
+**Context:** WordPress caches a theme's pattern list and `theme.json` until the theme version changes. During development, new patterns never registered and the template parts rendered empty (ADR-017).
+
+**Options:**
+- Clear the cache by hand or bump the theme version on every change.
+- Set `WP_DEVELOPMENT_MODE` to `theme`.
+
+**Decision:** `WP_DEVELOPMENT_MODE` is `theme` in `.wp-env.json` (ADR-002) and on the LocalWP site's configuration.
+
+**Rationale:** Theme edits take effect at once in both environments, and neither needs manual cache steps.
+
+## ADR-021: Ship Fontsource variable fonts with a Vietnamese subset for Igbo, and use radius presets
+
+**Status:** Accepted
+
+**Context:** ADR-008 chose self-hosted fonts subset to latin and latin-ext, and ADR-009 chose fluid radii. Igbo letters ị, ọ and ụ (U+1EA0 to U+1EF1) are in neither latin nor latin-ext. Core has had `border.radiusSizes` presets since 6.9.
+
+**Options:**
+- Fonts: latin and latin-ext only, or add the Vietnamese subset where a font has one.
+- Radii: CSS variables only, or `border.radiusSizes` presets.
+
+**Decision:**
+- Fonts are variable woff2 files from the Fontsource packages, in `assets/fonts/`, with their OFL licences alongside. They are declared in `theme.json` `fontFace` with `unicodeRange`. Schibsted Grotesk has latin and latin-ext. Onest adds the vietnamese subset, which covers ị, ọ and ụ.
+- Schibsted Grotesk has no Vietnamese subset, so those letters fall back to the system sans in headings. This is a known gap (see Future work).
+- Radii are `border.radiusSizes` presets, so editors get a radius picker.
+- The page gutter (56 / 24 / 16px) is a CSS variable stepped at the `theme.json` viewports (ADR-009), not a fluid size.
+
+**Rationale:** The Vietnamese subset is the only one that includes the Igbo letters missing from latin-ext, and it costs one extra file for body text. Radius presets put the tokens in the editor UI. A stepped gutter matches the boards exactly, where fluid sizing would not.
+
 ## Future work
 
 - **Hosting and deploy:** not decided. The options are a git pull on the server or CI-built theme and plugin zips; no remote or CI exists yet. A release must ship only the theme and plugin, never the repository root (ADR-001).
 - **PHP 8.3+:** ask the host to move to PHP 8.3 or newer before PHP 8.2 security support ends on 2026-12-31, then raise the floor in a new ADR (ADR-003).
 - **Animated Home blocks:** `tekseries/hero-carousel`, `tekseries/stat` and `tekseries/logo-marquee` (ADR-014).
 - **`cta_link` binding spike:** confirm that a Button `url` binding accepts the ACF link array; otherwise add a `tekseries/event` binding source or a URL field (ADR-010).
+- **Schibsted Grotesk glyph gap:** Igbo ị, ọ and ụ fall back to the system sans in headings (ADR-021). Find a font file that covers them, or accept the fallback.
+- **Search field and forms:** style the search field and the forms in Phase 3.
 - **Design-system updates:** add the components the boards use but the system lacks (Impact, Insight, Key figure, Pull quote, Pillar badge, anchor chip, marquee) and the missing tokens (`coral-text` from ADR-008, status colours, alpha and radius tokens). Settle the tablet and mobile h1/h2 sizes (the tokens win) and the footer radius (36 / 32 / 24px). Then refresh `docs/design-reference/`.
