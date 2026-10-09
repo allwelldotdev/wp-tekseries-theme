@@ -1,25 +1,21 @@
+import { readdirSync } from 'node:fs';
+import path from 'node:path';
 import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 import { invalidBlocks } from './utils/blocks';
 
-type Template = { id: string };
+const templates = readdirSync(
+	path.join( __dirname, '../wp-content/themes/tekseries/templates' )
+).map( ( file ) => path.basename( file, '.html' ) );
 
 test.describe( 'site editor', () => {
-	test( 'opens every theme template with valid blocks', async ( {
-		admin,
-		editor,
-		page,
-		requestUtils,
-	} ) => {
-		const templates = (
-			await requestUtils.rest< Template[] >( {
-				path: '/wp/v2/templates',
-			} )
-		).filter( ( template ) => template.id.startsWith( 'tekseries//' ) );
-		expect( templates.length ).toBeGreaterThan( 5 );
-
-		for ( const { id } of templates ) {
+	for ( const slug of templates ) {
+		test( `opens the ${ slug } template with valid blocks`, async ( {
+			admin,
+			editor,
+			page,
+		} ) => {
 			await admin.visitSiteEditor( {
-				postId: id,
+				postId: `tekseries//${ slug }`,
 				postType: 'wp_template',
 				canvas: 'edit',
 			} );
@@ -30,9 +26,7 @@ test.describe( 'site editor', () => {
 
 			// Every block, including template part and pattern content, must
 			// parse as valid.
-			expect( { [ id ]: await invalidBlocks( page ) } ).toEqual( {
-				[ id ]: [],
-			} );
-		}
-	} );
+			expect( await invalidBlocks( page ) ).toEqual( [] );
+		} );
+	}
 } );
