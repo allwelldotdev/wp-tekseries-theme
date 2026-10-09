@@ -200,7 +200,12 @@
 					"accent": "var(--wp--preset--color--saffron)",
 					"badge-bg": "var(--wp--preset--color--saffron)",
 					"badge-text": "var(--wp--preset--color--ink)",
-					"deco": "rgba(255, 255, 255, 0.08)"
+					"deco": "rgba(255, 255, 255, 0.08)",
+					"banner-accent": "var(--wp--preset--color--saffron)",
+					"sub": "var(--wp--preset--color--lilac-deep)",
+					"button-bg": "var(--wp--preset--color--saffron)",
+					"button-text": "var(--wp--preset--color--ink)",
+					"line": "rgba(255, 255, 255, 0.7)"
 				},
 				"saffron": {
 					"bg": "var(--wp--preset--color--saffron)",
@@ -208,7 +213,12 @@
 					"accent": "var(--wp--preset--color--plum)",
 					"badge-bg": "var(--wp--preset--color--ink)",
 					"badge-text": "var(--wp--preset--color--white)",
-					"deco": "rgba(74, 29, 94, 0.12)"
+					"deco": "rgba(74, 29, 94, 0.12)",
+					"banner-accent": "var(--wp--preset--color--plum)",
+					"sub": "var(--wp--preset--color--ink)",
+					"button-bg": "var(--wp--preset--color--ink)",
+					"button-text": "var(--wp--preset--color--white)",
+					"line": "rgba(42, 21, 51, 0.55)"
 				},
 				"lilac": {
 					"bg": "var(--wp--preset--color--lilac)",
@@ -216,7 +226,12 @@
 					"accent": "var(--wp--preset--color--ink)",
 					"badge-bg": "var(--wp--preset--color--plum)",
 					"badge-text": "var(--wp--preset--color--white)",
-					"deco": "rgba(74, 29, 94, 0.08)"
+					"deco": "rgba(74, 29, 94, 0.08)",
+					"banner-accent": "var(--wp--preset--color--plum)",
+					"sub": "var(--wp--preset--color--muted)",
+					"button-bg": "var(--wp--preset--color--plum)",
+					"button-text": "var(--wp--preset--color--white)",
+					"line": "rgba(74, 29, 94, 0.45)"
 				},
 				"ink": {
 					"bg": "var(--wp--preset--color--ink)",
@@ -224,7 +239,12 @@
 					"accent": "var(--wp--preset--color--saffron)",
 					"badge-bg": "var(--wp--preset--color--lilac)",
 					"badge-text": "var(--wp--preset--color--plum)",
-					"deco": "rgba(255, 255, 255, 0.07)"
+					"deco": "rgba(255, 255, 255, 0.07)",
+					"banner-accent": "var(--wp--preset--color--saffron)",
+					"sub": "var(--wp--preset--color--lilac-deep)",
+					"button-bg": "var(--wp--preset--color--saffron)",
+					"button-text": "var(--wp--preset--color--ink)",
+					"line": "rgba(255, 255, 255, 0.7)"
 				}
 			},
 			"focus": {

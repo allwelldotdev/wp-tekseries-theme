@@ -126,6 +126,26 @@ function tekseries_blocks_register_meta(): void {
 add_action( 'init', 'tekseries_blocks_register_meta' );
 
 /**
+ * Exposes the icon a post shows when none is picked, for editor previews.
+ */
+function tekseries_blocks_register_rest_fields(): void {
+	register_rest_field(
+		tekseries_blocks_tone_post_types(),
+		'tekseries_default_icon',
+		array(
+			'get_callback' => static fn( array $post ): string => tekseries_blocks_default_icon( (int) $post['id'] ),
+			'schema'       => array(
+				'description' => __( 'Topic icon the post shows when none is picked.', 'tekseries-blocks' ),
+				'type'        => 'string',
+				'context'     => array( 'view', 'edit' ),
+				'readonly'    => true,
+			),
+		)
+	);
+}
+add_action( 'rest_api_init', 'tekseries_blocks_register_rest_fields' );
+
+/**
  * Lets anyone who can edit the post change its tone and icon.
  *
  * @param bool   $allowed   Whether the user can add the meta. Unused.

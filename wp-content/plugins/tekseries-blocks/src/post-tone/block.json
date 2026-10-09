@@ -6,7 +6,7 @@
 	"title": "Post Tone",
 	"category": "theme",
 	"icon": "art",
-	"description": "Colours its contents with the post's tone and shows its topic icon.",
+	"description": "Colours its contents with the post's tone and shows its topic icon. Use it for listing card media and post banners.",
 	"keywords": [ "tone", "card", "banner" ],
 	"textdomain": "tekseries-blocks",
 	"usesContext": [ "postId", "postType" ],
@@ -18,8 +18,34 @@
 		}
 	},
 	"supports": {
-		"html": false
+		"html": false,
+		"align": [ "wide", "full" ],
+		"layout": {
+			"default": {
+				"type": "flex",
+				"orientation": "vertical",
+				"justifyContent": "stretch"
+			},
+			"allowSwitching": false,
+			"allowInheriting": false
+		},
+		"spacing": {
+			"padding": true,
+			"margin": [ "top", "bottom" ],
+			"blockGap": true
+		},
+		"dimensions": {
+			"minHeight": true,
+			"aspectRatio": true
+		},
+		"__experimentalBorder": {
+			"radius": true
+		},
+		"interactivity": {
+			"clientNavigation": true
+		}
 	},
 	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
 	"render": "file:./render.php"
 }
