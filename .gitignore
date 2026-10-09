@@ -1,0 +1,69 @@
+# This repo lives at the WordPress root (LocalWP site), so this file is a whitelist:
+# ignore everything at the root, then re-include only what we own. Git cannot
+# re-include a path whose parent directory is excluded, so each level is re-included.
+
+/*
+
+# Root files we own
+!/.gitignore
+!/.editorconfig
+!/.nvmrc
+!/.wp-env.json
+!/README.md
+!/package.json
+!/package-lock.json
+!/composer.json
+!/composer.lock
+!/phpcs.xml.dist
+!/tsconfig.json
+!/eslint.config.cjs
+!/playwright.config.ts
+!/vitest.config.ts
+
+# Root directories we own
+!/.github/
+!/docs/
+!/specs/
+!/tests/
+!/types/
+
+# wp-content: only the tekseries theme and the tekseries-blocks plugin
+!/wp-content/
+/wp-content/*
+!/wp-content/themes/
+/wp-content/themes/*
+!/wp-content/themes/tekseries/
+!/wp-content/plugins/
+/wp-content/plugins/*
+!/wp-content/plugins/tekseries-blocks/
+
+# Dependencies and build output (any depth inside re-included paths)
+node_modules/
+vendor/
+/wp-content/plugins/tekseries-blocks/build/
+
+# Test, lint and packaging artefacts
+artifacts/
+test-results/
+playwright-report/
+blob-report/
+.vitest/
+coverage/
+.phpcs-cache
+.eslintcache
+.stylelintcache
+*.zip
+
+# Local-only config and secrets
+.wp-env.override.json
+.env
+.env.*
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+*.log
