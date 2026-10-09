@@ -605,6 +605,110 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Rationale:** Server rendering keeps both usable without JavaScript (ADR-005). Reading the saved HTML means the list always matches the page. Core's icon artwork avoids a second icon set and a CDN (ADR-008). Deferring the enhancements keeps this phase free of front-end scripts.
 
+## ADR-039: Load WP Job Manager as a soft dependency, with plugin overrides and its own CSS left out
+
+**Status:** Accepted
+
+**Context:** ADR-012 put the WP Job Manager (WPJM) overrides in the plugin. The site's other parts (events, news, gallery) do not need jobs. WPJM's `frontend.css` fights the design, and its `job-listings.css` loaded on every page. wp-env needs the same WPJM release as live (ADR-002).
+
+**Options:**
+- Declare `Requires Plugins: wp-job-manager`, as is done for ACF (ADR-035).
+- Treat WPJM as a soft dependency and guard every call.
+- Keep WPJM's CSS and restyle on top of it.
+
+**Decision:**
+- wp-env installs WPJM 2.4.8 from the pinned wordpress.org zip. That is the version live runs, and the zip is byte-identical to the local site's copy.
+- The plugin does not declare WPJM in `Requires Plugins`. Every WPJM call is guarded, so events and the rest work without it.
+- Overrides live in `wp-content/plugins/tekseries-blocks/templates/wpjm/`. They load through `job_manager_locate_template` only for WPJM's own `job_manager` template path, so add-ons keep theirs. File names are checked with `validate_file()`.
+- WPJM's `frontend.css` is left out on every screen the plugin styles: the single job, pages with the Job Listings block, the submission form and the dashboard. Its `job-listings.css` is dequeued. select2 loads only on the submission form. Its dashboard CSS stays for the statistics dialog (ADR-043).
+- PHPCS exempts `templates/wpjm/` from the file-name and hook-prefix rules, because overrides must keep WPJM's names and fire its hooks.
+
+**Rationale:** A soft dependency keeps the rest of the site independent of jobs. Dropping WPJM's CSS avoids fighting it and stops it loading on unrelated pages. Checking the template path and file name keeps the filter from touching other plugins' templates.
+
+## ADR-040: Expose job data through two binding sources and class-keyed icon filters
+
+**Status:** Accepted
+
+**Context:** ADR-012 added a `tekseries/job-field` source because WPJM's `_`-prefixed meta is out of reach for `core/post-meta`. The templates need display-ready values, and the Job Series hero needs an open-jobs count.
+
+**Options:**
+- A custom dynamic block for job chips and the count.
+- Binding sources that return display strings, with core blocks in the templates.
+
+**Decision:**
+- `tekseries/job-field` has the keys `company`, `location`, `posted` and `type`. Location reads "Lagos", "Lagos (Remote)", "Remote" or "Anywhere". Posted reads "Posted 3 days ago", or "Posted on <date>" in WPJM's date format. It applies the same read checks as core's post-meta source (publicly viewable or `read_post`, and the password check) plus WPJM's view capability. It returns null without WPJM.
+- `tekseries/job-stats` has the key `open`. It returns the number of open jobs from WPJM's cached `get_job_listings()` query. The Job Series hero shows "{N} open jobs" in place of the design's "100's" figure (owner decision).
+- Icon blocks with class `ts-job-type-icon` draw the job type's icon (an 8-type map, `work` as fallback). `ts-job-location-icon` draws a globe for remote jobs. Both work through a render filter, the class-hook pattern of ADR-037. The SVG swap is now a shared helper, `tekseries_blocks_swap_icon()`.
+
+**Rationale:** Binding sources keep templates as core blocks that editors can change (ADR-005). Sharing the read checks with core's source avoids leaking private jobs. The shared swap helper keeps event and job icons on one code path.
+
+## ADR-041: Build the single job page as a theme template over a plugin body override
+
+**Status:** Accepted
+
+**Context:** The single job board has a plum hero, a description card and a side card. The page must work without JavaScript, and WPJM's jQuery `job-application.js` is not allowed here (ADR-007). Imported job descriptions can contain H1s.
+
+**Options:**
+- The whole page in plugin overrides.
+- Theme template and pattern for the hero and "More jobs", plugin override for the body.
+- Keep WPJM's jQuery apply toggle.
+
+**Decision:**
+- The theme has `single-job_listing.html` and a pattern. The hero has breadcrumbs (Home / Job Series / title), the title, chips bound to type, location and posted (ADR-040), and a "work" watermark. Post content follows. "More jobs" is a Query Loop of three other jobs, leaving out filled jobs when WPJM hides them.
+- A plugin breadcrumb filter supplies "Job Series" from WPJM's job listings page. It also does so on the submit and dashboard pages.
+- The body is a plugin override of `content-single-job_listing.php` (with `-company`, `-meta` and `job-application*.php`). A description card holds "Apply for job" and "All jobs". Beside it sits a side card: a company tile, details rows with icons, the apply box and a third-party note. The tile shows the uploaded logo, or initials on one of four tones hashed from the company name with the boards' own hash.
+- The side card comes first in the markup, so tablet and mobile get the boards' order with no CSS reordering. On desktop it is a sticky column.
+- The apply box is a native `<details>`, and `job-application.js` is no longer loaded. WPJM's apply-click statistic is pointed at `.application_button`, the summary, because its script binds the first match.
+- The second "Apply for job" under the description links straight to the application (URL in a new tab, or a mailto). A second toggle cannot open a `<details>` without JavaScript.
+- H1 headings in job descriptions become H2s, since the page already has the job title as H1.
+- The submission preview reuses the same body (owner default: one layout for single and preview).
+
+**Rationale:** The theme owns the hero and layout, and the plugin owns WPJM-specific markup (ADR-005). Source order gives the mobile order without reordering. `<details>` keeps the apply box working without JavaScript and keeps jQuery off this screen (ADR-007). One layout for preview and single means the employer sees what visitors will see.
+
+## ADR-042: Implement the Job Listings block as a plain GET form with server-rendered results
+
+**Status:** Accepted
+
+**Context:** ADR-012 chose a `tekseries/job-listings` block over `[jobs]`. This records how it was built. WPJM enables search statistics only on pages whose content contains `[jobs]`.
+
+**Options:**
+- Filters and pages as an AJAX app.
+- A plain GET form with server-rendered results and real links.
+- Re-implement WPJM's search statistics.
+
+**Decision:**
+- The block has `render.php`, a ServerSideRender editor preview and a `perPage` attribute (default 25).
+- It reads `search_keywords`, `search_location`, `search_category`, `filter_job_type[]` (none ticked means all types), `remote_position` and `pg` from a GET form. Type chips are real checkboxes under styled labels. "Remote positions only" is a checkbox with `role="switch"`.
+- It queries WPJM's `get_job_listings()`, newest first, and prints "N open jobs" or "N jobs match your search". Rows come from the `content-job_listing.php` override (`li.job_listing`, with its post class kept). Empty states offer "Clear filters".
+- Pagination is `paginate_links()` with end size 1 and mid size 2 ("1 2 3 … 54 →") on every screen size. That is the mobile board's set. The desktop board shows more numbers.
+- To get search statistics, the block calls WPJM's private `Stats_Script::enqueue_stats_script()` through a bound closure. That keeps WPJM's nonce, stat definitions and filters. The call is guarded with `method_exists`. The risk is that a WPJM update renaming the method silently drops search statistics. An e2e test checks that the impression stat is set up, so such an update would fail the test.
+- Live filtering as you type is not part of this ADR (see Future work). ADR-012's Interactivity API enhancement is deferred to Phase 6.
+
+**Rationale:** A GET form works without JavaScript, gives shareable URLs and needs no jQuery (ADR-007). Calling WPJM's own statistics code is less work and less drift than copying it. The e2e test turns the private-method risk into a visible failure.
+
+## ADR-043: Restyle the submission flow and dashboard with static heroes and WPJM overrides
+
+**Status:** Accepted
+
+**Context:** The boards redesign the submit flow (form, preview, submitted) and the employer dashboard. The submit form needs jQuery for its editor and uploads (ADR-007). Site registration is off.
+
+**Options:**
+- Page heroes generated inside the overrides, or static theme patterns.
+- Fully redesigned statistics dialog, or WPJM's own dialog.
+- Delete or Duplicate as a pending job's main dashboard action.
+
+**Decision:**
+- The "Post a job" and "Job dashboard" heroes are static theme patterns above WPJM's shortcode in a wide group (owner default). Steps live inside the overrides.
+- Overrides: `job-submit.php` (steps aside Job details, Preview and Submitted, with tips; the form in "Job details" and "Company details" cards; `<button>` Preview and Save draft with WPJM's names), `account-signin.php` (signed-in bar with initial and Sign out; signed-out sign-in card beside "How posting works"), `job-preview.php` (plum bar with Edit listing and Submit listing), `job-submitted.php` (done card), `job-dashboard.php` and `job-dashboard-login.php`.
+- Field labels, placeholders and help come from a `submit_job_form_fields` filter. The job category is optional (owner default; imported jobs all sit in one category). Required fields get a star.
+- Registration stays off, so the sign-in cards say "No account yet? Contact us to get an employer account" (owner default).
+- The dashboard has search, Add job, rows with status pills, a main action, a native `<details>` menu with icons, an empty state and "Signed in as". A draft's main action is Continue Submission. Other jobs get Edit where offered. Delete is never the main button: Duplicate takes it, because with the site's settings a pending job cannot be edited and WPJM would otherwise put Delete there. Published jobs read "Published" instead of "Active", on this site only. WPJM's behaviour stays for Duplicate (opens the copy in the form) and Delete (confirm).
+- `job-dashboard-login.php` is a plain sign-in card. No board exists for that state yet.
+- The statistics dialog keeps WPJM's layout and copy, since the board's redesign would need its overlay templates rewritten. WPJM's dashboard CSS stays for it (ADR-039).
+- The submit form works without JavaScript except reCAPTCHA. jQuery remains allowed there only (ADR-007).
+
+**Rationale:** Static heroes keep editors in control of page copy and the overrides simple. Keeping Delete off the main button protects employers from a destructive default. Keeping WPJM's dialog saves a large rewrite for a secondary screen. The copy matches a site with no self-registration.
+
 ## Future work
 
 - **Hosting and deploy:** not decided. The options are a git pull on the server or CI-built theme and plugin zips; no remote or CI exists yet. A release must ship only the theme and plugin, never the repository root (ADR-001).
@@ -619,4 +723,11 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - **Event type icon picker:** add one to wp-admin (ADR-037).
 - **Event page on phones:** show the poster before the details and Register at the end of the article, as on the board. Today the poster follows the details card and Register sits in the card.
 - **Time and venue for older events:** editors fill the new fields, since the old bodies hold them as text (ADR-035).
+- **Job Series live filtering:** filter as you type and change pages without a reload, using the Interactivity API (Phase 6; ADR-012, ADR-042).
+- **Statistics dialog redesign:** restyle WPJM's dialog to dashboard board 7, which needs its overlay templates rewritten (ADR-043).
+- **Logged-out job dashboard:** replace the plain sign-in card when the designer delivers the state (ADR-043).
+- **Job categories:** a curated list to replace the 76 imported terms (owner; ADR-043).
+- **Pending jobs:** decide whether employers may edit them, a WPJM setting (owner; ADR-043).
+- **"Upload your CV" links:** hidden until a target exists (ADR-043).
+- **Employer self-registration:** only if the owner wants it (ADR-043).
 - **Design-system updates:** add the components the boards use but the system lacks (Impact, Insight, Key figure, Pull quote, Pillar badge, anchor chip, marquee) and the missing tokens (`coral-text` from ADR-008, status colours, alpha and radius tokens). Settle the tablet and mobile h1/h2 sizes (the tokens win) and the footer radius (36 / 32 / 24px). Then refresh `docs/design-reference/`.

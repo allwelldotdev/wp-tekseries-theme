@@ -8,6 +8,7 @@ This repo holds the `tekseries` block theme and the `tekseries-blocks` plugin th
 - Docker, for the wp-env e2e tests only.
 - LocalWP running this site. The theme and plugin need WordPress 7.1+ and PHP 8.2+ (ADR-003).
 - Advanced Custom Fields, active. The plugin declares it in `Requires Plugins` (ADR-035), and wp-env installs ACF 6.8.10 from `.wp-env.json`.
+- WP Job Manager, for the Job Series screens. It's a soft dependency, so events and the rest work without it (ADR-039). wp-env installs 2.4.8 from `.wp-env.json`.
 - The `localwp` wrapper, which runs Composer, PHP and WP-CLI inside Local's site environment. Open the site's "Site shell" in Local once so it writes `~/.config/Local/ssh-entry/<site-id>.sh`, then export `LOCALWP_SSH_ENTRY` with that path.
 
 ## Setup
@@ -40,7 +41,7 @@ Every event and news post has a tone and a topic icon, assigned on first publish
 |---|---|
 | `npm run check-engines` | Checks your Node and npm versions against `engines`. |
 | `npm run lint:js` | ESLint over the plugin, `scripts/`, `specs/`, `tests/`, `types/` and the JS/TS config files. |
-| `npm run lint:css` | Stylelint over the theme's and plugin's CSS and SCSS. |
+| `npm run lint:css` | Stylelint over the theme's CSS and SCSS and the plugin's `src/` and `assets/css/`. |
 | `npm run format` | Prettier (`wp-prettier`) over the theme, plugin, scripts, tests and config files. |
 | `npm run typecheck` | `tsc --noEmit` over the plugin source, tests and config files. |
 | `npm run test:unit` | Vitest unit tests. |
@@ -48,7 +49,7 @@ Every event and news post has a tone and a topic icon, assigned on first publish
 | `npm run test:e2e:install` | Installs Playwright's Chromium once. |
 | `npm run build` / `npm run start` | Builds the plugin's blocks and post sidebar into `build/` with a blocks manifest, or watches and rebuilds. |
 | `npm run icons` | Downloads the plugin's Material Symbols SVGs from Google, for the names listed in `includes/icons.php`. |
-| `npm run plugin-zip` | Zips the plugin for release. |
+| `npm run plugin-zip` | Zips the plugin for release, `templates/` included. |
 | `npm run wp-env <cmd>` | Runs wp-env, e.g. `npm run wp-env start` or `stop`. |
 | `localwp composer run lint` | PHPCS with WordPress Coding Standards and PHPCompatibilityWP (PHP 8.2+) over the theme and plugin. |
 | `localwp composer run format` | Runs `phpcbf`. It exits 1 after fixing files, which isn't a failure. |
@@ -57,8 +58,9 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 
 ## Tests
 
-- `npm run test:unit` runs 165 Vitest tests in `tests/unit/`: design tokens, template wiring, the icon list and project metadata.
-- `npm run test:e2e` runs 60 Playwright tests against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). Run `npm run build` first; they cover the theme, event fields and types, the tone cycle, the three blocks and the sidebar panel.
+- `npm run test:unit` runs 176 Vitest tests in `tests/unit/`: design tokens, template wiring, the icon list and project metadata.
+- `npm run test:e2e` runs 73 Playwright tests against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). Run `npm run build` first; they cover the theme, event fields and types, the tone cycle, the plugin's blocks, the sidebar panel and the job screens (fields, single job, listings, submission, dashboard).
+- A test helper creates the Job Series, submit and dashboard pages on wp-env and selects them in WP Job Manager's settings, since it has no REST API for that. A fresh wp-env needs nothing extra.
 - The first `npm run wp-env start` pulls Docker images and takes several minutes, longer than Playwright's 120-second start timeout. Run it once by hand first, and retry on a network error (ETIMEDOUT, socket closed); `docker exec <wp-env cli container> wp …` also works.
 - Run `npm run test:e2e:install` once for the browser, then `sudo npx playwright install-deps chromium` once per machine for its system libraries.
 - `localwp composer run lint` checks the theme's and plugin's PHP with PHPCS.
@@ -70,7 +72,9 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 ├── wp-content/themes/tekseries/           # block theme: theme.json, templates, parts, patterns, assets
 ├── wp-content/plugins/tekseries-blocks/   # blocks plugin
 │   ├── src/                               # one folder per block, plus post-settings (sidebar panel)
-│   └── includes/                          # event fields (ACF), dates and types, icons, tone meta and cycle, editor, WP-CLI
+│   ├── includes/                          # event and job fields, bindings, icons, tone meta and cycle, editor, WP-CLI
+│   ├── templates/wpjm/                    # WP Job Manager template overrides
+│   └── assets/css/                        # job screen styles
 ├── specs/                                 # Playwright e2e specs
 ├── tests/unit/                            # Vitest unit tests
 ├── scripts/, types/                       # fetch-icons.mjs, TypeScript declarations
@@ -78,7 +82,9 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 └── package.json, composer.json, phpcs.xml.dist, .wp-env.json and other root config
 ```
 
-The plugin has three blocks: `tekseries/post-tone` (ADR-033), `tekseries/share-links` and `tekseries/toc` (ADR-038). Event templates show the ACF date, time, venue and Register button through Block Bindings, and past events say "This event has ended". The theme holds design tokens, fonts, header and footer parts, page patterns, templates for every screen and per-block CSS.
+The plugin has four blocks: `tekseries/post-tone` (ADR-033), `tekseries/share-links`, `tekseries/toc` (ADR-038) and `tekseries/job-listings` (ADR-042). Event templates show the ACF fields through Block Bindings, and job pages read WP Job Manager data through the `tekseries/job-field` and `tekseries/job-stats` sources (ADR-040).
+
+The theme holds design tokens, fonts, header and footer parts, page patterns, templates for every screen (`single-job_listing.html` is ADR-041) and per-block CSS. The submission flow and dashboard are WP Job Manager overrides (ADR-043).
 
 The repo root is the WordPress root. `.gitignore` is a whitelist, so WordPress core, uploads and other plugins and themes are never tracked (ADR-001).
 
@@ -96,11 +102,11 @@ The repo root is the WordPress root. `.gitignore` is a whitelist, so WordPress c
 | 3 | Pages from core blocks | done |
 | 4 | Blocks plugin scaffold | done |
 | 5a | Custom blocks: events | done |
-| 5b | Custom blocks: Job Series | not started |
+| 5b | Custom blocks: Job Series | done |
 | 5c | Custom blocks: gallery and home motion | not started |
 | 6 | Frontend behaviour | not started |
 | 7 | QA and release | not started |
 
-Phase 5b is next: the job listings block and the WP Job Manager templates.
+Phase 5c is next: the gallery and home motion.
 
 Architecture decisions and future work are in [docs/decisions.md](docs/decisions.md). Changes are in [docs/changelog.md](docs/changelog.md).
