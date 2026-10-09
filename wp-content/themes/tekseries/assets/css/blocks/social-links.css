@@ -32,3 +32,18 @@
 	outline: 2px solid var(--wp--preset--color--saffron);
 	outline-offset: 2px;
 }
+
+/* On white cards: lilac circles with plum icons. */
+.wp-block-social-links.ts-social--light .wp-social-link {
+	background-color: var(--wp--preset--color--lilac);
+	color: var(--wp--preset--color--plum);
+}
+
+.wp-block-social-links.ts-social--light .wp-social-link:hover {
+	background-color: var(--wp--preset--color--saffron);
+	color: var(--wp--preset--color--ink);
+}
+
+.wp-block-social-links.ts-social--light .wp-social-link a:focus-visible {
+	outline-color: var(--wp--preset--color--plum);
+}

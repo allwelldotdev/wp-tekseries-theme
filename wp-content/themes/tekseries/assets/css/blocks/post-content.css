@@ -1,0 +1,56 @@
+/*
+ * Article body (posts, events, legal pages): readable rhythm, coral list
+ * markers, and numbered H2 sections on legal pages.
+ */
+
+.ts-article > * + * {
+	margin-block-start: 1.1em;
+}
+
+.ts-article h2,
+.ts-article h3 {
+	margin-block-start: 1.6em;
+}
+
+.ts-article h2 {
+	font-size: var(--wp--preset--font-size--card-title);
+}
+
+.ts-article h3 {
+	font-size: var(--wp--preset--font-size--body-l);
+}
+
+.ts-article li::marker {
+	color: var(--wp--preset--color--coral-text);
+}
+
+.ts-legal {
+	counter-reset: ts-legal;
+}
+
+.ts-legal h2 {
+	display: flex;
+	gap: 16px;
+	align-items: baseline;
+	padding-top: 1.2em;
+	border-top: 1px solid var(--wp--preset--color--line);
+	counter-increment: ts-legal;
+	scroll-margin-top: 96px;
+}
+
+.ts-legal h2::before {
+	content: counter(ts-legal, decimal-leading-zero);
+	flex: none;
+	min-width: 56px;
+	color: var(--wp--preset--color--lilac-deep);
+	font-size: 2.5rem;
+	line-height: 1;
+}
+
+@media (width <= 640px) {
+
+	.ts-legal h2 {
+		flex-direction: column;
+		gap: 8px;
+	}
+}

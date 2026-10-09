@@ -1,0 +1,164 @@
+/*
+ * Group layouts theme.json can't express: the plum hero's decorative circles,
+ * card grids that mix query results with a CTA card, the contact map and the
+ * gallery collage.
+ */
+
+/* Plum hero: a deep circle top right and a saffron one at the bottom. */
+.wp-block-group.is-style-hero-plum {
+	position: relative;
+	overflow: hidden;
+	isolation: isolate;
+}
+
+.wp-block-group.is-style-hero-plum::before,
+.wp-block-group.is-style-hero-plum::after {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	border-radius: 50%;
+	pointer-events: none;
+}
+
+.wp-block-group.is-style-hero-plum::before {
+	top: -80px;
+	right: -60px;
+	width: 320px;
+	height: 320px;
+	background-color: #5b2a70;
+}
+
+.wp-block-group.is-style-hero-plum::after {
+	right: 260px;
+	bottom: -110px;
+	width: 200px;
+	height: 200px;
+	background-color: var(--wp--preset--color--saffron);
+	opacity: 0.9;
+}
+
+@media (width <= 1100px) {
+
+	.wp-block-group.is-style-hero-plum::after {
+		display: none;
+	}
+}
+
+/* Listing grids: posts and the CTA card are items of the same grid. */
+.ts-card-grid > .wp-block-post-template.ts-contents {
+	display: contents;
+}
+
+.ts-post-card {
+	transition: border-color var(--wp--custom--motion--duration);
+}
+
+.ts-post-card:hover,
+.ts-post-card:focus-within {
+	border-color: var(--wp--preset--color--saffron);
+}
+
+/* Large date on the single event banner. */
+.ts-banner .ts-banner__date .ts-card-date__day {
+	font-size: 160px;
+}
+
+.ts-banner .ts-banner__date .ts-card-date__month {
+	font-size: 30px;
+}
+
+/* Contact map: a drawn street grid with a pin, behind the address card. */
+.ts-map {
+	position: relative;
+	overflow: hidden;
+	isolation: isolate;
+}
+
+.ts-map::before {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	inset: 0;
+	background-image:
+		linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+		linear-gradient(32deg, transparent 46%, rgba(244, 162, 97, 0.35) 46%, rgba(244, 162, 97, 0.35) 50%, transparent 50%),
+		linear-gradient(-58deg, transparent 60%, rgba(255, 255, 255, 0.12) 60%, rgba(255, 255, 255, 0.12) 63%, transparent 63%);
+	background-size: 36px 36px, 36px 36px, 100% 100%, 100% 100%;
+}
+
+.ts-map::after {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	top: 38%;
+	left: 50%;
+	width: 56px;
+	height: 56px;
+	border-radius: 50% 50% 50% 0;
+	background-color: var(--wp--preset--color--saffron);
+	box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+	transform: translate(-50%, -100%) rotate(-45deg);
+}
+
+/* Gallery hero collage: three tilted photos with white frames. */
+.ts-collage {
+	position: relative;
+	min-height: 300px;
+}
+
+.ts-collage .wp-block-image {
+	position: absolute;
+	width: 58%;
+	margin: 0;
+}
+
+.ts-collage .wp-block-image img {
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+	border: 6px solid var(--wp--preset--color--white);
+	border-radius: 18px;
+	box-shadow: 0 18px 40px rgba(42, 21, 51, 0.35);
+}
+
+.ts-collage .wp-block-image:nth-child(1) {
+	top: 0;
+	left: 0;
+	transform: rotate(-6deg);
+}
+
+.ts-collage .wp-block-image:nth-child(2) {
+	top: 24px;
+	right: 0;
+	transform: rotate(5deg);
+}
+
+.ts-collage .wp-block-image:nth-child(3) {
+	bottom: 0;
+	left: 22%;
+	transform: rotate(-2deg);
+}
+
+/* Legal hero chips. */
+.ts-legal-chip {
+	padding: 6px 14px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background-color: var(--wp--custom--alpha--white-12);
+	color: var(--wp--preset--color--white);
+}
+
+.ts-legal-chip:first-child {
+	background-color: var(--wp--preset--color--saffron);
+	color: var(--wp--preset--color--ink);
+}
+
+.ts-card-grid > .ts-contents > li {
+	margin: 0;
+}
+
+/* Legal pages: the questions card stays in view beside the article. */
+.ts-legal-aside {
+	position: sticky;
+	top: calc(var(--wp-admin--admin-bar--height, 0px) + 104px);
+	align-self: start;
+}

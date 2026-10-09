@@ -609,6 +609,47 @@
 							}
 						}
 					},
+					"hero-plum": {
+						"color": {
+							"background": "var:preset|color|plum",
+							"text": "var:preset|color|lilac-deep"
+						},
+						"border": { "radius": "var:preset|border-radius|xl" },
+						"spacing": {
+							"padding": {
+								"top": "clamp(1.75rem, 1.2857rem + 1.9048vw, 3rem)",
+								"right": "var:preset|spacing|hero-x",
+								"bottom": "clamp(1.75rem, 1.2857rem + 1.9048vw, 3rem)",
+								"left": "var:preset|spacing|hero-x"
+							}
+						},
+						"elements": {
+							"heading": { "color": { "text": "var:preset|color|white" } },
+							"link": {
+								"color": { "text": "var:preset|color|lilac-deep" },
+								"typography": { "textDecoration": "none" },
+								":hover": { "color": { "text": "var:preset|color|saffron" } },
+								":focus-visible": {
+									"outline": { "color": "var:preset|color|saffron", "offset": "2px", "style": "solid", "width": "2px" }
+								}
+							},
+							"button": {
+								"color": {
+									"background": "var:preset|color|saffron",
+									"text": "var:preset|color|ink"
+								},
+								":hover": {
+									"color": {
+										"background": "var:preset|color|white",
+										"text": "var:preset|color|ink"
+									}
+								},
+								":focus-visible": {
+									"outline": { "color": "var:preset|color|saffron", "offset": "2px", "style": "solid", "width": "2px" }
+								}
+							}
+						}
+					},
 					"tile": {
 						"color": {
 							"background": "var:preset|color|blush",
@@ -766,6 +807,10 @@
 			}
 		}
 	},
+	"customTemplates": [
+		{ "name": "page-no-title", "title": "Page with its own hero", "postTypes": [ "page" ] },
+		{ "name": "page-legal", "title": "Legal page", "postTypes": [ "page" ] }
+	],
 	"templateParts": [
 		{ "name": "header", "title": "Header", "area": "header" },
 		{ "name": "footer", "title": "Footer", "area": "footer" }

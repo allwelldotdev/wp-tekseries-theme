@@ -1,0 +1,83 @@
+/*
+ * Listing card media: featured image under the tone overlay (plum until
+ * per-post tones arrive), the type badge at the top and a large date at the
+ * bottom. Without an image the tone colour fills the box.
+ */
+
+.wp-block-cover.ts-card-media {
+	align-items: stretch;
+	background-color: var(--wp--preset--color--plum);
+}
+
+.wp-block-cover.ts-card-media .wp-block-cover__image-background {
+	object-position: center top;
+}
+
+.wp-block-cover.ts-card-media .wp-block-cover__inner-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 12px;
+}
+
+.ts-card-date {
+	gap: 10px;
+	color: var(--wp--preset--color--white);
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 800;
+}
+
+.ts-card-date__day {
+	font-size: 72px;
+	line-height: 0.9;
+	letter-spacing: -0.04em;
+}
+
+.ts-card-date__month {
+	color: var(--wp--preset--color--saffron);
+	font-size: 18px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.ts-card-media--latest .ts-card-date {
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 4px;
+}
+
+.ts-card-media--latest .ts-card-date__day {
+	font-size: 120px;
+}
+
+.ts-card-media--latest .ts-card-date__month {
+	font-size: 28px;
+}
+
+@media (width <= 1100px) {
+
+	.ts-card-date__day {
+		font-size: 60px;
+	}
+
+	.ts-card-media--latest .ts-card-date__day {
+		font-size: 96px;
+	}
+}
+
+@media (width <= 640px) {
+
+	.ts-card-date__day {
+		font-size: 52px;
+	}
+
+	.ts-card-media--latest .ts-card-date__day {
+		font-size: 64px;
+	}
+
+	.ts-card-media--latest .ts-card-date__month {
+		font-size: 20px;
+	}
+}

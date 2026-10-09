@@ -1,0 +1,28 @@
+/*
+ * Search field: a white pill input with a plum button, 48px tall.
+ */
+
+.wp-block-search.ts-search .wp-block-search__inside-wrapper {
+	gap: 8px;
+	max-width: 560px;
+}
+
+.wp-block-search.ts-search .wp-block-search__input {
+	min-height: 48px;
+	padding: 0 20px;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: var(--wp--preset--border-radius--pill);
+	background-color: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--ink);
+	font-size: var(--wp--preset--font-size--body);
+}
+
+.wp-block-search.ts-search .wp-block-search__input:focus-visible {
+	outline: 2px solid var(--wp--preset--color--saffron);
+	outline-offset: 2px;
+}
+
+.wp-block-search.ts-search .wp-block-search__button {
+	min-height: 48px;
+	margin: 0;
+}

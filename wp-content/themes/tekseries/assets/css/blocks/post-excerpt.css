@@ -1,0 +1,12 @@
+/* Card excerpts stop after three lines. */
+
+.wp-block-post-excerpt.ts-clamp-3 .wp-block-post-excerpt__excerpt {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+}
+
+.wp-block-post-excerpt .wp-block-post-excerpt__excerpt {
+	margin: 0;
+}

@@ -1,0 +1,57 @@
+/*
+ * Pagination: 44px circles. Pages are white with a line border, the current
+ * page is plum, and the previous/next arrows are lilac.
+ */
+
+.wp-block-query-pagination.ts-pagination {
+	gap: 8px;
+	margin-top: var(--wp--preset--spacing--48);
+}
+
+.ts-pagination .wp-block-query-pagination-numbers {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.ts-pagination .page-numbers,
+.ts-pagination .wp-block-query-pagination-previous,
+.ts-pagination .wp-block-query-pagination-next {
+	display: grid;
+	place-items: center;
+	box-sizing: border-box;
+	min-width: var(--wp--custom--touch-target);
+	height: var(--wp--custom--touch-target);
+	margin: 0;
+	border-radius: 50%;
+	color: var(--wp--preset--color--plum);
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.ts-pagination a.page-numbers {
+	border: 1px solid var(--wp--preset--color--line);
+	background-color: var(--wp--preset--color--white);
+}
+
+.ts-pagination .page-numbers.current {
+	background-color: var(--wp--preset--color--plum);
+	color: var(--wp--preset--color--white);
+}
+
+.ts-pagination .page-numbers.dots {
+	border: 0;
+	background: none;
+}
+
+.ts-pagination .wp-block-query-pagination-previous,
+.ts-pagination .wp-block-query-pagination-next {
+	background-color: var(--wp--preset--color--lilac);
+	font-size: 1.25rem;
+}
+
+.ts-pagination a.page-numbers:hover,
+.ts-pagination .wp-block-query-pagination-previous:hover,
+.ts-pagination .wp-block-query-pagination-next:hover {
+	background-color: var(--wp--preset--color--lilac-deep);
+}

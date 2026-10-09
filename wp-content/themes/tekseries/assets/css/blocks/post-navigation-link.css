@@ -1,0 +1,36 @@
+/*
+ * Previous / next post links as cards; the next one aligns right.
+ */
+
+.wp-block-post-navigation-link.ts-post-nav {
+	padding: 20px 24px;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: var(--wp--preset--border-radius--md);
+	background-color: var(--wp--preset--color--white);
+	font-weight: 700;
+}
+
+.wp-block-post-navigation-link.ts-post-nav:hover {
+	border-color: var(--wp--preset--color--saffron);
+}
+
+.wp-block-post-navigation-link.ts-post-nav a {
+	color: var(--wp--preset--color--plum);
+	text-decoration: none;
+}
+
+.wp-block-post-navigation-link.ts-post-nav--next {
+	grid-column: 2;
+	text-align: right;
+}
+
+.wp-block-post-navigation-link.ts-post-nav:empty {
+	display: none;
+}
+
+@media (width <= 640px) {
+
+	.wp-block-post-navigation-link.ts-post-nav--next {
+		grid-column: auto;
+	}
+}
