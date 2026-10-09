@@ -530,17 +530,93 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Rationale:** Type-only packages give editor code real checks without shipping a second copy of WordPress's libraries (ADR-005). A small local declaration avoids a version clash. One extra entry avoids a second build. One icon list removes drift between PHP validation and the picker. Stable components avoid breakage when experimental APIs change.
 
+## ADR-035: Register the ACF Events group in code and bind event fields to core blocks
+
+**Status:** Accepted
+
+**Context:** ADR-010 chose to keep event fields in ACF, register them in code and spike whether a Button `url` binding accepts `cta_link`. ADR-032 moved tone and icon out of that group and left the rest for this phase. The group was first made in the ACF admin and is stored in the database. Events run in West Africa Time (WAT) and the site time zone is UTC. Every event on the site is already past, and the design has no past-event state. wp-env had no ACF (ADR-032), so the e2e tests could not exercise the bindings.
+
+**Options:**
+- Keep the database-stored group and bind to it.
+- Register the group in code under new keys, with a migration.
+- Register the group in code under the existing group and field keys.
+- A custom `tekseries/event` binding source, if core bindings fall short.
+
+**Decision:**
+- `includes/acf.php` registers the "Events" group with `acf_add_local_field_group()` on `acf/include_fields`, using the same group key (`group_643e98e5780ba`) and field keys as the stored group. The code version replaces it and existing values keep loading, which was verified on the dev site. The stored group can be deleted once the code group is live. Every field has `show_in_rest` and `allow_in_bindings`, because ACF's `acf/field` source returns an empty string without the latter.
+- Two optional text fields are new: `time_label`, free text with a time zone such as "11:00 AM WAT", and `venue`.
+- The plugin header declares `Requires Plugins: advanced-custom-fields`. wp-env installs the exact release 6.8.10 from `https://downloads.wordpress.org/plugin/advanced-custom-fields.6.8.10.zip`. The wordpress.org slug serves WP Engine's ACF again, and the zip is byte-identical to the dev site's copy. A unit test checks the header and that `.wp-env.json` pins an exact version.
+- Templates bind core blocks. Date blocks take `datetime` from `event_date`. Paragraphs take `time_label`, `venue` and `cta_link`, which shows as "Join here" text. The Register Button takes `url` from `cta_link` and `text` from `cta_name`, and opens in a new tab. `cta_link` returns a URL string, so the Button binding works unchanged and the `tekseries/event` source was not needed.
+- An `acf/blocks/binding_value` filter fixes two values. A Date block bound to a date field gets an ISO 8601 date at midnight in the site time zone, not ACF's formatted "September 26, 2026". Core's Date block accepted the formatted string, but `<time datetime>` was then invalid and the day could shift on a site west of UTC. A link field bound to text drops its scheme ("bit.ly/WomEngineers").
+- Blocks with class `ts-register` (the Register button and the Join here row) pass through a `render_block` filter in `includes/events.php`. Once the event date (`Ymd`, site time zone) has passed, the button becomes a "This event has ended" note and the other blocks are removed. A Register button with no link is hidden. This plain note is interim: the designer was asked for a past-event state.
+- A row whose bound value is empty is hidden with CSS `:has()`: a `.ts-event-row` without a non-empty `.ts-event-value`. Older events have no time or venue.
+
+**Rationale:** The same keys keep every stored value with no migration, and the fields come under version control, as ADR-010 intended. Core bindings keep the templates as editable core blocks (ADR-005). The hard ACF dependency that ADR-010 accepted now also holds in wp-env, so the bindings are testable on a fresh install. The ISO date filter keeps the markup valid and the day correct. A free-text time label avoids storing a time zone for events that all run in WAT.
+
+## ADR-036: Sort events by event date
+
+**Status:** Accepted
+
+**Context:** Events listed by publish date, which is not when they happen. Core runs `query_loop_block_query_vars` only for non-inherited Query Loops. The event archive and event type archives use an inherited loop (ADR-026), so that filter never fires for them. Some events have no date.
+
+**Options:**
+- Order by `meta_value` with a single meta key, which drops undated events.
+- Custom orderby in each template.
+- Two filters: one for non-inherited loops, one for the main query.
+
+**Decision:** Two filters set the order. `query_loop_block_query_vars` covers the non-inherited loops: the Latest card, the paginated grid and More events. `pre_get_posts` covers the main query of the event archive and the type archives. Both use the same arguments: a meta query that is an OR of `event_date` EXISTS, a named clause used for ordering, and NOT EXISTS, so undated events stay in the list, last. Publish date breaks ties. Only loops left on the default "date" orderby change, and their ASC or DESC direction is kept. The Latest card with the offset-1 grid (ADR-026) still pairs correctly because both queries share the order. The tone cycle stays on publish order (ADR-032).
+
+**Rationale:** Sorting by event date puts upcoming and recent events first, which is what a visitor expects. The OR clause keeps undated events visible. Touching only the default orderby leaves an editor's explicit choice alone. Tones are assigned at publish, so the cycle must not follow event date.
+
+## ADR-037: Add event type icons through filters on core blocks
+
+**Status:** Accepted
+
+**Context:** The event type badge and the type filter chips had no icon (ADR-033). The post topic icon already follows the event type by default (ADR-032). Templates should stay core blocks (ADR-005).
+
+**Options:**
+- A custom block for the badge and for the chips.
+- Filters on core blocks, keyed on classes.
+
+**Decision:**
+- `includes/event-types.php` registers `tekseries_icon` term meta on `event_type`. It is REST-editable and uses the same curated set and sanitiser as the topic icon. An unset term falls back to the slug map in `includes/meta.php` (Webinar `videocam`, Workshop `co_present`, Makers' Prize `emoji_events`), which stays the single source of defaults. An event's default topic icon follows its first type's icon.
+- `render_block_core/post-terms` adds the icon to each term link of a "badge" Post Terms block.
+- `render_block_core/navigation-link` adds the icon to links with class `ts-type-chip`, matching the `/event_type/<slug>/` path. "All events" gets `apps`, which was added to the icon collection (ADR-024).
+- `render_block_core/icon` swaps the drawing of an Icon block with class `ts-event-type-icon` (the details card), keeping its size and classes.
+- There is no wp-admin picker yet. Editors set the icon over REST or with `wp term meta update`.
+
+**Rationale:** Class-keyed filters keep every template a core block that editors can still change. Reusing the topic icon set and sanitiser avoids a second list (ADR-034). The slug map means a type with no stored icon still shows one.
+
+## ADR-038: Add Share Links and Table of Contents blocks
+
+**Status:** Accepted
+
+**Context:** The boards put share links under single events and news and a numbered table of contents on the legal pages. Core Social Links cannot share the current page, because their URLs are fixed. ADR-031 prepared the legal pages with anchored H2 sections. Core has no table-of-contents block.
+
+**Options:**
+- Core Social Links with fixed URLs.
+- Dynamic plugin blocks, rendered on the server.
+- Interactive blocks that need JavaScript.
+
+**Decision:** Both are dynamic plugin blocks with no front-end JavaScript. Editor previews use ServerSideRender (`@wordpress/server-side-render`, a type-only plugin devDependency, installed through `@wordpress/editor`, as in ADR-034).
+- `tekseries/share-links` renders one link per chosen service to that service's share page for the current post: LinkedIn share-offsite, Facebook sharer, X intent and WhatsApp `wa.me` with the title and link. An optional plain "Link to this page" is also available. Links open in a new tab. Icons are core's Social Icons artwork, from `block_core_social_link_get_icon()`. The default services are LinkedIn, Facebook and WhatsApp, as on the boards. Styles are default (lilac) and "Dark" (ink). It sits under the article on single events ("Share this event") and single news ("Share this story").
+- `tekseries/toc` lists the H2 headings of the saved content that have an anchor, found with `WP_HTML_Tag_Processor`. They are numbered 01, 02 and so on inside a `<details open>`, so it works without JavaScript. It renders nothing when there are no anchored H2s. In the Legal page template (ADR-031) it sits in the aside above the questions card: sticky beside the article on desktop only, above the article on tablet and mobile. Privacy (12 sections) and Terms (8) already had anchored H2s.
+- Deferred to the Interactivity API phase: copy-to-clipboard, the table of contents folded by default on phones (as on the board), and highlighting the section being read.
+
+**Rationale:** Server rendering keeps both usable without JavaScript (ADR-005). Reading the saved HTML means the list always matches the page. Core's icon artwork avoids a second icon set and a CDN (ADR-008). Deferring the enhancements keeps this phase free of front-end scripts.
+
 ## Future work
 
 - **Hosting and deploy:** not decided. The options are a git pull on the server or CI-built theme and plugin zips; no remote or CI exists yet. A release must ship only the theme and plugin, never the repository root (ADR-001).
 - **PHP 8.3+:** ask the host to move to PHP 8.3 or newer before PHP 8.2 security support ends on 2026-12-31, then raise the floor in a new ADR (ADR-003).
 - **Animated Home blocks:** `tekseries/hero-carousel`, `tekseries/stat` and `tekseries/logo-marquee` (ADR-014).
-- **`cta_link` binding spike:** confirm that a Button `url` binding accepts the ACF link array; otherwise add a `tekseries/event` binding source or a URL field (ADR-010).
 - **Schibsted Grotesk glyph gap:** Igbo ị, ọ and ụ fall back to the system sans in headings (ADR-021). Find a font file that covers them, or accept the fallback.
 - **Media gallery:** replace the interim core Gallery blocks with `tekseries/media-gallery` (ADR-015, ADR-030).
 - **Gallery alt text:** write descriptive alt text for the gallery images (ADR-030).
 - **Lost emoji:** fix the emoji that became `????` in posts and events.
-- **Event fields (Phase 5):** bind the date (from `event_date`), time, venue and Register button, and move the ACF "Events" group into code with the Block Bindings work (ADR-010, ADR-032).
-- **Event type icons:** the event type badge and the event type filter chips still have no type icon (ADR-033).
-- **Table of contents:** add the table-of-contents block to the legal pages (ADR-031).
+- **Interactivity:** a copy-link button for Share Links, and a table of contents folded on phones that highlights the current section (ADR-038).
+- **Past-event and registration-closed states:** replace the interim "This event has ended" note when the designer delivers (ADR-035).
+- **Event type icon picker:** add one to wp-admin (ADR-037).
+- **Event page on phones:** show the poster before the details and Register at the end of the article, as on the board. Today the poster follows the details card and Register sits in the card.
+- **Time and venue for older events:** editors fill the new fields, since the old bodies hold them as text (ADR-035).
 - **Design-system updates:** add the components the boards use but the system lacks (Impact, Insight, Key figure, Pull quote, Pillar badge, anchor chip, marquee) and the missing tokens (`coral-text` from ADR-008, status colours, alpha and radius tokens). Settle the tablet and mobile h1/h2 sizes (the tokens win) and the footer radius (36 / 32 / 24px). Then refresh `docs/design-reference/`.

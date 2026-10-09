@@ -7,6 +7,7 @@ This repo holds the `tekseries` block theme and the `tekseries-blocks` plugin th
 - Node 24.15+ and npm 11+. `.nvmrc` pins Node 24; `engines` also accepts 26+, but not 25.
 - Docker, for the wp-env e2e tests only.
 - LocalWP running this site. The theme and plugin need WordPress 7.1+ and PHP 8.2+ (ADR-003).
+- Advanced Custom Fields, active. The plugin declares it in `Requires Plugins` (ADR-035), and wp-env installs ACF 6.8.10 from `.wp-env.json`.
 - The `localwp` wrapper, which runs Composer, PHP and WP-CLI inside Local's site environment. Open the site's "Site shell" in Local once so it writes `~/.config/Local/ssh-entry/<site-id>.sh`, then export `LOCALWP_SSH_ENTRY` with that path.
 
 ## Setup
@@ -56,11 +57,10 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 
 ## Tests
 
-- `npm run test:unit` runs 162 Vitest tests in `tests/unit/`: design tokens, template wiring, the icon list and project metadata.
-- `npm run test:e2e` runs 46 Playwright tests against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). They cover the theme (patterns, templates, fonts, keyboard focus), the event type, the tone cycle, the Post Tone block and the sidebar panel.
-- Run `npm run test:e2e:install` once to get the browser. The e2e script doesn't install it.
-- The first `npm run wp-env start` pulls Docker images and takes several minutes, longer than Playwright's 120-second start timeout. Run it once by hand before your first e2e run.
-- Install Chromium's system libraries once per machine with `sudo npx playwright install-deps chromium`.
+- `npm run test:unit` runs 165 Vitest tests in `tests/unit/`: design tokens, template wiring, the icon list and project metadata.
+- `npm run test:e2e` runs 60 Playwright tests against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). Run `npm run build` first; they cover the theme, event fields and types, the tone cycle, the three blocks and the sidebar panel.
+- The first `npm run wp-env start` pulls Docker images and takes several minutes, longer than Playwright's 120-second start timeout. Run it once by hand first, and retry on a network error (ETIMEDOUT, socket closed); `docker exec <wp-env cli container> wp …` also works.
+- Run `npm run test:e2e:install` once for the browser, then `sudo npx playwright install-deps chromium` once per machine for its system libraries.
 - `localwp composer run lint` checks the theme's and plugin's PHP with PHPCS.
 
 ## Repo layout
@@ -70,17 +70,15 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 ├── wp-content/themes/tekseries/           # block theme: theme.json, templates, parts, patterns, assets
 ├── wp-content/plugins/tekseries-blocks/   # blocks plugin
 │   ├── src/                               # one folder per block, plus post-settings (sidebar panel)
-│   ├── includes/                          # event type, icons, tone meta and cycle, editor, WP-CLI
-│   └── webpack.config.js                  # adds the sidebar entry to the wp-scripts build
+│   └── includes/                          # event fields (ACF), dates and types, icons, tone meta and cycle, editor, WP-CLI
 ├── specs/                                 # Playwright e2e specs
 ├── tests/unit/                            # Vitest unit tests
-├── types/                                 # TypeScript declarations
-├── scripts/                               # fetch-icons.mjs
+├── scripts/, types/                       # fetch-icons.mjs, TypeScript declarations
 ├── docs/                                  # decisions.md, changelog.md and design-reference/
 └── package.json, composer.json, phpcs.xml.dist, .wp-env.json and other root config
 ```
 
-The plugin's first block is `tekseries/post-tone` (ADR-033). It colours a listing card or post banner with the post's tone and draws its icon. The theme holds design tokens, fonts, header and footer parts, page patterns, templates for every screen and per-block CSS.
+The plugin has three blocks: `tekseries/post-tone` (ADR-033), `tekseries/share-links` and `tekseries/toc` (ADR-038). Event templates show the ACF date, time, venue and Register button through Block Bindings, and past events say "This event has ended". The theme holds design tokens, fonts, header and footer parts, page patterns, templates for every screen and per-block CSS.
 
 The repo root is the WordPress root. `.gitignore` is a whitelist, so WordPress core, uploads and other plugins and themes are never tracked (ADR-001).
 
@@ -97,10 +95,12 @@ The repo root is the WordPress root. `.gitignore` is a whitelist, so WordPress c
 | 2 | Design tokens and theme shell | done |
 | 3 | Pages from core blocks | done |
 | 4 | Blocks plugin scaffold | done |
-| 5 | Custom blocks | not started |
+| 5a | Custom blocks: events | done |
+| 5b | Custom blocks: Job Series | not started |
+| 5c | Custom blocks: gallery and home motion | not started |
 | 6 | Frontend behaviour | not started |
 | 7 | QA and release | not started |
 
-Phase 5 is next: event fields with Block Bindings, share links, a table of contents, job listings and a media gallery.
+Phase 5b is next: the job listings block and the WP Job Manager templates.
 
 Architecture decisions and future work are in [docs/decisions.md](docs/decisions.md). Changes are in [docs/changelog.md](docs/changelog.md).
