@@ -28,6 +28,7 @@ require_once __DIR__ . '/includes/event-types.php';
 require_once __DIR__ . '/includes/job-fields.php';
 require_once __DIR__ . '/includes/wpjm.php';
 require_once __DIR__ . '/includes/job-submission.php';
+require_once __DIR__ . '/includes/job-dashboard.php';
 require_once __DIR__ . '/includes/tone-cycle.php';
 require_once __DIR__ . '/includes/editor.php';
 

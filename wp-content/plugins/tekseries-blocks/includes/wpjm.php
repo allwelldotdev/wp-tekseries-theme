@@ -57,15 +57,16 @@ add_filter( 'job_manager_enhanced_select_enabled', 'tekseries_blocks_wpjm_fronte
 
 /**
  * Leaves out WP Job Manager's front-end stylesheet on the same screens, and
- * on the submission form, whose templates this plugin styles too (it keeps
- * select2 for the category field).
+ * on the submission form and job dashboard, whose templates this plugin
+ * styles too (the form keeps select2 for the category field).
  *
  * @param bool $enabled Whether WP Job Manager loads frontend.css on this page.
  * @return bool
  */
 function tekseries_blocks_wpjm_frontend_style( $enabled ) {
 	$post = get_post();
-	return tekseries_blocks_wpjm_frontend_assets( $enabled ) && ! ( $post && has_shortcode( $post->post_content, 'submit_job_form' ) );
+	return tekseries_blocks_wpjm_frontend_assets( $enabled )
+		&& ! ( $post && ( has_shortcode( $post->post_content, 'submit_job_form' ) || has_shortcode( $post->post_content, 'job_dashboard' ) ) );
 }
 add_filter( 'job_manager_enqueue_frontend_style', 'tekseries_blocks_wpjm_frontend_style' );
 

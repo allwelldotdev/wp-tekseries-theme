@@ -92,6 +92,22 @@ describe( 'tekseries icon collection', () => {
 		expect( names ).toEqual( expect.arrayContaining( used ) );
 	} );
 
+	it( 'has an icon for every job dashboard action', () => {
+		const dashboard = readFileSync(
+			new URL( 'includes/job-dashboard.php', PLUGIN ),
+			'utf8'
+		);
+		const map =
+			dashboard.match(
+				/function tekseries_blocks_job_action_icon\(.*?\n}/s
+			)?.[ 0 ] ?? '';
+		const icons = [ ...map.matchAll( /'([a-z0-9_]+)'(?:;|,)$/gm ) ].map(
+			( [ , name = '' ] ) => name
+		);
+		expect( icons ).toHaveLength( 9 );
+		expect( names ).toEqual( expect.arrayContaining( icons ) );
+	} );
+
 	it( 'has an icon for every job type', () => {
 		const wpjm = readFileSync(
 			new URL( 'includes/wpjm.php', PLUGIN ),
