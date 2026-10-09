@@ -36,7 +36,7 @@ function tekseries_blocks_register_event_post_type(): void {
 		'set_featured_image'       => __( 'Set featured image for this Event', 'tekseries-blocks' ),
 		'remove_featured_image'    => __( 'Remove featured image for this Event', 'tekseries-blocks' ),
 		'use_featured_image'       => __( 'Use as featured image for this Event', 'tekseries-blocks' ),
-		'archives'                 => __( 'Event archives', 'tekseries-blocks' ),
+		'archives'                 => __( 'Events', 'tekseries-blocks' ),
 		'insert_into_item'         => __( 'Insert into Event', 'tekseries-blocks' ),
 		'uploaded_to_this_item'    => __( 'Upload to this Event', 'tekseries-blocks' ),
 		'filter_items_list'        => __( 'Filter Events list', 'tekseries-blocks' ),
