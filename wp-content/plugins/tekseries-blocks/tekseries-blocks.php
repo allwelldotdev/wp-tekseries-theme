@@ -6,6 +6,7 @@
  * Version:           0.1.0
  * Requires at least: 7.1
  * Requires PHP:      8.2
+ * Requires Plugins:  advanced-custom-fields
  * Author:            TekSeries
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -21,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once __DIR__ . '/includes/content-types.php';
 require_once __DIR__ . '/includes/icons.php';
 require_once __DIR__ . '/includes/meta.php';
+require_once __DIR__ . '/includes/acf.php';
 require_once __DIR__ . '/includes/tone-cycle.php';
 require_once __DIR__ . '/includes/editor.php';
 

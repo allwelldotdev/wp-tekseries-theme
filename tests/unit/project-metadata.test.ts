@@ -44,4 +44,16 @@ describe( 'tekseries-blocks plugin', () => {
 		const pkg = JSON.parse( read( `${ PLUGIN }/package.json` ) );
 		expect( header( main, 'Version' ) ).toBe( pkg.version );
 	} );
+
+	it( 'requires ACF, which the test environment installs at a pinned version', () => {
+		expect( header( main, 'Requires Plugins' ) ).toBe(
+			'advanced-custom-fields'
+		);
+		const env = JSON.parse( read( '../../.wp-env.json' ) );
+		expect( env.plugins ).toContainEqual(
+			expect.stringMatching(
+				/^https:\/\/downloads\.wordpress\.org\/plugin\/advanced-custom-fields\.\d+\.\d+\.\d+\.zip$/
+			)
+		);
+	} );
 } );
