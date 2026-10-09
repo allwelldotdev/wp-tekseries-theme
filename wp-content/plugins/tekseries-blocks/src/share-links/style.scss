@@ -1,0 +1,50 @@
+// Round 44px links: lilac with plum icons, or ink with white icons ("Dark");
+// both turn saffron on hover.
+.wp-block-tekseries-share-links {
+	--ts-share-bg: var(--wp--preset--color--lilac);
+	--ts-share-fg: var(--wp--preset--color--plum);
+	--ts-share-hover-bg: var(--wp--preset--color--saffron);
+	--ts-share-hover-fg: var(--wp--preset--color--ink);
+
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	padding: 0;
+	list-style: none;
+
+	&.is-style-dark {
+		--ts-share-bg: var(--wp--preset--color--ink);
+		--ts-share-fg: var(--wp--preset--color--white);
+		--ts-share-hover-bg: var(--wp--preset--color--plum);
+		--ts-share-hover-fg: var(--wp--preset--color--white);
+	}
+
+	li {
+		margin: 0;
+	}
+}
+
+.ts-share__link {
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	background-color: var(--ts-share-bg);
+	color: var(--ts-share-fg);
+	transition:
+		background-color var(--wp--custom--motion--duration),
+		color var(--wp--custom--motion--duration);
+
+	&:hover,
+	&:focus-visible {
+		background-color: var(--ts-share-hover-bg);
+		color: var(--ts-share-hover-fg);
+	}
+
+	svg {
+		width: 20px;
+		height: 20px;
+		fill: currentcolor;
+	}
+}

@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tekseries/share-links",
+	"version": "0.1.0",
+	"title": "Share Links",
+	"category": "theme",
+	"icon": "share",
+	"description": "Links that share the current post on LinkedIn, Facebook, X or WhatsApp. They work without JavaScript.",
+	"keywords": [ "share", "social", "linkedin", "whatsapp" ],
+	"textdomain": "tekseries-blocks",
+	"usesContext": [ "postId" ],
+	"attributes": {
+		"services": {
+			"type": "array",
+			"items": {
+				"type": "string",
+				"enum": [ "linkedin", "facebook", "x", "whatsapp", "link" ]
+			},
+			"default": [ "linkedin", "facebook", "whatsapp" ]
+		}
+	},
+	"styles": [
+		{ "name": "default", "label": "Lilac", "isDefault": true },
+		{ "name": "dark", "label": "Dark" }
+	],
+	"supports": {
+		"html": false,
+		"spacing": {
+			"margin": true
+		},
+		"interactivity": {
+			"clientNavigation": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

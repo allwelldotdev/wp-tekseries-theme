@@ -68,7 +68,15 @@
 <p class="is-style-eyebrow"><?php echo esc_html__( 'About this event', 'tekseries' ); ?></p>
 <!-- /wp:paragraph -->
 
-<!-- wp:post-content {"className":"ts-article","layout":{"type":"default"}} /--></div>
+<!-- wp:post-content {"className":"ts-article","layout":{"type":"default"}} /-->
+
+<!-- wp:group {"className":"ts-share-row","style":{"spacing":{"blockGap":"var:preset|spacing|16","margin":{"top":"var:preset|spacing|8"},"padding":{"top":"var:preset|spacing|24"}},"border":{"top":{"color":"var:preset|color|line","style":"solid","width":"1px"}}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
+<div class="wp-block-group ts-share-row" style="border-top-color:var(--wp--preset--color--line);border-top-style:solid;border-top-width:1px;margin-top:var(--wp--preset--spacing--8);padding-top:var(--wp--preset--spacing--24)"><!-- wp:paragraph {"className":"is-style-eyebrow"} -->
+<p class="is-style-eyebrow"><?php echo esc_html__( 'Share this event', 'tekseries' ); ?></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:tekseries/share-links /--></div>
+<!-- /wp:group --></div>
 <!-- /wp:group -->
 
 <!-- wp:group {"className":"ts-aside","style":{"spacing":{"blockGap":"var:preset|spacing|20"},"@tablet":{"layout":{"rowStart":1}},"@mobile":{"layout":{"rowStart":1}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
