@@ -1,0 +1,5 @@
+declare module '@wordpress/scripts/config/playwright.config.js' {
+	import type { PlaywrightTestConfig } from '@playwright/test';
+	const config: PlaywrightTestConfig;
+	export default config;
+}
