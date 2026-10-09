@@ -123,6 +123,17 @@ test.describe( 'Post Tone block', () => {
 				title: 'E2E Tone Listing',
 				status: 'publish',
 				meta: { tekseries_tone: 'saffron', tekseries_icon: 'school' },
+				// Listings follow the event date: the latest date puts it on page one.
+				// The link and its name are required ACF fields.
+				acf: {
+					event_date: '20991231',
+					cta_link: {
+						title: '',
+						url: 'https://example.com/',
+						target: '',
+					},
+					cta_name: 'Register',
+				},
 			},
 		} );
 		events.push( event.id );

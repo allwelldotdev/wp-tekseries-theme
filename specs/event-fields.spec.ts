@@ -137,6 +137,52 @@ test.describe( 'event fields', () => {
 		await expect( details ).not.toContainText( 'example.com/register' );
 	} );
 
+	test( 'events are listed by event date, newest first', async ( {
+		page,
+		requestUtils,
+	} ) => {
+		const terms = await requestUtils.rest< { id: number }[] >( {
+			path: '/wp/v2/event_type',
+			params: { slug: 'webinar' },
+		} );
+		const webinar =
+			terms[ 0 ]?.id ??
+			(
+				await requestUtils.rest< { id: number } >( {
+					method: 'POST',
+					path: '/wp/v2/event_type',
+					data: { name: 'Webinar', slug: 'webinar' },
+				} )
+			).id;
+
+		// Published first, but its event comes later.
+		for ( const [ title, date ] of [
+			[ 'E2E Order Later', '20990302' ],
+			[ 'E2E Order Earlier', '20990301' ],
+		] ) {
+			const event = await publish( requestUtils, title ?? '', {
+				event_date: date,
+			} );
+			await requestUtils.rest( {
+				method: 'POST',
+				path: `/wp/v2/event/${ event.id }`,
+				data: { event_type: [ webinar ] },
+			} );
+		}
+
+		for ( const url of [ '/events/', '/event_type/webinar/' ] ) {
+			await page.goto( url );
+			const titles = await page
+				.locator( '.ts-post-card .wp-block-post-title' )
+				.allTextContents();
+			const later = titles.indexOf( 'E2E Order Later' );
+			expect( later, url ).toBeGreaterThanOrEqual( 0 );
+			expect( later, url ).toBeLessThan(
+				titles.indexOf( 'E2E Order Earlier' )
+			);
+		}
+	} );
+
 	test( 'leaves out rows whose field is empty', async ( {
 		page,
 		requestUtils,
