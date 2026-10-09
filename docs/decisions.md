@@ -322,6 +322,152 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Rationale:** The Vietnamese subset is the only one that includes the Igbo letters missing from latin-ext, and it costs one extra file for body text. Radius presets put the tokens in the editor UI. A stepped gutter matches the boards exactly, where fluid sizing would not.
 
+## ADR-022: Keep page content in each page's post content, built from theme patterns
+
+**Status:** Accepted
+
+**Context:** The Home, Contact and Gallery sections could live in templates or in the pages themselves. The site owner wanted editors to own page content, with revisions, in the page editor. ADR-017 keeps strings in patterns.
+
+**Options:**
+- Keep the sections in `front-page.html` and page templates.
+- Insert the sections from patterns into each page's post content.
+
+**Decision:** `front-page.html` and the custom template "Page with its own hero" (`page-no-title.html`) render `post-content` at full width. Home, Contact and Gallery content is inserted from patterns and edited in the page editor. The theme ships section patterns (`home-*`, `contact-*`, `gallery-hero`, `cta-band`) and full-page patterns (`page-home`, `page-contact`, `page-gallery`, with `Block Types: core/post-content`), so a new page can start from them. There is no home content in any template.
+
+**Rationale:** Editors get per-page ownership and revisions, and a new page starts from a complete layout. The cost is that content changes ship to live as page content, through a database migration step, and not with the theme.
+
+## ADR-023: Use existing media-library images in page content, and bundle optimised copies in patterns
+
+**Status:** Accepted
+
+**Context:** The Local site is a copy of live, so the Home and Gallery photos are already in the media library. Patterns must also look complete on a fresh install, where those attachments do not exist (ADR-002).
+
+**Options:**
+- Import images into the media library from the theme.
+- Use the existing attachments in page content and bundle fallbacks in the theme.
+
+**Decision:** Page content (ADR-022) uses the existing attachments, and nothing was imported. One team portrait stays on Cloudinary as an external image URL, as the owner prefers. The theme bundles optimised copies in `assets/images/` (`home/hero.jpg`, `about.jpg`, `case-study.jpg`, four partner logos and `avatar.svg`, a placeholder avatar) for use in patterns.
+
+**Rationale:** Live content keeps its attachments and IDs, and a fresh install still shows full patterns. The Cloudinary portrait is an owner choice, and it adds one external dependency that ADR-005 does not otherwise allow for images.
+
+## ADR-024: Register a `tekseries` icon collection from Google's Material Symbols SVGs
+
+**Status:** Accepted
+
+**Context:** ADR-008 chose SVGs on the WordPress 7.1 Icon API instead of an icon font, at about 110 icons. The design now uses 117. The `@material-symbols/svg-400` npm package is optical size 48 and lacks six names the design uses.
+
+**Options:**
+- The `@material-symbols/svg-400` package.
+- SVGs fetched from Google's gstatic at optical size 24.
+
+**Decision:** The plugin registers a `tekseries` icon collection of 117 Material Symbols Rounded SVGs in `assets/icons/`, committed with the Apache-2.0 licence (`LICENSE.txt`). `npm run icons` (`scripts/fetch-icons.mjs`) fetches them from gstatic at optical size 24.
+
+**Rationale:** Size 24 matches the sizes the design draws, and the package could not supply every name. Committing the files keeps builds offline. This sets the final icon count that ADR-008 estimated.
+
+## ADR-025: Drive responsive layout with per-block `@tablet` and `@mobile` styles
+
+**Status:** Accepted
+
+**Context:** ADR-009 stepped the page gutter at the `theme.json` viewports and noted that WordPress 7.1 documents `@tablet` and `@mobile` styles under `styles.blocks`. Pages built from core blocks (ADR-022) need responsive grids, flex direction and padding.
+
+**Options:**
+- Theme utility classes with media queries.
+- Per-block `@tablet` and `@mobile` styles in block attributes.
+
+**Decision:** Grid column counts and spans, flex orientation and padding use per-block `@tablet` and `@mobile` styles. Theme CSS covers only what block supports cannot express: decorative circles and icons, card media internals and third-party form styling (ADR-028).
+
+**Rationale:** Editors can change responsive behaviour in the editor, and the page keeps no hidden class dependency. Deviations from the boards: the Pillar II key figures stack to one column on mobile, because three columns need 11px labels. Insight cards stack on tablet and mobile instead of a swipe carousel. The team is a plain grid, not masonry.
+
+## ADR-026: Build listings from two non-inherited Query Loops, and inherit on type archives
+
+**Status:** Accepted
+
+**Context:** The Events archive and the News posts page show a "Latest" card, then a grid with a "Get Involved" card as its last item. Core ignores `offset` on inherited queries. The design's per-post tone (ADR-011) is not yet bound.
+
+**Options:**
+- One inherited query for every listing.
+- Two non-inherited Query Loops, with offset, on the main listings.
+- A custom listing block.
+
+**Decision:**
+- `archive-event.html` and `home.html` use two non-inherited Query Loops. The first is the "Latest" card (1 post). The second is a grid of 5 per page with `offset` 1 and the "Get Involved" card last.
+- Pagination uses core `?query-N-page=` URLs, the owner's default. The Latest card never moves.
+- Event type archives (`taxonomy-event_type.html`) use a single inherited query.
+- Event filters are links to the `event_type` archives.
+- Plum is the interim tone for every card until the per-post tone is bound (see Future work).
+
+**Rationale:** Core blocks give the layout with no new block (ADR-005). Offset needs a non-inherited query, and type archives need inheritance to filter by term. Skipping a custom block keeps the markup editable.
+
+## ADR-027: Keep template text in non-inserter PHP patterns
+
+**Status:** Accepted
+
+**Context:** ADR-017 moved header, footer, 404 and no-results text into PHP patterns. The other templates also hold user-facing text.
+
+**Options:**
+- Hard-code English in `templates/*.html`.
+- Use `template-*` PHP patterns, referenced from the templates.
+
+**Decision:** Each template's text lives in a `template-*` pattern (`Inserter: no`): `archive`, `events`, `event-type`, `index`, `legal`, `news`, `page`, `search`, `single` and `single-event`. The templates keep layout and a `wp:pattern` reference. This extends ADR-017 from parts to templates.
+
+**Rationale:** The strings stay translatable (ADR-006). Pages cannot insert these patterns by accident.
+
+## ADR-028: Set the current-page state and breadcrumbs with theme filters
+
+**Status:** Accepted
+
+**Context:** Core marks a navigation link as current only when it stores an object ID. The header and filter links are relative URLs. Core's breadcrumbs insert a term, such as "Uncategorized", between the archive and the title.
+
+**Options:**
+- Custom script or CSS for the current state.
+- Theme filters on the rendered blocks.
+
+**Decision:** In `functions.php`, a `render_block_core/navigation-link` filter adds the current class and `aria-current="page"` to relative links on an exact path match. On a single event or post, the Events or News link counts as the current section. A `block_core_breadcrumbs_items` filter keeps single posts and events to Home / archive / title.
+
+**Rationale:** Server-side output works without JavaScript (ADR-005). Both filters are presentation only, which fits the light `functions.php` that ADR-005 allows the theme.
+
+## ADR-029: Edit Fluent Forms form 1 in place and style its block through the theme
+
+**Status:** Accepted
+
+**Context:** The Contact form holds 318 entries. The design adds a topic choice, placeholders and a "Send message" button. ADR-007 allows jQuery on the Contact page.
+
+**Options:**
+- Create a new form and migrate entries.
+- Edit form 1 in place.
+
+**Decision:** Form 1 was edited in place and keeps its entries. It gained a "What is this about?" radio (General question, Workshops, Job Series, Support or sponsorship), defaulting to General and prefilled from `?topic=`, plus the design's placeholders and the button. The theme styles the Fluent Forms block through `wp_enqueue_block_style`. The jQuery exception of ADR-007 stands.
+
+**Rationale:** Editing in place keeps every entry and the form's ID in page content. Styling through a block style loads the CSS only where the block renders.
+
+## ADR-030: Use core Gallery blocks for the interim gallery
+
+**Status:** Accepted
+
+**Context:** ADR-015 plans `tekseries/media-gallery`, which is not built. The stored alt text for the gallery images is file-name style.
+
+**Options:**
+- Wait for the custom block.
+- One core Gallery block per album, with the core lightbox.
+
+**Decision:** Until `tekseries/media-gallery` ships, the Gallery page holds one core Gallery block per album, with the core lightbox, shown as a uniform 4:3 grid. Alt text falls back to the image captions. ADR-015 stands as the target.
+
+**Rationale:** The page is usable now and needs no custom code. The filters, counts, Load more and video of ADR-015 are missing until the block replaces it.
+
+## ADR-031: Style legal pages through a "Legal page" template
+
+**Status:** Accepted
+
+**Context:** The terms and privacy pages share one layout: a plum hero, a questions card and numbered sections. A table-of-contents block is planned.
+
+**Options:**
+- Page content only, with hand-built sections.
+- A custom template with CSS counters over a restructured page.
+
+**Decision:** The "Legal page" template (`page-legal.html`) holds only the layout and references `tekseries/template-legal` (ADR-027). It gives a plum hero, a sticky questions card, and numbered H2 sections via CSS counters. Each page's content was restructured so every section is an H2 with a stable anchor, and the wording is unchanged. The template holds no legal content.
+
+**Rationale:** CSS counters keep the numbering out of the text, so editors can reorder sections. Stable anchors are ready for the table-of-contents block.
+
 ## Future work
 
 - **Hosting and deploy:** not decided. The options are a git pull on the server or CI-built theme and plugin zips; no remote or CI exists yet. A release must ship only the theme and plugin, never the repository root (ADR-001).
@@ -330,4 +476,10 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - **`cta_link` binding spike:** confirm that a Button `url` binding accepts the ACF link array; otherwise add a `tekseries/event` binding source or a URL field (ADR-010).
 - **Schibsted Grotesk glyph gap:** Igbo ị, ọ and ụ fall back to the system sans in headings (ADR-021). Find a font file that covers them, or accept the fallback.
 - **Search field and forms:** style the search field and the forms in Phase 3.
+- **Media gallery:** replace the interim core Gallery blocks with `tekseries/media-gallery` (ADR-015, ADR-030).
+- **Gallery alt text:** write descriptive alt text for the gallery images (ADR-030).
+- **Lost emoji:** fix the emoji that became `????` in posts and events.
+- **Per-post tone:** add the per-post tone to listing cards; plum is the interim (ADR-011, ADR-026).
+- **Event details:** add the registration button and the details (time, venue) once the event fields are bound (ADR-010).
+- **Table of contents:** add the table-of-contents block to the legal pages (ADR-031).
 - **Design-system updates:** add the components the boards use but the system lacks (Impact, Insight, Key figure, Pull quote, Pillar badge, anchor chip, marquee) and the missing tokens (`coral-text` from ADR-008, status colours, alpha and radius tokens). Settle the tablet and mobile h1/h2 sizes (the tokens win) and the footer radius (36 / 32 / 24px). Then refresh `docs/design-reference/`.
