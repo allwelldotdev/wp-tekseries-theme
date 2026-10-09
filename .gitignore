@@ -23,6 +23,7 @@
 # Root directories we own
 !/.github/
 !/docs/
+!/scripts/
 !/specs/
 !/tests/
 !/types/

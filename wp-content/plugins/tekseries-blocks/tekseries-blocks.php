@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once __DIR__ . '/includes/content-types.php';
+require_once __DIR__ . '/includes/icons.php';
 
 /**
  * Adds the event rewrite rules on activation, so /events/ resolves at once.

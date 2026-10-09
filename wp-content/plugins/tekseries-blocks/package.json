@@ -4,6 +4,12 @@
 	"private": true,
 	"description": "Custom blocks for tekseries.com.",
 	"license": "GPL-2.0-or-later",
+	"files": [
+		"tekseries-blocks.php",
+		"includes",
+		"assets",
+		"build"
+	],
 	"scripts": {
 		"build": "wp-scripts build --experimental-modules --blocks-manifest",
 		"start": "wp-scripts start --experimental-modules --blocks-manifest",
