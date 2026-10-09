@@ -20,6 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once __DIR__ . '/includes/content-types.php';
 require_once __DIR__ . '/includes/icons.php';
+require_once __DIR__ . '/includes/meta.php';
+require_once __DIR__ . '/includes/tone-cycle.php';
+
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once __DIR__ . '/includes/cli.php';
+}
 
 /**
  * Adds the event rewrite rules on activation, so /events/ resolves at once.

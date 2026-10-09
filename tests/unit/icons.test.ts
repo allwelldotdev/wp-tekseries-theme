@@ -40,6 +40,41 @@ describe( 'tekseries icon collection', () => {
 		}
 	);
 
+	it( 'has every topic icon and default icon a post can show', () => {
+		const meta = readFileSync(
+			new URL( 'includes/meta.php', PLUGIN ),
+			'utf8'
+		);
+		const body = ( fn: string ) =>
+			meta.match(
+				new RegExp( `function ${ fn }\\(.*?\\n}`, 's' )
+			)?.[ 0 ] ?? '';
+		const topics = [
+			...body( 'tekseries_blocks_topic_icons' ).matchAll(
+				/^\t\t'([a-z0-9_]+)',$/gm
+			),
+		].map( ( [ , name = '' ] ) => name );
+		const defaults = [
+			...body( 'tekseries_blocks_event_type_icons' ).matchAll(
+				/=> '([a-z0-9_]+)'/g
+			),
+			...body( 'tekseries_blocks_default_icon' ).matchAll(
+				/return '([a-z0-9_]+)'/g
+			),
+		].map( ( [ , name = '' ] ) => name );
+
+		expect( topics.length ).toBeGreaterThanOrEqual( 25 );
+		expect( defaults ).toEqual( [
+			'videocam',
+			'co_present',
+			'emoji_events',
+			'newspaper',
+			'event',
+		] );
+		expect( names ).toEqual( expect.arrayContaining( topics ) );
+		expect( topics ).toEqual( expect.arrayContaining( defaults ) );
+	} );
+
 	it( 'covers every tekseries icon the theme references', () => {
 		const dirs = [ 'patterns', 'parts', 'templates' ];
 		for ( const dir of dirs ) {
