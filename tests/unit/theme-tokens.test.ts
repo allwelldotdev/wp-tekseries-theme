@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 // theme.json must implement the design system's tokens. When a design pull
@@ -19,7 +19,9 @@ const theme = readJson< {
 		viewport: Record< string, string >;
 		color: { palette: ( Preset & { color: string } )[] };
 		typography: {
-			fontFamilies: Preset[];
+			fontFamilies: ( Preset & {
+				fontFace?: { fontFamily: string; src: string[] }[];
+			} )[];
 			fontSizes: ( Preset & {
 				size: string;
 				fluid: { min: string; max: string } | false;
@@ -92,6 +94,24 @@ describe( 'theme.json tokens', () => {
 	it( 'defines the display and text font families', () => {
 		const slugs = settings.typography.fontFamilies.map( ( f ) => f.slug );
 		expect( slugs ).toEqual( [ 'display', 'text' ] );
+	} );
+
+	it( 'self-hosts every font face from files in the theme', () => {
+		const faces = settings.typography.fontFamilies.flatMap(
+			( family ) => family.fontFace ?? []
+		);
+		expect( faces.map( ( face ) => face.fontFamily ) ).toEqual(
+			expect.arrayContaining( [ 'Schibsted Grotesk', 'Onest' ] )
+		);
+		for ( const src of faces.flatMap( ( face ) => face.src ) ) {
+			const file = new URL(
+				src.replace( 'file:./', '../../wp-content/themes/tekseries/' ),
+				import.meta.url
+			);
+			expect( { [ src ]: existsSync( file ) } ).toEqual( {
+				[ src ]: true,
+			} );
+		}
 	} );
 
 	it.each( [
