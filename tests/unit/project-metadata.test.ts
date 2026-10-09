@@ -56,4 +56,13 @@ describe( 'tekseries-blocks plugin', () => {
 			)
 		);
 	} );
+
+	it( 'is tested with WP Job Manager at a pinned version', () => {
+		const env = JSON.parse( read( '../../.wp-env.json' ) );
+		expect( env.plugins ).toContainEqual(
+			expect.stringMatching(
+				/^https:\/\/downloads\.wordpress\.org\/plugin\/wp-job-manager\.\d+\.\d+\.\d+\.zip$/
+			)
+		);
+	} );
 } );

@@ -35,4 +35,31 @@ test.describe( 'fresh install smoke', () => {
 		await admin.visitAdminPage( '/' );
 		expect( await page.content() ).not.toMatch( PHP_ERROR );
 	} );
+
+	test( 'WP Job Manager is active and a job renders with no PHP errors', async ( {
+		page,
+		requestUtils,
+	} ) => {
+		const plugin = await requestUtils.rest< { status: string } >( {
+			path: '/wp/v2/plugins/wp-job-manager/wp-job-manager',
+		} );
+		expect( plugin.status ).toBe( 'active' );
+
+		const job = await requestUtils.rest< { id: number; link: string } >( {
+			method: 'POST',
+			path: '/wp/v2/job-listings',
+			data: { title: 'E2E Smoke Job', status: 'publish' },
+		} );
+		try {
+			const response = await page.goto( job.link );
+			expect( response?.status() ).toBe( 200 );
+			expect( await page.content() ).not.toMatch( PHP_ERROR );
+		} finally {
+			await requestUtils.rest( {
+				method: 'DELETE',
+				path: `/wp/v2/job-listings/${ job.id }`,
+				params: { force: true },
+			} );
+		}
+	} );
 } );
