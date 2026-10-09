@@ -1,6 +1,6 @@
 /*
  * Post Terms "badge": each term as a small saffron pill, as on the listing
- * cards and post banners.
+ * cards and post banners, with the event type's icon.
  */
 
 .wp-block-post-terms.is-style-badge {
@@ -17,6 +17,9 @@
 }
 
 .wp-block-post-terms.is-style-badge a {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
 	padding: 6px 12px;
 	border-radius: var(--wp--preset--border-radius--pill);
 	background-color: var(--wp--preset--color--saffron);
@@ -27,6 +30,14 @@
 
 .wp-block-post-terms.is-style-badge a:hover {
 	background-color: var(--wp--preset--color--white);
+}
+
+/* Event type icon, added by the plugin. */
+.wp-block-post-terms.is-style-badge svg {
+	flex: none;
+	width: 16px;
+	height: 16px;
+	fill: currentcolor;
 }
 
 .ts-card-meta .wp-block-post-terms a {

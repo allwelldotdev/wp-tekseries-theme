@@ -118,7 +118,7 @@
 <!-- /wp:group -->
 
 <!-- wp:group {"className":"ts-event-row","style":{"spacing":{"blockGap":"14px"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
-<div class="wp-block-group ts-event-row"><!-- wp:icon {"icon":"tekseries/videocam","className":"is-style-tile","style":{"dimensions":{"width":"40px"},"spacing":{"padding":{"top":"10px","right":"10px","bottom":"10px","left":"10px"}}}} /-->
+<div class="wp-block-group ts-event-row"><!-- wp:icon {"icon":"tekseries/videocam","className":"is-style-tile ts-event-type-icon","style":{"dimensions":{"width":"40px"},"spacing":{"padding":{"top":"10px","right":"10px","bottom":"10px","left":"10px"}}}} /-->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"2px"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
 <div class="wp-block-group"><!-- wp:paragraph {"className":"ts-event-label","fontSize":"caption"} -->

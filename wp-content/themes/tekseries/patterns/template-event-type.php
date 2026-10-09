@@ -40,13 +40,13 @@
 
 <!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|24","margin":{"top":"var:preset|spacing|40"}}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
 <div class="wp-block-group alignwide" style="margin-top:var(--wp--preset--spacing--40)"><!-- wp:navigation {"overlayMenu":"never","className":"ts-nav-chips","layout":{"type":"flex","flexWrap":"wrap"},"ariaLabel":"<?php echo esc_attr__( 'Filter events', 'tekseries' ); ?>"} -->
-<!-- wp:navigation-link {"label":"<?php echo esc_html__( 'All events', 'tekseries' ); ?>","url":"/events/","kind":"custom","isTopLevelLink":true} /-->
+<!-- wp:navigation-link {"label":"<?php echo esc_html__( 'All events', 'tekseries' ); ?>","url":"/events/","kind":"custom","isTopLevelLink":true,"className":"ts-type-chip"} /-->
 
-<!-- wp:navigation-link {"label":"<?php echo esc_html__( 'Webinars', 'tekseries' ); ?>","url":"/event_type/webinar/","kind":"custom","isTopLevelLink":true} /-->
+<!-- wp:navigation-link {"label":"<?php echo esc_html__( 'Webinars', 'tekseries' ); ?>","url":"/event_type/webinar/","kind":"custom","isTopLevelLink":true,"className":"ts-type-chip"} /-->
 
-<!-- wp:navigation-link {"label":"<?php echo esc_html__( 'Workshops', 'tekseries' ); ?>","url":"/event_type/workshop/","kind":"custom","isTopLevelLink":true} /-->
+<!-- wp:navigation-link {"label":"<?php echo esc_html__( 'Workshops', 'tekseries' ); ?>","url":"/event_type/workshop/","kind":"custom","isTopLevelLink":true,"className":"ts-type-chip"} /-->
 
-<!-- wp:navigation-link {"label":"<?php echo esc_html__( 'Makers’ Prize', 'tekseries' ); ?>","url":"/event_type/makers-prize/","kind":"custom","isTopLevelLink":true} /-->
+<!-- wp:navigation-link {"label":"<?php echo esc_html__( 'Makers’ Prize', 'tekseries' ); ?>","url":"/event_type/makers-prize/","kind":"custom","isTopLevelLink":true,"className":"ts-type-chip"} /-->
 <!-- /wp:navigation -->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|4"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->

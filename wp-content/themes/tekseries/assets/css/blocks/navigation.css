@@ -119,12 +119,21 @@
 .wp-block-navigation.ts-nav-chips .wp-block-navigation-item__content {
 	display: inline-flex;
 	align-items: center;
+	gap: 8px;
 	min-height: var(--wp--custom--touch-target);
 	padding: 10px 18px;
 	border: 1px solid var(--wp--preset--color--line);
 	border-radius: var(--wp--preset--border-radius--pill);
 	background-color: var(--wp--preset--color--white);
 	font-weight: 700;
+}
+
+/* Event type icon, added by the plugin. */
+.wp-block-navigation.ts-nav-chips .wp-block-navigation-item__content svg {
+	flex: none;
+	width: 20px;
+	height: 20px;
+	fill: currentcolor;
 }
 
 .wp-block-navigation.ts-nav-chips .wp-block-navigation-item__content:hover {

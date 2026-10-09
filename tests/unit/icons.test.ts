@@ -75,6 +75,19 @@ describe( 'tekseries icon collection', () => {
 		expect( topics ).toEqual( expect.arrayContaining( defaults ) );
 	} );
 
+	it( "covers every icon the plugin's PHP names", () => {
+		const dir = new URL( 'includes/', PLUGIN );
+		const used = readdirSync( dir ).flatMap( ( file ) =>
+			[
+				...readFileSync( new URL( file, dir ), 'utf8' ).matchAll(
+					/(?:tekseries_blocks_icon_svg\( '|'tekseries\/)([a-z0-9_]+)'/g
+				),
+			].map( ( [ , name = '' ] ) => name )
+		);
+		expect( used ).toEqual( expect.arrayContaining( [ 'apps' ] ) );
+		expect( names ).toEqual( expect.arrayContaining( used ) );
+	} );
+
 	it( 'covers every tekseries icon the theme references', () => {
 		const dirs = [ 'patterns', 'parts', 'templates' ];
 		for ( const dir of dirs ) {

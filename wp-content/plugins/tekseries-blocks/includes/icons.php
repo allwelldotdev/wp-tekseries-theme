@@ -30,6 +30,7 @@ function tekseries_blocks_icon_labels(): array {
 		'ads_click'            => __( 'Click', 'tekseries-blocks' ),
 		'alternate_email'      => __( 'Email address', 'tekseries-blocks' ),
 		'apartment'            => __( 'Building', 'tekseries-blocks' ),
+		'apps'                 => __( 'All', 'tekseries-blocks' ),
 		'arrow_back'           => __( 'Arrow back', 'tekseries-blocks' ),
 		'arrow_downward'       => __( 'Arrow downward', 'tekseries-blocks' ),
 		'arrow_forward'        => __( 'Arrow forward', 'tekseries-blocks' ),
@@ -168,3 +169,13 @@ function tekseries_blocks_register_icons(): void {
 	}
 }
 add_action( 'init', 'tekseries_blocks_register_icons' );
+
+/**
+ * Returns a collection icon as decorative inline SVG (hidden from screen readers).
+ *
+ * @param string $name Icon name in the collection, without the `tekseries/` prefix.
+ * @return string Empty if the icon isn't registered.
+ */
+function tekseries_blocks_icon_svg( string $name ): string {
+	return wp_get_icon( 'tekseries/' . $name, array( 'size' => null ) );
+}

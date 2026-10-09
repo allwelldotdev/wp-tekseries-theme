@@ -159,7 +159,7 @@ add_filter( 'render_block', 'tekseries_blocks_render_registration', 10, 2 );
 function tekseries_blocks_event_ended_note(): string {
 	return sprintf(
 		'<p class="ts-event-ended">%1$s<span>%2$s</span></p>',
-		wp_get_icon( 'tekseries/event_busy', array( 'size' => null ) ),
+		tekseries_blocks_icon_svg( 'event_busy' ),
 		esc_html__( 'This event has ended', 'tekseries-blocks' )
 	);
 }

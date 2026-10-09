@@ -73,7 +73,7 @@ function tekseries_blocks_topic_icons(): array {
 }
 
 /**
- * Maps event type slugs to the icon a post shows until an editor picks one.
+ * Maps event type slugs to their default icon (a type can store its own, see event-types.php).
  *
  * @return array<string, string> Term slug => icon name.
  */
@@ -203,7 +203,7 @@ function tekseries_blocks_get_tone( int $post_id ): string {
 /**
  * Returns the icon a post shows when no editor has picked one.
  *
- * Events follow their first event type; news and unknown types get a general icon.
+ * Events show their first event type's icon; news and events without a type get a general icon.
  *
  * @param int $post_id Post ID.
  * @return string
@@ -214,16 +214,9 @@ function tekseries_blocks_default_icon( int $post_id ): string {
 		return 'newspaper';
 	}
 
-	if ( 'event' === $post_type ) {
-		$terms = get_the_terms( $post_id, 'event_type' );
-		$icons = tekseries_blocks_event_type_icons();
-		if ( is_array( $terms ) ) {
-			foreach ( $terms as $term ) {
-				if ( isset( $icons[ $term->slug ] ) ) {
-					return $icons[ $term->slug ];
-				}
-			}
-		}
+	$type_icon = 'event' === $post_type ? tekseries_blocks_event_first_type_icon( $post_id ) : '';
+	if ( '' !== $type_icon ) {
+		return $type_icon;
 	}
 
 	return 'event';
