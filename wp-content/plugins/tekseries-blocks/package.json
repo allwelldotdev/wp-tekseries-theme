@@ -1,0 +1,15 @@
+{
+	"name": "tekseries-blocks",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Custom blocks for tekseries.com.",
+	"license": "GPL-2.0-or-later",
+	"scripts": {
+		"build": "wp-scripts build --experimental-modules --blocks-manifest",
+		"start": "wp-scripts start --experimental-modules --blocks-manifest",
+		"plugin-zip": "wp-scripts plugin-zip"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^36.1.0"
+	}
+}

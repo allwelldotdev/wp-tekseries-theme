@@ -18,7 +18,7 @@
 !/tsconfig.json
 !/eslint.config.cjs
 !/playwright.config.ts
-!/vitest.config.ts
+!/vitest.config.mts
 
 # Root directories we own
 !/.github/

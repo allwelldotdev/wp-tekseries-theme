@@ -1,0 +1,42 @@
+{
+	"name": "tekseries",
+	"version": "0.1.0",
+	"private": true,
+	"description": "TekSeries block theme and companion blocks plugin.",
+	"license": "GPL-2.0-or-later",
+	"engines": {
+		"node": "^24.15.0 || >=26.0.0",
+		"npm": ">=11.0.0"
+	},
+	"workspaces": [
+		"wp-content/plugins/tekseries-blocks"
+	],
+	"prettier": "@wordpress/prettier-config",
+	"scripts": {
+		"check-engines": "wp-scripts check-engines",
+		"lint:js": "wp-scripts lint-js wp-content/plugins/tekseries-blocks specs tests types eslint.config.cjs playwright.config.ts vitest.config.mts --no-error-on-unmatched-pattern",
+		"lint:css": "wp-scripts lint-style \"wp-content/themes/tekseries/**/*.{css,scss}\" \"wp-content/plugins/tekseries-blocks/src/**/*.{css,scss}\" --allow-empty-input",
+		"format": "wp-scripts format wp-content/themes/tekseries wp-content/plugins/tekseries-blocks specs tests types eslint.config.cjs playwright.config.ts vitest.config.mts",
+		"typecheck": "tsc --noEmit",
+		"test:unit": "wp-scripts test-unit-js",
+		"test:e2e": "wp-scripts test-e2e",
+		"build": "npm run build --workspace=tekseries-blocks",
+		"start": "npm run start --workspace=tekseries-blocks",
+		"plugin-zip": "npm run plugin-zip --workspace=tekseries-blocks",
+		"wp-env": "wp-env"
+	},
+	"devDependencies": {
+		"@playwright/test": "^1.64.0",
+		"@types/node": "^24.19.1",
+		"@wordpress/babel-preset-default": "^9.0.0",
+		"@wordpress/e2e-test-utils-playwright": "^3.0.0",
+		"@wordpress/env": "^11.17.0",
+		"@wordpress/eslint-plugin": "^27.1.0",
+		"@wordpress/prettier-config": "^4.57.0",
+		"@wordpress/scripts": "^36.1.0",
+		"prettier": "npm:wp-prettier@^3.9.6",
+		"typescript": "~6.0.3",
+		"vite": "^8.3.4",
+		"vitest": "^5.0.3"
+	}
+}
