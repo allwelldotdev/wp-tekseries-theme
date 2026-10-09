@@ -1,0 +1,30 @@
+/* "Tone and icon" panel in the post sidebar. */
+
+.tekseries-post-tone-panel .components-base-control + .components-base-control {
+	margin-top: 24px;
+}
+
+/* Topic icon picker: a grid of icon buttons. */
+
+.tekseries-icon-picker {
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	gap: 4px;
+
+	.components-button {
+		justify-content: center;
+		width: 100%;
+		height: 36px;
+		padding: 0;
+	}
+
+	.components-button.is-default-icon {
+		grid-column: span 2;
+	}
+
+	svg {
+		width: 24px;
+		height: 24px;
+		fill: currentcolor;
+	}
+}

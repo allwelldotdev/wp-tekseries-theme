@@ -15,6 +15,8 @@ declare module '@wordpress/block-editor' {
 		}
 	): BlockProps & { children: ReactNode };
 
+	export function useSettings( ...paths: string[] ): unknown[];
+
 	export const InnerBlocks: ComponentType & { Content: ComponentType };
 	export const InspectorControls: ComponentType< {
 		group?: 'default' | 'settings' | 'styles';
