@@ -1,0 +1,25 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tekseries/post-tone",
+	"version": "0.1.0",
+	"title": "Post Tone",
+	"category": "theme",
+	"icon": "art",
+	"description": "Colours its contents with the post's tone and shows its topic icon.",
+	"keywords": [ "tone", "card", "banner" ],
+	"textdomain": "tekseries-blocks",
+	"usesContext": [ "postId", "postType" ],
+	"attributes": {
+		"variant": {
+			"type": "string",
+			"enum": [ "card", "banner" ],
+			"default": "card"
+		}
+	},
+	"supports": {
+		"html": false
+	},
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}
