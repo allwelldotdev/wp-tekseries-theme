@@ -38,20 +38,24 @@ test.describe( 'front-end templates', () => {
 		await requestUtils.deleteAllPosts();
 	} );
 
-	const pages: [ string, () => string, number ][] = [
-		[ 'events listing', () => '/events/', 200 ],
-		[ 'single event', () => event.link, 200 ],
-		[ 'single post', () => post.link, 200 ],
-		[ 'search', () => '/?s=E2E', 200 ],
-		[ '404', () => '/no-such-page-e2e/', 404 ],
+	// Listings and utility pages open with the plum hero; singles with the
+	// post's tone banner (Post Tone block).
+	const HERO = '.is-style-hero-plum';
+	const BANNER = '.wp-block-tekseries-post-tone.ts-banner';
+	const pages: [ string, () => string, number, string ][] = [
+		[ 'events listing', () => '/events/', 200, HERO ],
+		[ 'single event', () => event.link, 200, BANNER ],
+		[ 'single post', () => post.link, 200, BANNER ],
+		[ 'search', () => '/?s=E2E', 200, HERO ],
+		[ '404', () => '/no-such-page-e2e/', 404, HERO ],
 	];
 
-	for ( const [ name, url, status ] of pages ) {
+	for ( const [ name, url, status, hero ] of pages ) {
 		test( `${ name } renders cleanly`, async ( { page } ) => {
 			const response = await page.goto( url() );
 			expect( response?.status() ).toBe( status );
 			await expect( page.locator( 'main' ) ).toBeVisible();
-			await expect( page.locator( '.is-style-hero-plum' ) ).toBeVisible();
+			await expect( page.locator( hero ) ).toBeVisible();
 			const text = await page.locator( 'body' ).innerText();
 			expect( text ).not.toMatch( /\[(et_pb|difl)_/ );
 			expect( text ).not.toMatch(

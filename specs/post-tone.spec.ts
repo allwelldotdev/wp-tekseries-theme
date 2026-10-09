@@ -70,7 +70,9 @@ test.describe( 'Post Tone block', () => {
 		const page = await context.newPage();
 		await page.goto( event.link );
 
-		const block = page.locator( '.wp-block-tekseries-post-tone' );
+		const block = page.locator(
+			'.wp-block-post-content .wp-block-tekseries-post-tone'
+		);
 		await expect( block ).toHaveClass( /\bts-tone--ink\b/ );
 		await expect( block ).toHaveClass( /\bts-tone--banner\b/ );
 		await expect( block ).toContainText( 'Inside the tone' );
@@ -100,12 +102,76 @@ test.describe( 'Post Tone block', () => {
 		} );
 
 		await page.goto( event.link );
-		const block = page.locator( '.wp-block-tekseries-post-tone' );
+		const block = page.locator(
+			'.wp-block-post-content .wp-block-tekseries-post-tone'
+		);
 		await expect( block ).toHaveClass( /\bts-tone--card\b/ );
 		await expect( block.locator( '.ts-tone__icon path' ) ).toHaveAttribute(
 			'd',
 			iconPath( content ) ?? ''
 		);
+	} );
+
+	test( 'colours the listing card and banner with the stored tone, with JavaScript off', async ( {
+		browser,
+		requestUtils,
+	} ) => {
+		const event = await requestUtils.rest< Linked >( {
+			method: 'POST',
+			path: '/wp/v2/event',
+			data: {
+				title: 'E2E Tone Listing',
+				status: 'publish',
+				meta: { tekseries_tone: 'saffron', tekseries_icon: 'school' },
+			},
+		} );
+		events.push( event.id );
+		const { content } = await requestUtils.rest< Icon >( {
+			path: '/wp/v2/icons/tekseries/school',
+		} );
+
+		const context = await browser.newContext( {
+			javaScriptEnabled: false,
+			storageState: { cookies: [], origins: [] },
+		} );
+		const page = await context.newPage();
+		await page.goto( '/events/' );
+		const media = page
+			.locator( '.ts-post-card', { hasText: 'E2E Tone Listing' } )
+			.first()
+			.locator( '.ts-card-media' );
+		await expect( media ).toHaveClass( /\bts-tone--saffron\b/ );
+		await expect( media.locator( '.ts-tone__icon path' ) ).toHaveAttribute(
+			'd',
+			iconPath( content ) ?? ''
+		);
+
+		await page.goto( event.link );
+		const banner = page.locator( '.ts-banner' );
+		await expect( banner ).toHaveClass( /\bts-tone--saffron\b/ );
+		await expect( banner ).toHaveClass( /\bts-tone--banner\b/ );
+		await context.close();
+	} );
+
+	test( 'the events page loads no React for visitors', async ( {
+		browser,
+	} ) => {
+		const context = await browser.newContext( {
+			storageState: { cookies: [], origins: [] },
+		} );
+		const page = await context.newPage();
+		const scripts: string[] = [];
+		page.on( 'request', ( request ) => {
+			if ( request.resourceType() === 'script' ) {
+				scripts.push( request.url() );
+			}
+		} );
+		await page.goto( '/events/' );
+		await expect( page.locator( '.ts-card-media' ).first() ).toBeVisible();
+		expect( scripts.filter( ( url ) => /react/i.test( url ) ) ).toEqual(
+			[]
+		);
+		await context.close();
 	} );
 
 	test( 'is insertable and valid in the post editor', async ( {

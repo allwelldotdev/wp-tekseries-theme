@@ -100,7 +100,6 @@ add_action( 'after_setup_theme', 'tekseries_editor_styles' );
 function tekseries_enqueue_block_styles(): void {
 	$blocks = array(
 		'core/breadcrumbs'          => 'breadcrumbs',
-		'core/cover'                => 'cover',
 		'core/gallery'              => 'gallery',
 		'core/group'                => 'group',
 		'core/icon'                 => 'icon',
@@ -116,6 +115,7 @@ function tekseries_enqueue_block_styles(): void {
 		'core/search'               => 'search',
 		'core/social-links'         => 'social-links',
 		'fluentfom/guten-block'     => 'fluentform',
+		'tekseries/post-tone'       => 'post-tone',
 	);
 
 	foreach ( $blocks as $block_name => $file ) {

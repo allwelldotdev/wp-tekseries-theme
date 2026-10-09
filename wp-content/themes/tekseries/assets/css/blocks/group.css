@@ -58,15 +58,6 @@
 	border-color: var(--wp--preset--color--saffron);
 }
 
-/* Large date on the single event banner. */
-.ts-banner .ts-banner__date .ts-card-date__day {
-	font-size: 160px;
-}
-
-.ts-banner .ts-banner__date .ts-card-date__month {
-	font-size: 30px;
-}
-
 /* Contact map: a drawn street grid with a pin, behind the address card. */
 .ts-map {
 	position: relative;
