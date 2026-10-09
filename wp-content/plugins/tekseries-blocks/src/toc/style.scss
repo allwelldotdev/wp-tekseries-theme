@@ -1,0 +1,91 @@
+// "On this page" card: a coral eyebrow over a numbered list of section links.
+// The <details> can be folded away; its chevron turns with it.
+.wp-block-tekseries-toc {
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: var(--wp--preset--border-radius--lg);
+	background-color: var(--wp--preset--color--white);
+}
+
+.ts-toc__summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	min-height: var(--wp--custom--touch-target);
+	padding: 8px 20px;
+	cursor: pointer;
+	list-style: none;
+
+	&::-webkit-details-marker {
+		display: none;
+	}
+
+	> svg {
+		flex: none;
+		width: 22px;
+		height: 22px;
+		fill: var(--wp--preset--color--plum);
+		transition: rotate var(--wp--custom--motion--duration);
+	}
+}
+
+.ts-toc[open] > .ts-toc__summary > svg {
+	rotate: 180deg;
+}
+
+.ts-toc__title {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--wp--preset--color--coral-text);
+	font-size: var(--wp--preset--font-size--caption);
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+
+	svg {
+		width: 18px;
+		height: 18px;
+		fill: currentcolor;
+	}
+}
+
+.ts-toc__list {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	margin: 0;
+	padding: 0 10px 12px;
+	list-style: none;
+
+	li {
+		margin: 0;
+	}
+
+	a {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		padding: 8px 10px;
+		border-radius: 12px;
+		color: var(--wp--preset--color--body);
+		font-size: 0.9375rem;
+		font-weight: 600;
+		line-height: 1.35;
+		text-decoration: none;
+
+		&:hover,
+		&:focus-visible {
+			background-color: var(--wp--preset--color--lilac);
+			color: var(--wp--preset--color--plum);
+		}
+	}
+}
+
+.ts-toc__number {
+	flex: none;
+	width: 22px;
+	color: var(--wp--preset--color--coral-text);
+	font-variant-numeric: tabular-nums;
+	font-weight: 700;
+}
