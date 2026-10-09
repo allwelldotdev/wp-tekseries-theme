@@ -109,21 +109,7 @@ function tekseries_blocks_render_type_tile( string $content, array $parsed ): st
 	}
 
 	$icon = 'event' === get_post_type() ? tekseries_blocks_event_first_type_icon( (int) get_the_ID() ) : '';
-	$svg  = '' === $icon ? '' : tekseries_blocks_icon_svg( $icon );
-	if ( '' === $svg ) {
-		return $content;
-	}
-
-	// Keep the saved SVG's attributes (size, classes), swap only its drawing.
-	if ( ! preg_match( '#<svg\b[^>]*>(.*?)</svg>#s', $svg, $drawing ) ) {
-		return $content;
-	}
-	return (string) preg_replace_callback(
-		'#(<svg\b[^>]*>).*?(</svg>)#s',
-		static fn( array $saved ): string => $saved[1] . $drawing[1] . $saved[2],
-		$content,
-		1
-	);
+	return '' === $icon ? $content : tekseries_blocks_swap_icon( $content, $icon );
 }
 add_filter( 'render_block_core/icon', 'tekseries_blocks_render_type_tile', 10, 2 );
 

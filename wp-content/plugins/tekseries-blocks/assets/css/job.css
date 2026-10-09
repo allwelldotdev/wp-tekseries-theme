@@ -1,0 +1,396 @@
+/*
+ * Single job body (templates/wpjm/content-single-job_listing*.php): the
+ * description card beside a side card with the company, the job's details
+ * and how to apply. Colours and sizes come from the theme's tokens.
+ */
+
+.ts-job {
+	--ts-job-gap: 40px;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 340px;
+	gap: var(--ts-job-gap);
+	align-items: start;
+	color: var(--wp--preset--color--body);
+}
+
+.ts-job__aside {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	grid-column: 2;
+	grid-row: 1;
+	position: sticky;
+	top: calc(var(--wp-admin--admin-bar--height, 0px) + 104px);
+}
+
+.ts-job__main {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	min-width: 0;
+	grid-column: 1;
+	grid-row: 1;
+}
+
+.ts-job__card,
+.ts-job__description {
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: var(--wp--preset--border-radius--lg);
+	background: var(--wp--preset--color--white);
+}
+
+.ts-job__card {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding: 22px;
+}
+
+/* Imported job descriptions: arbitrary headings, lists, links and logos. */
+.ts-job__description {
+	padding: 36px 40px;
+	font-size: var(--wp--preset--font-size--body);
+	line-height: 1.7;
+	overflow-wrap: anywhere;
+}
+
+.ts-job__description > :first-child {
+	margin-top: 0;
+}
+
+.ts-job__description > :last-child {
+	margin-bottom: 0;
+}
+
+.ts-job__description :is(h1, h2, h3, h4, h5, h6) {
+	margin: 1.4em 0 0.4em;
+	color: var(--wp--preset--color--plum);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--body-l);
+	line-height: 1.3;
+}
+
+.ts-job__description :is(p, ul, ol) {
+	margin: 0 0 1em;
+}
+
+.ts-job__description li::marker {
+	color: var(--wp--preset--color--coral-text);
+}
+
+.ts-job__description a {
+	color: var(--wp--preset--color--plum);
+	text-decoration: underline;
+}
+
+.ts-job__description a:hover {
+	color: var(--wp--preset--color--coral-text);
+}
+
+.ts-job__description strong {
+	color: var(--wp--preset--color--ink);
+}
+
+.ts-job__description img {
+	max-width: 100%;
+	height: auto;
+}
+
+/* Buttons: plum pill (saffron on hover), or a soft lilac one. */
+.ts-job__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.ts-job-button {
+	display: inline-flex;
+	gap: 8px;
+	align-items: center;
+	justify-content: center;
+	min-height: 52px;
+	padding: 0 28px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background: var(--wp--preset--color--plum);
+	color: var(--wp--preset--color--white);
+	font-size: var(--wp--preset--font-size--body-s);
+	font-weight: 700;
+	text-decoration: none;
+	cursor: pointer;
+	transition:
+		background-color var(--wp--custom--motion--duration),
+		color var(--wp--custom--motion--duration);
+}
+
+.ts-job-button:hover {
+	background: var(--wp--preset--color--saffron);
+	color: var(--wp--preset--color--ink);
+}
+
+.ts-job-button--soft {
+	padding: 0 20px;
+	background: var(--wp--preset--color--lilac);
+	color: var(--wp--preset--color--plum);
+}
+
+.ts-job-button svg {
+	width: 20px;
+	height: 20px;
+	fill: currentcolor;
+}
+
+/* Company: logo or initials tile, eyebrow and name; tagline and links. */
+.ts-job-company {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.ts-job-company__head {
+	display: flex;
+	gap: 14px;
+	align-items: center;
+}
+
+.ts-job-company__name {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+	margin: 0;
+}
+
+.ts-job-company__name strong {
+	color: var(--wp--preset--color--plum);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	line-height: 1.25;
+}
+
+.ts-job-company .tagline {
+	margin: 0;
+	color: var(--wp--preset--color--muted);
+	font-size: var(--wp--preset--font-size--caption);
+}
+
+.ts-job-company__links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 14px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: var(--wp--preset--font-size--caption);
+	font-weight: 700;
+}
+
+.ts-job-company__links a {
+	display: inline-flex;
+	gap: 6px;
+	align-items: center;
+	min-height: var(--wp--custom--touch-target);
+	color: var(--wp--preset--color--plum);
+}
+
+.ts-job-company__links svg {
+	width: 18px;
+	height: 18px;
+	fill: var(--wp--preset--color--coral);
+}
+
+.ts-job-eyebrow {
+	color: var(--wp--preset--color--coral-text);
+	font-size: var(--wp--preset--font-size--caption);
+	font-weight: 700;
+	letter-spacing: var(--wp--custom--letter-spacing--eyebrow);
+	text-transform: uppercase;
+}
+
+.ts-job-tile {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 56px;
+	height: 56px;
+	overflow: hidden;
+	border-radius: 16px;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 800;
+}
+
+.ts-job-tile img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	background: var(--wp--preset--color--white);
+}
+
+.ts-job-tile--plum {
+	background: var(--wp--preset--color--plum);
+	color: var(--wp--preset--color--white);
+}
+
+.ts-job-tile--saffron {
+	background: var(--wp--preset--color--saffron);
+	color: var(--wp--preset--color--ink);
+}
+
+.ts-job-tile--lilac {
+	background: var(--wp--preset--color--lilac);
+	color: var(--wp--preset--color--plum);
+}
+
+.ts-job-tile--ink {
+	background: var(--wp--preset--color--ink);
+	color: var(--wp--preset--color--saffron);
+}
+
+.ts-job-tile--logo {
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+/* Details: icon rows. */
+.ts-job-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 0.9375rem;
+}
+
+.ts-job-meta li {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+}
+
+.ts-job-meta svg {
+	flex: none;
+	width: 20px;
+	height: 20px;
+	fill: var(--wp--preset--color--coral);
+}
+
+.ts-job-meta strong {
+	color: var(--wp--preset--color--plum);
+}
+
+.ts-job-meta__state {
+	color: var(--wp--preset--color--warning);
+	font-weight: 700;
+}
+
+/* How to apply: the summary is the button; the details open below it. */
+.ts-job-apply {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.ts-job-apply > summary {
+	width: 100%;
+	box-sizing: border-box;
+	list-style: none;
+}
+
+.ts-job-apply > summary::-webkit-details-marker {
+	display: none;
+}
+
+.ts-job-apply > summary svg:last-child,
+.ts-job-apply[open] > summary svg:nth-last-child(2) {
+	display: none;
+}
+
+.ts-job-apply[open] > summary svg:last-child {
+	display: block;
+}
+
+.ts-job-apply .application_details {
+	margin-top: 10px;
+	padding: 14px 16px;
+	border-radius: 16px;
+	background: var(--wp--preset--color--lilac);
+	font-size: var(--wp--preset--font-size--caption);
+	line-height: 1.55;
+}
+
+.ts-job-apply .application_details p {
+	margin: 0;
+}
+
+.ts-job-apply .application_details a {
+	color: var(--wp--preset--color--plum);
+	font-weight: 700;
+	text-decoration: underline;
+	overflow-wrap: anywhere;
+}
+
+/* Lilac notes: the third-party disclaimer, an expired listing. */
+.ts-job-note {
+	display: flex;
+	gap: 10px;
+	align-items: flex-start;
+	margin: 0;
+	padding: 14px 16px;
+	border-radius: 16px;
+	background: var(--wp--preset--color--lilac);
+	color: var(--wp--preset--color--plum);
+	font-size: 0.8125rem;
+	line-height: 1.55;
+}
+
+.ts-job-note svg {
+	flex: none;
+	width: 20px;
+	height: 20px;
+	fill: var(--wp--preset--color--coral);
+}
+
+/* Tablet and mobile: one column; the side card goes first, the note last. */
+@media (width <= 1100px) {
+
+	.ts-job {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		align-items: stretch;
+	}
+
+	.ts-job__aside {
+		display: contents;
+	}
+
+	.ts-job__card {
+		order: 1;
+	}
+
+	.ts-job__main {
+		order: 2;
+		width: 100%;
+	}
+
+	.ts-job__aside > .ts-job-note {
+		order: 3;
+	}
+
+	.ts-job__description {
+		padding: 28px;
+		font-size: var(--wp--preset--font-size--body-s);
+	}
+}
+
+@media (width <= 640px) {
+
+	.ts-job__description {
+		padding: 20px 18px;
+		font-size: 0.9375rem;
+	}
+
+	.ts-job__actions .ts-job-button {
+		flex: 1 1 100%;
+	}
+}

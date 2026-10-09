@@ -15,7 +15,7 @@
 	"scripts": {
 		"check-engines": "wp-scripts check-engines",
 		"lint:js": "wp-scripts lint-js wp-content/plugins/tekseries-blocks scripts specs tests types eslint.config.cjs playwright.config.ts vitest.config.mts --no-error-on-unmatched-pattern",
-		"lint:css": "wp-scripts lint-style \"wp-content/themes/tekseries/**/*.{css,scss}\" \"wp-content/plugins/tekseries-blocks/src/**/*.{css,scss}\" --allow-empty-input",
+		"lint:css": "wp-scripts lint-style \"wp-content/themes/tekseries/**/*.{css,scss}\" \"wp-content/plugins/tekseries-blocks/src/**/*.{css,scss}\" \"wp-content/plugins/tekseries-blocks/assets/css/*.css\" --allow-empty-input",
 		"format": "wp-scripts format wp-content/themes/tekseries wp-content/plugins/tekseries-blocks scripts specs tests types eslint.config.cjs playwright.config.ts vitest.config.mts",
 		"typecheck": "tsc --noEmit",
 		"test:unit": "wp-scripts test-unit-js",

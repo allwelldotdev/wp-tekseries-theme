@@ -8,7 +8,8 @@
 		"tekseries-blocks.php",
 		"includes",
 		"assets",
-		"build"
+		"build",
+		"templates"
 	],
 	"scripts": {
 		"build": "wp-scripts build --experimental-modules --blocks-manifest",

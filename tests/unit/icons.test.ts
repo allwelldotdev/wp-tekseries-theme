@@ -76,16 +76,38 @@ describe( 'tekseries icon collection', () => {
 	} );
 
 	it( "covers every icon the plugin's PHP names", () => {
-		const dir = new URL( 'includes/', PLUGIN );
-		const used = readdirSync( dir ).flatMap( ( file ) =>
-			[
-				...readFileSync( new URL( file, dir ), 'utf8' ).matchAll(
-					/(?:tekseries_blocks_icon_svg\( '|'tekseries\/)([a-z0-9_]+)'/g
-				),
-			].map( ( [ , name = '' ] ) => name )
+		const used = [ 'includes/', 'templates/wpjm/' ].flatMap( ( path ) => {
+			const dir = new URL( path, PLUGIN );
+			return readdirSync( dir ).flatMap( ( file ) =>
+				[
+					...readFileSync( new URL( file, dir ), 'utf8' ).matchAll(
+						/(?:tekseries_blocks_icon_svg\( '|'tekseries\/)([a-z0-9_]+)'/g
+					),
+				].map( ( [ , name = '' ] ) => name )
+			);
+		} );
+		expect( used ).toEqual(
+			expect.arrayContaining( [ 'apps', 'arrow_outward' ] )
 		);
-		expect( used ).toEqual( expect.arrayContaining( [ 'apps' ] ) );
 		expect( names ).toEqual( expect.arrayContaining( used ) );
+	} );
+
+	it( 'has an icon for every job type', () => {
+		const wpjm = readFileSync(
+			new URL( 'includes/wpjm.php', PLUGIN ),
+			'utf8'
+		);
+		const map =
+			wpjm.match(
+				/function tekseries_blocks_job_type_icons\(.*?\n}/s
+			)?.[ 0 ] ?? '';
+		const icons = [ ...map.matchAll( /=> '([a-z0-9_]+)'/g ) ].map(
+			( [ , name = '' ] ) => name
+		);
+		expect( icons ).toHaveLength( 8 );
+		expect( names ).toEqual(
+			expect.arrayContaining( [ ...icons, 'work' ] )
+		);
 	} );
 
 	it( 'covers every tekseries icon the theme references', () => {

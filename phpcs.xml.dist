@@ -42,4 +42,12 @@
 			</property>
 		</properties>
 	</rule>
+
+	<!-- WP Job Manager template overrides keep WP Job Manager's file names and fire its hooks. -->
+	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
+		<exclude-pattern>wp-content/plugins/tekseries-blocks/templates/wpjm/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound">
+		<exclude-pattern>wp-content/plugins/tekseries-blocks/templates/wpjm/*</exclude-pattern>
+	</rule>
 </ruleset>

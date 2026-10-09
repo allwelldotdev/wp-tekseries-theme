@@ -58,6 +58,7 @@ function tekseries_blocks_icon_labels(): array {
 		'corporate_fare'       => __( 'Organisation', 'tekseries-blocks' ),
 		'dashboard'            => __( 'Dashboard', 'tekseries-blocks' ),
 		'delete'               => __( 'Delete', 'tekseries-blocks' ),
+		'description'          => __( 'Document', 'tekseries-blocks' ),
 		'directions'           => __( 'Directions', 'tekseries-blocks' ),
 		'diversity_3'          => __( 'Community', 'tekseries-blocks' ),
 		'edit'                 => __( 'Edit', 'tekseries-blocks' ),
@@ -84,6 +85,7 @@ function tekseries_blocks_icon_labels(): array {
 		'home'                 => __( 'Home', 'tekseries-blocks' ),
 		'home_work'            => __( 'Home and work', 'tekseries-blocks' ),
 		'hourglass_top'        => __( 'Hourglass', 'tekseries-blocks' ),
+		'hourglass_bottom'     => __( 'Hourglass ending', 'tekseries-blocks' ),
 		'how_to_reg'           => __( 'Registered', 'tekseries-blocks' ),
 		'hub'                  => __( 'Hub', 'tekseries-blocks' ),
 		'info'                 => __( 'Information', 'tekseries-blocks' ),
@@ -102,6 +104,7 @@ function tekseries_blocks_icon_labels(): array {
 		'open_in_full'         => __( 'Open full size', 'tekseries-blocks' ),
 		'open_in_new'          => __( 'Open in new tab', 'tekseries-blocks' ),
 		'payments'             => __( 'Payments', 'tekseries-blocks' ),
+		'person_play'          => __( 'Freelancer', 'tekseries-blocks' ),
 		'photo_camera'         => __( 'Camera', 'tekseries-blocks' ),
 		'photo_library'        => __( 'Photo library', 'tekseries-blocks' ),
 		'play_arrow'           => __( 'Play', 'tekseries-blocks' ),
@@ -124,7 +127,9 @@ function tekseries_blocks_icon_labels(): array {
 		'south'                => __( 'Arrow down', 'tekseries-blocks' ),
 		'swap_vert'            => __( 'Sort', 'tekseries-blocks' ),
 		'swipe'                => __( 'Swipe', 'tekseries-blocks' ),
+		'sync_alt'             => __( 'Swap', 'tekseries-blocks' ),
 		'task_alt'             => __( 'Task done', 'tekseries-blocks' ),
+		'timelapse'            => __( 'Part of the day', 'tekseries-blocks' ),
 		'toc'                  => __( 'Table of contents', 'tekseries-blocks' ),
 		'touch_app'            => __( 'Tap', 'tekseries-blocks' ),
 		'travel_explore'       => __( 'Explore', 'tekseries-blocks' ),
@@ -178,4 +183,24 @@ add_action( 'init', 'tekseries_blocks_register_icons' );
  */
 function tekseries_blocks_icon_svg( string $name ): string {
 	return wp_get_icon( 'tekseries/' . $name, array( 'size' => null ) );
+}
+
+/**
+ * Draws another icon in a rendered Icon block, keeping the saved SVG's
+ * attributes (size, classes).
+ *
+ * @param string $content Rendered Icon block.
+ * @param string $name    Icon to draw, from the collection.
+ * @return string
+ */
+function tekseries_blocks_swap_icon( string $content, string $name ): string {
+	if ( ! preg_match( '#<svg\b[^>]*>(.*?)</svg>#s', tekseries_blocks_icon_svg( $name ), $drawing ) ) {
+		return $content;
+	}
+	return (string) preg_replace_callback(
+		'#(<svg\b[^>]*>).*?(</svg>)#s',
+		static fn( array $saved ): string => $saved[1] . $drawing[1] . $saved[2],
+		$content,
+		1
+	);
 }
