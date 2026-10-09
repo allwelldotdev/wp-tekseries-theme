@@ -1,0 +1,40 @@
+/*
+ * Image styles: a round avatar with a saffron ring, and a partner logo that
+ * fits a 160 x 40 box (140 x 34 tablet, 110 x 30 mobile).
+ */
+
+.wp-block-image.is-style-avatar {
+	margin-bottom: 10px;
+}
+
+.wp-block-image.is-style-avatar img {
+	width: 104px;
+	height: 104px;
+	object-fit: cover;
+	border: 4px solid var(--wp--preset--color--saffron);
+	border-radius: 50%;
+	background-color: var(--wp--preset--color--lilac);
+}
+
+.wp-block-image.is-style-logo img {
+	width: auto;
+	max-width: 160px;
+	height: 40px;
+	object-fit: contain;
+}
+
+@media (width <= 1100px) {
+
+	.wp-block-image.is-style-logo img {
+		max-width: 140px;
+		height: 34px;
+	}
+}
+
+@media (width <= 640px) {
+
+	.wp-block-image.is-style-logo img {
+		max-width: 110px;
+		height: 30px;
+	}
+}

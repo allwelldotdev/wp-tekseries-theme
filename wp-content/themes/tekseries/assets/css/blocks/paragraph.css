@@ -1,0 +1,17 @@
+/*
+ * Paragraph styles: chips hug their text, and an eyebrow takes its surface's
+ * accent unless an editor picked a colour.
+ */
+
+.is-style-chip {
+	width: fit-content;
+}
+
+.is-style-card-plum .is-style-eyebrow:not(.has-text-color),
+.is-style-tile-glass .is-style-eyebrow:not(.has-text-color) {
+	color: var(--wp--preset--color--saffron);
+}
+
+.is-style-card-saffron .is-style-eyebrow:not(.has-text-color) {
+	color: var(--wp--preset--color--ink);
+}

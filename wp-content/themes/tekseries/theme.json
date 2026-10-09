@@ -437,6 +437,58 @@
 								"text": "inherit"
 							}
 						}
+					},
+					"chip": {
+						"color": {
+							"background": "var:preset|color|white",
+							"text": "var:preset|color|plum"
+						},
+						"border": {
+							"color": "var:preset|color|line",
+							"style": "solid",
+							"width": "1px"
+						},
+						"spacing": {
+							"padding": { "top": "10px", "right": "16px", "bottom": "10px", "left": "16px" }
+						},
+						"typography": {
+							"fontSize": "var:preset|font-size|eyebrow",
+							"lineHeight": "1.5"
+						},
+						":hover": {
+							"color": {
+								"background": "var:preset|color|white",
+								"text": "var:preset|color|plum"
+							},
+							"border": { "color": "var:preset|color|saffron" }
+						}
+					},
+					"glass": {
+						"color": {
+							"background": "var(--wp--custom--alpha--white-12)",
+							"text": "var:preset|color|white"
+						},
+						":hover": {
+							"color": {
+								"background": "var:preset|color|white",
+								"text": "var:preset|color|plum"
+							}
+						}
+					}
+				}
+			},
+			"core/icon": {
+				"variations": {
+					"tile": {
+						"color": {
+							"background": "var:preset|color|lilac",
+							"text": "var:preset|color|plum"
+						},
+						"border": { "radius": "16px" },
+						"dimensions": { "width": "48px" },
+						"spacing": {
+							"padding": { "top": "12px", "right": "12px", "bottom": "12px", "left": "12px" }
+						}
 					}
 				}
 			},
@@ -556,6 +608,72 @@
 								"left": "var:preset|spacing|card-pad"
 							}
 						}
+					},
+					"tile": {
+						"color": {
+							"background": "var:preset|color|blush",
+							"text": "var:preset|color|body"
+						},
+						"border": {
+							"color": "var:preset|color|line",
+							"radius": "var:preset|border-radius|md",
+							"style": "solid",
+							"width": "1px"
+						},
+						"spacing": {
+							"padding": {
+								"top": "var:preset|spacing|24",
+								"right": "var:preset|spacing|24",
+								"bottom": "var:preset|spacing|24",
+								"left": "var:preset|spacing|24"
+							}
+						}
+					},
+					"tile-glass": {
+						"color": {
+							"background": "rgba(255, 255, 255, 0.06)",
+							"text": "var:preset|color|lilac-deep"
+						},
+						"border": {
+							"color": "rgba(255, 255, 255, 0.14)",
+							"radius": "var:preset|border-radius|md",
+							"style": "solid",
+							"width": "1px"
+						},
+						"spacing": {
+							"padding": {
+								"top": "var:preset|spacing|24",
+								"right": "var:preset|spacing|24",
+								"bottom": "var:preset|spacing|24",
+								"left": "var:preset|spacing|24"
+							}
+						},
+						"elements": {
+							"heading": { "color": { "text": "var:preset|color|white" } }
+						}
+					},
+					"tile-frost": {
+						"color": {
+							"background": "rgba(255, 255, 255, 0.55)",
+							"text": "var:preset|color|ink"
+						},
+						"border": {
+							"color": "rgba(42, 21, 51, 0.1)",
+							"radius": "var:preset|border-radius|md",
+							"style": "solid",
+							"width": "1px"
+						},
+						"spacing": {
+							"padding": {
+								"top": "var:preset|spacing|24",
+								"right": "var:preset|spacing|24",
+								"bottom": "var:preset|spacing|24",
+								"left": "var:preset|spacing|24"
+							}
+						},
+						"elements": {
+							"heading": { "color": { "text": "var:preset|color|ink" } }
+						}
 					}
 				}
 			},
@@ -569,6 +687,45 @@
 							"letterSpacing": "0.12em",
 							"lineHeight": "1.25",
 							"textTransform": "uppercase"
+						}
+					},
+					"chip": {
+						"color": {
+							"background": "var:preset|color|saffron",
+							"text": "var:preset|color|ink"
+						},
+						"border": { "radius": "var:preset|border-radius|pill" },
+						"spacing": {
+							"padding": { "top": "6px", "right": "14px", "bottom": "6px", "left": "14px" }
+						},
+						"typography": {
+							"fontSize": "var:preset|font-size|eyebrow",
+							"fontWeight": "700",
+							"lineHeight": "1.35"
+						}
+					},
+					"stat": {
+						"color": { "text": "var:preset|color|plum" },
+						"typography": {
+							"fontFamily": "var:preset|font-family|display",
+							"fontSize": "var:preset|font-size|stat",
+							"fontWeight": "800",
+							"letterSpacing": "-0.03em",
+							"lineHeight": "1"
+						}
+					},
+					"pull": {
+						"border": {
+							"left": { "color": "currentColor", "style": "solid", "width": "4px" }
+						},
+						"spacing": {
+							"padding": { "left": "18px" }
+						},
+						"typography": {
+							"fontFamily": "var:preset|font-family|display",
+							"fontSize": "var:preset|font-size|lead",
+							"fontWeight": "700",
+							"lineHeight": "1.4"
 						}
 					}
 				}

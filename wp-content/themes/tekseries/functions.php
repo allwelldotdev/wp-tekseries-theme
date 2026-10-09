@@ -38,15 +38,32 @@ function tekseries_register_block_styles(): void {
 			'soft'   => __( 'Soft', 'tekseries' ),
 			'dark'   => __( 'Dark', 'tekseries' ),
 			'accent' => __( 'Accent', 'tekseries' ),
+			'chip'   => __( 'Chip', 'tekseries' ),
+			'glass'  => __( 'Glass', 'tekseries' ),
 		),
 		'core/group'     => array(
 			'card'         => __( 'Card', 'tekseries' ),
 			'card-plum'    => __( 'Plum card', 'tekseries' ),
 			'card-saffron' => __( 'Saffron card', 'tekseries' ),
 			'card-lilac'   => __( 'Lilac card', 'tekseries' ),
+			'tile'         => __( 'Tile', 'tekseries' ),
+			'tile-glass'   => __( 'Tile on plum', 'tekseries' ),
+			'tile-frost'   => __( 'Tile on saffron', 'tekseries' ),
+		),
+		'core/icon'      => array(
+			'tile'        => __( 'Tile', 'tekseries' ),
+			'deco'        => __( 'Decoration, top', 'tekseries' ),
+			'deco-bottom' => __( 'Decoration, bottom', 'tekseries' ),
+		),
+		'core/image'     => array(
+			'avatar' => __( 'Avatar', 'tekseries' ),
+			'logo'   => __( 'Logo', 'tekseries' ),
 		),
 		'core/paragraph' => array(
 			'eyebrow' => __( 'Eyebrow', 'tekseries' ),
+			'chip'    => __( 'Chip', 'tekseries' ),
+			'stat'    => __( 'Stat', 'tekseries' ),
+			'pull'    => __( 'Pull statement', 'tekseries' ),
 		),
 	);
 
@@ -78,7 +95,10 @@ add_action( 'after_setup_theme', 'tekseries_editor_styles' );
  */
 function tekseries_enqueue_block_styles(): void {
 	$blocks = array(
+		'core/icon'         => 'icon',
+		'core/image'        => 'image',
 		'core/navigation'   => 'navigation',
+		'core/paragraph'    => 'paragraph',
 		'core/social-links' => 'social-links',
 	);
 
@@ -95,3 +115,4 @@ function tekseries_enqueue_block_styles(): void {
 	}
 }
 add_action( 'init', 'tekseries_enqueue_block_styles' );
+
