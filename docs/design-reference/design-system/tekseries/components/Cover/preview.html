@@ -1,0 +1,50 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>TekSeries New — cover</title>
+<style>
+  html,body{margin:0}
+  .cv{position:relative;width:960px;height:288px;overflow:hidden;background:var(--blush,#FBF7F9)}
+  .cv svg{position:absolute;left:0;top:0}
+  .plum{fill:var(--plum,#4A1D5E)}
+  .saffron{fill:var(--saffron,#F4A261)}
+  .coral{fill:var(--coral,#E76F51)}
+  .lilac{fill:var(--lilac,#F1E6EE)}
+  .ink{fill:var(--ink,#2A1533)}
+  .dot{fill:var(--white-50,rgba(255,255,255,.5))}
+  .slab{rx:var(--radius-xl,32px)}
+  .card{rx:var(--radius-lg,28px)}
+  .tile{rx:var(--radius-md,20px)}
+  .name{position:absolute;left:40px;bottom:32px;width:440px;margin:0}
+  .name h1{margin:0;font-family:"Schibsted Grotesk",sans-serif;font-weight:800;font-size:80px;line-height:.95;letter-spacing:-.03em;color:var(--ink,#2A1533)}
+  .name p{margin:14px 0 0;font-family:Onest,sans-serif;font-size:14px;line-height:1.4;color:var(--muted,#5B4466)}
+</style>
+</head>
+<body>
+<div class="cv">
+<svg width="960" height="288" viewBox="0 0 960 288" aria-hidden="true">
+  <!-- blocks: plum slab 360x248 (radius-xl) bleeding off top/right; saffron disc r56; coral pill 200x56 (radius-pill = half); lilac tile 88x120 (radius-lg); ink disc r20 -->
+  <!-- arrangement: one tall slab with satellites, the way the homepage sets a plum hero beside saffron and lilac cards -->
+  <!-- pattern: soft large radii -> pills and discs; the hero's slider-dot pill row repeated on the slab (a 28x8 saffron pill then white-50 dots, pitch space-12+) -->
+  <!-- scales: radius-xl 32, radius-lg 28, radius-md 20, radius-pill; steps space-8, space-12, space-20, space-40 -->
+  <rect class="plum slab" x="600" y="-40" width="400" height="248"/>
+  <rect class="lilac card" x="496" y="20" width="88" height="120"/>
+  <circle class="saffron" cx="552" cy="208" r="56"/>
+  <rect class="coral" x="640" y="224" width="200" height="56" rx="28"/>
+  <circle class="ink" cx="880" cy="252" r="20"/>
+  <rect class="saffron" x="640" y="160" width="28" height="8" rx="4"/>
+  <circle class="dot" cx="680" cy="164" r="4"/>
+  <circle class="dot" cx="696" cy="164" r="4"/>
+  <circle class="dot" cx="712" cy="164" r="4"/>
+  <circle class="dot" cx="728" cy="164" r="4"/>
+  <circle class="dot" cx="744" cy="164" r="4"/>
+  <rect class="saffron" x="640" y="40" width="120" height="36" rx="18"/>
+  <rect class="lilac tile" x="776" y="40" width="36" height="36"/>
+</svg>
+<div class="name">
+  <h1>TekSeries<br>New</h1>
+  <p>Share. Create. Solve. The TekSeries homepage language: plum, saffron and soft rounded shapes.</p>
+</div>
+</div>
+</body>
+</html>

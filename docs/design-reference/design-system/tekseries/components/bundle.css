@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap');
+
+/* TekSeries New — component styles. Every value reads the system's tokens, with the source value as fallback. */
+.ts-icon{font-family:'Material Symbols Rounded';font-weight:400;font-style:normal;line-height:1;display:inline-block;letter-spacing:normal;text-transform:none;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
+
+.ts-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;border-radius:var(--radius-pill,999px);font-family:Onest,sans-serif;font-weight:700;line-height:1.25;text-decoration:none;white-space:nowrap;cursor:pointer;border:0;transition:background-color .15s,color .15s}
+.ts-btn--sm{padding:10px 18px;font-size:16px}
+.ts-btn--md{padding:12px 22px;font-size:16px}
+.ts-btn--lg{padding:14px 26px;font-size:17px}
+.ts-btn--primary{background:var(--plum,#4A1D5E);color:var(--white,#fff)}
+.ts-btn--primary:hover{background:var(--saffron,#F4A261);color:var(--ink,#2A1533)}
+.ts-btn--soft{background:var(--lilac,#F1E6EE);color:var(--plum,#4A1D5E)}
+.ts-btn--soft:hover{background:var(--lilac-deep,#E5D3E0);color:var(--plum,#4A1D5E)}
+.ts-btn--dark{background:var(--ink,#2A1533);color:var(--white,#fff)}
+.ts-btn--dark:hover{background:var(--plum,#4A1D5E);color:var(--white,#fff)}
+.ts-btn--accent{background:var(--saffron,#F4A261);color:var(--ink,#2A1533)}
+.ts-btn--accent:hover{background:var(--white,#fff);color:var(--ink,#2A1533)}
+.ts-btn--outline{background:transparent;color:var(--white,#fff);border:1.5px solid var(--white-70,rgba(255,255,255,.7))}
+.ts-btn--outline:hover{background:var(--white-12,rgba(255,255,255,.12));color:var(--white,#fff)}
+.ts-btn:focus-visible,.ts-nav:focus-visible,.ts-social:focus-visible{outline:2px solid var(--saffron,#F4A261);outline-offset:2px}
+
+.ts-chip{display:inline-flex;align-items:center;gap:6px;width:max-content;padding:8px 14px;border-radius:var(--radius-pill,999px);font-family:Onest,sans-serif;font-size:15px;font-weight:700;line-height:1.25}
+.ts-chip--saffron{background:var(--saffron,#F4A261);color:var(--ink,#2A1533)}
+.ts-chip--lilac{background:var(--lilac,#F1E6EE);color:var(--plum,#4A1D5E)}
+
+.ts-eyebrow{display:inline-block;font-family:Onest,sans-serif;font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;line-height:1.25}
+.ts-eyebrow--coral{color:var(--coral,#E76F51)}
+.ts-eyebrow--saffron{color:var(--saffron,#F4A261)}
+.ts-eyebrow--ink{color:var(--ink,#2A1533)}
+
+.ts-nav{display:inline-block;padding:8px 14px;border-radius:var(--radius-pill,999px);font-family:Onest,sans-serif;font-size:16px;font-weight:600;line-height:1.25;color:var(--plum,#4A1D5E);text-decoration:none}
+.ts-nav:hover,.ts-nav--active{background:var(--lilac,#F1E6EE)}
+
+.ts-icontile{display:grid;place-items:center;border-radius:var(--radius-md,20px);background:var(--lilac,#F1E6EE);color:var(--plum,#4A1D5E);flex:none}
+
+.ts-pillar{display:inline-flex;align-items:center;gap:8px;font-family:Onest,sans-serif;font-weight:700;font-size:17px;color:var(--white,#fff)}
+.ts-pillar .ts-icon{color:var(--saffron,#F4A261)}
+
+.ts-dots{display:inline-flex;gap:8px}
+.ts-dot{width:8px;height:8px;border-radius:var(--radius-pill,999px);background:var(--white-50,rgba(255,255,255,.5))}
+.ts-dot--on{width:28px;background:var(--saffron,#F4A261)}
+
+.ts-social{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:Onest,sans-serif;font-weight:800;font-size:15px;text-decoration:none;background:var(--white-10,rgba(255,255,255,.1));color:var(--white,#fff);transition:background-color .15s,color .15s}
+.ts-social:hover{background:var(--saffron,#F4A261);color:var(--ink,#2A1533)}
+
+.ts-card{box-sizing:border-box;background:var(--white,#fff);border:1px solid var(--line,#EADFE6);font-family:Onest,sans-serif;color:var(--ink,#2A1533)}
+
+.ts-service{border-radius:var(--radius-lg,28px);padding:36px 40px;display:grid;grid-template-columns:320px 1fr;gap:40px;font-size:17px;line-height:1.7;color:var(--body,#3D2A47);transition:border-color .15s}
+.ts-service:hover{border-color:var(--saffron,#F4A261)}
+.ts-service--stack{grid-template-columns:1fr;gap:20px}
+.ts-service__head{display:flex;flex-direction:column;gap:16px}
+.ts-service__title{margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:32px;font-weight:700;letter-spacing:-.02em;line-height:1.1;color:var(--plum,#4A1D5E)}
+.ts-service__num{font-size:15px;font-weight:700;color:var(--coral,#E76F51);line-height:1.25}
+.ts-service__body{display:flex;flex-direction:column;gap:12px}
+.ts-service__body p{margin:0}
+
+.ts-quote{margin:0;background:var(--blush,#FBF7F9);border-radius:var(--radius-md,20px);padding:22px 24px;display:flex;flex-direction:column;gap:8px;font-family:Onest,sans-serif}
+.ts-quote blockquote{margin:0;font-size:17px;line-height:1.55;font-weight:500;color:var(--plum,#4A1D5E)}
+.ts-quote figcaption{font-size:14px;font-weight:700;color:var(--coral,#E76F51)}
+
+.ts-team{border-radius:var(--radius-lg,28px);padding:28px;display:flex;flex-direction:column;gap:8px}
+.ts-team__img{width:104px;height:104px;border-radius:50%;object-fit:cover;background:var(--lilac,#F1E6EE);border:4px solid var(--saffron,#F4A261);margin-bottom:10px;box-sizing:border-box;display:block}
+.ts-team__name{font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:24px;color:var(--plum,#4A1D5E)}
+.ts-team__role{font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--coral,#E76F51)}
+.ts-team__bio{margin:6px 0 0;font-size:16px;line-height:1.6;color:var(--muted,#5B4466)}
+
+.ts-stat{border-radius:var(--radius-xl,32px);padding:32px 44px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:32px}
+.ts-stat__value{font-family:'Schibsted Grotesk',sans-serif;font-size:50px;font-weight:800;line-height:1;letter-spacing:-.03em;color:var(--plum,#4A1D5E)}
+.ts-stat__text{display:flex;flex-direction:column;gap:4px}
+.ts-stat__title{font-family:'Schibsted Grotesk',sans-serif;font-size:24px;font-weight:700;color:var(--plum,#4A1D5E)}
+.ts-stat__sub{font-size:18px;color:var(--muted,#5B4466)}
+
+.ts-cta{box-sizing:border-box;border-radius:var(--radius-xl,32px);padding:32px;display:flex;flex-direction:column;gap:10px;font-family:Onest,sans-serif}
+.ts-cta--saffron{background:var(--saffron,#F4A261);color:var(--ink,#2A1533)}
+.ts-cta--plum{background:var(--plum,#4A1D5E);color:var(--mist,#F5E9F1)}
+.ts-cta__title{margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:28px;font-weight:700;line-height:1.2}
+.ts-cta--plum .ts-cta__title{color:var(--white,#fff)}
+.ts-cta .ts-btn{margin-top:8px;width:max-content}
+
+/* Responsive scale. Applies by viewport (tablet <=1100px, mobile <=640px), or on any container given
+   the class ts-tablet or ts-mobile (use these on fixed-width artboards, where the viewport is not the device). */
+@media (max-width:1100px){
+  .ts-btn--lg{padding:13px 22px;font-size:16px}.ts-btn--md{padding:12px 20px;font-size:16px}.ts-btn--sm{padding:10px 16px;font-size:15px}
+  .ts-chip{width:fit-content;max-width:100%;box-sizing:border-box;padding:7px 13px;font-size:13px;line-height:1.35}
+  .ts-eyebrow{font-size:13px}
+  .ts-pillar{font-size:16px;gap:7px}.ts-pillar .ts-icon{font-size:20px!important}
+  .ts-service{grid-template-columns:1fr;border-radius:24px;padding:28px;gap:22px;font-size:16px;line-height:1.65}
+  .ts-service__title{font-size:26px;line-height:1.12}.ts-service__num{font-size:14px}
+  .ts-quote{border-radius:18px;padding:20px 22px;gap:7px}.ts-quote blockquote{font-size:15px}.ts-quote figcaption{font-size:13px}
+  .ts-team{border-radius:24px;padding:24px;gap:7px}.ts-team__img{width:92px;height:92px;margin-bottom:9px}.ts-team__name{font-size:21px}.ts-team__role{font-size:13px}.ts-team__bio{font-size:15px;margin-top:5px}
+  .ts-stat{grid-template-columns:1fr;justify-items:center;text-align:center;border-radius:28px;padding:28px 32px;gap:20px}
+  .ts-stat__value{font-size:44px}.ts-stat__title{font-size:21px;line-height:1.3}.ts-stat__sub{font-size:16px}
+  .ts-cta{border-radius:28px;padding:28px 32px;gap:9px}.ts-cta__title{font-size:24px}
+}
+:is(.ts-tablet,.ts-mobile) .ts-btn--lg{padding:13px 22px;font-size:16px}
+:is(.ts-tablet,.ts-mobile) .ts-btn--md{padding:12px 20px;font-size:16px}
+:is(.ts-tablet,.ts-mobile) .ts-btn--sm{padding:10px 16px;font-size:15px}
+:is(.ts-tablet,.ts-mobile) .ts-chip{width:fit-content;max-width:100%;box-sizing:border-box;padding:7px 13px;font-size:13px;line-height:1.35}
+:is(.ts-tablet,.ts-mobile) .ts-eyebrow{font-size:13px}
+:is(.ts-tablet,.ts-mobile) .ts-pillar{font-size:16px;gap:7px}
+:is(.ts-tablet,.ts-mobile) .ts-pillar .ts-icon{font-size:20px!important}
+:is(.ts-tablet,.ts-mobile) .ts-service{grid-template-columns:1fr;border-radius:24px;padding:28px;gap:22px;font-size:16px;line-height:1.65}
+:is(.ts-tablet,.ts-mobile) .ts-service__title{font-size:26px;line-height:1.12}
+:is(.ts-tablet,.ts-mobile) .ts-service__num{font-size:14px}
+:is(.ts-tablet,.ts-mobile) .ts-quote{border-radius:18px;padding:20px 22px;gap:7px}
+:is(.ts-tablet,.ts-mobile) .ts-quote blockquote{font-size:15px}
+:is(.ts-tablet,.ts-mobile) .ts-quote figcaption{font-size:13px}
+:is(.ts-tablet,.ts-mobile) .ts-team{border-radius:24px;padding:24px;gap:7px}
+:is(.ts-tablet,.ts-mobile) .ts-team__img{width:92px;height:92px;margin-bottom:9px}
+:is(.ts-tablet,.ts-mobile) .ts-team__name{font-size:21px}
+:is(.ts-tablet,.ts-mobile) .ts-team__role{font-size:13px}
+:is(.ts-tablet,.ts-mobile) .ts-team__bio{font-size:15px;margin-top:5px}
+:is(.ts-tablet,.ts-mobile) .ts-stat{grid-template-columns:1fr;justify-items:center;text-align:center;border-radius:28px;padding:28px 32px;gap:20px}
+:is(.ts-tablet,.ts-mobile) .ts-stat__value{font-size:44px}
+:is(.ts-tablet,.ts-mobile) .ts-stat__title{font-size:21px;line-height:1.3}
+:is(.ts-tablet,.ts-mobile) .ts-stat__sub{font-size:16px}
+:is(.ts-tablet,.ts-mobile) .ts-cta{border-radius:28px;padding:28px 32px;gap:9px}
+:is(.ts-tablet,.ts-mobile) .ts-cta__title{font-size:24px}
+
+@media (max-width:640px){
+  .ts-btn--lg,.ts-btn--md{padding:12px 20px;font-size:15px}.ts-btn--sm{padding:10px 16px;font-size:14px}
+  .ts-chip{padding:6px 12px;font-size:12px}
+  .ts-eyebrow{font-size:12px}
+  .ts-pillar{font-size:15px;gap:6px}.ts-pillar .ts-icon{font-size:18px!important}
+  .ts-dot{width:6px;height:6px}.ts-dot--on{width:22px}
+  .ts-service{border-radius:22px;padding:22px 20px;gap:18px;font-size:15px;line-height:1.6}
+  .ts-service__title{font-size:22px;line-height:1.15}.ts-service__num{font-size:13px}.ts-service__body{gap:10px}
+  .ts-quote{border-radius:16px;padding:16px;gap:6px}.ts-quote blockquote{font-size:14px}.ts-quote figcaption{font-size:12px}
+  .ts-team{border-radius:22px;padding:22px 20px;gap:6px}.ts-team__img{width:80px;height:80px;border-width:3px;margin-bottom:8px}.ts-team__name{font-size:19px}.ts-team__role{font-size:12px}.ts-team__bio{font-size:14px;margin-top:4px}
+  .ts-stat{border-radius:24px;padding:24px 20px;gap:16px}.ts-stat__value{font-size:36px}.ts-stat__title{font-size:18px}.ts-stat__sub{font-size:15px}
+  .ts-cta{border-radius:24px;padding:24px 20px;gap:8px}.ts-cta__title{font-size:21px}
+}
+.ts-mobile .ts-btn--lg,.ts-mobile .ts-btn--md{padding:12px 20px;font-size:15px}
+.ts-mobile .ts-btn--sm{padding:10px 16px;font-size:14px}
+.ts-mobile .ts-chip{padding:6px 12px;font-size:12px}
+.ts-mobile .ts-eyebrow{font-size:12px}
+.ts-mobile .ts-pillar{font-size:15px;gap:6px}
+.ts-mobile .ts-pillar .ts-icon{font-size:18px!important}
+.ts-mobile .ts-dot{width:6px;height:6px}
+.ts-mobile .ts-dot--on{width:22px}
+.ts-mobile .ts-service{border-radius:22px;padding:22px 20px;gap:18px;font-size:15px;line-height:1.6}
+.ts-mobile .ts-service__title{font-size:22px;line-height:1.15}
+.ts-mobile .ts-service__num{font-size:13px}
+.ts-mobile .ts-service__body{gap:10px}
+.ts-mobile .ts-quote{border-radius:16px;padding:16px;gap:6px}
+.ts-mobile .ts-quote blockquote{font-size:14px}
+.ts-mobile .ts-quote figcaption{font-size:12px}
+.ts-mobile .ts-team{border-radius:22px;padding:22px 20px;gap:6px}
+.ts-mobile .ts-team__img{width:80px;height:80px;border-width:3px;margin-bottom:8px}
+.ts-mobile .ts-team__name{font-size:19px}
+.ts-mobile .ts-team__role{font-size:12px}
+.ts-mobile .ts-team__bio{font-size:14px;margin-top:4px}
+.ts-mobile .ts-stat{border-radius:24px;padding:24px 20px;gap:16px}
+.ts-mobile .ts-stat__value{font-size:36px}
+.ts-mobile .ts-stat__title{font-size:18px}
+.ts-mobile .ts-stat__sub{font-size:15px}
+.ts-mobile .ts-cta{border-radius:24px;padding:24px 20px;gap:8px}
+.ts-mobile .ts-cta__title{font-size:21px}

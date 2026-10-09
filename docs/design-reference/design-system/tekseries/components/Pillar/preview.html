@@ -1,0 +1,16 @@
+<!-- @dsCard group="Hero" height=100 subtitle="on plum" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Pillar — preview</title></head>
+<body style="margin:0;background:#4A1D5E">
+<div id="root"></div>
+<script>
+  var T = window.TekSeries, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h('div', { style: { display: 'flex', gap: '28px', padding: '28px' } },
+      h(T.Pillar, { icon: 'hub' }, 'Share'),
+      h(T.Pillar, { icon: 'lightbulb' }, 'Create'),
+      h(T.Pillar, { icon: 'settings_suggest' }, 'Solve')));
+</script>
+</body>
+</html>

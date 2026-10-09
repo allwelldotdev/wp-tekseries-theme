@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TekSeries Event Post - Desktop</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>.ts-si{display:block;width:20px;height:20px;background:currentColor;-webkit-mask:var(--si) center/contain no-repeat;mask:var(--si) center/contain no-repeat}.ts-si-in{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/linkedin-in.svg)}.ts-si-fb{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/facebook-f.svg)}.ts-si-ig{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/instagram.svg)}.ts-si-wa{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/whatsapp.svg)}</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBF7F9;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}a:hover{color:#E76F51}.ms{font-family:'Material Symbols Rounded';font-weight:400;font-style:normal;line-height:1;display:inline-block;letter-spacing:normal;text-transform:none;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
+.clamp3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+</style></helmet>
+<div style="width:1440px;height:3070px;font-family:'Onest',sans-serif;color:#2A1533;background:#FBF7F9;font-variant-ligatures:none">
+  <header style="position:sticky;top:0;z-index:5;padding:14px 56px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid #EADFE6">
+    <img src="https://tekseries.com/wp-content/uploads/2025/08/tekseries_logo_no0goj.png" alt="TekSeries" style="height:44px;width:auto">
+    <nav aria-label="Main" style="display:flex;gap:4px;font-size:16px;font-weight:600;color:#4A1D5E"><sc-for list="{{ nav }}" as="n" hint-placeholder-count="7"><a href="{{ n.href }}" aria-current="{{ n.current }}" style="padding:8px 14px;border-radius:999px;background:{{ n.bg }}" style-hover="background:#F1E6EE">{{ n.label }}</a></sc-for></nav>
+    <div style="display:flex;gap:8px">
+      <a href="#" style="padding:10px 18px;border-radius:999px;font-size:16px;font-weight:700;color:#4A1D5E;background:#F1E6EE" style-hover="background:#E5D3E0">Job Series</a>
+      <a href="#" style="padding:10px 18px;background:#4A1D5E;border-radius:999px;font-size:16px;font-weight:700;color:#fff" style-hover="background:#F4A261;color:#2A1533">Post A Job</a>
+    </div>
+  </header>
+
+  <section style="padding:32px 56px 0">
+    <div style="position:relative;overflow:hidden;min-height:480px;background:{{ post.bg }};color:{{ post.fg }};border-radius:32px;display:flex;align-items:flex-end;justify-content:space-between;gap:40px">
+      <span class="ms" aria-hidden="true" style="position:absolute;right:-30px;bottom:-60px;font-size:340px;color:{{ post.deco }}">{{ post.icon }}</span>
+      <div style="position:relative;padding:56px;max-width:880px;display:flex;flex-direction:column;gap:20px">
+        <nav aria-label="Breadcrumb" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ post.sub }}"><a href="Main.dc.html" style="display:flex;align-items:center;gap:6px"><span class="ms" style="font-size:18px">home</span>Home</a><span aria-hidden="true">/</span><a href="Events.dc.html">Events</a><span aria-hidden="true">/</span><span aria-current="page" style="color:{{ post.fg }}">Women in Engineering Series</span></nav>
+        <span style="width:max-content;display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:{{ post.chipBg }};color:{{ post.chipFg }};font-size:15px;font-weight:700"><span class="ms" style="font-size:18px">{{ post.typeIcon }}</span>{{ post.type }}</span>
+        <h1 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-weight:800;font-size:50px;line-height:1.05;letter-spacing:-.03em;text-wrap:balance">Women in Engineering Series: Skills, Challenges &amp; Opportunities for Women in Engineering</h1>
+        <div style="display:flex;flex-wrap:wrap;gap:10px 28px;font-size:18px;font-weight:600"><sc-for list="{{ heroMeta }}" as="m" hint-placeholder-count="3"><span style="display:flex;align-items:center;gap:8px"><span class="ms" style="font-size:22px;color:{{ post.accent }}">{{ m.icon }}</span>{{ m.text }}</span></sc-for></div>
+        <div style="display:flex;gap:12px;margin-top:6px">
+          <a href="https://bit.ly/WomEngineers" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:8px;padding:14px 26px;background:{{ post.btnBg }};color:{{ post.btnFg }};border-radius:999px;font-weight:700;font-size:17px" style-hover="opacity:.88">Register and attend<span class="ms" style="font-size:20px">arrow_outward</span></a>
+          <a href="Events.dc.html" style="display:flex;align-items:center;gap:8px;padding:14px 26px;border:1.5px solid {{ post.line }};color:{{ post.fg }};border-radius:999px;font-weight:700;font-size:17px" style-hover="opacity:.8"><span class="ms" style="font-size:20px">arrow_back</span>All events</a>
+        </div>
+      </div>
+      <div aria-hidden="true" style="position:relative;flex:none;padding:56px 64px 56px 0;display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <span style="font-family:'Schibsted Grotesk',sans-serif;font-size:160px;font-weight:800;line-height:.85;letter-spacing:-.05em">{{ post.day }}</span>
+        <span style="font-family:'Schibsted Grotesk',sans-serif;font-size:30px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:{{ post.accent }}">{{ post.monthYear }}</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:56px 56px 0;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:56px;align-items:start">
+    <article style="display:flex;flex-direction:column;gap:48px">
+      <div style="display:flex;flex-direction:column;gap:18px;font-size:18px;line-height:1.65;color:#3D2A47">
+        <span style="font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E76F51">About this event</span>
+        <p style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:30px;font-weight:700;line-height:1.25;letter-spacing:-.01em;color:#4A1D5E">Ladies, ready to build your future in engineering?</p>
+        <p style="margin:0">Engineering needs more women, and we’re here to help you take your place! Whether you’re a student wondering if engineering is the right path, a fresh graduate figuring out your next step, or a young engineer ready to grow, this session is for you.</p>
+        <p style="margin:0">Join us for the “Women in Engineering Series,” where we get real about the skills you need, the challenges women face in the field, and the opportunities waiting for you. You’ll hear straight from recent engineering graduates who’ve been in your shoes, and from a talent acquisition leader who knows exactly what recruiters look for.</p>
+        <p style="margin:0">This isn’t just a talk. It’s your chance to learn, ask questions, and connect with people who can help you move forward. Stay for our Recruiter Exposition &amp; Q&amp;A, and bring your toughest questions!</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <h2 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:36px;font-weight:800;letter-spacing:-.02em;color:#4A1D5E">The lineup</h2>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">
+          <sc-for list="{{ speakers }}" as="s" hint-placeholder-count="4">
+            <div style="background:#fff;border:1px solid #EADFE6;border-radius:24px;padding:20px;display:flex;align-items:center;gap:16px">
+              <span aria-hidden="true" style="flex:none;width:64px;height:64px;border-radius:50%;box-sizing:border-box;border:3px solid #F4A261;background:#F1E6EE;color:#4A1D5E;display:grid;place-items:center;font-family:'Schibsted Grotesk',sans-serif;font-weight:800;font-size:20px">{{ s.initials }}</span>
+              <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+                <span style="font-family:'Schibsted Grotesk',sans-serif;font-size:20px;font-weight:700;line-height:1.2;color:#4A1D5E">{{ s.name }}</span>
+                <span style="font-size:15px;line-height:1.45;color:#5B4466">{{ s.role }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <h2 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:36px;font-weight:800;letter-spacing:-.02em;color:#4A1D5E">What to expect</h2>
+        <ul style="margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">
+          <sc-for list="{{ expect }}" as="x" hint-placeholder-count="4">
+            <li style="background:#fff;border:1px solid #EADFE6;border-radius:24px;padding:20px;display:flex;align-items:flex-start;gap:14px">
+              <span style="flex:none;width:48px;height:48px;border-radius:16px;background:#F1E6EE;color:#4A1D5E;display:grid;place-items:center"><span class="ms" style="font-size:24px">{{ x.icon }}</span></span>
+              <span style="padding-top:12px;font-size:17px;font-weight:600;line-height:1.45;color:#2A1533">{{ x.text }}</span>
+            </li>
+          </sc-for>
+        </ul>
+      </div>
+
+      <div style="background:#F4A261;color:#2A1533;border-radius:28px;padding:32px;display:flex;align-items:center;justify-content:space-between;gap:32px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <span style="font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase">Spread the word</span>
+          <p style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:24px;font-weight:700;line-height:1.3">Tag a friend who needs to be in this room, and let’s build the future of engineering together!</p>
+        </div>
+        <div style="display:flex;gap:10px;flex:none"><sc-for list="{{ shares }}" as="s" hint-placeholder-count="3"><a href="#" aria-label="{{ s.label }}" style="width:44px;height:44px;border-radius:50%;background:#2A1533;color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px" style-hover="background:#4A1D5E"><span class="ts-si ts-si-{{ s.mark }}" aria-hidden="true"></span></a></sc-for></div>
+      </div>
+    </article>
+
+    <aside style="position:sticky;top:96px;display:flex;flex-direction:column;gap:20px">
+      <div style="background:#4A1D5E;color:#F5E9F1;border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:18px">
+        <span style="font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#F4A261">Event details</span>
+        <dl style="margin:0;display:flex;flex-direction:column;gap:14px">
+          <sc-for list="{{ details }}" as="d" hint-placeholder-count="5">
+            <div style="display:flex;gap:14px;align-items:flex-start">
+              <span style="flex:none;width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,.1);display:grid;place-items:center;color:#F4A261"><span class="ms" style="font-size:22px">{{ d.icon }}</span></span>
+              <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><dt style="font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E5D3E0">{{ d.label }}</dt><dd style="margin:0;font-size:17px;font-weight:600;color:#fff;overflow-wrap:anywhere">{{ d.value }}</dd></div>
+            </div>
+          </sc-for>
+        </dl>
+        <a href="https://bit.ly/WomEngineers" target="_blank" rel="noopener" style="margin-top:4px;display:flex;justify-content:center;align-items:center;gap:8px;padding:14px 26px;background:#F4A261;color:#2A1533;border-radius:999px;font-weight:700;font-size:17px" style-hover="background:#fff">Register and attend<span class="ms" style="font-size:20px">arrow_outward</span></a>
+        <p style="margin:0;font-size:14px;line-height:1.55;color:#E5D3E0">Button not working? Paste <a href="https://bit.ly/WomEngineers" style="color:#fff;font-weight:700;text-decoration:underline">bit.ly/WomEngineers</a> into your browser.</p>
+        <div style="border-top:1px solid rgba(255,255,255,.15);padding-top:16px;font-size:15px;line-height:1.5;color:#E5D3E0">Questions? Email <a href="mailto:team@tekseries.com" style="color:#fff;font-weight:700;text-decoration:underline">team@tekseries.com</a></div>
+      </div>
+      <figure style="margin:0;background:#fff;border:1px solid #EADFE6;border-radius:28px;padding:12px;display:flex;flex-direction:column;gap:12px">
+        <img src="/_blob/ae457e09dba42d52e7e0ac938054a97f" alt="Women in Engineering Series poster: 26 Sept 2026, 11:00am WAT, online on Zoom, with Ogechi Oweziem, Victor Orishade, Udochi Metu and George-Joshua Jessica-Ann" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:20px;display:block">
+        <figcaption style="padding:0 8px 6px;display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:600;color:#5B4466"><span>Event poster</span><a href="/_blob/ae457e09dba42d52e7e0ac938054a97f" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:4px;color:#4A1D5E;font-weight:700">View full size<span class="ms" style="font-size:18px">open_in_full</span></a></figcaption>
+      </figure>
+    </aside>
+  </section>
+
+  <section style="padding:80px 56px 56px;display:flex;flex-direction:column;gap:24px">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px">
+      <h2 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:54px;font-weight:800;letter-spacing:-.03em;color:#4A1D5E">More events</h2>
+      <a href="Events.dc.html" style="display:flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;background:#F1E6EE;color:#4A1D5E;font-weight:700;font-size:16px" style-hover="background:#E5D3E0">View all events<span class="ms" style="font-size:20px">arrow_forward</span></a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px">
+      <sc-for list="{{ more }}" as="e" hint-placeholder-count="3">
+        <article style="background:#fff;border:1px solid #EADFE6;border-radius:28px;padding:12px;display:flex;flex-direction:column;gap:18px" style-hover="border-color:#F4A261">
+          <div style="position:relative;overflow:hidden;aspect-ratio:16/10;border-radius:20px;background:{{ e.bg }};color:{{ e.fg }};padding:20px;display:flex;flex-direction:column;justify-content:space-between">
+            <img src="{{ e.img }}" alt="" style="display:{{ e.imgDisplay }};position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top"><span aria-hidden="true" style="display:{{ e.imgDisplay }};position:absolute;inset:0;background:{{ e.overlay }}"></span>
+            <span class="ms" aria-hidden="true" style="position:absolute;right:-16px;bottom:-28px;font-size:180px;color:{{ e.deco }}">{{ e.icon }}</span>
+            <span style="position:relative;width:max-content;display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:{{ e.chipBg }};color:{{ e.chipFg }};font-size:13px;font-weight:700"><span class="ms" style="font-size:16px">{{ e.typeIcon }}</span>{{ e.type }}</span>
+            <div style="position:relative;display:flex;align-items:baseline;gap:10px"><span style="font-family:'Schibsted Grotesk',sans-serif;font-size:72px;font-weight:800;line-height:.9;letter-spacing:-.04em">{{ e.day }}</span><span style="font-family:'Schibsted Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:{{ e.accent }}">{{ e.monthYear }}</span></div>
+          </div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;flex:1">
+            <h3 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:22px;font-weight:700;line-height:1.25;letter-spacing:-.01em;color:#4A1D5E">{{ e.title }}</h3>
+            <div style="display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px;font-weight:600;color:#5B4466"><span style="display:flex;align-items:center;gap:5px"><span class="ms" style="font-size:18px">calendar_month</span>{{ e.date }}</span><span style="display:flex;align-items:center;gap:5px"><span class="ms" style="font-size:18px">{{ e.typeIcon }}</span>{{ e.type }}</span></div>
+            <p class="clamp3" style="margin:0;font-size:16px;line-height:1.6;color:#3D2A47">{{ e.excerpt }}</p>
+            <a href="#" style="margin-top:auto;padding-top:6px;width:max-content;display:flex;align-items:center;gap:6px;font-size:16px;font-weight:700;color:#4A1D5E">Read more<span class="ms" style="font-size:20px">arrow_forward</span></a>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </section>
+
+  <footer style="padding:0 56px 32px;display:flex;flex-direction:column;gap:20px">
+    <div style="background:#4A1D5E;color:#E5D3E0;border-radius:36px;padding:48px;display:grid;grid-template-columns:1.3fr 1fr 1fr auto;gap:40px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:14px"><div style="font-family:'Schibsted Grotesk',sans-serif;font-size:38px;font-weight:800;color:#fff;line-height:1.05;letter-spacing:-.02em">Share. Create. <span style="color:#F4A261">Solve.</span></div><p style="margin:0;font-size:16px;line-height:1.6;max-width:320px">Preparing underserved Nigerian youth for the future of work and innovation.</p></div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:16px"><div style="font-weight:700;color:#fff;margin-bottom:6px">Explore</div><a href="Main.dc.html#about">Who We Are</a><a href="Main.dc.html#services">What We Do</a><a href="News.dc.html">News</a><a href="Events.dc.html">Events</a><a href="Gallery.dc.html">Gallery</a></div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:16px"><div style="font-weight:700;color:#fff;margin-bottom:6px">Job Series</div><a href="JobSeries.dc.html">Find a job</a><a href="JobSubmitSignIn.dc.html">Post a job</a><a href="Contact.dc.html#support">Support our work</a><a href="Contact.dc.html">Contact</a></div>
+      <div style="display:flex;flex-direction:column;gap:12px;font-size:16px"><div style="font-weight:700;color:#fff;margin-bottom:6px">Find us on social media</div><div style="display:flex;gap:10px"><sc-for list="{{ socials }}" as="s" hint-placeholder-count="3"><a href="{{ s.href }}" aria-label="{{ s.name }}" style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff" style-hover="background:#F4A261;color:#2A1533"><span class="ts-si ts-si-{{ s.mark }}" aria-hidden="true"></span></a></sc-for></div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:14px;color:#5B4466;padding:0 12px"><span style="display:flex;flex-wrap:wrap;gap:4px 16px"><span>Copyright © TekSeries 2026</span><span>Designed and developed by <a href="https://allwell.dev" target="_blank" rel="noopener" style="font-weight:700;color:#4A1D5E;text-decoration:underline;text-underline-offset:3px">Allwell</a></span></span><span style="display:flex;gap:16px"><a href="Terms.dc.html">Terms and Conditions</a><a href="Privacy.dc.html">Privacy Policy</a></span></div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3070}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const tones = {
+      plum:    { bg: '#4A1D5E', fg: '#FFFFFF', accent: '#F4A261', deco: 'rgba(255,255,255,.08)', chipBg: '#F4A261', chipFg: '#2A1533', overlay: 'linear-gradient(90deg,rgba(74,29,94,.94) 0%,rgba(74,29,94,.72) 45%,rgba(74,29,94,.15) 100%)' },
+      saffron: { bg: '#F4A261', fg: '#2A1533', accent: '#4A1D5E', deco: 'rgba(74,29,94,.12)',    chipBg: '#2A1533', chipFg: '#FFFFFF', overlay: 'linear-gradient(90deg,rgba(244,162,97,.94) 0%,rgba(244,162,97,.72) 45%,rgba(244,162,97,.15) 100%)' },
+      lilac:   { bg: '#F1E6EE', fg: '#4A1D5E', accent: '#2A1533', deco: 'rgba(74,29,94,.08)',    chipBg: '#4A1D5E', chipFg: '#FFFFFF', overlay: 'linear-gradient(90deg,rgba(241,230,238,.94) 0%,rgba(241,230,238,.72) 45%,rgba(241,230,238,.15) 100%)' },
+      ink:     { bg: '#2A1533', fg: '#FFFFFF', accent: '#F4A261', deco: 'rgba(255,255,255,.07)', chipBg: '#F1E6EE', chipFg: '#4A1D5E', overlay: 'linear-gradient(90deg,rgba(42,21,51,.94) 0%,rgba(42,21,51,.72) 45%,rgba(42,21,51,.15) 100%)' }
+    };
+    // Each post owns one tone (post meta set at publish, see the Events listing). It colours the post's card everywhere
+    // and this page's solid banner, so the card and the banner always match.
+    const bannerTones = {
+      plum:    { bg: '#4A1D5E', fg: '#FFFFFF', sub: '#E5D3E0', accent: '#F4A261', chipBg: '#F4A261', chipFg: '#2A1533', btnBg: '#F4A261', btnFg: '#2A1533', line: 'rgba(255,255,255,.7)', deco: 'rgba(255,255,255,.08)' },
+      saffron: { bg: '#F4A261', fg: '#2A1533', sub: '#2A1533', accent: '#4A1D5E', chipBg: '#2A1533', chipFg: '#FFFFFF', btnBg: '#2A1533', btnFg: '#FFFFFF', line: 'rgba(42,21,51,.55)', deco: 'rgba(74,29,94,.12)' },
+      lilac:   { bg: '#F1E6EE', fg: '#4A1D5E', sub: '#5B4466', accent: '#4A1D5E', chipBg: '#4A1D5E', chipFg: '#FFFFFF', btnBg: '#4A1D5E', btnFg: '#FFFFFF', line: 'rgba(74,29,94,.45)', deco: 'rgba(74,29,94,.08)' },
+      ink:     { bg: '#2A1533', fg: '#FFFFFF', sub: '#E5D3E0', accent: '#F4A261', chipBg: '#F1E6EE', chipFg: '#4A1D5E', btnBg: '#F4A261', btnFg: '#2A1533', line: 'rgba(255,255,255,.7)', deco: 'rgba(255,255,255,.07)' }
+    };
+    const post = { tone: 'plum', icon: 'engineering', type: 'Webinar', typeIcon: 'videocam', day: '26', monthYear: 'Sep 2026' };
+    Object.assign(post, bannerTones[post.tone]);
+    const more = [
+      { title: 'Empower Her Future: Tech Scholarships & Global Career Opportunities', date: 'March 28, 2026', day: '28', monthYear: 'Mar 2026', tone: 'saffron', icon: 'school', img: '',
+        excerpt: 'Ladies, ready to take your career global? In celebration of Women’s History Month, we are pulling back the…' },
+      { title: 'Smart Job Search in 2026: Using AI to Stand Out', date: 'February 7, 2026', day: '07', monthYear: 'Feb 2026', tone: 'lilac', icon: 'travel_explore', img: '',
+        excerpt: 'Hey job seekers! Ready to outshine the algorithm in 2026? Tired of your applications disappearing into the digital…' },
+      { title: 'AI Impact on Job Readiness & Search for New Graduates', date: 'August 29, 2025', day: '29', monthYear: 'Aug 2025', tone: 'ink', icon: 'smart_toy', img: '',
+        excerpt: 'Hey there, ready to master the AI-driven job market? The job market is changing fast, and AI is a big part of it. Get…' }
+    ].map((e, i) => ({ ...e, type: 'Webinar', typeIcon: 'videocam', imgDisplay: e.img ? 'block' : 'none', ...tones[e.tone] }));
+    const nav = [['Who We Are', 'Main.dc.html#about'],['What We Do', 'Main.dc.html#services'],['News', 'News.dc.html'],['Events', 'Events.dc.html'],['Gallery', 'Gallery.dc.html'],['Team', 'Main.dc.html#team'],['Contact', 'Contact.dc.html']]
+      .map(([label, href]) => ({ label, href, current: label === 'Events' ? 'page' : 'false', bg: label === 'Events' ? '#F1E6EE' : 'transparent' }));
+    return {
+      nav, more, post,
+      heroMeta: [
+        { icon: 'calendar_month', text: 'September 26, 2026' },
+        { icon: 'schedule', text: '11:00 AM WAT' },
+        { icon: 'location_on', text: 'Online (Zoom)' }],
+      speakers: [
+        { initials: 'OO', name: 'Ogechi Oweziem', role: 'HR Adviser, TekSeries' },
+        { initials: 'VO', name: 'Victor Orishade', role: 'Head, Talent Acquisition, ARM' },
+        { initials: 'UM', name: 'Udochi Metu', role: 'Electrical and Electronics Engineering Graduate (FUTO)' },
+        { initials: 'GJ', name: 'George-Joshua Jessica-Ann', role: 'Mechanical Engineering Graduate (FUTO)' }],
+      expect: [
+        { icon: 'construction', text: 'Skills every woman in engineering should build' },
+        { icon: 'forum', text: 'Real talk on challenges in the field and how to overcome them' },
+        { icon: 'trending_up', text: 'Opportunities to grow your engineering career' },
+        { icon: 'record_voice_over', text: 'Recruiter Exposition & live Q&A' }],
+      details: [
+        { icon: 'calendar_month', label: 'Date', value: 'September 26, 2026' },
+        { icon: 'schedule', label: 'Time', value: '11:00 AM WAT' },
+        { icon: 'location_on', label: 'Venue', value: 'Online (Zoom)' },
+        { icon: 'videocam', label: 'Event type', value: 'Webinar' },
+        { icon: 'link', label: 'Join here', value: 'bit.ly/WomEngineers' }],
+      shares: [
+        { label: 'Share on LinkedIn', mark: 'in' },
+        { label: 'Share on Facebook', mark: 'fb' },
+        { label: 'Share on WhatsApp', mark: 'wa' }],
+      socials: [
+        { name: 'LinkedIn', mark: 'in', href: 'https://www.linkedin.com/company/tekseries/' },
+        { name: 'Facebook', mark: 'fb', href: 'https://www.facebook.com/share/18AH7UBXue/' },
+        { name: 'Instagram', mark: 'ig', href: 'https://instagram.com/tekseries' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

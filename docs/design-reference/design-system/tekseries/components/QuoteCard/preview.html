@@ -1,0 +1,14 @@
+<!-- @dsCard group="Cards" height=150 subtitle="blush on white" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>QuoteCard — preview</title></head>
+<body style="margin:0;background:#FFFFFF">
+<div id="root"></div>
+<script>
+  var T = window.TekSeries, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h('div', { style: { padding: '20px', maxWidth: '640px' } },
+      h(T.QuoteCard, { source: 'WEF Job Reset Summit 2020' }, '“Africa needs digital skills across the economy, not just the tech sector.”')));
+</script>
+</body>
+</html>

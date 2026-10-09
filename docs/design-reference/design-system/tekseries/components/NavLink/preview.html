@@ -1,0 +1,15 @@
+<!-- @dsCard group="Navigation" height=80 subtitle="default / active" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>NavLink — preview</title></head>
+<body style="margin:0;background:#FFFFFF">
+<div id="root"></div>
+<script>
+  var T = window.TekSeries, h = React.createElement;
+  var items = ['About', 'Services', 'Events', 'News', 'Gallery', 'Team', 'Contact'];
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h('nav', { style: { display: 'flex', gap: '4px', padding: '20px' } },
+      items.map(function (t, i) { return h(T.NavLink, { key: t, href: '#', active: i === 1 }, t); })));
+</script>
+</body>
+</html>

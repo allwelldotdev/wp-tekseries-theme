@@ -1,0 +1,22 @@
+<!-- @dsCard group="Actions" height=200 subtitle="primary / soft / dark / accent / outline · sm, md, lg" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Button — preview</title></head>
+<body style="margin:0;background:#FBF7F9">
+<div id="root"></div>
+<script>
+  var T = window.TekSeries, h = React.createElement;
+  var row = { display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' };
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h('div', { style: { display: 'flex', flexDirection: 'column', gap: '16px', padding: '20px' } },
+      h('div', { style: row },
+        h(T.Button, { variant: 'primary' }, 'Support our work'),
+        h(T.Button, { variant: 'soft', size: 'sm' }, 'Job Series'),
+        h(T.Button, { variant: 'primary', size: 'sm' }, 'Post A Job'),
+        h(T.Button, { variant: 'dark', size: 'md' }, 'Support our work')),
+      h('div', { style: Object.assign({ background: '#4A1D5E', borderRadius: '20px', padding: '20px' }, row) },
+        h(T.Button, { variant: 'accent' }, 'Explore Job Series'),
+        h(T.Button, { variant: 'outline' }, 'Get Involved'))));
+</script>
+</body>
+</html>

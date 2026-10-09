@@ -1,0 +1,15 @@
+<!-- @dsCard group="Icons" height=96 subtitle="Material Symbols Rounded" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Icon — preview</title></head>
+<body style="margin:0;background:#FBF7F9">
+<div id="root"></div>
+<script>
+  var T = window.TekSeries, h = React.createElement;
+  var names = ['hub', 'lightbulb', 'settings_suggest', 'co_present', 'potted_plant', 'emoji_events', 'work', 'menu', 'close'];
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h('div', { style: { display: 'flex', gap: '20px', padding: '24px', color: '#4A1D5E' } },
+      names.map(function (n) { return h(T.Icon, { key: n, name: n, size: 32 }); })));
+</script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TekSeries News Post (Image) - Desktop</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>.ts-si{display:block;width:20px;height:20px;background:currentColor;-webkit-mask:var(--si) center/contain no-repeat;mask:var(--si) center/contain no-repeat}.ts-si-in{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/linkedin-in.svg)}.ts-si-fb{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/facebook-f.svg)}.ts-si-ig{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/instagram.svg)}.ts-si-wa{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/whatsapp.svg)}</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBF7F9;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}a:hover{color:#E76F51}.ms{font-family:'Material Symbols Rounded';font-weight:400;font-style:normal;line-height:1;display:inline-block;letter-spacing:normal;text-transform:none;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
+.clamp3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+</style></helmet>
+<div style="width:1440px;height:2910px;font-family:'Onest',sans-serif;color:#2A1533;background:#FBF7F9;font-variant-ligatures:none">
+  <header style="position:sticky;top:0;z-index:5;padding:14px 56px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid #EADFE6">
+    <img src="https://tekseries.com/wp-content/uploads/2025/08/tekseries_logo_no0goj.png" alt="TekSeries" style="height:44px;width:auto">
+    <nav aria-label="Main" style="display:flex;gap:4px;font-size:16px;font-weight:600;color:#4A1D5E"><sc-for list="{{ nav }}" as="n" hint-placeholder-count="7"><a href="{{ n.href }}" aria-current="{{ n.current }}" style="padding:8px 14px;border-radius:999px;background:{{ n.bg }}" style-hover="background:#F1E6EE">{{ n.label }}</a></sc-for></nav>
+    <div style="display:flex;gap:8px">
+      <a href="#" style="padding:10px 18px;border-radius:999px;font-size:16px;font-weight:700;color:#4A1D5E;background:#F1E6EE" style-hover="background:#E5D3E0">Job Series</a>
+      <a href="#" style="padding:10px 18px;background:#4A1D5E;border-radius:999px;font-size:16px;font-weight:700;color:#fff" style-hover="background:#F4A261;color:#2A1533">Post A Job</a>
+    </div>
+  </header>
+
+  <section style="padding:32px 56px 0">
+    <div style="position:relative;overflow:hidden;background:{{ post.bg }};color:{{ post.fg }};border-radius:32px;display:flex;align-items:flex-end;justify-content:space-between;gap:40px">
+      <span class="ms" aria-hidden="true" style="position:absolute;right:-30px;bottom:-60px;font-size:340px;color:{{ post.deco }}">{{ post.icon }}</span>
+      <div style="position:relative;padding:56px;max-width:880px;display:flex;flex-direction:column;gap:20px">
+        <nav aria-label="Breadcrumb" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px;font-weight:600;color:{{ post.sub }}"><a href="Main.dc.html" style="display:flex;align-items:center;gap:6px"><span class="ms" style="font-size:18px">home</span>Home</a><span aria-hidden="true">/</span><a href="News.dc.html">News</a><span aria-hidden="true">/</span><span aria-current="page" style="color:{{ post.fg }}">{{ post.title }}</span></nav>
+        <span style="width:max-content;display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:{{ post.chipBg }};color:{{ post.chipFg }};font-size:15px;font-weight:700"><span class="ms" style="font-size:18px">newspaper</span>News</span>
+        <h1 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-weight:800;font-size:54px;line-height:1.05;letter-spacing:-.03em;text-wrap:balance">{{ post.title }}</h1>
+        <span style="display:flex;align-items:center;gap:8px;font-size:18px;font-weight:600"><span class="ms" style="font-size:22px;color:{{ post.accent }}">calendar_month</span>Last updated {{ post.date }}</span>
+      </div>
+      <div aria-hidden="true" style="position:relative;flex:none;padding:56px 64px 56px 0;display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <span style="font-family:'Schibsted Grotesk',sans-serif;font-size:160px;font-weight:800;line-height:.85;letter-spacing:-.05em">{{ post.day }}</span>
+        <span style="font-family:'Schibsted Grotesk',sans-serif;font-size:30px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:{{ post.accent }}">{{ post.monthYear }}</span>
+      </div>
+    </div>
+  </section>
+
+  <sc-if value="{{ post.hasImg }}" hint-placeholder-val="{{ true }}">
+    <figure style="margin:0;padding:48px 56px 0;display:flex;justify-content:center">
+      <img src="{{ post.img }}" alt="{{ post.imgAlt }}" style="width:720px;max-width:100%;height:auto;border-radius:28px;display:block;border:1px solid #EADFE6">
+    </figure>
+  </sc-if>
+
+  <article style="padding:48px 56px 0;display:flex;justify-content:center">
+    <div style="width:720px;display:flex;flex-direction:column;gap:28px;font-size:19px;line-height:1.7;color:#3D2A47">
+      <sc-for list="{{ blocks }}" as="b" hint-placeholder-count="3">
+        <sc-if value="{{ b.isLead }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:26px;font-weight:600;line-height:1.45;letter-spacing:-.01em;color:#4A1D5E">{{ b.text }}</p></sc-if>
+        <sc-if value="{{ b.isP }}" hint-placeholder-val="{{ true }}"><p style="margin:0">{{ b.text }}</p></sc-if>
+        <sc-if value="{{ b.isList }}" hint-placeholder-val="{{ false }}">
+          <section style="display:flex;flex-direction:column;gap:16px">
+            <h2 style="margin:0;display:flex;align-items:center;gap:12px;font-family:'Schibsted Grotesk',sans-serif;font-size:32px;font-weight:800;letter-spacing:-.02em;color:#4A1D5E"><span style="width:48px;height:48px;border-radius:16px;background:#F1E6EE;display:grid;place-items:center"><span class="ms" style="font-size:24px">{{ b.icon }}</span></span>{{ b.title }}</h2>
+            <ul style="margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px">
+              <sc-for list="{{ b.items }}" as="it" hint-placeholder-count="4"><li style="background:#fff;border:1px solid #EADFE6;border-radius:22px;padding:20px 22px;display:flex;flex-direction:column;gap:6px;font-size:16px;line-height:1.6"><strong style="font-family:'Schibsted Grotesk',sans-serif;font-size:19px;font-weight:700;color:#4A1D5E">{{ it.label }}</strong><span>{{ it.text }}</span></li></sc-for>
+            </ul>
+          </section>
+        </sc-if>
+        <sc-if value="{{ b.isCallout }}" hint-placeholder-val="{{ false }}">
+          <aside style="background:#F4A261;color:#2A1533;border-radius:28px;padding:28px 32px;display:flex;gap:18px;align-items:flex-start">
+            <span style="flex:none;width:48px;height:48px;border-radius:16px;background:#2A1533;color:#F4A261;display:grid;place-items:center"><span class="ms" style="font-size:24px">lightbulb</span></span>
+            <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase">{{ b.title }}</span><p style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:22px;font-weight:700;line-height:1.35">{{ b.text }}</p></div>
+          </aside>
+        </sc-if>
+        <sc-if value="{{ b.isTags }}" hint-placeholder-val="{{ false }}">
+          <ul aria-label="Tags" style="margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ b.items }}" as="t" hint-placeholder-count="6"><li style="padding:8px 14px;border-radius:999px;background:#F1E6EE;color:#4A1D5E;font-size:15px;font-weight:600">{{ t }}</li></sc-for></ul>
+        </sc-if>
+      </sc-for>
+
+      <div style="margin-top:8px;padding-top:24px;border-top:1px solid #EADFE6;display:flex;align-items:center;justify-content:space-between;gap:16px">
+        <span style="font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E76F51">Share this story</span>
+        <div style="display:flex;gap:10px"><sc-for list="{{ shares }}" as="s" hint-placeholder-count="3"><a href="#" aria-label="{{ s.label }}" style="width:44px;height:44px;border-radius:50%;background:#F1E6EE;color:#4A1D5E;display:grid;place-items:center;font-weight:800;font-size:15px" style-hover="background:#F4A261;color:#2A1533"><span class="ts-si ts-si-{{ s.mark }}" aria-hidden="true"></span></a></sc-for></div>
+      </div>
+
+      <nav aria-label="More posts" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px">
+        <sc-if value="{{ hasPrev }}" hint-placeholder-val="{{ true }}"><a href="{{ prevPost.href }}" style="grid-column:1;background:#fff;border:1px solid #EADFE6;border-radius:24px;padding:20px 22px;display:flex;flex-direction:column;gap:6px" style-hover="border-color:#F4A261"><span style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E76F51"><span class="ms" style="font-size:18px">arrow_back</span>Previous post</span><span style="font-family:'Schibsted Grotesk',sans-serif;font-size:19px;font-weight:700;line-height:1.3;color:#4A1D5E">{{ prevPost.title }}</span><span style="font-size:14px;color:#5B4466">{{ prevPost.date }}</span></a></sc-if>
+        <sc-if value="{{ hasNext }}" hint-placeholder-val="{{ true }}"><a href="{{ nextPost.href }}" style="grid-column:2;background:#fff;border:1px solid #EADFE6;border-radius:24px;padding:20px 22px;display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:6px" style-hover="border-color:#F4A261"><span style="display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E76F51">Next post<span class="ms" style="font-size:18px">arrow_forward</span></span><span style="font-family:'Schibsted Grotesk',sans-serif;font-size:19px;font-weight:700;line-height:1.3;color:#4A1D5E">{{ nextPost.title }}</span><span style="font-size:14px;color:#5B4466">{{ nextPost.date }}</span></a></sc-if>
+      </nav>
+    </div>
+  </article>
+
+  <section style="padding:80px 56px 56px;display:flex;flex-direction:column;gap:24px">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px">
+      <h2 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:54px;font-weight:800;letter-spacing:-.03em;color:#4A1D5E">More news</h2>
+      <a href="News.dc.html" style="display:flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;background:#F1E6EE;color:#4A1D5E;font-weight:700;font-size:16px" style-hover="background:#E5D3E0">View all news<span class="ms" style="font-size:20px">arrow_forward</span></a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px">
+      <sc-for list="{{ more }}" as="e" hint-placeholder-count="3">
+        <article style="background:#fff;border:1px solid #EADFE6;border-radius:28px;padding:12px;display:flex;flex-direction:column;gap:18px" style-hover="border-color:#F4A261">
+          <div style="position:relative;overflow:hidden;aspect-ratio:16/10;border-radius:20px;background:{{ e.bg }};color:{{ e.fg }};padding:20px;display:flex;flex-direction:column;justify-content:space-between">
+            <img src="{{ e.img }}" alt="" style="display:{{ e.imgDisplay }};position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top"><span aria-hidden="true" style="display:{{ e.imgDisplay }};position:absolute;inset:0;background:{{ e.overlay }}"></span>
+            <span class="ms" aria-hidden="true" style="position:absolute;right:-16px;bottom:-28px;font-size:180px;color:{{ e.deco }}">{{ e.icon }}</span>
+            <span style="position:relative;width:max-content;display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:{{ e.chipBg }};color:{{ e.chipFg }};font-size:13px;font-weight:700"><span class="ms" style="font-size:16px">newspaper</span>News</span>
+            <div style="position:relative;display:flex;align-items:baseline;gap:10px"><span style="font-family:'Schibsted Grotesk',sans-serif;font-size:72px;font-weight:800;line-height:.9;letter-spacing:-.04em">{{ e.day }}</span><span style="font-family:'Schibsted Grotesk',sans-serif;font-size:18px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:{{ e.accent }}">{{ e.monthYear }}</span></div>
+          </div>
+          <div style="padding:0 12px 12px;display:flex;flex-direction:column;gap:10px;flex:1">
+            <h3 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:22px;font-weight:700;line-height:1.25;letter-spacing:-.01em;color:#4A1D5E">{{ e.title }}</h3>
+            <span style="display:flex;align-items:center;gap:5px;font-size:14px;font-weight:600;color:#5B4466"><span class="ms" style="font-size:18px">calendar_month</span>{{ e.date }}</span>
+            <p class="clamp3" style="margin:0;font-size:16px;line-height:1.6;color:#3D2A47">{{ e.excerpt }}</p>
+            <a href="{{ e.href }}" style="margin-top:auto;padding-top:6px;width:max-content;display:flex;align-items:center;gap:6px;font-size:16px;font-weight:700;color:#4A1D5E">Read more<span class="ms" style="font-size:20px">arrow_forward</span></a>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </section>
+
+  <footer style="padding:0 56px 32px;display:flex;flex-direction:column;gap:20px">
+    <div style="background:#4A1D5E;color:#E5D3E0;border-radius:36px;padding:48px;display:grid;grid-template-columns:1.3fr 1fr 1fr auto;gap:40px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:14px"><div style="font-family:'Schibsted Grotesk',sans-serif;font-size:38px;font-weight:800;color:#fff;line-height:1.05;letter-spacing:-.02em">Share. Create. <span style="color:#F4A261">Solve.</span></div><p style="margin:0;font-size:16px;line-height:1.6;max-width:320px">Preparing underserved Nigerian youth for the future of work and innovation.</p></div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:16px"><div style="font-weight:700;color:#fff;margin-bottom:6px">Explore</div><a href="Main.dc.html#about">Who We Are</a><a href="Main.dc.html#services">What We Do</a><a href="News.dc.html">News</a><a href="Events.dc.html">Events</a><a href="Gallery.dc.html">Gallery</a></div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:16px"><div style="font-weight:700;color:#fff;margin-bottom:6px">Job Series</div><a href="JobSeries.dc.html">Find a job</a><a href="JobSubmitSignIn.dc.html">Post a job</a><a href="Contact.dc.html#support">Support our work</a><a href="Contact.dc.html">Contact</a></div>
+      <div style="display:flex;flex-direction:column;gap:12px;font-size:16px"><div style="font-weight:700;color:#fff;margin-bottom:6px">Find us on social media</div><div style="display:flex;gap:10px"><sc-for list="{{ socials }}" as="s" hint-placeholder-count="3"><a href="{{ s.href }}" aria-label="{{ s.name }}" style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff" style-hover="background:#F4A261;color:#2A1533"><span class="ts-si ts-si-{{ s.mark }}" aria-hidden="true"></span></a></sc-for></div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:14px;color:#5B4466;padding:0 12px"><span style="display:flex;flex-wrap:wrap;gap:4px 16px"><span>Copyright © TekSeries 2026</span><span>Designed and developed by <a href="https://allwell.dev" target="_blank" rel="noopener" style="font-weight:700;color:#4A1D5E;text-decoration:underline;text-underline-offset:3px">Allwell</a></span></span><span style="display:flex;gap:16px"><a href="Terms.dc.html">Terms and Conditions</a><a href="Privacy.dc.html">Privacy Policy</a></span></div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2910}}'>
+class Component extends DCLogic {
+  renderVals() {
+    // One news-post template, two scenarios. 'eziama' has a featured image; 'empower' has none.
+    const which = 'eziama';
+    const height = '3150px';
+    const tones = {
+      plum:    { bg: '#4A1D5E', fg: '#FFFFFF', accent: '#F4A261', deco: 'rgba(255,255,255,.08)', chipBg: '#F4A261', chipFg: '#2A1533', overlay: 'linear-gradient(90deg,rgba(74,29,94,.94) 0%,rgba(74,29,94,.72) 45%,rgba(74,29,94,.15) 100%)' },
+      saffron: { bg: '#F4A261', fg: '#2A1533', accent: '#4A1D5E', deco: 'rgba(74,29,94,.12)',    chipBg: '#2A1533', chipFg: '#FFFFFF', overlay: 'linear-gradient(90deg,rgba(244,162,97,.94) 0%,rgba(244,162,97,.72) 45%,rgba(244,162,97,.15) 100%)' },
+      lilac:   { bg: '#F1E6EE', fg: '#4A1D5E', accent: '#2A1533', deco: 'rgba(74,29,94,.08)',    chipBg: '#4A1D5E', chipFg: '#FFFFFF', overlay: 'linear-gradient(90deg,rgba(241,230,238,.94) 0%,rgba(241,230,238,.72) 45%,rgba(241,230,238,.15) 100%)' },
+      ink:     { bg: '#2A1533', fg: '#FFFFFF', accent: '#F4A261', deco: 'rgba(255,255,255,.07)', chipBg: '#F1E6EE', chipFg: '#4A1D5E', overlay: 'linear-gradient(90deg,rgba(42,21,51,.94) 0%,rgba(42,21,51,.72) 45%,rgba(42,21,51,.15) 100%)' }
+    };
+    // The post's own tone (post meta, set at publish) colours its banner as a solid block, matching its card.
+    const bannerTones = {
+      plum:    { bg: '#4A1D5E', fg: '#FFFFFF', sub: '#E5D3E0', accent: '#F4A261', chipBg: '#F4A261', chipFg: '#2A1533', deco: 'rgba(255,255,255,.08)' },
+      saffron: { bg: '#F4A261', fg: '#2A1533', sub: '#2A1533', accent: '#4A1D5E', chipBg: '#2A1533', chipFg: '#FFFFFF', deco: 'rgba(74,29,94,.12)' },
+      lilac:   { bg: '#F1E6EE', fg: '#4A1D5E', sub: '#5B4466', accent: '#4A1D5E', chipBg: '#4A1D5E', chipFg: '#FFFFFF', deco: 'rgba(74,29,94,.08)' },
+      ink:     { bg: '#2A1533', fg: '#FFFFFF', sub: '#E5D3E0', accent: '#F4A261', chipBg: '#F1E6EE', chipFg: '#4A1D5E', deco: 'rgba(255,255,255,.07)' }
+    };
+    const card = {
+      gideon:    { title: 'Thank You, Gideon!', date: 'April 6, 2026', day: '06', monthYear: 'Apr 2026', tone: 'saffron', icon: 'volunteer_activism', img: '', excerpt: 'Our erstwhile instructor and operations manager is finally heading off for Youth Service. We take this opportunity to thank him for his commitment…' },
+      newYear:   { title: 'Here’s to a Great New Year!', date: 'January 26, 2026', day: '26', monthYear: 'Jan 2026', tone: 'lilac', icon: 'celebration', img: '', excerpt: '2025 was an eventful year for team TekSeries. We launched the third cohort of our rural computer camp in Eziama and gained quite some following by…' },
+      intern:    { title: 'Welcoming Our Operations Intern', date: 'October 18, 2024', day: '18', monthYear: 'Oct 2024', tone: 'ink', icon: 'badge', img: '', excerpt: 'We welcome back Gideon Augustus as an Operations Intern. Mr. Augustus is a 2024 Computer Science graduate with distinction, from the Federal…' },
+      christmas: { title: 'Merry Christmas and Happy New Year from TekSeries', date: 'December 25, 2023', day: '25', monthYear: 'Dec 2023', tone: 'plum', icon: 'redeem', img: '/_blob/693ea12e9cebf9c6f8d6d2e92705a9d6', excerpt: 'As we celebrate the joyous spirit of the season, we extend our warmest wishes to you and your loved ones. May this festive season bring you…' },
+      wwt:       { title: 'Women, Work & Tech – March 2023', date: 'April 24, 2023', day: '24', monthYear: 'Apr 2023', tone: 'lilac', icon: 'groups', img: '/_blob/60ef6532360bacac59275a7b85ff5345', excerpt: 'Our many thanks to today’s speakers at the Women, Work & Tech event. Thank you Zigwal, Yetunde, and…' }
+    };
+    const vp = '';
+    for (const k in card) card[k].href = '#';
+    card.gideon.href = '#';
+    const P = (text) => ({ isP: true, isLead: false, isList: false, isCallout: false, isTags: false, text });
+    const Lead = (text) => ({ ...P(text), isP: false, isLead: true });
+    const posts = {
+      eziama: {
+        title: 'Thank You, Eziama BootCamp', date: 'October 7, 2023', day: '07', monthYear: 'Oct 2023', tone: 'saffron', icon: 'school',
+        img: '/_blob/9ec5707df52ffc82cf566ec9910b83e8', imgAlt: 'Thank you graphic',
+        blocks: [
+          Lead('Thank you to all our organizers and attendees at the recently concluded Eziama Junior Programming Bootcamp. After several online and in town workshops, this was our inaugural camp in a rural area.'),
+          P('The four week exercise held between August 16 – September 8, 2023 was a resounding success, despite challenges with power, transportation and attendance. However, to have some school age children only turn on a computer for the first time in 2023, means there is a lot of work to be done.'),
+          P('Plans are in the works to structure an ongoing program for interested attendees. As always, TekSeries will continue its contribution to expanding foundational opportunities for our young people.')],
+        prev: card.wwt, next: card.christmas, more: [card.christmas, card.intern, card.wwt] },
+      empower: {
+        title: 'Empower Her Future Webinar Highlights', date: 'April 6, 2026', day: '06', monthYear: 'Apr 2026', tone: 'plum', icon: 'public', img: '', imgAlt: '',
+        blocks: [
+          Lead('On March 28, 2026, we had an inspiring session to celebrate International Women’s Month! We invited 73 passionate participants to explore how young women can access global opportunities and build impactful careers.'),
+          { ...P(''), isP: false, isList: true, title: 'Highlights', icon: 'auto_awesome', items: [
+            { label: 'Career Strategy', text: 'Adebisi Olugbodi encouraged participants to set 30–90 day action plans: improving CVs, applying for jobs, and building strategic relationships.' },
+            { label: 'Global Opportunities', text: 'Dr. Roseline Adewuyi shared her journey from local to international programs, emphasizing opportunity literacy, storytelling, and using measurable results in applications.' },
+            { label: 'Practical Tips', text: 'Learn to use numbers in essays, tailor each application, and maintain a strong digital presence, especially on LinkedIn.' },
+            { label: 'Real Challenges', text: 'Participants discussed issues like transcript delays and how to navigate them through proactive communication with universities.' }] },
+          { ...P('Information, strategy, and visibility open doors. Start early, stay consistent, and position yourself for the opportunities that align with your goals.'), isP: false, isCallout: true, title: 'Key takeaway' },
+          { ...P(''), isP: false, isTags: true, items: ['#EmpowerHerFuture', '#TekSeriesNG', '#CareerDevelopment', '#GlobalOpportunities', '#WomenInLeadership', '#Scholarships'] }],
+        prev: card.gideon, next: null, more: [card.gideon, card.newYear, card.intern] }
+    };
+    const raw = posts[which];
+    const post = { ...raw, ...bannerTones[raw.tone], hasImg: !!raw.img };
+    const nav = [['Who We Are', 'Main.dc.html#about'],['What We Do', 'Main.dc.html#services'],['News', 'News.dc.html'],['Events', 'Events.dc.html'],['Gallery', 'Gallery.dc.html'],['Team', 'Main.dc.html#team'],['Contact', 'Contact.dc.html']]
+      .map(([label, href]) => ({ label, href, current: label === 'News' ? 'page' : 'false', bg: label === 'News' ? '#F1E6EE' : 'transparent' }));
+    return {
+      height, nav, post,
+      blocks: raw.blocks,
+      hasPrev: !!raw.prev, prevPost: raw.prev || {},
+      hasNext: !!raw.next, nextPost: raw.next || {},
+      more: raw.more.map(e => ({ ...e, ...tones[e.tone], imgDisplay: e.img ? 'block' : 'none' })),
+      shares: [
+        { label: 'Share on LinkedIn', mark: 'in' },
+        { label: 'Share on Facebook', mark: 'fb' },
+        { label: 'Share on WhatsApp', mark: 'wa' }],
+      socials: [
+        { name: 'LinkedIn', mark: 'in', href: 'https://www.linkedin.com/company/tekseries/' },
+        { name: 'Facebook', mark: 'fb', href: 'https://www.facebook.com/share/18AH7UBXue/' },
+        { name: 'Instagram', mark: 'ig', href: 'https://instagram.com/tekseries' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

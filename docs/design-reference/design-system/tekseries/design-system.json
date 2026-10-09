@@ -1,0 +1,14 @@
+{
+  "v": 3,
+  "layout": "files",
+  "createdOnFiles": {"v": 1, "at": "2026-09-28T13:05:00Z"},
+  "title": "TekSeries New",
+  "namespace": "TekSeries",
+  "libraries": [{"name": "react", "version": "18"}, {"name": "react-dom", "version": "18"}],
+  "sections": {},
+  "groups": [],
+  "assetGroups": {},
+  "blobs": {},
+  "docs": {"readme": "project/README.md", "sections": []},
+  "lastChange": {"by": "Allwell", "at": "2026-10-01T09:00:00Z", "via": "Cowork", "note": "Listing-card rule revised: each post owns its tone (set at publish), shared by its card and its solid post-page banner; paging keeps Latest event and Get Involved fixed."}
+}

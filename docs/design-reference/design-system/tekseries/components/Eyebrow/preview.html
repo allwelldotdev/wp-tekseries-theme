@@ -1,0 +1,17 @@
+<!-- @dsCard group="Labels" height=96 subtitle="coral / saffron / ink" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Eyebrow — preview</title></head>
+<body style="margin:0;background:#FBF7F9">
+<div id="root"></div>
+<script>
+  var T = window.TekSeries, h = React.createElement;
+  var box = function (bg, el) { return h('div', { style: { background: bg, borderRadius: '20px', padding: '20px 24px' } }, el); };
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h('div', { style: { display: 'flex', gap: '12px', padding: '20px' } },
+      box('#FFFFFF', h(T.Eyebrow, { tone: 'coral' }, 'Method')),
+      box('#4A1D5E', h(T.Eyebrow, { tone: 'saffron' }, 'Mission')),
+      box('#F4A261', h(T.Eyebrow, { tone: 'ink' }, 'Get Involved'))));
+</script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TekSeries Design System</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>.ts-si{display:block;width:20px;height:20px;background:currentColor;-webkit-mask:var(--si) center/contain no-repeat;mask:var(--si) center/contain no-repeat}.ts-si-in{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/linkedin-in.svg)}.ts-si-fb{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/facebook-f.svg)}.ts-si-ig{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/instagram.svg)}.ts-si-wa{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/whatsapp.svg)}</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBF7F9;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}a:hover{color:#E76F51}.ms{font-family:'Material Symbols Rounded';font-weight:400;font-style:normal;line-height:1;display:inline-block;letter-spacing:normal;text-transform:none;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';font-feature-settings:'liga'}</style>
+</helmet>
+<div style="width:1440px;height:3700px;box-sizing:border-box;padding:64px;display:flex;flex-direction:column;gap:56px;background:#FBF7F9;font-family:'Onest',sans-serif;color:#2A1533;font-variant-ligatures:none">
+
+  <header style="display:flex;justify-content:space-between;align-items:flex-end;gap:40px;padding-bottom:32px;border-bottom:1px solid #EADFE6">
+    <div style="display:flex;flex-direction:column;gap:12px;max-width:760px">
+      <img src="https://tekseries.com/wp-content/uploads/2025/08/tekseries_logo_no0goj.png" alt="TekSeries" style="height:44px;width:max-content;margin-bottom:12px">
+      <span style="font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E76F51">Design System</span>
+      <h1 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:62px;font-weight:800;line-height:1.02;letter-spacing:-.03em;color:#4A1D5E">TekSeries Home</h1>
+      <p style="margin:0;font-size:18px;line-height:1.65;color:#5B4466">Tokens and components taken from the “TekSeries Home - Larger Text” design: deep plum surfaces, saffron and coral accents, pill-shaped actions and generously rounded cards.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;font-size:14px;font-weight:600;color:#4A1D5E">
+      <span style="padding:8px 14px;border-radius:999px;background:#F1E6EE">Display · Schibsted Grotesk 700–800</span>
+      <span style="padding:8px 14px;border-radius:999px;background:#F1E6EE">Text · Onest 400–700</span>
+      <span style="padding:8px 14px;border-radius:999px;background:#F1E6EE">Icons · Material Symbols Rounded</span>
+    </div>
+  </header>
+
+  <section style="display:flex;flex-direction:column;gap:24px">
+    <div style="display:flex;align-items:baseline;gap:16px"><h2 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:36px;font-weight:800;letter-spacing:-.02em;color:#4A1D5E">Color</h2><span style="font-size:16px;color:#5B4466">12 tokens</span></div>
+    <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:20px">
+      <sc-for list="{{ colors }}" as="c" hint-placeholder-count="12">
+        <div style="background:#fff;border:1px solid #EADFE6;border-radius:24px;overflow:hidden;display:flex;flex-direction:column">
+          <div style="height:112px;background:{{ c.hex }};border-bottom:1px solid #EADFE6"></div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:4px">
+            <span style="font-family:'Schibsted Grotesk',sans-serif;font-size:18px;font-weight:700;color:#4A1D5E">{{ c.name }}</span>
+            <span style="font-size:15px;font-weight:600;color:#2A1533">{{ c.hex }}</span>
+            <span style="font-size:14px;line-height:1.35;color:#5B4466">{{ c.role }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:20px">
+      <div style="flex:1;height:72px;border-radius:24px;background:linear-gradient(90deg,rgba(74,29,94,.94) 0%,rgba(74,29,94,.72) 45%,rgba(74,29,94,.15) 100%),#9A8AA3;display:flex;align-items:center;padding:0 24px;color:#fff;font-size:15px;font-weight:600">Hero image overlay · plum 94% → 72% (45%) → 15%, left to right</div>
+      <div style="width:420px;height:72px;border-radius:24px;background:#4A1D5E;display:flex;align-items:center;gap:12px;padding:0 24px;color:#fff;font-size:15px;font-weight:600"><span style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.1)"></span>White 10% on plum · social buttons</div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:24px">
+    <div style="display:flex;align-items:baseline;gap:16px"><h2 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:36px;font-weight:800;letter-spacing:-.02em;color:#4A1D5E">Typography</h2><span style="font-size:16px;color:#5B4466">Desktop sizes · H1 drops to 44 / 36 px and H2 to 42 / 36 px at 1100 / 640 px</span></div>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px">
+      <div style="background:#fff;border:1px solid #EADFE6;border-radius:32px;padding:32px 36px;display:flex;flex-direction:column">
+        <div style="display:flex;flex-direction:column;gap:4px;padding-bottom:12px"><span style="font-family:'Schibsted Grotesk',sans-serif;font-size:22px;font-weight:800;color:#4A1D5E">Schibsted Grotesk</span><span style="font-size:14px;color:#5B4466">Display and headings · tight tracking</span></div>
+        <sc-for list="{{ display }}" as="t" hint-placeholder-count="7">
+          <div style="display:flex;flex-direction:column;gap:10px;padding:20px 0;border-top:1px solid #EADFE6">
+            <div style="display:flex;justify-content:space-between;gap:16px;font-size:14px"><span style="font-weight:700;color:#E76F51">{{ t.name }}</span><span style="color:#5B4466">{{ t.spec }}</span></div>
+            <div style="{{ t.style }}">{{ t.sample }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="background:#fff;border:1px solid #EADFE6;border-radius:32px;padding:32px 36px;display:flex;flex-direction:column">
+        <div style="display:flex;flex-direction:column;gap:4px;padding-bottom:12px"><span style="font-family:'Onest',sans-serif;font-size:22px;font-weight:700;color:#4A1D5E">Onest</span><span style="font-size:14px;color:#5B4466">Body, labels and UI · ligatures off</span></div>
+        <sc-for list="{{ text }}" as="t" hint-placeholder-count="7">
+          <div style="display:flex;flex-direction:column;gap:10px;padding:20px 0;border-top:1px solid #EADFE6">
+            <div style="display:flex;justify-content:space-between;gap:16px;font-size:14px"><span style="font-weight:700;color:#E76F51">{{ t.name }}</span><span style="color:#5B4466">{{ t.spec }}</span></div>
+            <div style="{{ t.style }}">{{ t.sample }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:24px">
+    <h2 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:36px;font-weight:800;letter-spacing:-.02em;color:#4A1D5E">Shape, spacing &amp; layout</h2>
+    <div style="display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:20px">
+      <div style="background:#fff;border:1px solid #EADFE6;border-radius:32px;padding:32px;display:flex;flex-direction:column;gap:20px">
+        <span style="font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E76F51">Corner radius</span>
+        <div style="display:flex;gap:10px">
+          <sc-for list="{{ radii }}" as="r" hint-placeholder-count="6">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;align-items:center;font-size:13px;line-height:1.3;color:#5B4466;text-align:center">
+              <div style="width:56px;height:56px;background:#F1E6EE;border:2px solid #4A1D5E;box-sizing:border-box;border-radius:{{ r.css }}"></div>
+              <span style="font-weight:700;color:#4A1D5E">{{ r.value }}</span><span>{{ r.use }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #EADFE6;border-radius:32px;padding:32px;display:flex;flex-direction:column;gap:20px">
+        <span style="font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E76F51">Spacing scale</span>
+        <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap">
+          <sc-for list="{{ spacing }}" as="s" hint-placeholder-count="9">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#4A1D5E">
+              <div style="width:{{ s.px }};height:{{ s.px }};background:#F4A261;border-radius:4px"></div>{{ s.label }}
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #EADFE6;border-radius:32px;padding:32px;display:flex;flex-direction:column;gap:12px;font-size:15px;line-height:1.5;color:#3D2A47">
+        <span style="font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E76F51;margin-bottom:8px">Layout</span>
+        <span><b style="color:#4A1D5E">Container</b> · 1440 px max; side padding max(56px, (100% − 1440px) / 2)</span>
+        <span><b style="color:#4A1D5E">Gutter</b> · 56 → 24 px (≤1100) → 16 px (≤640)</span>
+        <span><b style="color:#4A1D5E">Grid</b> · 12 columns, 20 px gap; About splits 7 / 5</span>
+        <span><b style="color:#4A1D5E">Sections</b> · 32 / 40 / 48 px vertical padding</span>
+        <span><b style="color:#4A1D5E">Borders</b> · 1 px #EADFE6 on white cards</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:24px">
+    <h2 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:36px;font-weight:800;letter-spacing:-.02em;color:#4A1D5E">Components</h2>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px">
+      <div style="background:#fff;border:1px solid #EADFE6;border-radius:32px;padding:32px;display:flex;flex-direction:column;gap:20px">
+        <span style="font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E76F51">Buttons · pill, 700 weight</span>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+          <a href="#" style="padding:14px 26px;background:#4A1D5E;color:#fff;border-radius:999px;font-weight:700;font-size:17px" style-hover="background:#F4A261;color:#2A1533">Support our work</a>
+          <a href="#" style="padding:10px 18px;border-radius:999px;font-size:16px;font-weight:700;color:#4A1D5E;background:#F1E6EE" style-hover="background:#E5D3E0">Job Series</a>
+          <a href="#" style="padding:10px 18px;background:#4A1D5E;border-radius:999px;font-size:16px;font-weight:700;color:#fff" style-hover="background:#F4A261;color:#2A1533">Post A Job</a>
+          <a href="#" style="padding:12px 22px;background:#2A1533;color:#fff;border-radius:999px;font-weight:700;font-size:16px" style-hover="background:#4A1D5E">Support our work</a>
+        </div>
+        <div style="background:#4A1D5E;border-radius:20px;padding:24px;display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+          <a href="#" style="padding:14px 26px;background:#F4A261;color:#2A1533;border-radius:999px;font-weight:700;font-size:17px" style-hover="background:#fff">Explore Job Series</a>
+          <a href="#" style="padding:14px 26px;border:1.5px solid rgba(255,255,255,.7);color:#fff;border-radius:999px;font-weight:700;font-size:17px" style-hover="background:rgba(255,255,255,.12)">Get Involved</a>
+        </div>
+        <span style="font-size:14px;line-height:1.5;color:#5B4466">Primary plum → saffron on hover · Soft lilac → #E5D3E0 · Dark ink → plum · On-dark saffron → white, outline → white 12%</span>
+      </div>
+      <div style="background:#fff;border:1px solid #EADFE6;border-radius:32px;padding:32px;display:flex;flex-direction:column;gap:20px">
+        <span style="font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E76F51">Navigation, chips &amp; indicators</span>
+        <nav style="display:flex;gap:4px;font-size:16px;font-weight:600;color:#4A1D5E"><a href="#" style="padding:8px 14px;border-radius:999px">About</a><a href="#" style="padding:8px 14px;border-radius:999px;background:#F1E6EE">Services</a><a href="#" style="padding:8px 14px;border-radius:999px">Events</a><a href="#" style="padding:8px 14px;border-radius:999px">Team</a><a href="#" style="padding:8px 14px;border-radius:999px">Contact</a></nav>
+        <div style="background:#4A1D5E;border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:18px">
+          <span style="width:max-content;padding:8px 14px;border-radius:999px;background:#F4A261;color:#2A1533;font-size:15px;font-weight:700">§ 501(c)(3) non-profit · New York &amp; South East Nigeria</span>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;gap:28px"><span style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:17px;color:#fff"><span class="ms" style="font-size:22px;color:#F4A261">hub</span>Share</span><span style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:17px;color:#fff"><span class="ms" style="font-size:22px;color:#F4A261">lightbulb</span>Create</span><span style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:17px;color:#fff"><span class="ms" style="font-size:22px;color:#F4A261">settings_suggest</span>Solve</span></div>
+            <div style="display:flex;gap:8px"><span style="width:28px;height:8px;border-radius:999px;background:#F4A261"></span><span style="width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.5)"></span><span style="width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.5)"></span></div>
+          </div>
+          <div style="display:flex;gap:10px"><a href="#" aria-label="LinkedIn" style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff"><span class="ts-si ts-si-in" aria-hidden="true"></span></a><a href="#" aria-label="Facebook" style="width:44px;height:44px;border-radius:50%;background:#F4A261;display:grid;place-items:center;font-weight:800;font-size:15px;color:#2A1533"><span class="ts-si ts-si-fb" aria-hidden="true"></span></a><a href="#" aria-label="Instagram" style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff"><span class="ts-si ts-si-ig" aria-hidden="true"></span></a></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:20px;align-items:start">
+      <article style="background:#fff;border:1px solid #EADFE6;border-radius:28px;padding:36px 40px;display:flex;flex-direction:column;gap:16px">
+        <span style="width:60px;height:60px;border-radius:20px;background:#F1E6EE;display:grid;place-items:center;color:#4A1D5E"><span class="ms" style="font-size:30px">co_present</span></span>
+        <h3 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:32px;font-weight:700;letter-spacing:-.02em;color:#4A1D5E;line-height:1.1">Workshops</h3>
+        <span style="font-size:15px;font-weight:700;color:#E76F51">01 / 04</span>
+        <p style="margin:0;font-size:17px;line-height:1.7;color:#3D2A47">Service card · 28 px radius, border turns saffron on hover.</p>
+      </article>
+      <figure style="margin:0;background:#fff;border:1px solid #EADFE6;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="background:#FBF7F9;border-radius:20px;padding:22px 24px;display:flex;flex-direction:column;gap:8px"><blockquote style="margin:0;font-size:17px;line-height:1.55;font-weight:500;color:#4A1D5E">“Africa needs digital skills across the economy, not just the tech sector.”</blockquote><figcaption style="font-size:14px;font-weight:700;color:#E76F51">WEF Job Reset Summit 2020</figcaption></div>
+        <div style="background:#F4A261;color:#2A1533;border-radius:32px;padding:28px;display:flex;flex-direction:column;gap:10px"><span style="font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase">Get Involved</span><p style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:28px;font-weight:700;line-height:1.2">Help Grow Our Impact</p></div>
+      </figure>
+      <div style="background:#fff;border:1px solid #EADFE6;border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:8px">
+        <img src="https://res.cloudinary.com/ddmk8yzzq/image/upload/q_auto/v1777288281/allwell_circle_xqvulr.png" alt="Allwell Agwu-Okoro" style="width:104px;height:104px;border-radius:50%;object-fit:cover;background:#F1E6EE;border:4px solid #F4A261;margin-bottom:10px">
+        <div style="font-family:'Schibsted Grotesk',sans-serif;font-weight:700;font-size:24px;color:#4A1D5E">Allwell Agwu-Okoro</div>
+        <div style="font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E76F51">Lead Tech Adviser</div>
+        <p style="margin:6px 0 0;font-size:16px;line-height:1.6;color:#5B4466">Team card · 104 px avatar, 4 px saffron ring.</p>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid #EADFE6;border-radius:32px;padding:32px 44px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:32px">
+      <span style="font-family:'Schibsted Grotesk',sans-serif;font-size:50px;font-weight:800;line-height:1;letter-spacing:-.03em;color:#4A1D5E">3,285+</span>
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font-family:'Schibsted Grotesk',sans-serif;font-size:24px;font-weight:700;color:#4A1D5E">days of Services, Workshops, and One on Ones</span><span style="font-size:18px;color:#5B4466">Stat bar · 32 px radius</span></div>
+      <a href="#" style="padding:14px 26px;background:#4A1D5E;color:#fff;border-radius:999px;font-weight:700;font-size:17px;white-space:nowrap" style-hover="background:#F4A261;color:#2A1533">Support our work</a>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:24px">
+    <div style="display:flex;align-items:baseline;gap:16px"><h2 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:36px;font-weight:800;letter-spacing:-.02em;color:#4A1D5E">Icons</h2><span style="font-size:16px;color:#5B4466">Material Symbols Rounded · weight 400, outline</span></div>
+    <div style="background:#fff;border:1px solid #EADFE6;border-radius:32px;padding:32px;display:flex;gap:28px;flex-wrap:wrap">
+      <sc-for list="{{ icons }}" as="i" hint-placeholder-count="9">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px;color:#5B4466"><span style="width:60px;height:60px;border-radius:20px;background:#F1E6EE;display:grid;place-items:center;color:#4A1D5E"><span class="ms" style="font-size:30px">{{ i }}</span></span>{{ i }}</div>
+      </sc-for>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3700}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const D = "font-family:'Schibsted Grotesk',sans-serif;color:#4A1D5E;margin:0;";
+    const T = "font-family:'Onest',sans-serif;margin:0;";
+    return {
+      colors: [
+        { name: 'Plum', hex: '#4A1D5E', role: 'Primary · hero, dark cards, headings, buttons' },
+        { name: 'Ink', hex: '#2A1533', role: 'Base text, dark button, text on saffron' },
+        { name: 'Saffron', hex: '#F4A261', role: 'Accent · chips, CTA, avatar ring, hovers' },
+        { name: 'Coral', hex: '#E76F51', role: 'Eyebrows, roles, captions, link hover' },
+        { name: 'Blush', hex: '#FBF7F9', role: 'Page background, quote cards' },
+        { name: 'White', hex: '#FFFFFF', role: 'Header, cards' },
+        { name: 'Lilac', hex: '#F1E6EE', role: 'Soft button, nav hover, icon tile' },
+        { name: 'Lilac Deep', hex: '#E5D3E0', role: 'Soft hover, hero lead, footer text' },
+        { name: 'Line', hex: '#EADFE6', role: 'Card and header borders' },
+        { name: 'Body', hex: '#3D2A47', role: 'Long-form body on white' },
+        { name: 'Muted', hex: '#5B4466', role: 'Secondary text, bios, copyright' },
+        { name: 'Mist', hex: '#F5E9F1', role: 'Body text on plum' }
+      ],
+      display: [
+        { name: 'H1 · Hero', spec: '62 / 1.02 · 800 · −3%', sample: 'Empowering Our Future', style: D + 'font-size:62px;font-weight:800;line-height:1.02;letter-spacing:-.03em' },
+        { name: 'H2 · Section', spec: '54 · 800 · −3%', sample: 'Services', style: D + 'font-size:54px;font-weight:800;line-height:1.1;letter-spacing:-.03em' },
+        { name: 'Stat', spec: '50 / 1 · 800 · −3%', sample: '3,285+', style: D + 'font-size:50px;font-weight:800;line-height:1;letter-spacing:-.03em' },
+        { name: 'Footer display', spec: '38 / 1.05 · 800 · −2%', sample: 'Share. Create. Solve.', style: D + 'font-size:38px;font-weight:800;line-height:1.05;letter-spacing:-.02em' },
+        { name: 'H3 · Card', spec: '32 / 1.1 · 700 · −2%', sample: 'Seed Investments', style: D + 'font-size:32px;font-weight:700;line-height:1.1;letter-spacing:-.02em' },
+        { name: 'Card title', spec: '28 / 1.2–1.3 · 700', sample: 'Help Grow Our Impact', style: D + 'font-size:28px;font-weight:700;line-height:1.3' },
+        { name: 'Name / stat label', spec: '24 · 700', sample: 'Ogechi Oweziem', style: D + 'font-size:24px;font-weight:700;line-height:1.2' }
+      ],
+      text: [
+        { name: 'Lead', spec: '22 / 1.5 · 400', sample: 'One Youth Career At A Time', style: T + 'font-size:22px;line-height:1.5;color:#5B4466' },
+        { name: 'Body L', spec: '18 / 1.65 · 400', sample: 'Our core belief remains, that technology is mostly a force for good.', style: T + 'font-size:18px;line-height:1.65;color:#3D2A47' },
+        { name: 'Body', spec: '17 / 1.7 · 400 (quotes 500 / 1.55)', sample: 'Interactive webinars and live workshops in urban and rural locations.', style: T + 'font-size:17px;line-height:1.7;color:#3D2A47' },
+        { name: 'Body S / Button', spec: '16 / 1.6 · 400 · buttons 700', sample: 'Preparing underserved Nigerian youth for the future of work.', style: T + 'font-size:16px;line-height:1.6;color:#5B4466' },
+        { name: 'Nav', spec: '16 · 600', sample: 'About   Services   Events   Team', style: T + 'font-size:16px;font-weight:600;color:#4A1D5E;white-space:pre' },
+        { name: 'Eyebrow', spec: '15 · 700 · +12% · uppercase', sample: 'Mission', style: T + 'font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E76F51' },
+        { name: 'Caption / Role', spec: '14 · 700 · +10% uppercase', sample: 'Lead Tech Adviser', style: T + 'font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E76F51' }
+      ],
+      radii: [
+        { value: '999', use: 'Pills', css: '999px' },
+        { value: '36', use: 'Footer', css: '36px' },
+        { value: '32', use: 'Hero, cards', css: '32px' },
+        { value: '28', use: 'Service, team', css: '28px' },
+        { value: '20', use: 'Quote, icon', css: '20px' },
+        { value: '14', use: 'Mobile nav', css: '14px' }
+      ],
+      spacing: [4, 8, 12, 16, 20, 28, 32, 40, 48, 56].map((n) => ({ label: String(n), px: n + 'px' })),
+      icons: ['hub', 'lightbulb', 'settings_suggest', 'co_present', 'potted_plant', 'emoji_events', 'work', 'menu', 'close']
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<!-- @dsCard group="Hero" height=80 subtitle="3 dots, first active" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>SliderDots — preview</title></head>
+<body style="margin:0;background:#4A1D5E">
+<div id="root"></div>
+<script>
+  var T = window.TekSeries, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h('div', { style: { padding: '28px' } }, h(T.SliderDots, { count: 3, active: 0 })));
+</script>
+</body>
+</html>

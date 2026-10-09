@@ -1,0 +1,670 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Contact.dc.html": {
+      "h": 2730,
+      "is_interactive": true,
+      "page": "contact",
+      "title": "TekSeries Contact - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "ContactMobile.dc.html": {
+      "h": 4700,
+      "is_interactive": true,
+      "page": "contact",
+      "title": "TekSeries Contact - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 0
+    },
+    "ContactTablet.dc.html": {
+      "h": 3750,
+      "is_interactive": true,
+      "page": "contact",
+      "title": "TekSeries Contact - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 0
+    },
+    "DesignSystem.dc.html": {
+      "h": 3700,
+      "page": "design-system",
+      "title": "TekSeries Design System",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "EventPost.dc.html": {
+      "h": 3070,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Event Post - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 4820
+    },
+    "EventPostMobile.dc.html": {
+      "h": 4890,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Event Post - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 4820
+    },
+    "EventPostTablet.dc.html": {
+      "h": 3430,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Event Post - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 4820
+    },
+    "Events.dc.html": {
+      "h": 2690,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Events - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "EventsMobile.dc.html": {
+      "h": 4410,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Events - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 0
+    },
+    "EventsTablet.dc.html": {
+      "h": 3400,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Events - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 0
+    },
+    "Gallery.dc.html": {
+      "h": 2270,
+      "is_interactive": true,
+      "page": "gallery",
+      "title": "TekSeries Gallery - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "GalleryLightbox.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "gallery",
+      "title": "TekSeries Gallery, lightbox open - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 2520
+    },
+    "GalleryLightboxMobile.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "gallery",
+      "title": "TekSeries Gallery, lightbox open - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 2520
+    },
+    "GalleryLightboxTablet.dc.html": {
+      "h": 1194,
+      "is_interactive": true,
+      "page": "gallery",
+      "title": "TekSeries Gallery, lightbox open - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 2520
+    },
+    "GalleryMobile.dc.html": {
+      "h": 2310,
+      "is_interactive": true,
+      "page": "gallery",
+      "title": "TekSeries Gallery - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 0
+    },
+    "GalleryTablet.dc.html": {
+      "h": 2310,
+      "is_interactive": true,
+      "page": "gallery",
+      "title": "TekSeries Gallery - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 0
+    },
+    "Main.dc.html": {
+      "h": 7010,
+      "is_interactive": true,
+      "page": "homepage",
+      "title": "TekSeries Home - Larger Text",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "Mobile.dc.html": {
+      "h": 8000,
+      "is_interactive": true,
+      "page": "homepage",
+      "title": "TekSeries Home - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 0
+    },
+    "News.dc.html": {
+      "h": 2490,
+      "is_interactive": true,
+      "page": "news",
+      "title": "TekSeries News - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "NewsMobile.dc.html": {
+      "h": 4170,
+      "is_interactive": true,
+      "page": "news",
+      "title": "TekSeries News - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 0
+    },
+    "NewsPostImage.dc.html": {
+      "h": 2910,
+      "is_interactive": true,
+      "page": "news",
+      "title": "TekSeries News Post, with image - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 4820
+    },
+    "NewsPostImageMobile.dc.html": {
+      "h": 3410,
+      "is_interactive": true,
+      "page": "news",
+      "title": "TekSeries News Post, with image - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 4820
+    },
+    "NewsPostImageTablet.dc.html": {
+      "h": 2810,
+      "is_interactive": true,
+      "page": "news",
+      "title": "TekSeries News Post, with image - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 4820
+    },
+    "NewsPostText.dc.html": {
+      "h": 2830,
+      "is_interactive": true,
+      "page": "news",
+      "title": "TekSeries News Post, no image - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 8790
+    },
+    "NewsPostTextMobile.dc.html": {
+      "h": 3740,
+      "is_interactive": true,
+      "page": "news",
+      "title": "TekSeries News Post, no image - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 8790
+    },
+    "NewsPostTextTablet.dc.html": {
+      "h": 2760,
+      "is_interactive": true,
+      "page": "news",
+      "title": "TekSeries News Post, no image - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 8790
+    },
+    "NewsTablet.dc.html": {
+      "h": 3250,
+      "is_interactive": true,
+      "page": "news",
+      "title": "TekSeries News - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 0
+    },
+    "Tablet.dc.html": {
+      "h": 8000,
+      "is_interactive": true,
+      "page": "homepage",
+      "title": "TekSeries Home - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 0
+    },
+    "Privacy.dc.html": {
+      "h": 4780,
+      "is_interactive": true,
+      "page": "legal",
+      "title": "TekSeries Privacy Policy - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "PrivacyTablet.dc.html": {
+      "h": 4870,
+      "is_interactive": true,
+      "page": "legal",
+      "title": "TekSeries Privacy Policy - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 0
+    },
+    "PrivacyMobile.dc.html": {
+      "h": 5870,
+      "is_interactive": true,
+      "page": "legal",
+      "title": "TekSeries Privacy Policy - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 0
+    },
+    "Terms.dc.html": {
+      "h": 3180,
+      "is_interactive": true,
+      "page": "legal",
+      "title": "TekSeries Terms and Conditions - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 5990
+    },
+    "TermsTablet.dc.html": {
+      "h": 3370,
+      "is_interactive": true,
+      "page": "legal",
+      "title": "TekSeries Terms and Conditions - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 5990
+    },
+    "TermsMobile.dc.html": {
+      "h": 4160,
+      "is_interactive": true,
+      "page": "legal",
+      "title": "TekSeries Terms and Conditions - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 5990
+    },
+    "JobSeries.dc.html": {
+      "h": 3840,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Series - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "JobSeriesTablet.dc.html": {
+      "h": 5060,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Series - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 0
+    },
+    "JobSeriesMobile.dc.html": {
+      "h": 5940,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Series - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 0
+    },
+    "JobPost.dc.html": {
+      "h": 2850,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Series Post - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 6060
+    },
+    "JobPostTablet.dc.html": {
+      "h": 3230,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Series Post - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 6060
+    },
+    "JobPostMobile.dc.html": {
+      "h": 4640,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Series Post - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 6060
+    },
+    "JobSubmitSignIn.dc.html": {
+      "h": 1200,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Submit a Job: 1 Sign in - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 10820
+    },
+    "JobSubmitSignInTablet.dc.html": {
+      "h": 1320,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Submit a Job: 1 Sign in - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 10820
+    },
+    "JobSubmitSignInMobile.dc.html": {
+      "h": 1700,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Submit a Job: 1 Sign in - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 10820
+    },
+    "JobSubmitForm.dc.html": {
+      "h": 2660,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Submit a Job: 2 Form - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 12640
+    },
+    "JobSubmitFormTablet.dc.html": {
+      "h": 2820,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Submit a Job: 2 Form - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 12640
+    },
+    "JobSubmitFormMobile.dc.html": {
+      "h": 3790,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Submit a Job: 2 Form - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 12640
+    },
+    "JobSubmitPreview.dc.html": {
+      "h": 1200,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Submit a Job: 3 Preview - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 16550
+    },
+    "JobSubmitPreviewTablet.dc.html": {
+      "h": 1580,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Submit a Job: 3 Preview - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 16550
+    },
+    "JobSubmitPreviewMobile.dc.html": {
+      "h": 1750,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Submit a Job: 3 Preview - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 16550
+    },
+    "JobSubmitDraft.dc.html": {
+      "h": 2730,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Submit a Job: 4 Draft saved - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 18420
+    },
+    "JobSubmitDraftTablet.dc.html": {
+      "h": 2890,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Submit a Job: 4 Draft saved - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 18420
+    },
+    "JobSubmitDraftMobile.dc.html": {
+      "h": 3880,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Submit a Job: 4 Draft saved - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 18420
+    },
+    "JobDashboard.dc.html": {
+      "h": 1250,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Dashboard: 5 List - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 22420
+    },
+    "JobDashboardTablet.dc.html": {
+      "h": 1350,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Dashboard: 5 List - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 22420
+    },
+    "JobDashboardMobile.dc.html": {
+      "h": 1550,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Dashboard: 5 List - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 22420
+    },
+    "JobDashboardMenu.dc.html": {
+      "h": 1250,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Dashboard: 6 Actions menu - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 24090
+    },
+    "JobDashboardMenuTablet.dc.html": {
+      "h": 1350,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Dashboard: 6 Actions menu - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 24090
+    },
+    "JobDashboardMenuMobile.dc.html": {
+      "h": 1550,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Dashboard: 6 Actions menu - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 24090
+    },
+    "JobDashboardStats.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Dashboard: 7 Job statistics - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 25760
+    },
+    "JobDashboardStatsTablet.dc.html": {
+      "h": 1194,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Dashboard: 7 Job statistics - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 25760
+    },
+    "JobDashboardStatsMobile.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "jobs",
+      "title": "TekSeries Job Dashboard: 7 Job statistics - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 25760
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-09-28T12:10:00Z",
+    "v": 1
+  },
+  "designSystems": [
+    {
+      "artifact": "https://claude.ai/artifact/92of7TNC5fWLzLNt9JAKQb",
+      "copiedAt": "2026-09-28T14:36:00Z",
+      "namespace": "tekseries",
+      "title": "TekSeries New",
+      "version": "1790605302-6eda"
+    }
+  ],
+  "launch": {
+    "page": "design-system",
+    "view": "canvas"
+  },
+  "notes": {},
+  "order": [
+    "DesignSystem.dc.html",
+    "Events.dc.html",
+    "EventsTablet.dc.html",
+    "EventsMobile.dc.html",
+    "EventPost.dc.html",
+    "EventPostTablet.dc.html",
+    "EventPostMobile.dc.html",
+    "News.dc.html",
+    "NewsTablet.dc.html",
+    "NewsMobile.dc.html",
+    "NewsPostImage.dc.html",
+    "NewsPostImageTablet.dc.html",
+    "NewsPostImageMobile.dc.html",
+    "NewsPostText.dc.html",
+    "NewsPostTextTablet.dc.html",
+    "NewsPostTextMobile.dc.html",
+    "Main.dc.html",
+    "Tablet.dc.html",
+    "Mobile.dc.html",
+    "Gallery.dc.html",
+    "GalleryTablet.dc.html",
+    "GalleryMobile.dc.html",
+    "GalleryLightbox.dc.html",
+    "GalleryLightboxTablet.dc.html",
+    "GalleryLightboxMobile.dc.html",
+    "Contact.dc.html",
+    "ContactTablet.dc.html",
+    "ContactMobile.dc.html",
+    "Privacy.dc.html",
+    "PrivacyTablet.dc.html",
+    "PrivacyMobile.dc.html",
+    "Terms.dc.html",
+    "TermsTablet.dc.html",
+    "TermsMobile.dc.html",
+    "JobSeries.dc.html",
+    "JobSeriesTablet.dc.html",
+    "JobSeriesMobile.dc.html",
+    "JobPost.dc.html",
+    "JobPostTablet.dc.html",
+    "JobPostMobile.dc.html",
+    "JobSubmitSignIn.dc.html",
+    "JobSubmitSignInTablet.dc.html",
+    "JobSubmitSignInMobile.dc.html",
+    "JobSubmitForm.dc.html",
+    "JobSubmitFormTablet.dc.html",
+    "JobSubmitFormMobile.dc.html",
+    "JobSubmitPreview.dc.html",
+    "JobSubmitPreviewTablet.dc.html",
+    "JobSubmitPreviewMobile.dc.html",
+    "JobSubmitDraft.dc.html",
+    "JobSubmitDraftTablet.dc.html",
+    "JobSubmitDraftMobile.dc.html",
+    "JobDashboard.dc.html",
+    "JobDashboardTablet.dc.html",
+    "JobDashboardMobile.dc.html",
+    "JobDashboardMenu.dc.html",
+    "JobDashboardMenuTablet.dc.html",
+    "JobDashboardMenuMobile.dc.html",
+    "JobDashboardStats.dc.html",
+    "JobDashboardStatsTablet.dc.html",
+    "JobDashboardStatsMobile.dc.html"
+  ],
+  "pages": [
+    {
+      "id": "design-system",
+      "name": "Design System"
+    },
+    {
+      "id": "homepage",
+      "name": "Homepage"
+    },
+    {
+      "id": "events",
+      "name": "Events"
+    },
+    {
+      "id": "news",
+      "name": "News"
+    },
+    {
+      "id": "gallery",
+      "name": "Gallery"
+    },
+    {
+      "id": "contact",
+      "name": "Contact"
+    },
+    {
+      "id": "legal",
+      "name": "Privacy & Terms"
+    },
+    {
+      "id": "jobs",
+      "name": "Job Series"
+    }
+  ],
+  "title": "TekSeries Home"
+}
