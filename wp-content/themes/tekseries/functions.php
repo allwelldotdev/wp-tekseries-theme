@@ -26,9 +26,49 @@ function tekseries_enqueue_styles(): void {
 add_action( 'wp_enqueue_scripts', 'tekseries_enqueue_styles' );
 
 /**
+ * Registers the theme's block style variations.
+ *
+ * The style data lives in theme.json (`styles.blocks.*.variations`), which
+ * keeps responsive and hover states working; core only applies it to
+ * variations registered here. Button's `outline` is core's own style.
+ */
+function tekseries_register_block_styles(): void {
+	$styles = array(
+		'core/button'    => array(
+			'soft'   => __( 'Soft', 'tekseries' ),
+			'dark'   => __( 'Dark', 'tekseries' ),
+			'accent' => __( 'Accent', 'tekseries' ),
+		),
+		'core/group'     => array(
+			'card'         => __( 'Card', 'tekseries' ),
+			'card-plum'    => __( 'Plum card', 'tekseries' ),
+			'card-saffron' => __( 'Saffron card', 'tekseries' ),
+			'card-lilac'   => __( 'Lilac card', 'tekseries' ),
+		),
+		'core/paragraph' => array(
+			'eyebrow' => __( 'Eyebrow', 'tekseries' ),
+		),
+	);
+
+	foreach ( $styles as $block_name => $variations ) {
+		foreach ( $variations as $name => $label ) {
+			register_block_style(
+				$block_name,
+				array(
+					'name'  => $name,
+					'label' => $label,
+				)
+			);
+		}
+	}
+}
+add_action( 'init', 'tekseries_register_block_styles' );
+
+/**
  * Loads the same stylesheet in the editor canvas.
  */
 function tekseries_editor_styles(): void {
 	add_editor_style( 'assets/css/global.css' );
 }
 add_action( 'after_setup_theme', 'tekseries_editor_styles' );
+
