@@ -1,0 +1,834 @@
+/*
+ * Job submission screens (templates/wpjm/job-submit.php, account-signin.php,
+ * job-preview.php, job-submitted.php): the steps aside beside the sign-in
+ * card, the form, the preview or the done card. Buttons and the company tile
+ * come from job.css; colours and sizes from the theme's tokens.
+ */
+
+.ts-submit {
+	display: grid;
+	grid-template-columns: 280px minmax(0, 1fr);
+	gap: 32px;
+	align-items: start;
+	color: var(--wp--preset--color--body);
+}
+
+.ts-submit--edit {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.ts-submit__aside {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	position: sticky;
+	top: calc(var(--wp-admin--admin-bar--height, 0px) + 104px);
+}
+
+.ts-submit__main {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	min-width: 0;
+}
+
+/* Steps: done (lilac, tick), current (plum, saffron number), next (white). */
+.ts-steps {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ts-steps__step {
+	display: flex;
+	flex: 1;
+	gap: 10px;
+	align-items: center;
+	padding: 12px 14px;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: 16px;
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--muted);
+	font-size: 0.9375rem;
+	font-weight: 700;
+}
+
+.ts-steps__dot {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	background: var(--wp--preset--color--lilac);
+	color: var(--wp--preset--color--plum);
+	font-size: var(--wp--preset--font-size--caption);
+}
+
+.ts-steps__dot svg {
+	width: 16px;
+	height: 16px;
+	fill: currentcolor;
+}
+
+.ts-steps__step.is-current {
+	border-color: var(--wp--preset--color--plum);
+	background: var(--wp--preset--color--plum);
+	color: var(--wp--preset--color--white);
+}
+
+.ts-steps__step.is-current .ts-steps__dot {
+	background: var(--wp--preset--color--saffron);
+	color: var(--wp--preset--color--ink);
+}
+
+.ts-steps__step.is-done {
+	border-color: var(--wp--preset--color--lilac);
+	background: var(--wp--preset--color--lilac);
+	color: var(--wp--preset--color--plum);
+}
+
+.ts-steps__step.is-done .ts-steps__dot {
+	background: var(--wp--preset--color--plum);
+	color: var(--wp--preset--color--white);
+}
+
+.ts-submit-tips {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 20px;
+	border-radius: 20px;
+	background: var(--wp--preset--color--lilac);
+	font-size: var(--wp--preset--font-size--caption);
+	line-height: 1.55;
+}
+
+.ts-submit-tips__title {
+	margin: 0;
+	color: var(--wp--preset--color--plum);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.0625rem;
+	font-weight: 700;
+}
+
+.ts-submit-tips ul {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ts-submit-tips li {
+	display: flex;
+	gap: 8px;
+}
+
+.ts-submit-tips svg {
+	flex: none;
+	width: 18px;
+	height: 18px;
+	fill: var(--wp--preset--color--coral);
+}
+
+/* Notices WP Job Manager prints above the form: errors, messages, statuses. */
+.job-manager-error,
+.job-manager-info,
+.job-manager-message,
+.ts-submit-status {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	margin: 0 0 18px;
+	padding: 14px 18px;
+	border-radius: 18px;
+	background: var(--wp--preset--color--lilac);
+	color: var(--wp--preset--color--plum);
+	font-size: 0.9375rem;
+	line-height: 1.5;
+}
+
+.job-manager-error {
+	background: var(--wp--preset--color--danger-soft);
+	color: var(--wp--preset--color--danger);
+	font-weight: 600;
+}
+
+.job-manager-info {
+	background: var(--wp--preset--color--saffron);
+	color: var(--wp--preset--color--ink);
+}
+
+:is(
+	.job-manager-error,
+	.job-manager-info,
+	.job-manager-message,
+	.ts-submit-status
+) a:not(.ts-job-button) {
+	color: inherit;
+	font-weight: 700;
+	text-decoration: underline;
+}
+
+.ts-submit-status {
+	margin: 0;
+}
+
+.ts-submit-status svg {
+	flex: none;
+	width: 22px;
+	height: 22px;
+	fill: var(--wp--preset--color--coral);
+}
+
+/* Signed in: a bar with the account and "Sign out". */
+.ts-submit-account {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 18px;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: 18px;
+	background: var(--wp--preset--color--white);
+	font-size: var(--wp--preset--font-size--caption);
+}
+
+.ts-submit-account p {
+	flex: 1;
+	margin: 0;
+}
+
+.ts-submit-account__avatar {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	background: var(--wp--preset--color--ink);
+	color: var(--wp--preset--color--saffron);
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 800;
+}
+
+.ts-submit-account__out {
+	display: inline-flex;
+	gap: 6px;
+	align-items: center;
+	min-height: var(--wp--custom--touch-target);
+	color: var(--wp--preset--color--plum);
+	font-weight: 700;
+	text-decoration: underline;
+}
+
+.ts-submit-account__out svg {
+	width: 18px;
+	height: 18px;
+	fill: currentcolor;
+}
+
+/* Signed out: the sign-in card beside "How posting works". */
+.ts-signin {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 20px;
+	align-items: stretch;
+}
+
+.ts-signin__card {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	align-items: flex-start;
+	padding: 36px;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: var(--wp--preset--border-radius--lg);
+	background: var(--wp--preset--color--white);
+}
+
+.ts-signin__card h2 {
+	margin: 0;
+	color: var(--wp--preset--color--plum);
+	font-size: 1.875rem;
+}
+
+.ts-signin__card p {
+	margin: 0;
+}
+
+.ts-signin__help {
+	color: var(--wp--preset--color--muted);
+	font-size: var(--wp--preset--font-size--caption);
+}
+
+.ts-signin__help a {
+	color: var(--wp--preset--color--plum);
+	font-weight: 700;
+}
+
+.ts-signin__how {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding: 36px;
+	border-radius: var(--wp--preset--border-radius--lg);
+	background: var(--wp--preset--color--lilac);
+}
+
+.ts-signin__how .ts-job-eyebrow {
+	margin: 0;
+}
+
+.ts-signin__how ol {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: ts-how;
+}
+
+.ts-signin__how li {
+	display: grid;
+	grid-template-columns: 32px minmax(0, 1fr);
+	gap: 2px 12px;
+	counter-increment: ts-how;
+}
+
+.ts-signin__how li::before {
+	content: counter(ts-how);
+	display: grid;
+	grid-row: span 2;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: var(--wp--preset--color--plum);
+	color: var(--wp--preset--color--white);
+	font-weight: 800;
+}
+
+.ts-signin__how strong {
+	color: var(--wp--preset--color--plum);
+}
+
+.ts-signin__how span {
+	font-size: var(--wp--preset--font-size--caption);
+}
+
+/* Form cards: an icon, heading and subtitle over a two-column field grid. */
+.ts-submit-card,
+.ts-submit-main .recaptcha-field,
+#submit-job-form > fieldset {
+	padding: 30px 32px;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: var(--wp--preset--border-radius--lg);
+	background: var(--wp--preset--color--white);
+}
+
+.ts-submit-card__head {
+	display: flex;
+	gap: 14px;
+	align-items: center;
+	margin-bottom: 24px;
+}
+
+.ts-submit-card__head h2 {
+	margin: 0;
+	color: var(--wp--preset--color--plum);
+	font-size: 1.375rem;
+}
+
+.ts-submit-card__head p {
+	margin: 2px 0 0;
+	color: var(--wp--preset--color--muted);
+	font-size: var(--wp--preset--font-size--caption);
+}
+
+.ts-submit-card__icon {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 14px;
+	background: var(--wp--preset--color--lilac);
+}
+
+.ts-signin__card .ts-submit-card__icon {
+	width: 56px;
+	height: 56px;
+	border-radius: 18px;
+}
+
+.ts-submit-card__icon svg {
+	width: 22px;
+	height: 22px;
+	fill: var(--wp--preset--color--plum);
+}
+
+/* Six columns: most fields take half, long ones a row, salary a third. */
+.ts-submit-fields {
+	display: grid;
+	grid-template-columns: repeat(6, minmax(0, 1fr));
+	gap: 20px 18px;
+}
+
+.ts-submit-fields > fieldset {
+	display: flex;
+	flex-direction: column;
+	grid-column: span 3;
+	gap: 8px;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.ts-submit-fields > :is(
+	.fieldset-job_title,
+	.fieldset-job_description,
+	.fieldset-application,
+	.fieldset-company_name,
+	.fieldset-company_logo,
+	.fieldset-type-wp-editor
+) {
+	grid-column: 1 / -1;
+}
+
+.ts-submit-fields > [class*="fieldset-job_salary"] {
+	grid-column: span 2;
+}
+
+.ts-submit-fields label {
+	color: var(--wp--preset--color--plum);
+	font-size: var(--wp--preset--font-size--caption);
+	font-weight: 700;
+}
+
+.ts-submit-fields label small {
+	color: var(--wp--preset--color--muted);
+	font-size: inherit;
+	font-weight: 500;
+}
+
+.ts-required {
+	color: var(--wp--preset--color--coral-text);
+}
+
+.ts-submit-fields .field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.ts-submit-fields .description {
+	color: var(--wp--preset--color--muted);
+	font-size: 0.8125rem;
+}
+
+.ts-submit-fields :is(
+	input[type="text"],
+	input[type="email"],
+	input[type="url"],
+	input[type="password"],
+	input[type="date"],
+	select,
+	textarea
+) {
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 50px;
+	padding: 0 16px;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: 14px;
+	background: var(--wp--preset--color--blush);
+	color: var(--wp--preset--color--ink);
+	font: inherit;
+	font-size: 0.9375rem;
+}
+
+.ts-submit-fields textarea {
+	padding: 14px 16px;
+	line-height: 1.6;
+	resize: vertical;
+}
+
+.ts-submit-fields :is(input, select, textarea):focus {
+	border-color: var(--wp--preset--color--plum);
+	outline: none;
+	background: var(--wp--preset--color--white);
+	box-shadow: 0 0 0 4px rgb(74 29 94 / 12%);
+}
+
+.ts-submit-fields ::placeholder {
+	color: var(--wp--preset--color--muted);
+}
+
+/* Remote position: the checkbox drawn as a switch. */
+.ts-submit-fields .fieldset-remote_position .field {
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+.ts-submit-fields input[type="checkbox"] {
+	position: relative;
+	flex: none;
+	width: 40px;
+	height: 24px;
+	margin: 0;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background: var(--wp--preset--color--lilac-deep);
+	cursor: pointer;
+	transition: background-color var(--wp--custom--motion--duration);
+	appearance: none;
+}
+
+.ts-submit-fields input[type="checkbox"]::after {
+	content: "";
+	position: absolute;
+	top: 3px;
+	left: 3px;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: var(--wp--preset--color--white);
+	transition: left var(--wp--custom--motion--duration);
+}
+
+.ts-submit-fields input[type="checkbox"]:checked {
+	background: var(--wp--preset--color--plum);
+}
+
+.ts-submit-fields input[type="checkbox"]:checked::after {
+	left: 19px;
+}
+
+/* Logo: a dashed drop zone around WP Job Manager's file input. */
+.ts-submit-fields .fieldset-company_logo .field {
+	padding: 18px;
+	border: 1px dashed var(--wp--preset--color--lilac-deep);
+	border-radius: 18px;
+	background: var(--wp--preset--color--blush);
+}
+
+.ts-submit-fields input[type="file"] {
+	font: inherit;
+	font-size: var(--wp--preset--font-size--caption);
+}
+
+.ts-submit-fields input[type="file"]::file-selector-button {
+	min-height: 40px;
+	margin-right: 12px;
+	padding: 0 16px;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: var(--wp--preset--border-radius--pill);
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--plum);
+	font: inherit;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+/* WP Job Manager's description editor (TinyMCE) and category select2. */
+.ts-submit-fields .wp-editor-wrap {
+	overflow: hidden;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: 14px;
+}
+
+.ts-submit-fields .wp-editor-wrap textarea {
+	border: 0;
+	border-radius: 0;
+}
+
+.ts-submit-fields .select2-container {
+	width: 100% !important;
+}
+
+.ts-submit-fields .select2-container .select2-selection {
+	min-height: 50px;
+	padding: 8px 12px;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: 14px;
+	background: var(--wp--preset--color--blush);
+}
+
+.ts-submit-fields .select2-selection__choice {
+	padding: 4px 10px !important;
+	border: 0 !important;
+	border-radius: var(--wp--preset--border-radius--pill) !important;
+	background: var(--wp--preset--color--plum) !important;
+	color: var(--wp--preset--color--white);
+	font-size: var(--wp--preset--font-size--caption);
+	font-weight: 700;
+}
+
+/* reCAPTCHA ("Are you human?"), when WP Job Manager adds it. */
+#submit-job-form > fieldset.fieldset-recaptcha {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 14px;
+	align-items: center;
+	justify-content: space-between;
+	margin: 0;
+}
+
+#submit-job-form > fieldset.fieldset-recaptcha label {
+	color: var(--wp--preset--color--plum);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.125rem;
+	font-weight: 700;
+}
+
+/* Actions: Preview, Save draft and the "* Required" legend. */
+.ts-submit-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	align-items: center;
+}
+
+.ts-submit-actions .ts-job-button {
+	min-height: 54px;
+	border: 0;
+	font: inherit;
+	font-size: var(--wp--preset--font-size--body-s);
+	font-weight: 700;
+}
+
+.ts-job-button--outline {
+	border: 1px solid var(--wp--preset--color--lilac-deep) !important;
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--plum);
+}
+
+.ts-job-button--outline:hover {
+	border-color: var(--wp--preset--color--saffron) !important;
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--plum);
+}
+
+.ts-submit-actions__legend {
+	margin: 0;
+	color: var(--wp--preset--color--muted);
+	font-size: 0.8125rem;
+}
+
+.ts-submit-actions__legend span {
+	color: var(--wp--preset--color--coral-text);
+	font-weight: 700;
+}
+
+/* Preview: the listing inside a plum frame, with the actions on the bar. */
+.ts-preview {
+	gap: 0;
+	overflow: hidden;
+	border: 2px solid var(--wp--preset--color--plum);
+	border-radius: var(--wp--preset--border-radius--lg);
+	background: var(--wp--preset--color--white);
+}
+
+.ts-preview__bar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 24px;
+	background: var(--wp--preset--color--plum);
+	color: var(--wp--preset--color--white);
+}
+
+.ts-preview__label {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	margin: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 800;
+}
+
+.ts-preview__label svg {
+	width: 22px;
+	height: 22px;
+	fill: var(--wp--preset--color--saffron);
+}
+
+.ts-preview__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.ts-preview__actions .ts-job-button {
+	min-height: 48px;
+	border: 0;
+	font: inherit;
+	font-size: 0.9375rem;
+	font-weight: 700;
+}
+
+.ts-job-button--glass {
+	border: 1px solid var(--wp--custom--alpha--white-50) !important;
+	background: transparent;
+	color: var(--wp--preset--color--white);
+}
+
+.ts-job-button--accent {
+	background: var(--wp--preset--color--saffron);
+	color: var(--wp--preset--color--ink);
+}
+
+.ts-job-button--accent:hover,
+.ts-job-button--glass:hover {
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--plum);
+}
+
+.ts-preview__body {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+	padding: 28px;
+}
+
+.ts-preview__title {
+	margin: 0;
+	color: var(--wp--preset--color--plum);
+	font-size: clamp(1.625rem, 1.25rem + 1.5vw, 2.375rem);
+}
+
+/* Done: a card with a tick, the message and where to go next. */
+.ts-submit-done {
+	flex-direction: column;
+	gap: 14px;
+	align-items: flex-start;
+	margin: 0;
+	padding: 36px;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: var(--wp--preset--border-radius--lg);
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--body);
+}
+
+.ts-submit-done h2 {
+	margin: 0;
+	color: var(--wp--preset--color--plum);
+	font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+}
+
+.ts-submit-done p {
+	margin: 0;
+}
+
+.ts-submit-done__icon {
+	display: grid;
+	place-items: center;
+	width: 64px;
+	height: 64px;
+	border-radius: 50%;
+	background: var(--wp--preset--color--success-soft);
+}
+
+.ts-submit-done__icon svg {
+	width: 34px;
+	height: 34px;
+	fill: var(--wp--preset--color--success);
+}
+
+.ts-submit-done__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-top: 6px !important;
+}
+
+/* Tablet and mobile: the steps become a row above the content; no tips. */
+@media (width <= 1100px) {
+
+	.ts-submit {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 20px;
+	}
+
+	.ts-submit__aside {
+		position: static;
+	}
+
+	.ts-steps {
+		flex-direction: row;
+	}
+
+	.ts-submit-tips {
+		display: none;
+	}
+}
+
+@media (width <= 640px) {
+
+	.ts-steps__step {
+		gap: 8px;
+		padding: 10px;
+		font-size: 0.8125rem;
+	}
+
+	.ts-steps__dot {
+		width: 26px;
+		height: 26px;
+	}
+
+	.ts-signin {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.ts-signin__card,
+	.ts-signin__how {
+		padding: 24px 20px;
+	}
+
+	.ts-signin__card .ts-job-button {
+		align-self: stretch;
+	}
+
+	.ts-submit-card {
+		padding: 20px 18px;
+	}
+
+	.ts-submit-fields > fieldset,
+	.ts-submit-fields > [class*="fieldset-job_salary"] {
+		grid-column: 1 / -1;
+	}
+
+	.ts-submit-actions .ts-job-button {
+		flex: 1;
+	}
+
+	.ts-submit-actions__legend {
+		width: 100%;
+		text-align: center;
+	}
+
+	.ts-preview__bar {
+		padding: 14px 16px;
+	}
+
+	.ts-preview__actions,
+	.ts-preview__actions .ts-job-button {
+		flex: 1;
+	}
+
+	.ts-preview__body {
+		padding: 18px;
+	}
+}

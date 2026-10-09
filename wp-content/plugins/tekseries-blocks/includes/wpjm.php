@@ -53,8 +53,21 @@ add_action( 'init', 'tekseries_blocks_register_wpjm_styles' );
 function tekseries_blocks_wpjm_frontend_assets( $enabled ) {
 	return $enabled && ! is_singular( 'job_listing' ) && ! has_block( 'tekseries/job-listings' );
 }
-add_filter( 'job_manager_enqueue_frontend_style', 'tekseries_blocks_wpjm_frontend_assets' );
 add_filter( 'job_manager_enhanced_select_enabled', 'tekseries_blocks_wpjm_frontend_assets' );
+
+/**
+ * Leaves out WP Job Manager's front-end stylesheet on the same screens, and
+ * on the submission form, whose templates this plugin styles too (it keeps
+ * select2 for the category field).
+ *
+ * @param bool $enabled Whether WP Job Manager loads frontend.css on this page.
+ * @return bool
+ */
+function tekseries_blocks_wpjm_frontend_style( $enabled ) {
+	$post = get_post();
+	return tekseries_blocks_wpjm_frontend_assets( $enabled ) && ! ( $post && has_shortcode( $post->post_content, 'submit_job_form' ) );
+}
+add_filter( 'job_manager_enqueue_frontend_style', 'tekseries_blocks_wpjm_frontend_style' );
 
 /**
  * Leaves out the stylesheet WP Job Manager loads on every other page, for its
@@ -136,7 +149,8 @@ function tekseries_blocks_demote_job_description_h1( $description ) {
 add_filter( 'wpjm_the_job_description', 'tekseries_blocks_demote_job_description_h1' );
 
 /**
- * Gives single jobs the Home / Job Series / title breadcrumbs.
+ * Gives single jobs, the submission page and the job dashboard the
+ * Home / Job Series / title breadcrumbs.
  *
  * Jobs have no archive; the Job Series page (WP Job Manager's job listings
  * page) stands in for it.
@@ -145,8 +159,12 @@ add_filter( 'wpjm_the_job_description', 'tekseries_blocks_demote_job_description
  * @return array
  */
 function tekseries_blocks_job_breadcrumbs( array $items ): array {
-	$listings = function_exists( 'job_manager_get_page_id' ) ? (int) job_manager_get_page_id( 'jobs' ) : 0;
-	if ( ! is_singular( 'job_listing' ) || ! $listings || count( $items ) < 2 ) {
+	if ( ! function_exists( 'job_manager_get_page_id' ) || count( $items ) < 2 ) {
+		return $items;
+	}
+	$listings = (int) job_manager_get_page_id( 'jobs' );
+	$pages    = array_filter( array( (int) job_manager_get_page_id( 'submit_job_form' ), (int) job_manager_get_page_id( 'job_dashboard' ) ) );
+	if ( ! $listings || ! ( is_singular( 'job_listing' ) || ( $pages && is_page( $pages ) ) ) ) {
 		return $items;
 	}
 	return array(

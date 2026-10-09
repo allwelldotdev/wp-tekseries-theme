@@ -5,6 +5,11 @@ type WpPage = { id: number; link: string };
 type Name = 'jobs' | 'submit' | 'dashboard';
 export type JobPages = Record< Name, WpPage >;
 
+// A shortcode in a wide group, as on the site's pages.
+const wide = ( shortcode: string ) =>
+	'<!-- wp:group {"align":"wide","layout":{"type":"default"}} --><div class="wp-block-group alignwide">' +
+	`<!-- wp:shortcode -->${ shortcode }<!-- /wp:shortcode --></div><!-- /wp:group -->`;
+
 // The pages WP Job Manager's setup wizard would create, and the setting each
 // one is chosen in. They stay between runs, like a site's real pages.
 const PAGES: Record< Name, [ string, string, string, string ] > = {
@@ -17,13 +22,13 @@ const PAGES: Record< Name, [ string, string, string, string ] > = {
 	submit: [
 		'submit-a-job',
 		'Submit a job',
-		'<!-- wp:shortcode -->[submit_job_form]<!-- /wp:shortcode -->',
+		wide( '[submit_job_form]' ),
 		'job_manager_submit_job_form_page_id',
 	],
 	dashboard: [
 		'job-dashboard',
 		'Job dashboard',
-		'<!-- wp:shortcode -->[job_dashboard]<!-- /wp:shortcode -->',
+		wide( '[job_dashboard]' ),
 		'job_manager_job_dashboard_page_id',
 	],
 };
