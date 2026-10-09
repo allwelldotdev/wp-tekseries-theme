@@ -29,6 +29,12 @@ $keys: text, badge-bg, badge-text, deco, sub, button-bg, button-text, line;
 		}
 	}
 
+	// Headings take the tone's text colour over the theme's heading colour;
+	// a colour an editor picks (has-*-color) still wins.
+	:is(h1, h2, h3, h4, h5, h6) {
+		color: inherit;
+	}
+
 	&.ts-tone--card {
 		--ts-tone-accent: var(--ts-tone-card-accent);
 	}
