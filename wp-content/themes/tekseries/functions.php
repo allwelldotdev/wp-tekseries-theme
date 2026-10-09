@@ -72,3 +72,26 @@ function tekseries_editor_styles(): void {
 }
 add_action( 'after_setup_theme', 'tekseries_editor_styles' );
 
+/**
+ * Loads per-block stylesheets only on pages that use the block, after core's
+ * own styles for it, on the front end and in the editor.
+ */
+function tekseries_enqueue_block_styles(): void {
+	$blocks = array(
+		'core/navigation'   => 'navigation',
+		'core/social-links' => 'social-links',
+	);
+
+	foreach ( $blocks as $block_name => $file ) {
+		wp_enqueue_block_style(
+			$block_name,
+			array(
+				'handle' => "tekseries-block-{$file}",
+				'src'    => get_theme_file_uri( "assets/css/blocks/{$file}.css" ),
+				'path'   => get_theme_file_path( "assets/css/blocks/{$file}.css" ),
+				'ver'    => wp_get_theme()->get( 'Version' ),
+			)
+		);
+	}
+}
+add_action( 'init', 'tekseries_enqueue_block_styles' );

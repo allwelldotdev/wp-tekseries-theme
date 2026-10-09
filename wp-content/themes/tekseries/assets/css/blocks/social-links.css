@@ -1,0 +1,34 @@
+/*
+ * Footer social links (.ts-social): 44px circles in translucent white on plum,
+ * saffron with ink icons on hover.
+ */
+
+.wp-block-social-links.ts-social .wp-social-link {
+	background-color: var(--wp--custom--alpha--white-10);
+	transition: background-color var(--wp--custom--motion--duration), color var(--wp--custom--motion--duration);
+}
+
+.wp-block-social-links.ts-social .wp-social-link a {
+	display: grid;
+	place-items: center;
+	width: var(--wp--custom--touch-target);
+	height: var(--wp--custom--touch-target);
+	padding: 0;
+}
+
+.wp-block-social-links.ts-social .wp-social-link svg {
+	width: 20px;
+	height: 20px;
+}
+
+.wp-block-social-links.ts-social .wp-social-link:hover {
+	background-color: var(--wp--preset--color--saffron);
+	color: var(--wp--preset--color--ink);
+	transform: none;
+}
+
+.wp-block-social-links.ts-social .wp-social-link a:focus-visible {
+	border-radius: 50%;
+	outline: 2px solid var(--wp--preset--color--saffron);
+	outline-offset: 2px;
+}

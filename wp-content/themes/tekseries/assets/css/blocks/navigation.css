@@ -1,0 +1,113 @@
+/*
+ * Header menus. Loaded after core's navigation styles.
+ *
+ * Desktop (.ts-nav-primary): pill links with a lilac hover and current state,
+ * 44px tall for touch. At 1100px and below (.ts-nav-compact) core's overlay
+ * becomes a panel that drops under the header bar; core still handles the
+ * toggle, focus trap and Escape key.
+ */
+
+.ts-nav-primary .wp-block-navigation-item__content {
+	padding: 12px 14px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	transition: background-color var(--wp--custom--motion--duration);
+}
+
+.ts-nav-primary .wp-block-navigation-item__content:hover,
+.ts-nav-primary .current-menu-item > .wp-block-navigation-item__content {
+	background-color: var(--wp--preset--color--lilac);
+}
+
+/* The menu and close buttons: a 44px lilac circle in the same spot. */
+.ts-nav-compact .wp-block-navigation__responsive-container-open,
+.ts-nav-compact .wp-block-navigation__responsive-container-close {
+	display: grid;
+	place-items: center;
+	width: var(--wp--custom--touch-target);
+	height: var(--wp--custom--touch-target);
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: 50%;
+	background-color: var(--wp--preset--color--lilac);
+	color: var(--wp--preset--color--plum);
+}
+
+.ts-nav-compact .wp-block-navigation__responsive-container-open:focus-visible,
+.ts-nav-compact .wp-block-navigation__responsive-container-close:focus-visible {
+	outline: var(--wp--custom--focus--width) solid var(--wp--preset--color--plum);
+	outline-offset: var(--wp--custom--focus--offset);
+}
+
+.wp-block-navigation.ts-nav-compact {
+	position: static;
+}
+
+.wp-block-navigation.ts-nav-compact .wp-block-navigation__responsive-container.is-menu-open {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	bottom: auto;
+	left: 0;
+	padding: 12px var(--wp--preset--spacing--gutter) 8px;
+	overflow: visible;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+	animation: none;
+}
+
+/* The close button sits above the panel, so the list scrolls instead. */
+.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__responsive-container-content {
+	max-height: calc(100dvh - 120px);
+	overflow-y: auto;
+}
+
+.admin-bar .wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__responsive-dialog,
+.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__responsive-dialog {
+	margin-top: 0;
+}
+
+.wp-block-navigation.ts-nav-compact .wp-block-navigation__responsive-container-close {
+	top: calc(-1 * (12px + var(--ts-header-pad, 12px) + var(--wp--custom--touch-target)));
+	right: 0;
+}
+
+.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__responsive-container-content {
+	align-items: stretch;
+	padding-top: 0;
+}
+
+.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__container {
+	align-items: stretch;
+}
+
+.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation-item__content {
+	display: block;
+	padding: 12px 14px;
+	border-radius: var(--wp--preset--border-radius--sm);
+	font-size: 1.0625rem;
+}
+
+.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation-item__content:hover,
+.wp-block-navigation.ts-nav-compact .is-menu-open .current-menu-item > .wp-block-navigation-item__content {
+	background-color: var(--wp--preset--color--lilac);
+}
+
+.wp-block-navigation.ts-nav-compact .ts-nav-compact__ctas {
+	flex-wrap: nowrap;
+	padding-top: 8px;
+}
+
+.wp-block-navigation.ts-nav-compact .ts-nav-compact__ctas .wp-block-button {
+	flex: 1;
+	text-align: center;
+}
+
+.wp-block-navigation.ts-nav-compact .ts-nav-compact__ctas .wp-block-button__link {
+	width: 100%;
+}
+
+@media (width <= 640px) {
+
+	.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation-item__content {
+		padding: 12px;
+		font-size: 1rem;
+	}
+}

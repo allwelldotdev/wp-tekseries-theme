@@ -584,7 +584,7 @@
 				"elements": {
 					"link": {
 						"color": { "text": "inherit" },
-						"typography": { "fontWeight": "600", "textDecoration": "none" },
+						"typography": { "fontWeight": "inherit", "textDecoration": "none" },
 						":hover": {
 							"color": { "text": "var:preset|color|plum" }
 						}
@@ -608,5 +608,9 @@
 				}
 			}
 		}
-	}
+	},
+	"templateParts": [
+		{ "name": "header", "title": "Header", "area": "header" },
+		{ "name": "footer", "title": "Footer", "area": "footer" }
+	]
 }
