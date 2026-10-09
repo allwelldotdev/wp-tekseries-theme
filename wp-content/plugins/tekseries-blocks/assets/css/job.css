@@ -1,7 +1,9 @@
 /*
- * Single job body (templates/wpjm/content-single-job_listing*.php): the
- * description card beside a side card with the company, the job's details
- * and how to apply. Colours and sizes come from the theme's tokens.
+ * Job Series screens from the WP Job Manager templates in templates/wpjm/:
+ * the single job body (the description card beside a side card with the
+ * company, the job's details and how to apply) and the company tile, which
+ * the Job Listings block's rows use too. Colours and sizes come from the
+ * theme's tokens.
  */
 
 .ts-job {

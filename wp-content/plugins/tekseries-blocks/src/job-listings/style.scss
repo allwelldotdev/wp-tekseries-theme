@@ -1,0 +1,570 @@
+// Job Listings: the search card, the results line, one row per job and the
+// page links (JobSeries boards). Colours and sizes come from the theme tokens.
+
+.wp-block-tekseries-job-listings {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	color: var(--wp--preset--color--body);
+}
+
+// Search card: fields and button on one row, types and remote on the next.
+.ts-job-filters {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding: 20px;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: var(--wp--preset--border-radius--lg);
+	background: var(--wp--preset--color--white);
+
+	.search_jobs {
+		display: grid;
+		grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+		gap: 12px;
+		align-items: center;
+	}
+
+	.search_jobs:not(:has(select)) {
+		grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto;
+	}
+}
+
+.ts-job-field {
+	position: relative;
+	display: block;
+	min-width: 0;
+
+	svg {
+		position: absolute;
+		top: 50%;
+		left: 14px;
+		width: 22px;
+		height: 22px;
+		transform: translateY(-50%);
+		fill: var(--wp--preset--color--plum);
+		pointer-events: none;
+	}
+
+	input,
+	select {
+		box-sizing: border-box;
+		width: 100%;
+		min-height: 52px;
+		padding: 0 14px 0 46px;
+		border: 1px solid var(--wp--preset--color--line);
+		border-radius: 14px;
+		background: var(--wp--preset--color--blush);
+		color: var(--wp--preset--color--ink);
+		font: inherit;
+		font-size: var(--wp--preset--font-size--body-s);
+	}
+
+	input::placeholder {
+		color: var(--wp--preset--color--muted);
+	}
+
+	select {
+		padding-right: 40px;
+		appearance: none;
+		cursor: pointer;
+	}
+
+	svg:last-child:not(:first-of-type) {
+		right: 12px;
+		left: auto;
+		fill: var(--wp--preset--color--muted);
+	}
+}
+
+.ts-job-search {
+	display: inline-flex;
+	gap: 8px;
+	align-items: center;
+	justify-content: center;
+	min-height: 52px;
+	padding: 0 26px;
+	border: 0;
+	border-radius: 14px;
+	background: var(--wp--preset--color--plum);
+	color: var(--wp--preset--color--white);
+	font: inherit;
+	font-size: 0.9375rem;
+	font-weight: 700;
+	cursor: pointer;
+	transition:
+		background-color var(--wp--custom--motion--duration),
+		color var(--wp--custom--motion--duration);
+
+	&:hover {
+		background: var(--wp--preset--color--saffron);
+		color: var(--wp--preset--color--ink);
+	}
+
+	svg {
+		width: 20px;
+		height: 20px;
+		fill: currentcolor;
+	}
+}
+
+.ts-job-filters__more {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	align-items: center;
+	justify-content: space-between;
+	padding-top: 14px;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+// Job type chips: real checkboxes, hidden behind the label. Checked chips are
+// plum with a tick; unchecked ones are white with the type's icon.
+.ts-job-types {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	min-width: 0; // fieldsets are otherwise at least as wide as their content
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.ts-job-type-toggle,
+.ts-job-switch {
+	display: inline-flex;
+	gap: 6px;
+	align-items: center;
+	min-height: var(--wp--custom--touch-target);
+	font-size: var(--wp--preset--font-size--caption);
+	font-weight: 700;
+	cursor: pointer;
+
+	input {
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	&:has(input:focus-visible) {
+		outline: var(--wp--custom--focus--width) solid var(--wp--preset--color--plum);
+		outline-offset: var(--wp--custom--focus--offset);
+	}
+}
+
+.ts-job-type-toggle {
+	position: relative;
+	box-sizing: border-box;
+	padding: 0 12px;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: var(--wp--preset--border-radius--pill);
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--muted);
+
+	svg {
+		width: 18px;
+		height: 18px;
+		fill: currentcolor;
+	}
+
+	svg:nth-of-type(2) {
+		display: none;
+	}
+
+	&:has(input:checked) {
+		border-color: var(--wp--preset--color--plum);
+		background: var(--wp--preset--color--plum);
+		color: var(--wp--preset--color--white);
+
+		svg:nth-of-type(1) {
+			display: none;
+		}
+
+		svg:nth-of-type(2) {
+			display: block;
+		}
+	}
+}
+
+// "Remote positions only": a checkbox shown as a switch.
+.ts-job-switch {
+	position: relative;
+	gap: 10px;
+	color: var(--wp--preset--color--plum);
+}
+
+.ts-job-switch__track {
+	position: relative;
+	flex: none;
+	width: 40px;
+	height: 24px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background: var(--wp--preset--color--lilac-deep);
+	transition: background-color var(--wp--custom--motion--duration);
+
+	&::after {
+		content: "";
+		position: absolute;
+		top: 3px;
+		left: 3px;
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		background: var(--wp--preset--color--white);
+		transition: left var(--wp--custom--motion--duration);
+	}
+
+	input:checked + & {
+		background: var(--wp--preset--color--plum);
+	}
+
+	input:checked + &::after {
+		left: 19px;
+	}
+}
+
+// Results line, list and rows.
+.ts-job-results {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.ts-job-results__head {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 4px 4px;
+	color: var(--wp--preset--color--muted);
+	font-size: var(--wp--preset--font-size--caption);
+
+	p {
+		display: flex;
+		gap: 6px;
+		align-items: center;
+		margin: 0;
+	}
+
+	strong {
+		color: var(--wp--preset--color--plum);
+	}
+
+	svg {
+		width: 18px;
+		height: 18px;
+		fill: currentcolor;
+	}
+}
+
+.wp-block-tekseries-job-listings .job_listings {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ts-job-row {
+	margin: 0;
+}
+
+.ts-job-row__link {
+	display: grid;
+	grid-template-columns: 52px minmax(0, 1.6fr) minmax(0, 1fr) 170px;
+	gap: 18px;
+	align-items: center;
+	padding: 16px 20px;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: var(--wp--preset--border-radius--md);
+	background: var(--wp--preset--color--white);
+	color: inherit;
+	text-decoration: none;
+	transition: border-color var(--wp--custom--motion--duration);
+
+	&:hover,
+	&:focus-visible {
+		border-color: var(--wp--preset--color--saffron);
+	}
+
+	&:hover .ts-job-row__title {
+		color: var(--wp--preset--color--coral-text);
+	}
+
+	.ts-job-tile {
+		width: 52px;
+		height: 52px;
+		font-size: 1.125rem;
+	}
+
+	.position {
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+		min-width: 0;
+	}
+
+	.company {
+		color: var(--wp--preset--color--muted);
+		font-size: var(--wp--preset--font-size--caption);
+		font-weight: 600;
+	}
+
+	.location,
+	.date {
+		display: flex;
+		gap: 6px;
+		align-items: flex-start;
+		font-size: var(--wp--preset--font-size--caption);
+		line-height: 1.4;
+
+		svg {
+			flex: none;
+			width: 18px;
+			height: 18px;
+			fill: var(--wp--preset--color--coral);
+		}
+	}
+
+	// Location in the third column; type and date stacked in the fourth.
+	.meta {
+		display: contents;
+	}
+
+	.ts-job-row__end {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		align-items: flex-end;
+		text-align: right;
+	}
+
+	.date {
+		color: var(--wp--preset--color--muted);
+		font-size: 0.8125rem;
+
+		svg {
+			display: none;
+		}
+	}
+}
+
+.ts-job-row__title {
+	margin: 0;
+	color: var(--wp--preset--color--plum);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--body-l);
+	font-weight: 700;
+	line-height: 1.3;
+	transition: color var(--wp--custom--motion--duration);
+}
+
+// Type chip colours (boards): most types lilac, four with their own.
+.ts-job-type {
+	padding: 4px 10px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background: var(--wp--preset--color--lilac);
+	color: var(--wp--preset--color--plum);
+	font-size: 0.75rem;
+	font-weight: 800;
+	letter-spacing: 0.02em;
+	white-space: nowrap;
+}
+
+.ts-job-type--onsite {
+	background: var(--wp--preset--color--danger-soft);
+	color: var(--wp--preset--color--danger);
+}
+
+.ts-job-type--internship {
+	background: var(--wp--preset--color--warning-soft);
+	color: var(--wp--preset--color--warning);
+}
+
+.ts-job-type--part-time {
+	background: var(--wp--preset--color--success-soft);
+	color: var(--wp--preset--color--success);
+}
+
+// Empty results.
+.ts-job-empty {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	align-items: center;
+	padding: 36px 20px;
+	border: 1px dashed var(--wp--preset--color--lilac-deep);
+	border-radius: var(--wp--preset--border-radius--md);
+	background: var(--wp--preset--color--white);
+	text-align: center;
+
+	svg {
+		width: 40px;
+		height: 40px;
+		fill: var(--wp--preset--color--lilac-deep);
+	}
+}
+
+.ts-job-empty__title {
+	margin: 0;
+	color: var(--wp--preset--color--plum);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.1875rem;
+	font-weight: 700;
+}
+
+.ts-job-empty__clear {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--wp--custom--touch-target);
+	padding: 0 20px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background: var(--wp--preset--color--lilac);
+	color: var(--wp--preset--color--plum);
+	font-weight: 700;
+	text-decoration: none;
+}
+
+// Page links: 44px circles, the current page plum.
+.ts-job-pages {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	align-items: center;
+	justify-content: center;
+	padding-top: 18px;
+
+	.page-numbers {
+		display: grid;
+		box-sizing: border-box;
+		place-items: center;
+		min-width: var(--wp--custom--touch-target);
+		height: var(--wp--custom--touch-target);
+		padding: 0 6px;
+		border: 1px solid var(--wp--preset--color--line);
+		border-radius: var(--wp--preset--border-radius--pill);
+		background: var(--wp--preset--color--white);
+		color: var(--wp--preset--color--plum);
+		font-size: 0.9375rem;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.page-numbers.current {
+		border-color: var(--wp--preset--color--plum);
+		background: var(--wp--preset--color--plum);
+		color: var(--wp--preset--color--white);
+	}
+
+	.page-numbers.dots {
+		min-width: 0;
+		padding: 0 4px;
+		border: 0;
+		background: none;
+		color: var(--wp--preset--color--muted);
+	}
+
+	:is(.prev, .next) {
+		border-color: var(--wp--preset--color--lilac);
+		background: var(--wp--preset--color--lilac);
+	}
+
+	a.page-numbers:hover {
+		border-color: var(--wp--preset--color--saffron);
+	}
+
+	svg {
+		width: 22px;
+		height: 22px;
+		fill: currentcolor;
+	}
+}
+
+// Tablet: two-row search; rows become tile + stacked text.
+@media (width <= 1100px) {
+
+	.ts-job-filters .search_jobs,
+	.ts-job-filters .search_jobs:not(:has(select)) {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.ts-job-search {
+		grid-column: 1 / -1;
+	}
+
+	.ts-job-row__link {
+		grid-template-columns: 48px minmax(0, 1fr);
+		grid-template-areas:
+			"tile position"
+			"tile meta";
+		gap: 4px 16px;
+
+		.ts-job-tile {
+			grid-area: tile;
+			align-self: start;
+			width: 48px;
+			height: 48px;
+		}
+
+		.position {
+			grid-area: position;
+		}
+
+		// Type chip, location and date share one line under the title.
+		.meta {
+			display: flex;
+			grid-area: meta;
+			flex-wrap: wrap;
+			gap: 6px 12px;
+			align-items: center;
+			margin-top: 4px;
+		}
+
+		.ts-job-row__end {
+			display: contents;
+		}
+
+		.job-type {
+			order: -1;
+		}
+
+		.date svg {
+			display: block;
+		}
+	}
+}
+
+@media (width <= 640px) {
+
+	.ts-job-filters .search_jobs,
+	.ts-job-filters .search_jobs:not(:has(select)) {
+		grid-template-columns: 1fr;
+	}
+
+	// Type chips scroll sideways in one line, out to the card's edges.
+	.ts-job-types {
+		flex: 1 1 100%;
+		flex-wrap: nowrap;
+		margin: 0 -20px;
+		padding: 0 20px;
+		overflow-x: auto;
+	}
+
+	.ts-job-type-toggle {
+		flex: none;
+	}
+
+	.ts-job-results__order {
+		display: none !important;
+	}
+
+	.ts-job-row__link {
+		grid-template-columns: 44px minmax(0, 1fr);
+
+		.ts-job-tile {
+			width: 44px;
+			height: 44px;
+		}
+	}
+}

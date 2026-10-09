@@ -43,16 +43,18 @@ function tekseries_blocks_register_wpjm_styles(): void {
 add_action( 'init', 'tekseries_blocks_register_wpjm_styles' );
 
 /**
- * Leaves out WP Job Manager's front-end stylesheet on the single job page,
- * which this plugin's templates style.
+ * Leaves out WP Job Manager's front-end stylesheet and its enhanced selects
+ * (select2) on the screens this plugin styles in full: a single job, and a
+ * page with the Job Listings block. The submission form keeps them.
  *
- * @param bool $enqueue Whether WP Job Manager loads frontend.css.
+ * @param bool $enabled Whether WP Job Manager loads them on this page.
  * @return bool
  */
-function tekseries_blocks_wpjm_frontend_style( $enqueue ) {
-	return $enqueue && ! is_singular( 'job_listing' );
+function tekseries_blocks_wpjm_frontend_assets( $enabled ) {
+	return $enabled && ! is_singular( 'job_listing' ) && ! has_block( 'tekseries/job-listings' );
 }
-add_filter( 'job_manager_enqueue_frontend_style', 'tekseries_blocks_wpjm_frontend_style' );
+add_filter( 'job_manager_enqueue_frontend_style', 'tekseries_blocks_wpjm_frontend_assets' );
+add_filter( 'job_manager_enhanced_select_enabled', 'tekseries_blocks_wpjm_frontend_assets' );
 
 /**
  * Leaves out the stylesheet WP Job Manager loads on every other page, for its
@@ -90,6 +92,36 @@ function tekseries_blocks_wpjm_apply_click_stat( $stats ) {
 	return $stats;
 }
 add_filter( 'wpjm_get_registered_stats', 'tekseries_blocks_wpjm_apply_click_stat' );
+
+/**
+ * Records job search statistics for a page showing the Job Listings block, as
+ * WP Job Manager does for a page with its [jobs] shortcode (search views, and
+ * impressions of each `li.job_listing` scrolled into view). WP Job Manager
+ * only looks for the shortcode in the page content, so its own private method
+ * is called here, keeping its nonce, stat definitions and filters.
+ *
+ * @param int $page_id Page the listings are on.
+ */
+function tekseries_blocks_track_job_search( int $page_id ): void {
+	static $tracked = false;
+	if ( $tracked || ! $page_id ) {
+		return;
+	}
+	$tracked = true;
+
+	// After WP Job Manager registers its stats script (priority 10).
+	add_action(
+		'wp_enqueue_scripts',
+		function () use ( $page_id ): void {
+			$stats = '\WP_Job_Manager\Stats_Script';
+			if ( ! class_exists( '\WP_Job_Manager\Stats' ) || ! \WP_Job_Manager\Stats::is_enabled() || ! method_exists( $stats, 'enqueue_stats_script' ) ) {
+				return;
+			}
+			( fn() => $this->enqueue_stats_script( array( 'jobs' ), $page_id ) )->call( $stats::instance() ); // phpcs:ignore PHPCompatibility.FunctionDeclarations.NewClosure.ThisFoundOutsideClass -- bound to the instance by call().
+		},
+		20
+	);
+}
 
 /**
  * Turns H1 headings in a job description into H2s: imported descriptions

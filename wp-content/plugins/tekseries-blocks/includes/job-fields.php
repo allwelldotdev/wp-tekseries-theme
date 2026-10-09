@@ -4,7 +4,8 @@
  *
  * WP Job Manager keeps a job's details in protected (`_`-prefixed) post meta,
  * which core's post-meta binding source refuses. The `tekseries/job-field`
- * source gives templates the ones the design shows, as display text.
+ * source gives templates the ones the design shows, as display text; the
+ * `tekseries/job-stats` source gives the number of open jobs.
  *
  * @package TekSeries
  */
@@ -100,7 +101,29 @@ function tekseries_blocks_job_field_value( array $args, WP_Block $block ): ?stri
 }
 
 /**
- * Registers the `tekseries/job-field` binding source.
+ * Returns the value of a `tekseries/job-stats` binding.
+ *
+ * Key `open`: the number of open jobs, as the Job Listings block counts them
+ * (WP Job Manager caches the query), e.g. "1,341".
+ *
+ * @param array $args Binding arguments; `key` names the figure.
+ * @return string|null
+ */
+function tekseries_blocks_job_stats_value( array $args ): ?string {
+	if ( 'open' !== ( $args['key'] ?? '' ) || ! function_exists( 'get_job_listings' ) ) {
+		return null;
+	}
+	$jobs = get_job_listings(
+		array(
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+		)
+	);
+	return number_format_i18n( (int) $jobs->found_posts );
+}
+
+/**
+ * Registers the `tekseries/job-field` and `tekseries/job-stats` binding sources.
  */
 function tekseries_blocks_register_job_field_source(): void {
 	register_block_bindings_source(
@@ -109,6 +132,13 @@ function tekseries_blocks_register_job_field_source(): void {
 			'label'              => __( 'Job field', 'tekseries-blocks' ),
 			'get_value_callback' => 'tekseries_blocks_job_field_value',
 			'uses_context'       => array( 'postId', 'postType' ),
+		)
+	);
+	register_block_bindings_source(
+		'tekseries/job-stats',
+		array(
+			'label'              => __( 'Job Series figures', 'tekseries-blocks' ),
+			'get_value_callback' => 'tekseries_blocks_job_stats_value',
 		)
 	);
 }

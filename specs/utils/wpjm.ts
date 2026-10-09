@@ -8,7 +8,12 @@ export type JobPages = Record< Name, WpPage >;
 // The pages WP Job Manager's setup wizard would create, and the setting each
 // one is chosen in. They stay between runs, like a site's real pages.
 const PAGES: Record< Name, [ string, string, string, string ] > = {
-	jobs: [ 'job-series', 'Job Series', '', 'job_manager_jobs_page_id' ],
+	jobs: [
+		'job-series',
+		'Job Series',
+		'<!-- wp:tekseries/job-listings /-->',
+		'job_manager_jobs_page_id',
+	],
 	submit: [
 		'submit-a-job',
 		'Submit a job',
@@ -26,6 +31,7 @@ const PAGES: Record< Name, [ string, string, string, string ] > = {
 // Checkbox settings as the live site has them.
 const LIVE_SETTINGS: Record< string, boolean > = {
 	job_manager_hide_filled_positions: true,
+	job_manager_enable_categories: true,
 };
 
 /**

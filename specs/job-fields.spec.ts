@@ -13,7 +13,9 @@ const LIST =
 	'<div class="wp-block-query"><!-- wp:post-template -->' +
 	'<!-- wp:post-title /-->' +
 	[ 'company', 'location', 'posted', 'type' ].map( bound ).join( '' ) +
-	'<!-- /wp:post-template --></div><!-- /wp:query -->';
+	'<!-- /wp:post-template --></div><!-- /wp:query -->' +
+	'<!-- wp:paragraph {"className":"e2e-open","metadata":{"bindings":{"content":{"source":"tekseries/job-stats","args":{"key":"open"}}}}} -->' +
+	'<p class="e2e-open"></p><!-- /wp:paragraph -->';
 
 test.describe( 'job field binding source', () => {
 	const jobs: number[] = [];
@@ -97,6 +99,11 @@ test.describe( 'job field binding source', () => {
 			'Anywhere'
 		);
 		await expect( plain.locator( '.e2e-type' ) ).toHaveText( '' );
+
+		// The open-jobs figure counts every open job, these two included.
+		await expect( visitor.locator( '.e2e-open' ) ).toHaveText(
+			/^[1-9][\d,]*$/
+		);
 		await context.close();
 	} );
 } );
