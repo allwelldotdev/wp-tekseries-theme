@@ -18,6 +18,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+require_once __DIR__ . '/includes/content-types.php';
+
+/**
+ * Adds the event rewrite rules on activation, so /events/ resolves at once.
+ */
+function tekseries_blocks_activate(): void {
+	tekseries_blocks_register_content_types();
+	flush_rewrite_rules();
+}
+register_activation_hook( __FILE__, 'tekseries_blocks_activate' );
+
+/**
+ * Removes the event rewrite rules on deactivation.
+ */
+function tekseries_blocks_deactivate(): void {
+	unregister_taxonomy( 'event_type' );
+	unregister_post_type( 'event' );
+	flush_rewrite_rules();
+}
+register_deactivation_hook( __FILE__, 'tekseries_blocks_deactivate' );
+
 /**
  * Registers every block in the build manifest.
  *
