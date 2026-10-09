@@ -147,7 +147,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-010: Move the event model into the plugin and keep event fields in ACF
 
-**Status:** Accepted
+**Status:** Superseded by ADR-032 (tone and icon fields only)
 
 **Context:** Events are the `event` post type with the `event_type` taxonomy, registered today in the Divi child theme. A theme switch would make `/events/`, every `/event/{slug}/` and the type archives return 404. Event fields live in an ACF group: `event_date` (stored as `Ymd`), `cta_link` (an ACF link array) and `cta_name`. The design also needs a time label, venue, tone and topic icon.
 
@@ -380,7 +380,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-026: Build listings from two non-inherited Query Loops, and inherit on type archives
 
-**Status:** Accepted
+**Status:** Superseded by ADR-033 (interim plum tone only)
 
 **Context:** The Events archive and the News posts page show a "Latest" card, then a grid with a "Get Involved" card as its last item. Core ignores `offset` on inherited queries. The design's per-post tone (ADR-011) is not yet bound.
 
@@ -468,6 +468,68 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Rationale:** CSS counters keep the numbering out of the text, so editors can reorder sections. Stable anchors are ready for the table-of-contents block.
 
+## ADR-032: Store tone and topic icon as plugin-registered post meta, assigned on publish
+
+**Status:** Accepted
+
+**Context:** ADR-011 gives every event and news post a tone and a topic icon. ADR-010 listed both among the new fields in the code-registered ACF group. Only the plugin's own block, the publish hook and the editor sidebar read them. wp-env has no ACF (ADR-002), so ACF-backed meta would not work in the e2e tests or on a fresh install.
+
+**Options:**
+- Tone and icon as ACF fields with an `acf/field` binding.
+- Plain post meta registered by the plugin with `register_post_meta`.
+- Icon default: a stored value set on publish, or a default computed at render.
+
+**Decision:**
+- `tekseries_tone` (saffron, plum, ink, lilac) and `tekseries_icon` (one of 30 curated icons from the `tekseries` collection, ADR-024) are post meta registered on `event` and `post` (`includes/meta.php`). Each has `show_in_rest` with an enum schema where an empty value means "not chosen", a sanitize callback and `edit_post` auth. They are not ACF fields. The ACF "Events" group (`event_date`, `cta_link`, `cta_name`, plus new time and venue fields) still moves into code, unchanged, with the Block Bindings work in Phase 5.
+- With no icon picked, a post shows a default computed at render: the event type's icon (webinar `videocam`, workshop `co_present`, makers-prize `emoji_events`), `newspaper` for news, otherwise `event`. It is not stored, so changing a type changes the default. A read-only REST field, `tekseries_default_icon`, exposes it to the editor.
+- On the transition into `publish`, a post with no tone gets the tone after the newest published post of the same type that has one, in the cycle saffron, plum, ink, lilac (`includes/tone-cycle.php`). Posts published in the same second are ordered by ID. With no toned post, the tone is plum. Events and news cycle separately. The hook is `wp_after_insert_post`, which fires after REST has saved meta, so a tone picked before publishing is kept. Editors can override the tone in the sidebar (ADR-034).
+- `wp tekseries backfill-tones [--post_type=event|post] [--force] [--dry-run]` (`includes/cli.php`) tones published posts oldest first. The oldest starts where the cycle must start for the newest post to land on plum. This reproduces the design boards' sample listings: on Local, 19 events and 20 news posts, newest first plum, saffron, lilac, ink and so on. Posts with a tone keep it unless `--force` is given.
+- There is no PHPUnit suite. The cycle is tested end to end over REST in `specs/tones.spec.ts`.
+
+**Rationale:** The tone is stored, so filters and paging never recolour a post (ADR-011). Plain registered meta needs no binding source and works without ACF. The cost is that two event-related fields sit outside the ACF group that holds the rest. A computed default keeps untouched posts in step with their event type.
+
+## ADR-033: Render tone through a `tekseries/post-tone` block, with the block owning its look and the theme owning what is inside
+
+**Status:** Accepted
+
+**Context:** Listing cards and post banners must take the post's tone as a background, text colour and large decorative icon. Core blocks cannot bind a class or background to post meta (ADR-011). The blocks inside, such as the date, type badge, breadcrumbs and buttons, also change with the tone.
+
+**Options:**
+- A `render_block` filter that injects a tone class.
+- A wrapper block that outputs the tone class, with CSS split by ownership.
+- Keep the Cover block with a fixed plum overlay.
+
+**Decision:**
+- `tekseries/post-tone` is a dynamic wrapper block (InnerBlocks; uses context `postId` and `postType`; attribute `variant` is `card` or `banner`). `render.php` outputs `ts-tone--{tone} ts-tone--{variant}` and the topic icon SVG from `wp_get_icon()`, `aria-hidden`, bleeding off the bottom-right corner. It has no front-end script. It declares `supports.interactivity.clientNavigation`, so it does not disable enhanced pagination. Supports are align, a flex layout with no switching, padding, margin, block gap, minimum height, aspect ratio and border radius.
+- The block's stylesheet maps the theme's `custom.tone.{tone}.*` tokens to `--ts-tone-*` custom properties and draws the surface: background, text colour, headings that inherit the tone text, a featured image inside that fills the box under the tone's overlay gradient (card), and the icon.
+- The theme's `assets/css/blocks/post-tone.css`, loaded only where the block is, uses those properties for the blocks inside: large date, type badge, breadcrumbs, accent icons, banner buttons and the focus ring.
+- The rule: the block's own look lives in the plugin; how core blocks inside it look lives in the theme (ADR-005).
+- `theme.json` `custom.tone` gained `banner-accent`, `sub` (breadcrumbs), `button-bg`, `button-text` and `line` (outline) for each tone, from the EventPost board. Card and banner accents differ for lilac: ink on cards, plum on banners.
+- Listing card media and single banners in the theme's template patterns now use this block instead of a Cover with a fixed plum overlay. The inner-page hero (`hero-plum`) is unchanged.
+
+**Rationale:** A wrapper block works inside Query Loop and leaves the contents as editable core blocks. Tokens stay in `theme.json` (ADR-009). Splitting by ownership keeps the block reusable under another theme while the theme controls how its own blocks look. This delivers the per-post tone that ADR-026 left as an interim plum.
+
+## ADR-034: Build editor-only TypeScript with type-only WordPress packages and a webpack entry for the sidebar
+
+**Status:** Accepted
+
+**Context:** `edit.tsx` files and the post sidebar need types for `@wordpress/*` editor packages, which WordPress provides as externals at runtime. WordPress 7.1 ships React 18.3.1. `@wordpress/block-editor` ships no types. The "Tone and icon" sidebar panel is not a block, and `wp-scripts` builds only the scripts that `block.json` files list.
+
+**Options:**
+- Types: no type checking for editor code; or `@wordpress/*` as devDependencies used only for types.
+- Block editor types: `@types/wordpress__block-editor`, or a small local declaration.
+- Sidebar build: a second build tool, or an extra entry added to the default `wp-scripts` webpack config.
+- Icon list: duplicated in TypeScript, or passed from PHP.
+
+**Decision:**
+- The `@wordpress/*` editor packages are devDependencies of the plugin workspace, on the `@wordpress/scripts` 36.1 release line, used only for types. At runtime they remain WordPress externals. Root `package.json` pins `@types/react` to 18.3.31 to match React 18.3.1.
+- `types/wordpress-block-editor.d.ts` declares only the `@wordpress/block-editor` exports the plugin uses, because `@types/wordpress__block-editor` pins older `@wordpress` packages. `types/assets.d.ts` covers asset imports.
+- The plugin's `webpack.config.js` adds `post-settings/index` as an extra entry to the default script config. `includes/editor.php` enqueues it in the block editor.
+- The curated icon list reaches the panel from PHP as inline data, so `tekseries_blocks_topic_icons()` stays the one source of truth (ADR-032). Icon SVGs and labels come from the core icon REST entity.
+- The panel uses only stable components, `ColorPalette` for the tone and a button group for icons, because `ToggleGroupControl` is still experimental.
+
+**Rationale:** Type-only packages give editor code real checks without shipping a second copy of WordPress's libraries (ADR-005). A small local declaration avoids a version clash. One extra entry avoids a second build. One icon list removes drift between PHP validation and the picker. Stable components avoid breakage when experimental APIs change.
+
 ## Future work
 
 - **Hosting and deploy:** not decided. The options are a git pull on the server or CI-built theme and plugin zips; no remote or CI exists yet. A release must ship only the theme and plugin, never the repository root (ADR-001).
@@ -475,11 +537,10 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - **Animated Home blocks:** `tekseries/hero-carousel`, `tekseries/stat` and `tekseries/logo-marquee` (ADR-014).
 - **`cta_link` binding spike:** confirm that a Button `url` binding accepts the ACF link array; otherwise add a `tekseries/event` binding source or a URL field (ADR-010).
 - **Schibsted Grotesk glyph gap:** Igbo ị, ọ and ụ fall back to the system sans in headings (ADR-021). Find a font file that covers them, or accept the fallback.
-- **Search field and forms:** style the search field and the forms in Phase 3.
 - **Media gallery:** replace the interim core Gallery blocks with `tekseries/media-gallery` (ADR-015, ADR-030).
 - **Gallery alt text:** write descriptive alt text for the gallery images (ADR-030).
 - **Lost emoji:** fix the emoji that became `????` in posts and events.
-- **Per-post tone:** add the per-post tone to listing cards; plum is the interim (ADR-011, ADR-026).
-- **Event details:** add the registration button and the details (time, venue) once the event fields are bound (ADR-010).
+- **Event fields (Phase 5):** bind the date (from `event_date`), time, venue and Register button, and move the ACF "Events" group into code with the Block Bindings work (ADR-010, ADR-032).
+- **Event type icons:** the event type badge and the event type filter chips still have no type icon (ADR-033).
 - **Table of contents:** add the table-of-contents block to the legal pages (ADR-031).
 - **Design-system updates:** add the components the boards use but the system lacks (Impact, Insight, Key figure, Pull quote, Pillar badge, anchor chip, marquee) and the missing tokens (`coral-text` from ADR-008, status colours, alpha and radius tokens). Settle the tablet and mobile h1/h2 sizes (the tokens win) and the footer radius (36 / 32 / 24px). Then refresh `docs/design-reference/`.
