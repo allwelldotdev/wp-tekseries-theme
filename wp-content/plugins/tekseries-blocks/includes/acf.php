@@ -88,3 +88,37 @@ function tekseries_blocks_register_event_fields(): void {
 	);
 }
 add_action( 'acf/include_fields', 'tekseries_blocks_register_event_fields' );
+
+/**
+ * Adapts bound ACF values to the blocks that show them.
+ *
+ * ACF binds the formatted value. A Date block bound to a date field gets an
+ * ISO date in the site's time zone instead of "September 26, 2026": that keeps
+ * `<time datetime>` valid and lets the block's own format apply. A link field
+ * bound to text shows its address without the scheme, e.g. "bit.ly/WomEngineers".
+ *
+ * @param mixed    $value          Bound value from ACF.
+ * @param array    $source_args    Binding arguments; `key` is the field name or key.
+ * @param WP_Block $block          Block being rendered. Unused.
+ * @param string   $attribute_name Bound attribute.
+ * @return mixed
+ */
+function tekseries_blocks_acf_binding_value( $value, $source_args, $block, $attribute_name ) {
+	$key   = is_array( $source_args ) && isset( $source_args['key'] ) ? (string) $source_args['key'] : '';
+	$field = '' === $key ? false : get_field_object( $key, false, false );
+	if ( ! is_array( $field ) ) {
+		return $value;
+	}
+
+	if ( 'date_picker' === $field['type'] && 'datetime' === $attribute_name ) {
+		$date = tekseries_blocks_parse_ymd( (string) $field['value'] );
+		return $date ? $date->format( DATE_ATOM ) : '';
+	}
+
+	if ( 'link' === $field['type'] && 'content' === $attribute_name && is_string( $value ) ) {
+		return (string) preg_replace( '#^[a-z]+:(//)?(www\.)?#i', '', $value );
+	}
+
+	return $value;
+}
+add_filter( 'acf/blocks/binding_value', 'tekseries_blocks_acf_binding_value', 10, 4 );

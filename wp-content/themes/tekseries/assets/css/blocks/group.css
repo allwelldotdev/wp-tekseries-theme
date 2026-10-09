@@ -153,3 +153,36 @@
 	top: calc(var(--wp-admin--admin-bar--height, 0px) + 104px);
 	align-self: start;
 }
+
+/*
+ * Event fields (bound to the plugin's ACF fields). A row whose field is empty,
+ * such as an older event without a time or venue, is left out.
+ */
+.ts-event-row:not(:has(.ts-event-value:not(:empty))) {
+	display: none;
+}
+
+.ts-details .ts-event-label {
+	color: var(--wp--preset--color--lilac-deep);
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+.ts-details .ts-event-value {
+	color: var(--wp--preset--color--white);
+	font-size: var(--wp--preset--font-size--body);
+	font-weight: 600;
+	overflow-wrap: anywhere;
+}
+
+.ts-details__note {
+	padding-top: 16px;
+	border-top: 1px solid var(--wp--custom--alpha--white-12);
+	color: var(--wp--preset--color--lilac-deep);
+}
+
+.ts-details__note a {
+	color: var(--wp--preset--color--white);
+	font-weight: 700;
+}

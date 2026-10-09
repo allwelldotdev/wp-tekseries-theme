@@ -100,6 +100,7 @@ add_action( 'after_setup_theme', 'tekseries_editor_styles' );
 function tekseries_enqueue_block_styles(): void {
 	$blocks = array(
 		'core/breadcrumbs'          => 'breadcrumbs',
+		'core/buttons'              => 'buttons',
 		'core/gallery'              => 'gallery',
 		'core/group'                => 'group',
 		'core/icon'                 => 'icon',

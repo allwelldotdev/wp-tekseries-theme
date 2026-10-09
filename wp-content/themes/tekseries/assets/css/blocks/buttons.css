@@ -1,0 +1,57 @@
+/*
+ * Event registration. The Register button opens another site, so it ends in an
+ * outward arrow; after the event the plugin replaces it with an ended note.
+ */
+
+.wp-block-button.ts-register .wp-block-button__link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+.wp-block-button.ts-register .wp-block-button__link::after {
+	content: "";
+	flex: none;
+	width: 20px;
+	height: 20px;
+	background-color: currentcolor;
+	-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M640-624 284-268q-11 11-28 11t-28-11q-11-11-11-28t11-28l356-356H280q-17 0-28.5-11.5T240-720q0-17 11.5-28.5T280-760h400q17 0 28.5 11.5T720-720v400q0 17-11.5 28.5T680-280q-17 0-28.5-11.5T640-320v-304Z'/%3E%3C/svg%3E") center / contain no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M640-624 284-268q-11 11-28 11t-28-11q-11-11-11-28t11-28l356-356H280q-17 0-28.5-11.5T240-720q0-17 11.5-28.5T280-760h400q17 0 28.5 11.5T720-720v400q0 17-11.5 28.5T680-280q-17 0-28.5-11.5T640-320v-304Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.ts-event-ended {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 12px 22px;
+	border: 1.5px solid var(--ts-tone-line, var(--wp--custom--alpha--white-50));
+	border-radius: var(--wp--preset--border-radius--pill);
+	font-size: var(--wp--preset--font-size--body);
+	font-weight: 700;
+}
+
+.ts-event-ended svg {
+	flex: none;
+	width: 20px;
+	height: 20px;
+	fill: currentcolor;
+}
+
+/* On phones the banner's buttons stack at full width. */
+@media (width <= 640px) {
+
+	.wp-block-buttons.ts-banner__actions {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.wp-block-buttons.ts-banner__actions > * {
+		justify-content: center;
+	}
+
+	.wp-block-buttons.ts-banner__actions .wp-block-button__link {
+		width: 100%;
+	}
+}
