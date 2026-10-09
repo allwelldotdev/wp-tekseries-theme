@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<ruleset name="TekSeries">
+	<description>WordPress Coding Standards for the TekSeries theme and blocks plugin.</description>
+
+	<!-- Only our code; the repo root is the WordPress root. -->
+	<file>wp-content/themes/tekseries</file>
+	<file>wp-content/plugins/tekseries-blocks</file>
+
+	<exclude-pattern>*/build/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+
+	<arg name="basepath" value="."/>
+	<arg name="extensions" value="php"/>
+	<arg name="parallel" value="8"/>
+	<arg name="cache" value=".phpcs-cache"/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+
+	<!-- Match the live host: WordPress 7.1, PHP 8.2. -->
+	<config name="minimum_wp_version" value="7.1"/>
+	<config name="testVersion" value="8.2-"/>
+
+	<rule ref="WordPress"/>
+	<rule ref="PHPCompatibilityWP">
+		<include-pattern>*\.php$</include-pattern>
+	</rule>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="tekseries"/>
+				<element value="tekseries-blocks"/>
+			</property>
+		</properties>
+	</rule>
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="tekseries"/>
+				<element value="TekSeries"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>

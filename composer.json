@@ -1,0 +1,28 @@
+{
+	"name": "tekseries/site",
+	"description": "PHP coding standards tooling for the TekSeries theme and blocks plugin.",
+	"type": "project",
+	"license": "GPL-2.0-or-later",
+	"require-dev": {
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.2.1",
+		"phpcompatibility/php-compatibility": "^10.0@alpha",
+		"phpcompatibility/phpcompatibility-paragonie": "^2.0@alpha",
+		"phpcompatibility/phpcompatibility-wp": "^3.0@alpha",
+		"wp-coding-standards/wpcs": "^3.4.1"
+	},
+	"scripts": {
+		"lint": "phpcs --standard=phpcs.xml.dist",
+		"format": "phpcbf --standard=phpcs.xml.dist"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"platform": {
+			"php": "8.2"
+		},
+		"sort-packages": true
+	},
+	"minimum-stability": "stable",
+	"prefer-stable": true
+}
