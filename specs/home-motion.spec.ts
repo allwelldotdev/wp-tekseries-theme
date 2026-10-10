@@ -15,6 +15,7 @@ const MOVING = { ...NO_JS, reducedMotion: 'no-preference' } as const;
 // carousel. All three are complete on the server and need no JavaScript.
 test.describe( 'home motion blocks', () => {
 	let home: Linked;
+	const extras: number[] = [];
 
 	test.beforeAll( async ( { requestUtils } ) => {
 		// Slides and logos come from the theme's own Home patterns.
@@ -49,11 +50,13 @@ test.describe( 'home motion blocks', () => {
 	} );
 
 	test.afterAll( async ( { requestUtils } ) => {
-		await requestUtils.rest( {
-			method: 'DELETE',
-			path: `/wp/v2/pages/${ home.id }`,
-			params: { force: true },
-		} );
+		for ( const id of [ home.id, ...extras ] ) {
+			await requestUtils.rest( {
+				method: 'DELETE',
+				path: `/wp/v2/pages/${ id }`,
+				params: { force: true },
+			} );
+		}
 	} );
 
 	test( 'a stat counts up to its number, or shows it at once', async ( {
@@ -229,6 +232,37 @@ test.describe( 'home motion blocks', () => {
 		await expect( single.getByRole( 'navigation' ) ).toHaveCount( 0 );
 		await expect( single ).not.toHaveAttribute( 'role' );
 
+		await context.close();
+	} );
+
+	test( 'the Home page pattern uses the stats and the logo marquee', async ( {
+		browser,
+		requestUtils,
+	} ) => {
+		const front = await requestUtils.rest< Linked >( {
+			method: 'POST',
+			path: '/wp/v2/pages',
+			data: {
+				title: 'E2E Home Pattern',
+				status: 'publish',
+				content: '<!-- wp:pattern {"slug":"tekseries/page-home"} /-->',
+			},
+		} );
+		extras.push( front.id );
+
+		const context = await browser.newContext( NO_JS );
+		const page = await context.newPage();
+		await page.goto( front.link );
+		await expect(
+			page.locator( '.wp-block-tekseries-stat .screen-reader-text' )
+		).toHaveText( [ '312+', '675+', '25+', '100’s' ] );
+		await expect(
+			page
+				.getByRole( 'region', {
+					name: 'Organisations TekSeries has worked with',
+				} )
+				.getByRole( 'img' )
+		).toHaveCount( 4 );
 		await context.close();
 	} );
 

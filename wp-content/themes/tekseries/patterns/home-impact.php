@@ -33,9 +33,7 @@
 <div class="wp-block-group"><!-- wp:group {"className":"is-style-tile","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
 <div class="wp-block-group is-style-tile"><!-- wp:icon {"icon":"tekseries/school","className":"is-style-tile"} /-->
 
-<!-- wp:paragraph {"className":"is-style-stat"} -->
-<p class="is-style-stat">312<mark style="background-color:rgba(0, 0, 0, 0)" class="has-inline-color has-coral-text-color"><?php echo esc_html__( '+', 'tekseries' ); ?></mark></p>
-<!-- /wp:paragraph -->
+<!-- wp:tekseries/stat {"value":312} /-->
 
 <!-- wp:paragraph {"style":{"typography":{"fontWeight":"600","lineHeight":"1.35"}},"textColor":"body","fontSize":"body"} -->
 <p class="has-body-color has-text-color has-body-font-size" style="font-weight:600;line-height:1.35"><?php echo esc_html__( 'Digital Literacy/AI Workshops', 'tekseries' ); ?></p>
@@ -45,9 +43,7 @@
 <!-- wp:group {"className":"is-style-tile","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
 <div class="wp-block-group is-style-tile"><!-- wp:icon {"icon":"tekseries/groups","className":"is-style-tile"} /-->
 
-<!-- wp:paragraph {"className":"is-style-stat"} -->
-<p class="is-style-stat">675<mark style="background-color:rgba(0, 0, 0, 0)" class="has-inline-color has-coral-text-color"><?php echo esc_html__( '+', 'tekseries' ); ?></mark></p>
-<!-- /wp:paragraph -->
+<!-- wp:tekseries/stat {"value":675} /-->
 
 <!-- wp:paragraph {"style":{"typography":{"fontWeight":"600","lineHeight":"1.35"}},"textColor":"body","fontSize":"body"} -->
 <p class="has-body-color has-text-color has-body-font-size" style="font-weight:600;line-height:1.35"><?php echo esc_html__( 'Youth Trained', 'tekseries' ); ?></p>
@@ -57,9 +53,7 @@
 <!-- wp:group {"className":"is-style-tile","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
 <div class="wp-block-group is-style-tile"><!-- wp:icon {"icon":"tekseries/co_present","className":"is-style-tile"} /-->
 
-<!-- wp:paragraph {"className":"is-style-stat"} -->
-<p class="is-style-stat">25<mark style="background-color:rgba(0, 0, 0, 0)" class="has-inline-color has-coral-text-color"><?php echo esc_html__( '+', 'tekseries' ); ?></mark></p>
-<!-- /wp:paragraph -->
+<!-- wp:tekseries/stat {"value":25} /-->
 
 <!-- wp:paragraph {"style":{"typography":{"fontWeight":"600","lineHeight":"1.35"}},"textColor":"body","fontSize":"body"} -->
 <p class="has-body-color has-text-color has-body-font-size" style="font-weight:600;line-height:1.35"><?php echo esc_html__( 'IT/Job Seminars', 'tekseries' ); ?></p>
@@ -69,9 +63,7 @@
 <!-- wp:group {"className":"is-style-tile","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
 <div class="wp-block-group is-style-tile"><!-- wp:icon {"icon":"tekseries/work","className":"is-style-tile"} /-->
 
-<!-- wp:paragraph {"className":"is-style-stat"} -->
-<p class="is-style-stat">100<mark style="background-color:rgba(0, 0, 0, 0)" class="has-inline-color has-coral-text-color"><?php echo esc_html__( '’s', 'tekseries' ); ?></mark></p>
-<!-- /wp:paragraph -->
+<!-- wp:tekseries/stat {"suffix":"<?php echo esc_attr__( '’s', 'tekseries' ); ?>"} /-->
 
 <!-- wp:paragraph {"style":{"typography":{"fontWeight":"600","lineHeight":"1.35"}},"textColor":"body","fontSize":"body"} -->
 <p class="has-body-color has-text-color has-body-font-size" style="font-weight:600;line-height:1.35"><?php echo esc_html__( 'Curated Jobs Aggregated Daily', 'tekseries' ); ?></p>
