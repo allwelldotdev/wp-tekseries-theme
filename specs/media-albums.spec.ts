@@ -59,6 +59,32 @@ test.describe( 'media albums', () => {
 		expect( count ).toBe( 1 );
 	} );
 
+	// Core shows the field only for public taxonomies, which is why this one is.
+	test( 'the Media Library offers the album in a file’s details', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		const photo = await requestUtils.uploadMedia( PHOTO );
+		media.push( photo.id );
+		await admin.visitAdminPage(
+			'upload.php',
+			`item=${ photo.id }&mode=grid`
+		);
+		const field = page.getByRole( 'textbox', { name: 'Albums' } );
+		await field.fill( 'E2E Modal Album' );
+		await field.blur();
+
+		const inAlbums = async () =>
+			(
+				await requestUtils.rest< { media_album: number[] } >( {
+					path: `/wp/v2/media/${ photo.id }`,
+				} )
+			).media_album;
+		await expect.poll( async () => ( await inAlbums() ).length ).toBe( 1 );
+		albums.push( ...( await inAlbums() ) );
+	} );
+
 	test( 'the album forms save the year', async ( {
 		admin,
 		page,
