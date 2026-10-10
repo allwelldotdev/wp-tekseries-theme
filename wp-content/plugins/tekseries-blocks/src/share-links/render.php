@@ -2,7 +2,8 @@
 /**
  * Share Links: one link per chosen service, to that service's share page for
  * the current post. Plain links, so they work without JavaScript; the icons
- * are core's Social Icons artwork.
+ * are core's Social Icons artwork. "Link to this page" is a link to the post;
+ * with JavaScript (view.ts) it copies that link instead.
  *
  * @package TekSeries
  *
@@ -51,19 +52,52 @@ $tekseries_chosen = array_intersect( (array) ( $attributes['services'] ?? array(
 if ( ! $tekseries_chosen ) {
 	return;
 }
+
+// Only "Link to this page" has behaviour, so only then is the block interactive.
+$tekseries_copies = in_array( 'link', $tekseries_chosen, true );
+if ( $tekseries_copies ) {
+	wp_interactivity_state(
+		'tekseries/share-links',
+		array(
+			'copyLabel' => __( 'Copy the link to this page', 'tekseries-blocks' ),
+			'copied'    => __( 'Link copied', 'tekseries-blocks' ),
+		)
+	);
+}
 ?>
-<ul <?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes the wrapper attributes. ?>>
+<ul <?php echo get_block_wrapper_attributes( $tekseries_copies ? array( 'data-wp-interactive' => 'tekseries/share-links' ) : array() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes the wrapper attributes. ?>>
 	<?php foreach ( $tekseries_chosen as $tekseries_service ) : ?>
 		<?php [ $tekseries_label, $tekseries_href, $tekseries_icon ] = $tekseries_services[ $tekseries_service ]; ?>
-		<li>
-			<a
-				class="ts-share__link ts-share__link--<?php echo esc_attr( $tekseries_service ); ?>"
-				href="<?php echo esc_url( $tekseries_href ); ?>"
-				aria-label="<?php echo esc_attr( $tekseries_label ); ?>"
-				<?php if ( 'link' !== $tekseries_service ) : ?>
+		<?php if ( 'link' === $tekseries_service ) : ?>
+			<li
+				<?php
+				echo wp_interactivity_data_wp_context( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes the context attribute.
+					array(
+						'label' => $tekseries_label,
+						'note'  => '',
+					)
+				);
+				?>
+			>
+				<a
+					class="ts-share__link ts-share__link--link"
+					href="<?php echo esc_url( $tekseries_href ); ?>"
+					aria-label="<?php echo esc_attr( $tekseries_label ); ?>"
+					data-wp-bind--aria-label="context.label"
+					data-wp-init="callbacks.ready"
+					data-wp-on--click="actions.copy"
+				><?php echo $tekseries_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?></a>
+				<span class="ts-share__note" role="status" data-wp-text="context.note"></span>
+			</li>
+		<?php else : ?>
+			<li>
+				<a
+					class="ts-share__link ts-share__link--<?php echo esc_attr( $tekseries_service ); ?>"
+					href="<?php echo esc_url( $tekseries_href ); ?>"
+					aria-label="<?php echo esc_attr( $tekseries_label ); ?>"
 					target="_blank" rel="noopener noreferrer"
-				<?php endif; ?>
-			><?php echo $tekseries_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from core's social icons or the plugin's icon collection. ?></a>
-		</li>
+				><?php echo $tekseries_icon; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from core's social icons. ?></a>
+			</li>
+		<?php endif; ?>
 	<?php endforeach; ?>
 </ul>

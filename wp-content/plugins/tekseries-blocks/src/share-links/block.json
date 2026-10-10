@@ -6,7 +6,7 @@
 	"title": "Share Links",
 	"category": "theme",
 	"icon": "share",
-	"description": "Links that share the current post on LinkedIn, Facebook, X or WhatsApp. They work without JavaScript.",
+	"description": "Links that share the current post on LinkedIn, Facebook, X or WhatsApp, or copy its link. They work without JavaScript.",
 	"keywords": [ "share", "social", "linkedin", "whatsapp" ],
 	"textdomain": "tekseries-blocks",
 	"usesContext": [ "postId" ],
@@ -29,11 +29,10 @@
 		"spacing": {
 			"margin": true
 		},
-		"interactivity": {
-			"clientNavigation": true
-		}
+		"interactivity": true
 	},
 	"editorScript": "file:./index.js",
+	"viewScriptModule": "file:./view.js",
 	"style": "file:./style-index.css",
 	"render": "file:./render.php"
 }

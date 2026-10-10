@@ -20,6 +20,7 @@
 	}
 
 	li {
+		position: relative;
 		margin: 0;
 	}
 }
@@ -46,5 +47,31 @@
 		width: 20px;
 		height: 20px;
 		fill: currentcolor;
+	}
+}
+
+// "Link copied", over the link for a moment after a copy. Kept in the page
+// while empty, so assistive technology hears the text arrive.
+.ts-share__note {
+	position: absolute;
+	bottom: calc(100% + 8px);
+	left: 50%;
+	padding: 6px 12px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background-color: var(--wp--preset--color--ink);
+	color: var(--wp--preset--color--white);
+	font-size: var(--wp--preset--font-size--caption);
+	font-weight: 700;
+	white-space: nowrap;
+	pointer-events: none;
+	translate: -50% 0;
+
+	&:empty {
+		opacity: 0;
+	}
+
+	.is-style-dark & {
+		background-color: var(--wp--preset--color--white);
+		color: var(--wp--preset--color--ink);
 	}
 }
