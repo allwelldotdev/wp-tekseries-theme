@@ -264,6 +264,142 @@ test.describe( 'Media Gallery block', () => {
 		await context.close();
 	} );
 
+	// With JavaScript, a tile opens in a viewer instead of leaving the page.
+	test( 'opens the loaded media in a viewer that works from the keyboard', async ( {
+		browser,
+	} ) => {
+		const context = await browser.newContext( {
+			storageState: { cookies: [], origins: [] },
+		} );
+		const page = await context.newPage();
+		const scripts: string[] = [];
+		page.on( 'request', ( request ) => scripts.push( request.url() ) );
+		// All six: clip, three, two, one, five, four.
+		await page.goto( `${ gallery.link }?media_shown=6` );
+		const [ , , three, , , clip ] = media;
+
+		const tiles = page.locator( '.ts-media__grid .ts-media__tile' );
+		const viewer = page.getByRole( 'dialog', { name: 'Media viewer' } );
+		const counter = viewer.locator(
+			'.ts-lightbox__counter [aria-hidden="true"]'
+		);
+		const announced = viewer.locator( '[aria-live="polite"]' );
+		const photo = viewer.locator( '.ts-lightbox__photo' );
+		const video = viewer.locator( 'video' );
+		await expect( viewer ).toBeHidden();
+
+		await tiles.nth( 1 ).click();
+		await expect( viewer ).toBeVisible();
+		// The tests ask for less motion, so it appears without its fade.
+		await expect( viewer ).toHaveCSS( 'animation-name', 'none' );
+		await expect( page ).toHaveURL( /media_shown=6$/ );
+		await expect( counter ).toHaveText( '2 / 6' );
+		await expect( announced ).toHaveText( '2 of 6: E2E photo three' );
+		await expect( viewer.locator( 'figcaption' ) ).toHaveText(
+			'E2E photo three'
+		);
+		await expect( photo ).toHaveAttribute( 'src', three?.source_url ?? '' );
+		await expect( photo ).toHaveAttribute( 'alt', 'E2E photo three' );
+		await expect( video ).toBeHidden();
+		// The page behind is out of reach: no scrolling, no focus.
+		await expect( page.locator( 'html' ) ).toHaveCSS(
+			'overflow',
+			'hidden'
+		);
+		await expect(
+			viewer.getByRole( 'button', { name: 'Close viewer' } )
+		).toBeFocused();
+		for ( let presses = 0; presses < 12; presses++ ) {
+			await page.keyboard.press( 'Tab' );
+			expect(
+				await viewer.evaluate( ( dialog ) => {
+					const { activeElement, body } = dialog.ownerDocument;
+					return (
+						activeElement === body ||
+						dialog.contains( activeElement )
+					);
+				} )
+			).toBe( true );
+		}
+
+		// Arrow keys, the buttons and the thumbnails all step; the ends wrap.
+		await page.keyboard.press( 'ArrowRight' );
+		await expect( counter ).toHaveText( '3 / 6' );
+		await expect( announced ).toHaveText( '3 of 6: E2E alt two' );
+		await viewer.getByRole( 'button', { name: 'Next' } ).click();
+		await expect( counter ).toHaveText( '4 / 6' );
+		await viewer.getByRole( 'button', { name: 'Previous' } ).click();
+		await expect( counter ).toHaveText( '3 / 6' );
+		const thumbs = viewer
+			.getByRole( 'group', { name: 'All items' } )
+			.getByRole( 'button' );
+		await expect( thumbs ).toHaveCount( 6 );
+		await expect( thumbs.nth( 2 ) ).toHaveAttribute(
+			'aria-current',
+			'true'
+		);
+
+		// The first item is the video: it plays in the viewer, with controls.
+		await viewer.getByRole( 'button', { name: 'Show item 1' } ).click();
+		await expect( counter ).toHaveText( '1 / 6' );
+		await expect( video ).toBeVisible();
+		await expect( video ).toHaveAttribute( 'src', clip?.source_url ?? '' );
+		await expect( video ).toHaveAttribute( 'controls', '' );
+		await expect( photo ).toBeHidden();
+		await page.keyboard.press( 'ArrowLeft' );
+		await expect( counter ).toHaveText( '6 / 6' );
+		await expect( thumbs.nth( 5 ) ).toHaveAttribute(
+			'aria-current',
+			'true'
+		);
+
+		// A sideways swipe steps too.
+		const swipe = async ( from: number, to: number ) => {
+			const stage = viewer.locator( '.ts-lightbox__stage' );
+			const touch = {
+				pointerType: 'touch',
+				isPrimary: true,
+				clientY: 300,
+			};
+			await stage.dispatchEvent( 'pointerdown', {
+				...touch,
+				clientX: from,
+			} );
+			await stage.dispatchEvent( 'pointerup', { ...touch, clientX: to } );
+		};
+		await swipe( 300, 120 );
+		await expect( counter ).toHaveText( '1 / 6' );
+		await swipe( 120, 300 );
+		await expect( counter ).toHaveText( '6 / 6' );
+
+		// Escape closes it and focus goes back to the tile it was opened from.
+		await page.keyboard.press( 'Escape' );
+		await expect( viewer ).toBeHidden();
+		await expect( tiles.nth( 1 ) ).toBeFocused();
+		await expect( page.locator( 'html' ) ).not.toHaveCSS(
+			'overflow',
+			'hidden'
+		);
+
+		// A modified click is still a link to the file.
+		const opened = context.waitForEvent( 'page' );
+		await tiles.nth( 1 ).click( { modifiers: [ 'ControlOrMeta' ] } );
+		await ( await opened ).close();
+		await expect( viewer ).toBeHidden();
+
+		expect(
+			scripts.filter( ( url ) => /react|jquery/i.test( url ) )
+		).toEqual( [] );
+		expect(
+			scripts.filter( ( url ) =>
+				/tekseries-blocks\/build\/.*\.js/.test( url )
+			)
+		).toEqual( [
+			expect.stringContaining( '/build/media-gallery/view.js' ),
+		] );
+		await context.close();
+	} );
+
 	test( 'gives templates the totals and loads no React or jQuery', async ( {
 		browser,
 	} ) => {

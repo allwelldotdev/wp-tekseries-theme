@@ -421,3 +421,420 @@
 		}
 	}
 }
+
+// The viewer (GalleryLightbox boards): a full-screen modal <dialog> on ink,
+// with a top bar, the media and its caption, and a strip of thumbnails. The
+// page behind stays put while it is open.
+html:has(.ts-lightbox[open]) {
+	overflow: hidden;
+}
+
+.ts-lightbox {
+	// Room the bars, caption and thumbnails take, top to bottom: what is
+	// left of the screen's height is the media's.
+	--ts-lightbox-chrome: 320px;
+	--ts-lightbox-max-width: 1100px;
+
+	position: fixed;
+	inset: 0;
+	box-sizing: border-box;
+	flex-direction: column;
+	width: 100%;
+	max-width: none;
+	height: 100%;
+	max-height: none;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: color-mix(in srgb, var(--wp--preset--color--ink) 96%, transparent);
+	color: var(--wp--preset--color--white);
+
+	// Closed, the dialog must keep the browser's `display: none`.
+	&[open] {
+		display: flex;
+	}
+
+	&::backdrop {
+		background: transparent;
+	}
+
+	[hidden] {
+		display: none;
+	}
+}
+
+.ts-lightbox__bar {
+	display: flex;
+	flex: none;
+	gap: 10px;
+	align-items: center;
+	padding: 20px 32px;
+
+	p {
+		margin: 0;
+	}
+}
+
+.ts-lightbox__brand {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+	padding: 7px 13px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background: var(--wp--preset--color--saffron);
+	color: var(--wp--preset--color--ink);
+	font-size: var(--wp--preset--font-size--caption);
+	font-weight: 700;
+
+	svg {
+		width: 18px;
+		height: 18px;
+		fill: currentcolor;
+	}
+}
+
+.ts-lightbox__counter {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.02em;
+}
+
+.ts-lightbox__of,
+.ts-lightbox__hint {
+	color: var(--wp--custom--alpha--white-70);
+}
+
+// Round buttons: Close, Previous and Next.
+.ts-lightbox__button {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 48px;
+	height: 48px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: var(--wp--custom--alpha--white-12);
+	color: var(--wp--preset--color--white);
+	cursor: pointer;
+	transition:
+		background-color var(--wp--custom--motion--duration),
+		color var(--wp--custom--motion--duration);
+
+	&:hover,
+	&.ts-lightbox__button--next {
+		background: var(--wp--preset--color--saffron);
+		color: var(--wp--preset--color--ink);
+	}
+
+	svg {
+		width: 26px;
+		height: 26px;
+		fill: currentcolor;
+	}
+}
+
+.ts-lightbox__button,
+.ts-lightbox__thumb {
+
+	&:focus-visible {
+		outline: var(--wp--custom--focus--width) solid var(--wp--preset--color--saffron);
+		outline-offset: var(--wp--custom--focus--offset);
+	}
+}
+
+.ts-lightbox__close {
+	margin-left: auto;
+}
+
+// The media, with Previous and Next at its sides. Sideways swipes are the
+// viewer's; up, down and pinch stay the browser's.
+.ts-lightbox__stage {
+	position: relative;
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+	min-height: 0;
+	padding: 8px 112px;
+	touch-action: pan-y pinch-zoom;
+}
+
+.ts-lightbox__figure {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	align-items: center;
+	width: 100%;
+	margin: 0;
+}
+
+// As large as fits the width and the height left, in the item's proportions
+// (set inline, with the ratio as a number for the sum below).
+.ts-lightbox__frame {
+	--ts-lightbox-room: calc(100vh - var(--ts-lightbox-chrome));
+	--ts-lightbox-fit: calc(var(--ts-lightbox-room) * var(--ts-lightbox-ratio, 1.5));
+
+	overflow: hidden;
+	width: min(100%, var(--ts-lightbox-max-width), var(--ts-lightbox-fit));
+	border-radius: var(--wp--preset--border-radius--md);
+	background: var(--wp--preset--color--ink);
+
+	@supports (height: 100dvh) {
+		--ts-lightbox-room: calc(100dvh - var(--ts-lightbox-chrome));
+	}
+}
+
+.ts-lightbox__photo,
+.ts-lightbox__video {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.ts-lightbox__video {
+	object-fit: contain;
+}
+
+.ts-lightbox__caption {
+	max-width: 720px;
+	color: var(--wp--preset--color--lilac-deep);
+	font-size: var(--wp--preset--font-size--body);
+	line-height: 1.5;
+	text-align: center;
+}
+
+.ts-lightbox__step {
+	position: absolute;
+	top: 50%;
+	left: 32px;
+	width: 64px;
+	height: 64px;
+	translate: 0 -50%;
+
+	svg {
+		width: 30px;
+		height: 30px;
+	}
+}
+
+.ts-lightbox__step--next {
+	right: 32px;
+	left: auto;
+}
+
+// One thumbnail per loaded item; the strip scrolls when they don't all fit.
+.ts-lightbox__thumbs {
+	display: flex;
+	flex: none;
+	gap: 8px;
+	justify-content: safe center;
+	padding: 4px 56px 24px;
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+
+.ts-lightbox__thumb {
+	position: relative;
+	flex: none;
+	box-sizing: border-box;
+	overflow: hidden;
+	width: 72px;
+	height: 72px;
+	padding: 0;
+	border: 3px solid transparent;
+	border-radius: 12px;
+	background: var(--wp--preset--color--plum);
+	cursor: pointer;
+	opacity: 0.55;
+
+	&[aria-current="true"] {
+		border-color: var(--wp--preset--color--saffron);
+		opacity: 1;
+	}
+
+	&:hover {
+		opacity: 1;
+	}
+
+	img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+}
+
+.ts-lightbox__thumb-play {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+
+	svg {
+		width: 24px;
+		height: 24px;
+		fill: var(--wp--preset--color--saffron);
+	}
+}
+
+// Phones only.
+.ts-lightbox__foot {
+	display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+	.ts-lightbox[open] {
+		animation: ts-lightbox-in 0.2s ease-out;
+	}
+
+	.ts-lightbox__thumb {
+		transition:
+			opacity var(--wp--custom--motion--duration),
+			border-color var(--wp--custom--motion--duration);
+	}
+}
+
+@keyframes ts-lightbox-in {
+
+	from {
+		opacity: 0;
+	}
+}
+
+// Tablet: tighter bars, smaller buttons over the media's edges.
+@media (width <= 1100px) {
+
+	.ts-lightbox {
+		--ts-lightbox-chrome: 300px;
+	}
+
+	.ts-lightbox__bar {
+		padding: 16px 24px;
+	}
+
+	.ts-lightbox__stage {
+		padding: 8px 24px;
+	}
+
+	// Over a photo the faint white disc disappears: back it with ink.
+	.ts-lightbox__step {
+		left: 12px;
+		width: 56px;
+		height: 56px;
+
+		&:not(:hover) {
+			background: color-mix(in srgb, var(--wp--preset--color--ink) 72%, transparent);
+		}
+	}
+
+	.ts-lightbox__step--next {
+		right: 12px;
+		left: auto;
+	}
+
+	.ts-lightbox__thumbs {
+		padding: 4px 24px 24px;
+	}
+
+	.ts-lightbox__thumb {
+		width: 60px;
+		height: 60px;
+	}
+}
+
+// Phone: no brand chip, side buttons or thumbnails; Previous and Next move to
+// a bar under the media.
+@media (width <= 640px) {
+
+	.ts-lightbox {
+		--ts-lightbox-chrome: 270px;
+	}
+
+	.ts-lightbox__bar {
+		padding: 14px 16px;
+	}
+
+	.ts-lightbox__brand,
+	.ts-lightbox__step,
+	.ts-lightbox__thumbs {
+		display: none;
+	}
+
+	.ts-lightbox__counter {
+		font-size: 1.0625rem;
+	}
+
+	.ts-lightbox__stage {
+		padding: 8px 16px;
+	}
+
+	.ts-lightbox__frame {
+		border-radius: var(--wp--preset--border-radius--sm);
+	}
+
+	.ts-lightbox__caption {
+		font-size: 0.9375rem;
+	}
+
+	.ts-lightbox__foot {
+		display: flex;
+		flex: none;
+		gap: 12px;
+		align-items: center;
+		justify-content: space-between;
+		padding: 12px 16px 24px;
+
+		.ts-lightbox__button {
+			width: 52px;
+			height: 52px;
+		}
+
+		svg {
+			width: 28px;
+			height: 28px;
+		}
+	}
+
+	.ts-lightbox__hint {
+		display: flex;
+		gap: 6px;
+		align-items: center;
+		margin: 0;
+		font-size: 0.8125rem;
+		font-weight: 600;
+
+		svg {
+			width: 18px;
+			height: 18px;
+			fill: currentcolor;
+		}
+	}
+}
+
+// A short screen (a phone on its side): the media needs the height more than
+// the thumbnails and the caption do.
+@media (height <= 560px) {
+
+	.ts-lightbox {
+		--ts-lightbox-chrome: 110px;
+	}
+
+	.ts-lightbox__bar {
+		padding-block: 8px;
+	}
+
+	.ts-lightbox__thumbs,
+	.ts-lightbox__caption,
+	.ts-lightbox__hint {
+		display: none;
+	}
+
+	.ts-lightbox__foot {
+		padding-block: 4px 8px;
+	}
+}
