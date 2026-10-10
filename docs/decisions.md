@@ -904,15 +904,136 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Rationale:** The board shows the dots, and the live slider already rotates. Motion that starts by itself needs a pause control (WCAG 2.2.2), the reasoning ADR-046 used for the marquee. An off-by-default setting leaves the choice with editors, and the Home pattern turns it on to match the live site. Everything is an enhancement of the server markup, so the page without JavaScript is unchanged (ADR-005). This reverses the hero part of ADR-052 and delivers the carousel items in Future work.
 
+## ADR-054: Text over a photo carries a halo in the overlay's colour
+
+**Status:** Accepted
+
+**Context:** The design's photo overlay is a left-to-right gradient in the tone colour: 94% at the left edge, 72% at 45% and 15% at the right. An accessibility audit measured the real pixels behind text over photos, which axe cannot judge. With real site content, the month and year on listing cards with a featured image measured as low as 1.75:1. The Home hero's lead line measured 2.8:1 on phones, where text spans the whole photo. WCAG AA needs 4.5:1 for that text. A brighter photo would be worse.
+
+**Options:**
+- A stronger overlay.
+- A solid or feathered box behind the text.
+- Change the text colour alone.
+- Keep the overlay and the photo as designed and give the text a soft halo.
+
+**Decision:** Give the text a halo of six stacked `text-shadow`s (blur 3, 3, 6, 6, 12 and 12px, no offset) in the overlay's own colour. It applies to:
+- The card month label, only when the card has a featured image, in the card tone's colour (`--ts-tone-bg`, `wp-content/themes/tekseries/assets/css/blocks/post-tone.css`).
+- Headings, paragraphs without their own background (chips are left out) and outline buttons inside a Cover that uses the plum overlay gradient. This is the new `assets/css/blocks/cover.css`, loaded for `core/cover` through the per-block stylesheet list in `functions.php`.
+- Each Hero Carousel dot also gets a 1.5px dark ring (ink at 72%), like the pause button's dark disc, so dots stay visible over a bright part of the photo.
+
+After the change the card month measures at least 5.1:1 and the hero lead at least 5.7:1 on a pure white photo (plum, ink) or a pure black one (saffron, lilac).
+
+**Rationale:** A stronger overlay fails on phones, where text spans the photo: the whole photo would need about 80% tone and all but disappear. A box leaves a visible band across the photo. A text colour change alone still fails where the overlay thins. The halo keeps the photo and the overlay as designed. It is a small, visible deviation from the boards. ADR-056 adds a regression test that measures it.
+
+## ADR-055: Correct what the accessibility audit found
+
+**Status:** Accepted
+
+**Context:** The audit ran axe at WCAG 2.2 levels A and AA on 55 pages and states of the development site with real content (0 violations after the fixes below). It also included a keyboard walk of every page type at 1280px and 390px and a read of the accessibility tree. No real screen reader was used. Each item below failed a WCAG criterion or was announced wrongly.
+
+**Options:**
+- Fix each finding in the markup or CSS that caused it.
+- Leave some findings as found, where the cause is outside our code or is content.
+
+**Decision:**
+1. `:focus-visible` shares the anchors' 96px `scroll-margin-top`, so keyboard focus is never left under the sticky header (WCAG 2.4.11 Focus Not Obscured). In `global.css`.
+2. The eyebrow's coral text measured 3.95:1 on lilac. On lilac surfaces (`.is-style-card-lilac`, `.has-lilac-background-color` and the job sign-in panel's "How posting works") it is `color-mix(in srgb, coral-text 85%, ink)`, about 4.8:1, with no new palette colour. The boards use the lighter coral there, about 2.5:1.
+3. The Stat block's suffix uses the `coral-text` colour. The light coral was 2.91:1 on the blush tile, and large text needs 3:1.
+4. Fluent Forms: the submit button gets a focus ring (it only faded), and a topic chip is ringed as a whole when its radio has keyboard focus. In `fluentform.css`.
+5. The "Read more" arrow is CSS content with empty alternative text (`content: "\2192" / ""`, the plain declaration first as the fallback), so it is no longer read as part of the link's name.
+6. Images in a job description get `alt=""` when they have no alt attribute, through the `wpjm_the_job_description` filter in the plugin's `includes/wpjm.php`. 41 imported descriptions carried a source logo without one.
+7. Two Groups carried an `aria-label` on a plain `div`, which ARIA does not allow. The previous and next post links are now a `nav` named "More posts". The Home figures group lost its label.
+8. The Job Listings block prints a screen-reader-only `h2` "Job listings". It names the results region (`aria-labelledby`) and puts the job titles (`h3`) under a heading.
+
+Left as found:
+- Fluent Forms' own markup: `aria-label` on `label` elements, no group semantics for the topic radios, and the reCAPTCHA frame.
+- The gallery video has no captions. That is content.
+- The large card date and the meta date are both read.
+- The event page's section labels are styled paragraphs, not headings.
+- Text links, badges and table-of-contents links are smaller than the design system's 44px target (ADR-005) but meet WCAG 2.2's 24px-or-spacing rule.
+
+**Rationale:** Each fix removes a failed criterion or a wrong announcement without changing the design, and uses existing tokens. The items left are in third-party markup, are content, or already meet the criterion. The halo for text over photos is ADR-054.
+
+## ADR-056: Check accessibility automatically in the end-to-end suite
+
+**Status:** Accepted
+
+**Context:** The audit in ADR-055 was a one-off. Without a repeatable check, the fixes can regress silently. Axe cannot measure text over a photo (ADR-054).
+
+**Options:**
+- Inject axe-core by hand from a transitive dependency. This is fragile.
+- Screenshot diffing. This is brittle.
+- Lighthouse's accessibility score in CI. It gives a score, not a list of failures, and has no states.
+- `@axe-core/playwright` in the existing end-to-end suite, plus a pixel measurement for text over photos.
+
+**Decision:**
+- `specs/a11y.spec.ts` uses `@axe-core/playwright` 4.13 (root devDependency). It builds one page of every public kind on the test site: front page, the Home and Contact page patterns, events archive, event type archive, event, news post, gallery, an empty gallery filter, legal page, job listings, a job search with no results, job, job dashboard, job submission, search results, an empty search and not found. It expects no axe violation against WCAG 2.2 A and AA at 1280px and 390px.
+- It also scans states only a script or a click reaches: hero on its second slide and paused, header menu open at 834px and 390px, gallery viewer open, table of contents opened on a phone, apply box opened, and, signed in, the job submission form and the dashboard.
+- Excluded as not ours, with a comment in the spec: WordPress's admin toolbar (`#wpadminbar`) and the TinyMCE editor's own buttons (`.mce-tinymce`).
+- A Shift+Tab walk checks that focus is never under the sticky header.
+- `specs/utils/contrast.ts` measures text over a photo. It captures the text's box twice, as drawn and with the letters' fill made transparent (a text shadow stays). It takes the differing pixels as the letters and returns the WCAG contrast ratio that all but the worst twentieth of those pixels, and one pixel around them, reach. The test puts a pure white photo under plum and ink cards and the hero, and a pure black one under saffron and lilac cards. It expects 4.5:1 for small text and 3:1 for the hero's large heading at 1280, 834 and 390px.
+- The card-month test and the focus walk were checked to fail without their fix (card month 1.76:1; eight focus stops under the header) and to pass with it. The suite went from 94 to 119 tests.
+
+**Rationale:** The check runs where the other browser tests run and fails with a list of violations. Worst-case photos make the contrast test independent of what editors upload. Limits: axe sees names, roles, structure and solid colours, not everything. The Contact form (Fluent Forms) exists only on the development site, so it is scanned there by hand and not in the suite.
+
+## ADR-057: Preload the two text fonts and load later carousel photos at low priority
+
+**Status:** Accepted
+
+**Context:** Lighthouse 13.5 on the development site (simulated throttling, medians of three runs) already scored 95 to 99 on mobile and 100 on desktop for Home, Gallery, Job Series and an event page. The remaining loss on Home was a layout shift of 0.044 on phones: the headline reflowed when its font arrived.
+
+**Options:**
+- Preload the Latin font files and lower the priority of later carousel photos.
+- `fetchpriority="high"` on the first two gallery tiles. Tried and dropped: Largest Contentful Paint went from 2.88 s to 3.03 s.
+- Raise WordPress's inline-style limit to remove five small render-blocking stylesheets. Not done: bigger HTML on every page for an estimated 150 ms on throttled mobile.
+- Convert uploads to WebP or AVIF. Not done: content and host work.
+
+**Decision:** A `wp_preload_resources` filter in the theme preloads the Latin file of each family (Schibsted Grotesk and Onest). Other unicode ranges still load on demand. The Hero Carousel sets `fetchpriority="low"` on the photos of slides after the first. They still load at once, behind the first, rather than lazily, so they are there before their slide comes.
+
+Mobile results, before to after:
+- First Contentful Paint: Home 1.53 to 1.15 s, Gallery 1.38 to 1.11 s, Job Series 1.53 to 1.16 s, event 1.38 to 1.21 s.
+- Home's Cumulative Layout Shift: 0.044 to 0.001.
+- Largest Contentful Paint within 0.1 s: Home 2.58 to 2.65 s, Gallery 2.96 to 2.96 s back to back, Job Series 1.83 to 1.68 s, event 2.67 to 2.65 s.
+- Total Blocking Time: 0 to about 60 ms.
+- Scores after: Home 96, Gallery 95, Job Series 99, event 96 on mobile, and 100 on desktop. Accessibility, best practices and SEO are 100 on all four (Job Series' accessibility went 99 to 100 with the list heading of ADR-055).
+
+**Rationale:** Preloading removes the font reflow, the one measurable loss, and brings First Contentful Paint down by 0.2 to 0.4 s. Low priority for later slides keeps their bandwidth from competing with the first photo without delaying them. What remains is the host's: server response time (the development site has no page cache, and the live site answers from one) and cache lifetimes for static files.
+
+## ADR-058: Release 1.0.0 as two uploaded zips, with database content as a scripted bundle
+
+**Status:** Accepted
+
+**Context:** On 2026-10-10 the site owner chose to deploy by uploading zips, not by pulling git on the server. The theme and the plugin are always released together. Much of the new site also lives in the development site's database: page content built from the patterns, gallery albums, topic icons and the contact form's fields. Zips do not carry it, and the development database must not replace the live one, because it is an old copy.
+
+**Options:**
+- A git pull on the server. The owner chose otherwise, and it needs a build step on the server.
+- Copy the development database to live. It would overwrite newer live content and bring an old copy's damage.
+- Paste ten pages by hand. It is slow, error-prone and has no dry run.
+- Two zips plus a scripted bundle of the database content.
+
+**Decision:**
+- One version, 1.0.0, in the theme header, the plugin header and both package files, kept equal by a unit test.
+- `npm run plugin-zip` (after `npm run build`) and the new `npm run theme-zip` produce the two files. The theme zip is `zip -FS` of the theme folder, which holds only files that ship: it is exactly the 91 tracked theme files. Both zips are git-ignored.
+- The database content travels as a bundle exported from the development site: ten pages and posts with the development domain replaced, the icons, the albums, the gallery video's poster image and the contact form's fields.
+- A WP-CLI script applies the bundle on the live site. It does a dry run by default, checks every item before touching it (same ID, type and address) and skips what is already done. Tones for existing posts come from the plugin's own `wp tekseries backfill-tones`.
+- The export and apply scripts and the step-by-step runbook are kept outside the repository with the site's private working files.
+- A release tag is made only after the owner approves. There is no CI, so the gate runs on a developer's machine.
+
+Verified: both zips were installed through WordPress's own installer on a fresh WordPress 7.1.3 (with ACF 6.8.10 and WP Job Manager 2.4.8). Both activate at 1.0.0 with nothing of ours in the debug log. The apply script was rehearsed on the test site with a made-up bundle (12 changes on the first run, 0 on the second). It has never run against the live site or a copy of it. The live site's page, post and media IDs were compared with the development site's through its public REST API and match.
+
+**Rationale:** Zips match the owner's choice and carry only what ships (ADR-001). A checked, dry-run-first script moves database content without overwriting live content, and a second run changes nothing. One equal version keeps the two packages from drifting.
+
 ## Future work
 
-- **Hosting and deploy:** not decided. The options are a git pull on the server or CI-built theme and plugin zips; no remote or CI exists yet. A release must ship only the theme and plugin, never the repository root (ADR-001).
+- **Hosting and deploy:** the release method is decided (ADR-058). Still open on the host: a page cache and longer cache lifetimes for static files on the development site's host, and the first real run of the apply script against the live site (owner).
+- **Accessibility leftovers:** captions for the gallery video (content), and a hand scan of the Contact form after each change to it, as the suite cannot reach it (ADR-055, ADR-056).
+- **Image formats:** convert uploads to WebP or AVIF (content and host work; ADR-057).
 - **PHP 8.3+:** ask the host to move to PHP 8.3 or newer before PHP 8.2 security support ends on 2026-12-31, then raise the floor in a new ADR (ADR-003).
 - **Schibsted Grotesk glyph gap:** Igbo ị, ọ and ụ fall back to the system sans in headings (ADR-021). Find a font file that covers them, or accept the fallback.
 - **Gallery captions and alt text:** write descriptive captions and alt text for the gallery photos. Nine share one caption, and the alt texts are file names (ADR-045).
 - **Gallery Load more size:** it still adds 12 on every screen, where the boards show 10 on phones (ADR-045, ADR-049).
 - **Gallery hero chips:** the totals on the Gallery page do not follow the year filter (ADR-045).
-- **Gallery video on live:** done on the development site (album "2026 Empower Her Webinar", year 2026, with a poster as featured image). Repeat it on the live site (owner; ADR-045).
+- **Gallery video on live:** done on the development site (album "2026 Empower Her Webinar", year 2026, with a poster as featured image). Repeat it on the live site (owner; ADR-045). The release bundle carries the poster and the album (ADR-058).
 - **Album years:** the owner confirmed "2023-2024" under 2024. Confirm the Junior Camp album with the owner. It is filed under 2022 on the development site, because its captions, alt text and matching event say 2022, while only the file names say 2021 (ADR-044).
 - **Bulk album action:** a bulk "add to album" action in the Media Library, if editors need it (ADR-044).
 - **Motion behaviour:** an in-view start for the stat count, and Previous and Next arrows on the carousel, if wanted (ADR-046, ADR-053).

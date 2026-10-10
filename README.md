@@ -1,6 +1,6 @@
 # TekSeries
 
-This repo holds the `tekseries` block theme and the `tekseries-blocks` plugin that rebuild tekseries.com. Site editors change text, images, links, header, footer and colours in the Site Editor without code, and React never ships to visitors: it runs only in wp-admin (ADR-005). `specs/visitor-scripts.spec.ts` checks this on every kind of public page, and jQuery loads only on the Contact form and the job submission form (ADR-007).
+This repo holds the `tekseries` block theme and the `tekseries-blocks` plugin that rebuild tekseries.com, version 1.0.0. Site editors change text, images, links, header, footer and colours in the Site Editor without code, and React never ships to visitors: it runs only in wp-admin (ADR-005). `specs/visitor-scripts.spec.ts` checks this on every kind of public page, and jQuery loads only on the Contact form and the job submission form (ADR-007).
 
 ## Requirements
 
@@ -23,9 +23,7 @@ localwp wp plugin activate tekseries-blocks
 
 The site runs at `https://tekseriescomnew.local`, or whichever domain Local shows, with the `tekseries` theme active.
 
-`build/` is not tracked. Without it the plugin registers no blocks and the e2e tests fail.
-
-For theme work, set development mode once, or WordPress serves a cached pattern list.
+`build/` is not tracked. Without it the plugin registers no blocks and the e2e tests fail. For theme work, set development mode once, or WordPress serves a cached pattern list.
 
 ```bash
 localwp wp config set WP_DEVELOPMENT_MODE theme --type=constant
@@ -47,7 +45,8 @@ Every event and news post has a tone and a topic icon, assigned on first publish
 | `npm run test:e2e:install` | Installs Playwright's Chromium once. |
 | `npm run build` / `npm run start` | Builds the plugin's blocks and post sidebar into `build/` with a blocks manifest, or watches and rebuilds. |
 | `npm run icons` | Downloads the plugin's Material Symbols SVGs from Google, for the names listed in `includes/icons.php`. |
-| `npm run plugin-zip` | Zips the plugin for release, `templates/` included. |
+| `npm run plugin-zip` | Zips the plugin, `templates/` included, to `wp-content/plugins/tekseries-blocks/tekseries-blocks.zip`. |
+| `npm run theme-zip` | Zips the theme folder to `wp-content/themes/tekseries.zip`. |
 | `npm run wp-env <cmd>` | Runs wp-env, e.g. `npm run wp-env start` or `stop`. |
 | `localwp composer run lint` | PHPCS with WordPress Coding Standards and PHPCompatibilityWP (PHP 8.2+) over the theme and plugin. |
 | `localwp composer run format` | Runs `phpcbf`. It exits 1 after fixing files, which isn't a failure. |
@@ -56,10 +55,11 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 
 ## Tests
 
-- `npm run test:unit` runs 178 Vitest tests in `tests/unit/`: design tokens, templates, icons and project metadata.
-- `npm run test:e2e` runs about 90 Playwright tests in 26 spec files against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). Run `npm run build` first. They cover the theme, events, tones, the blocks, the job screens and media albums, check the scripts each public page loads, and drive the lightbox, in-place filtering and search, copy link and table of contents in a browser.
+- `npm run test:unit` runs 179 Vitest tests in `tests/unit/`: design tokens, templates, icons and project metadata, including that the theme, plugin and both package files share one version (ADR-058).
+- `npm run test:e2e` runs 119 Playwright tests in 27 spec files against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). Run `npm run build` first. They cover the theme, events, tones, the blocks, the job screens and media albums, check the scripts each public page loads, and drive the lightbox, in-place filtering and search, copy link and table of contents in a browser.
+- `specs/a11y.spec.ts` scans every kind of public page at 1280px and 390px with `@axe-core/playwright` against WCAG 2.2 A and AA. It also covers states only a script or click reaches, keyboard focus under the sticky header, and the contrast of text over photos (ADR-056).
 - The first `npm run wp-env start` pulls Docker images and takes several minutes, longer than Playwright's 120-second start timeout. Run it once by hand first, and retry on a network error.
-- Run `npm run test:e2e:install` once for the browser, then `sudo npx playwright install-deps chromium` once per machine for its system libraries.
+- Run `npm run test:e2e:install` once, then `sudo npx playwright install-deps chromium` once per machine for system libraries.
 - `localwp composer run lint` checks the theme's and plugin's PHP with PHPCS.
 
 ## Repo layout
@@ -79,27 +79,25 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 └── package.json, composer.json, phpcs.xml.dist, .wp-env.json and other root config
 ```
 
+The repo root is the WordPress root. `.gitignore` is a whitelist, so WordPress core, uploads and other plugins and themes are never tracked, and neither are the zips (ADR-001).
+
 The plugin has eight blocks: `post-tone` (ADR-033), `share-links`, `toc` (ADR-038), `job-listings` (ADR-042), `media-gallery` (ADR-045), `hero-carousel` (ADR-053) and the CSS-only `stat` and `logo-marquee` (ADR-046). Five send visitors a small script module on the Interactivity API, `src/<block>/view.ts` (ADR-047), and each works without JavaScript:
 
 - `share-links` copies "Link to this page", and loads only when a block offers that link.
 - `media-gallery` has a lightbox (ADR-048), and its filters and Load more update in place (ADR-049).
 - `job-listings` updates search and paging in place (ADR-049).
 - `toc` marks the section being read and starts folded on phones (ADR-051).
-- `hero-carousel` dots follow the slide in view and move the slides in place. "Change slides automatically" (off by default) advances every 7 seconds with a pause button, never under reduced motion.
-
-The other three have no script, and the motion blocks stand still under `prefers-reduced-motion`.
+- `hero-carousel` dots follow the slide in view. "Change slides automatically" (off by default) advances every 7 seconds with a pause button, never under reduced motion.
 
 Event templates show the ACF fields through Block Bindings. Job pages read WP Job Manager data through the `tekseries/job-field` and `tekseries/job-stats` sources (ADR-040), and the gallery reads totals through `tekseries/media-stats`. Only media in an album (Media → Albums) appears in the gallery (ADR-044).
 
-The theme holds design tokens, fonts, header and footer parts, page patterns, templates for every screen (`single-job_listing.html` is ADR-041) and per-block CSS. The job submission flow and dashboard are WP Job Manager overrides (ADR-043).
+## Release
 
-Gallery tiles sit in a CSS grid that fills the shortest column (ADR-050). Home uses Stat and Logo Marquee (ADR-052), and its hero is a two-slide Hero Carousel (ADR-053).
-
-The repo root is the WordPress root. `.gitignore` is a whitelist, so WordPress core, uploads and other plugins and themes are never tracked (ADR-001).
+Releases ship as two zips uploaded in wp-admin (ADR-058). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip`. Upload `tekseries-blocks.zip` under Plugins, then `tekseries.zip` under Themes. The content that lives in the database (page content, albums, topic icons, the contact form's fields) moves separately, as a scripted bundle with a dry run (ADR-058).
 
 ## Design reference
 
-`docs/design-reference/` holds the Claude Design page boards at desktop, tablet and mobile widths, plus the design system's tokens and components. It's reference material: don't edit it by hand, because later pulls diff against it. The theme's `theme.json` implements its tokens.
+`docs/design-reference/` holds the design canvas's page boards at desktop, tablet and mobile widths, plus the design system's tokens and components. It's reference material: don't edit it by hand, because later pulls diff against it. The theme's `theme.json` implements its tokens.
 
 ## Status
 
@@ -114,8 +112,8 @@ The repo root is the WordPress root. `.gitignore` is a whitelist, so WordPress c
 | 5b | Custom blocks: Job Series | done |
 | 5c | Custom blocks: gallery and home motion | done |
 | 6 | Frontend behaviour | done |
-| 7 | QA and release | not started |
+| 7 | QA and release | done |
 
-Phase 7 is next: accessibility and performance passes, a full test run, and the plugin and theme zips.
+The build plan is complete at version 1.0.0. Lighthouse on the development site scores 95 to 99 on mobile and 100 on desktop for Home, Gallery, Job Series and an event page (ADR-057). What is still to do is outside the code: the release tag, made once the site owner approves, and moving the site to the live server, which means uploading the two zips and the first run of the content bundle (ADR-058).
 
 Architecture decisions and future work are in [docs/decisions.md](docs/decisions.md). Changes are in [docs/changelog.md](docs/changelog.md).
