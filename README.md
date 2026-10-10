@@ -21,19 +21,17 @@ localwp composer install
 localwp wp plugin activate tekseries-blocks
 ```
 
-The site runs at `https://tekseriescomnew.local`, or whichever domain Local shows, with the `tekseries` theme active. Pages that still hold Divi shortcodes show them as raw text until their content is re-authored from the theme's patterns.
+The site runs at `https://tekseriescomnew.local`, or whichever domain Local shows, with the `tekseries` theme active.
 
-`build/` is not tracked. Without it the plugin registers no blocks and the e2e tests fail, because wp-env mounts the plugin folder as it is.
+`build/` is not tracked. Without it the plugin registers no blocks and the e2e tests fail.
 
-For theme work, set development mode once, or WordPress serves a cached pattern list and new theme patterns don't appear. wp-env already sets it in `.wp-env.json`.
+For theme work, set development mode once, or WordPress serves a cached pattern list. wp-env already sets it.
 
 ```bash
 localwp wp config set WP_DEVELOPMENT_MODE theme --type=constant
 ```
 
-Set the site logo in the Site Editor or Settings, not in code.
-
-Every event and news post has a tone and a topic icon, assigned on first publish (ADR-032). To tone posts that already exist, run `localwp wp tekseries backfill-tones --dry-run`, then again without `--dry-run`. Options: `--post_type=event|post` and `--force`.
+Every event and news post has a tone and a topic icon, assigned on first publish (ADR-032). To tone posts that already exist, run `localwp wp tekseries backfill-tones --dry-run`, then again without `--dry-run`.
 
 ## Commands
 
@@ -58,9 +56,8 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 
 ## Tests
 
-- `npm run test:unit` runs 176 Vitest tests in `tests/unit/`: design tokens, template wiring, the icon list and project metadata.
-- `npm run test:e2e` runs 73 Playwright tests against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). Run `npm run build` first; they cover the theme, event fields and types, the tone cycle, the plugin's blocks, the sidebar panel and the job screens (fields, single job, listings, submission, dashboard).
-- A test helper creates the Job Series, submit and dashboard pages on wp-env and selects them in WP Job Manager's settings, since it has no REST API for that. A fresh wp-env needs nothing extra.
+- `npm run test:unit` runs about 180 Vitest tests in `tests/unit/`: design tokens, template wiring, the icon list and project metadata.
+- `npm run test:e2e` runs about 85 Playwright tests against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). Run `npm run build` first; they cover the theme, event fields and types, the tone cycle, the plugin's blocks, the sidebar panel, the job screens, media albums, the gallery and the Home motion blocks.
 - The first `npm run wp-env start` pulls Docker images and takes several minutes, longer than Playwright's 120-second start timeout. Run it once by hand first, and retry on a network error (ETIMEDOUT, socket closed); `docker exec <wp-env cli container> wp …` also works.
 - Run `npm run test:e2e:install` once for the browser, then `sudo npx playwright install-deps chromium` once per machine for its system libraries.
 - `localwp composer run lint` checks the theme's and plugin's PHP with PHPCS.
@@ -72,7 +69,7 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 ├── wp-content/themes/tekseries/           # block theme: theme.json, templates, parts, patterns, assets
 ├── wp-content/plugins/tekseries-blocks/   # blocks plugin
 │   ├── src/                               # one folder per block, plus post-settings (sidebar panel)
-│   ├── includes/                          # event and job fields, bindings, icons, tone meta and cycle, editor, WP-CLI
+│   ├── includes/                          # event and job fields, media albums, bindings, icons, tone meta and cycle, editor, WP-CLI
 │   ├── templates/wpjm/                    # WP Job Manager template overrides
 │   └── assets/css/                        # job screen styles
 ├── specs/                                 # Playwright e2e specs
@@ -82,9 +79,13 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 └── package.json, composer.json, phpcs.xml.dist, .wp-env.json and other root config
 ```
 
-The plugin has four blocks: `tekseries/post-tone` (ADR-033), `tekseries/share-links`, `tekseries/toc` (ADR-038) and `tekseries/job-listings` (ADR-042). Event templates show the ACF fields through Block Bindings, and job pages read WP Job Manager data through the `tekseries/job-field` and `tekseries/job-stats` sources (ADR-040).
+The plugin has eight blocks: `post-tone` (ADR-033), `share-links`, `toc` (ADR-038), `job-listings` (ADR-042), `media-gallery` (ADR-045) and the CSS-only `stat`, `logo-marquee` and `hero-carousel` (ADR-046). None sends a script to visitors, and the three motion blocks stand still under `prefers-reduced-motion`.
 
-The theme holds design tokens, fonts, header and footer parts, page patterns, templates for every screen (`single-job_listing.html` is ADR-041) and per-block CSS. The submission flow and dashboard are WP Job Manager overrides (ADR-043).
+Event templates show the ACF fields through Block Bindings. Job pages read WP Job Manager data through the `tekseries/job-field` and `tekseries/job-stats` sources (ADR-040), and the gallery reads totals through `tekseries/media-stats`.
+
+Media files are grouped in wp-admin under Media → Albums, and each album carries a Year. Only files in an album appear in the gallery (ADR-044).
+
+The theme holds design tokens, fonts, header and footer parts, page patterns, templates for every screen (`single-job_listing.html` is ADR-041) and per-block CSS. The Gallery page pattern uses the media gallery block. The submission flow and dashboard are WP Job Manager overrides (ADR-043).
 
 The repo root is the WordPress root. `.gitignore` is a whitelist, so WordPress core, uploads and other plugins and themes are never tracked (ADR-001).
 
@@ -103,10 +104,10 @@ The repo root is the WordPress root. `.gitignore` is a whitelist, so WordPress c
 | 4 | Blocks plugin scaffold | done |
 | 5a | Custom blocks: events | done |
 | 5b | Custom blocks: Job Series | done |
-| 5c | Custom blocks: gallery and home motion | not started |
+| 5c | Custom blocks: gallery and home motion | done |
 | 6 | Frontend behaviour | not started |
 | 7 | QA and release | not started |
 
-Phase 5c is next: the gallery and home motion.
+Phase 6 is next: the Interactivity API behaviour on top of the finished blocks.
 
 Architecture decisions and future work are in [docs/decisions.md](docs/decisions.md). Changes are in [docs/changelog.md](docs/changelog.md).

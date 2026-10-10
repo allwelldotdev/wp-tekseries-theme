@@ -221,7 +221,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-015: Build the Gallery as a custom block over a private media_album taxonomy
 
-**Status:** Accepted
+**Status:** Superseded by ADR-044 (taxonomy visibility only)
 
 **Context:** The Gallery boards have type and year filters with counts, video items, Load more with a counter, and a lightbox with captions and thumbnails. Today's gallery is six DiviFlash albums holding 32 unique images, with the year only in each album title; the upload dates were lost in a 2023 migration. 1,711 of the media library's attachments are WP Job Manager company logos.
 
@@ -442,7 +442,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-030: Use core Gallery blocks for the interim gallery
 
-**Status:** Accepted
+**Status:** Superseded by ADR-045
 
 **Context:** ADR-015 plans `tekseries/media-gallery`, which is not built. The stored alt text for the gallery images is file-name style.
 
@@ -709,14 +709,81 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Rationale:** Static heroes keep editors in control of page copy and the overrides simple. Keeping Delete off the main button protects employers from a destructive default. Keeping WPJM's dialog saves a large rewrite for a secondary screen. The copy matches a site with no self-registration.
 
+## ADR-044: Make media_album a public, non-queryable taxonomy that carries the gallery year
+
+**Status:** Accepted
+
+**Context:** ADR-015 decided the gallery reads a "private `media_album` taxonomy". The Media Library holds about 2,060 files, about 1,710 of them WPJM company-logo uploads, so the gallery must show only files an editor chose. The design filters by year, but the migrated photos' upload dates are wrong for that: photos from 2016 to 2019 were uploaded in 2023.
+
+**Options:**
+- Visibility: a fully private taxonomy (`public` false), or a public taxonomy that is not publicly queryable.
+- Album and year as attachment post meta.
+- Year: from each file's upload date, or as term meta on the album.
+
+**Decision:**
+- Taxonomy `media_album` on attachments, registered in the plugin. It is `public` but not `publicly_queryable`, with no rewrite rules, no query var, and hidden from navigation menus and the tag cloud, so it has no front-end archive. It counts terms with `_update_generic_term_count`.
+- Each album carries integer term meta `tekseries_year`, exposed over REST. Editors set it in a "Year" field on the Add and Edit Album screens (Media, Albums).
+- A file in several albums takes the latest year. A file whose albums have no year lists only under "All years".
+- Existing photos were put into six albums with a one-off script. The plugin has no importer.
+
+**Rationale:** WordPress shows a taxonomy field in a file's attachment details (Media Library grid) only for public taxonomies. With a private one, editors would have to open each file's full edit screen. Not being publicly queryable still gives no archive, and the taxonomy does not enter the SEO plugin's sitemap (checked on the development site). Core's default counter counts an attachment only through a published parent post, and gallery files are unattached, so counts would read 0. The year on the album is one field per album instead of one per file, and it matches how the old site grouped photos. An e2e test guards the Media Library field and the wp-admin Year field. This refines the "private" wording of ADR-015.
+
+## ADR-045: Build the Media Gallery as a dynamic block that filters in PHP, with links for every state
+
+**Status:** Accepted
+
+**Context:** ADR-015 chose a custom block, and ADR-030 shipped core Gallery blocks per album as an interim. The design has type (All / Photos / Videos) and year filters with counts, a masonry of tiles, "Showing N of M" with Load more, and a lightbox. Server HTML must be complete and usable without JavaScript.
+
+**Options:**
+- Keep core Galleries, which have no filters, counts or Load more.
+- A dynamic block that filters in SQL with one count query per chip.
+- A dynamic block that reads the whole hand-picked set once and filters in PHP.
+- Layout: CSS columns, or a JavaScript masonry.
+- URLs: `type` and `year`, or prefixed parameters.
+
+**Decision:**
+- Dynamic block `tekseries/media-gallery`. One query reads every image and video attachment that has a `media_album` term (ADR-044), cached for the request. Results sort by newest album year first, then newest upload first within a year.
+- Filters are plain links with counts. URL parameters are `media_type` (`photo` or `video`), `media_year` and `media_shown`. Unknown values are ignored.
+- "Load more" is a link that raises `media_shown` by the block's per-page setting (default 12, cumulative) and lands on the first newly shown tile. Filter links land on the gallery.
+- A filter group renders only when it distinguishes something: both photos and videos exist, or there is more than one year.
+- Tiles are links to the full file in a CSS-columns masonry (4, 3 and 2 columns), each sized from its file's stored dimensions. A tile's accessible name ("View photo: ..." or "Play video: ...") and hover caption is the attachment caption, falling back to alt text, then title.
+- A `tekseries/media-stats` block-binding source gives templates the totals ("32 photos"). It is empty when there are none, so the chip hides.
+- The Gallery page pattern uses the block, and the interim `.ts-gallery` styling for core Gallery is removed.
+- Deferred: the lightbox, and filtering and loading without a page reload.
+
+**Rationale:** `year` is a WordPress query variable. On a page URL it turns the request into a date archive and the page 404s. `type` is a reserved term. The set is small and curated, and every chip needs a count, so one query plus PHP filtering is simpler and cheaper than a count query per chip. CSS columns need no script, but reading and tab order run down each column, a known difference from the design's row order. On the migrated photos the captions are clean while the alt texts are file names. Links keep every state shareable and can be intercepted later for in-place navigation. This replaces the interim gallery of ADR-030.
+
+## ADR-046: Build the Home motion blocks with CSS only
+
+**Status:** Accepted
+
+**Context:** ADR-014 decided Home motion ships in two versions: static core blocks first, moving plugin blocks later (hero carousel, count-up stat, logo marquee). The design's count-up is CSS. Its marquee pauses only on hover, with no keyboard or touch control, which fails WCAG 2.2.2. Its slider dots have nothing to slide. Server HTML must work without JavaScript, and motion must respect `prefers-reduced-motion`.
+
+**Options:**
+- Wait and build all three with the Interactivity API.
+- Render static markup now with inert controls and add behaviour later.
+- Build them with CSS only, so they are complete now.
+
+**Decision:** Three dynamic blocks that ship no script and move only under `prefers-reduced-motion: no-preference`.
+- `tekseries/stat` (attributes `value`, `suffix`): the number is a CSS counter fed by a registered custom property (`@property`) that animates from 0. The drawn figure is hidden from assistive technology, and a screen-reader copy carries the plain "312+", which is also what shows without CSS.
+- `tekseries/logo-marquee` (Image inner blocks): the server repeats the set so each half of the strip holds at least eight logos, and the strip slides by half its width. Repeats are `aria-hidden` and `inert` with empty alt text. The pause control is a checkbox drawn as a button, placed before the logos in the document, and hovering pauses too. Without motion, and in the editor, it is a still wrapping row.
+- `tekseries/hero-carousel` (Cover inner blocks): a scroll-snap track that can be swiped. The server gives each slide an id and slide roles, the dots are links to those ids, and the current dot follows `:target`. One slide renders with no dots or carousel roles.
+- Home keeps its static patterns until the site owner asks for the switch.
+
+**Rationale:** CSS covers what the design shows, so nothing waits on a later phase and nothing breaks without JavaScript. A checkbox gives a real pause control with no script, where an inert button would be worse than none. Anchor dots plus native scrolling make a usable carousel without script. This delivers the blocks that ADR-014 deferred. Later, optional behaviour is listed in Future work.
+
 ## Future work
 
 - **Hosting and deploy:** not decided. The options are a git pull on the server or CI-built theme and plugin zips; no remote or CI exists yet. A release must ship only the theme and plugin, never the repository root (ADR-001).
 - **PHP 8.3+:** ask the host to move to PHP 8.3 or newer before PHP 8.2 security support ends on 2026-12-31, then raise the floor in a new ADR (ADR-003).
-- **Animated Home blocks:** `tekseries/hero-carousel`, `tekseries/stat` and `tekseries/logo-marquee` (ADR-014).
 - **Schibsted Grotesk glyph gap:** Igbo ị, ọ and ụ fall back to the system sans in headings (ADR-021). Find a font file that covers them, or accept the fallback.
-- **Media gallery:** replace the interim core Gallery blocks with `tekseries/media-gallery` (ADR-015, ADR-030).
-- **Gallery alt text:** write descriptive alt text for the gallery images (ADR-030).
+- **Gallery captions and alt text:** write descriptive captions and alt text for the gallery photos. Nine share one caption, and the alt texts are file names (ADR-045).
+- **Gallery behaviour:** a lightbox, and filtering and Load more without a page reload, using the Interactivity API (ADR-045).
+- **Gallery video:** a webinar highlights video sits in the Media Library. Putting it in an album makes the Photos/Videos filter and the video chip appear (owner; ADR-045).
+- **Album years:** confirm with the owner. The "2021 Junior Camp" photos carry captions that say 2022, and the "2023-2024" album is filed under 2024 (ADR-044).
+- **Bulk album action:** a bulk "add to album" action in the Media Library, if editors need it (ADR-044).
+- **Home motion switch:** swap Home's static patterns for the moving blocks. This is the owner's decision, and the carousel also needs a second slide (ADR-046).
+- **Motion behaviour:** carousel dots that follow swipes, previous/next buttons and autoplay with a pause control, and an in-view start for the stat count, if wanted (ADR-046).
 - **Lost emoji:** fix the emoji that became `????` in posts and events.
 - **Interactivity:** a copy-link button for Share Links, and a table of contents folded on phones that highlights the current section (ADR-038).
 - **Past-event and registration-closed states:** replace the interim "This event has ended" note when the designer delivers (ADR-035).
