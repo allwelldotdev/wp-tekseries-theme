@@ -120,6 +120,13 @@ test.describe( 'Job Listings block', () => {
 		await expect( page.locator( '.showing_jobs' ) ).toHaveText(
 			'3 open jobs'
 		);
+		// The job titles (h3) sit under a heading of the list, read out only.
+		await expect(
+			page.getByRole( 'heading', { level: 2, name: 'Job listings' } )
+		).toBeAttached();
+		await expect(
+			page.getByRole( 'region', { name: 'Job listings' } )
+		).toBeVisible();
 		await expect( titles ).toHaveText( [
 			'E2E Listing C Remote',
 			'E2E Listing B Intern',

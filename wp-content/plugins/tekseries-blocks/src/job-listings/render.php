@@ -146,14 +146,19 @@ tekseries_blocks_track_job_search( (int) get_the_ID() );
 		</div>
 	</form>
 
-	<?php // Focusable by the script, which sends focus here after a change of page. ?>
+	<?php
+	// Focusable by the script, which sends focus here after a change of page.
+	$tekseries_title = wp_unique_id( 'ts-job-results-' );
+	?>
 	<section
 		class="ts-job-results"
-		aria-label="<?php esc_attr_e( 'Job listings', 'tekseries-blocks' ); ?>"
+		aria-labelledby="<?php echo esc_attr( $tekseries_title ); ?>"
 		tabindex="-1"
 		data-wp-interactive="tekseries/job-listings"
 		data-wp-router-region="tekseries/job-listings"
 	>
+		<?php // The heading the job titles sit under; the count line below is what shows. ?>
+		<h2 class="screen-reader-text" id="<?php echo esc_attr( $tekseries_title ); ?>"><?php esc_html_e( 'Job listings', 'tekseries-blocks' ); ?></h2>
 		<div class="ts-job-results__head">
 			<?php // A status, so the new count is read out when the results change in place. ?>
 			<p class="showing_jobs" role="status">
