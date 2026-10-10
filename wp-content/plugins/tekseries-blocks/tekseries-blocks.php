@@ -29,6 +29,7 @@ require_once __DIR__ . '/includes/job-fields.php';
 require_once __DIR__ . '/includes/wpjm.php';
 require_once __DIR__ . '/includes/job-submission.php';
 require_once __DIR__ . '/includes/job-dashboard.php';
+require_once __DIR__ . '/includes/media-albums.php';
 require_once __DIR__ . '/includes/tone-cycle.php';
 require_once __DIR__ . '/includes/editor.php';
 
