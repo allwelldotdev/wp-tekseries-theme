@@ -1,0 +1,423 @@
+// Media Gallery: filter chips, the masonry of tiles and the Load more row
+// (Gallery boards). Colours and sizes come from the theme tokens.
+
+.wp-block-tekseries-media-gallery {
+	color: var(--wp--preset--color--body);
+}
+
+// Filters on the left, the hint on the right (desktop only).
+.ts-media__bar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 24px;
+}
+
+.ts-media__filters {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	min-width: 0;
+	max-width: 100%;
+}
+
+.ts-media__types,
+.ts-media__years {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+}
+
+.ts-media__years {
+	gap: 6px;
+}
+
+.ts-media__type,
+.ts-media__year {
+	display: inline-flex;
+	flex: none;
+	gap: 8px;
+	align-items: center;
+	box-sizing: border-box;
+	min-height: var(--wp--custom--touch-target);
+	padding: 0 18px;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: var(--wp--preset--border-radius--pill);
+	background: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--plum);
+	font-size: var(--wp--preset--font-size--body-s);
+	font-weight: 700;
+	text-decoration: none;
+	transition:
+		background-color var(--wp--custom--motion--duration),
+		border-color var(--wp--custom--motion--duration),
+		color var(--wp--custom--motion--duration);
+
+	&:hover {
+		border-color: var(--wp--preset--color--plum);
+		color: var(--wp--preset--color--plum);
+	}
+
+	svg {
+		width: 20px;
+		height: 20px;
+		fill: currentcolor;
+	}
+}
+
+.ts-media__type {
+
+	.ts-media__count {
+		padding: 2px 8px;
+		border-radius: var(--wp--preset--border-radius--pill);
+		background: var(--wp--preset--color--lilac);
+		font-size: 0.8125rem;
+	}
+
+	&[aria-current] {
+		border-color: var(--wp--preset--color--plum);
+		background: var(--wp--preset--color--plum);
+		color: var(--wp--preset--color--white);
+
+		.ts-media__count {
+			background: rgba(255, 255, 255, 0.18);
+		}
+	}
+}
+
+// Year chips are lighter: no fill until chosen, then saffron.
+.ts-media__year {
+	gap: 6px;
+	padding: 0 14px;
+	background: transparent;
+	font-size: 0.9375rem;
+	font-variant-numeric: tabular-nums;
+
+	.ts-media__count {
+		font-size: 0.75rem;
+		font-weight: 600;
+		opacity: 0.75;
+	}
+
+	&[aria-current] {
+		border-color: var(--wp--preset--color--saffron);
+		background: var(--wp--preset--color--saffron);
+		color: var(--wp--preset--color--ink);
+	}
+}
+
+.ts-media__hint {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+	margin: 0;
+	color: var(--wp--preset--color--muted);
+	font-size: 0.9375rem;
+	font-weight: 600;
+
+	svg {
+		width: 20px;
+		height: 20px;
+		fill: var(--wp--preset--color--plum);
+	}
+}
+
+// Masonry: CSS columns, each tile keeping its file's own proportions.
+.ts-media__grid {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	columns: 4;
+	column-gap: 16px;
+}
+
+.ts-media__item {
+	margin: 0 0 16px;
+	break-inside: avoid;
+}
+
+.ts-media__tile {
+	position: relative;
+	display: block;
+	overflow: hidden;
+	border-radius: var(--wp--preset--border-radius--md);
+	background: var(--wp--preset--color--lilac-deep);
+	cursor: zoom-in;
+
+	&:focus-visible {
+		outline: var(--wp--custom--focus--width) solid var(--wp--preset--color--plum);
+		outline-offset: var(--wp--custom--focus--offset);
+	}
+
+	img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	&:hover .ts-media__veil,
+	&:focus-visible .ts-media__veil {
+		opacity: 1;
+	}
+}
+
+.ts-media__tile--video {
+	background: var(--wp--preset--color--plum);
+	cursor: pointer;
+}
+
+// Caption and icon over a plum fade, on hover and keyboard focus.
+.ts-media__veil {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	gap: 8px;
+	align-items: flex-end;
+	justify-content: space-between;
+	padding: 14px;
+	background: linear-gradient(0deg, rgba(74, 29, 94, 0.85) 0%, rgba(74, 29, 94, 0.2) 60%, rgba(74, 29, 94, 0) 100%);
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+
+.ts-media__caption {
+	color: var(--wp--preset--color--white);
+	font-size: var(--wp--preset--font-size--caption);
+	font-weight: 600;
+	line-height: 1.35;
+}
+
+.ts-media__zoom,
+.ts-media__play {
+	display: grid;
+	flex: none;
+	place-items: center;
+	border-radius: 50%;
+	background: var(--wp--preset--color--saffron);
+	color: var(--wp--preset--color--ink);
+
+	svg {
+		fill: currentcolor;
+	}
+}
+
+.ts-media__zoom {
+	width: 40px;
+	height: 40px;
+	margin-left: auto;
+
+	svg {
+		width: 22px;
+		height: 22px;
+	}
+}
+
+// Videos: a play disc in the middle and a "Video" badge, always shown.
+.ts-media__play {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 72px;
+	height: 72px;
+	box-shadow: 0 8px 24px rgba(42, 21, 51, 0.35);
+	transform: translate(-50%, -50%);
+
+	svg {
+		width: 40px;
+		height: 40px;
+	}
+}
+
+.ts-media__badge {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	display: flex;
+	gap: 4px;
+	align-items: center;
+	padding: 5px 10px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background: var(--wp--preset--color--ink);
+	color: var(--wp--preset--color--white);
+	font-size: 0.75rem;
+	font-weight: 700;
+
+	svg {
+		width: 15px;
+		height: 15px;
+		fill: var(--wp--preset--color--saffron);
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+	.ts-media__tile img {
+		transition: transform 0.35s ease;
+	}
+
+	.ts-media__tile:hover img {
+		transform: scale(1.04);
+	}
+}
+
+// "Showing 12 of 32" and Load more.
+.ts-media__more {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	align-items: center;
+	margin-top: 24px;
+}
+
+.ts-media__showing {
+	margin: 0;
+	color: var(--wp--preset--color--muted);
+	font-size: 0.9375rem;
+	font-weight: 600;
+}
+
+.ts-media__load {
+	display: inline-flex;
+	gap: 8px;
+	align-items: center;
+	min-height: 48px;
+	padding: 0 28px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background: var(--wp--preset--color--plum);
+	color: var(--wp--preset--color--white);
+	font-size: var(--wp--preset--font-size--body-s);
+	font-weight: 700;
+	text-decoration: none;
+	transition:
+		background-color var(--wp--custom--motion--duration),
+		color var(--wp--custom--motion--duration);
+
+	&:hover {
+		background: var(--wp--preset--color--saffron);
+		color: var(--wp--preset--color--ink);
+	}
+
+	svg {
+		width: 20px;
+		height: 20px;
+		fill: currentcolor;
+	}
+}
+
+// Nothing under the chosen filters.
+.ts-media__empty {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	align-items: center;
+	padding: 40px 24px;
+	border: 1px dashed var(--wp--preset--color--lilac-deep);
+	border-radius: var(--wp--preset--border-radius--lg);
+	background: var(--wp--preset--color--white);
+	text-align: center;
+
+	svg {
+		width: 40px;
+		height: 40px;
+		fill: var(--wp--preset--color--lilac-deep);
+	}
+}
+
+.ts-media__empty-title {
+	margin: 0;
+	color: var(--wp--preset--color--plum);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 700;
+}
+
+.ts-media__reset {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--wp--custom--touch-target);
+	padding: 0 20px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background: var(--wp--preset--color--lilac);
+	color: var(--wp--preset--color--plum);
+	font-size: 0.9375rem;
+	font-weight: 700;
+	text-decoration: none;
+
+	&:hover {
+		background: var(--wp--preset--color--lilac-deep);
+		color: var(--wp--preset--color--plum);
+	}
+}
+
+// Tablet: three columns, no hint.
+@media (width <= 1100px) {
+
+	.ts-media__grid {
+		columns: 3;
+	}
+
+	.ts-media__hint {
+		display: none;
+	}
+}
+
+// Phone: two tight columns; the year chips scroll sideways on one row and the
+// caption gives way to the icon.
+@media (width <= 640px) {
+
+	.ts-media__bar {
+		margin-bottom: 16px;
+	}
+
+	.ts-media__type {
+		padding: 0 14px;
+		font-size: 0.875rem;
+	}
+
+	.ts-media__years {
+		flex-wrap: nowrap;
+		margin: 0 calc(-1 * var(--wp--preset--spacing--gutter));
+		padding: 0 var(--wp--preset--spacing--gutter) 4px;
+		overflow-x: auto;
+	}
+
+	.ts-media__year {
+		font-size: 0.875rem;
+	}
+
+	.ts-media__grid {
+		columns: 2;
+		column-gap: 8px;
+	}
+
+	.ts-media__item {
+		margin-bottom: 8px;
+	}
+
+	.ts-media__tile {
+		border-radius: 12px;
+	}
+
+	.ts-media__veil {
+		padding: 8px;
+	}
+
+	.ts-media__caption {
+		display: none;
+	}
+
+	.ts-media__play {
+		width: 48px;
+		height: 48px;
+
+		svg {
+			width: 28px;
+			height: 28px;
+		}
+	}
+}

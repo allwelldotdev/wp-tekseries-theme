@@ -8,6 +8,9 @@
  * are from (`tekseries_year`), which the gallery's year filter uses; the upload
  * date can't say, because old photos were uploaded years later.
  *
+ * The Media Gallery block lists them (tekseries_blocks_gallery_items()), and
+ * the `tekseries/media-stats` binding source gives templates the totals.
+ *
  * @package TekSeries
  */
 
@@ -154,3 +157,115 @@ function tekseries_blocks_save_album_year( int $term_id ): void {
 }
 add_action( 'created_media_album', 'tekseries_blocks_save_album_year' );
 add_action( 'edited_media_album', 'tekseries_blocks_save_album_year' );
+
+/**
+ * Returns the gallery's media: every photo and video in an album, newest year
+ * first and, within a year, newest upload first. Media whose albums have no
+ * year come last. A file in several albums takes the latest year.
+ *
+ * @return array<int, array{post: WP_Post, kind: string, year: int}>
+ */
+function tekseries_blocks_gallery_items(): array {
+	// The gallery block and the hero's figures ask on the same page.
+	static $items = null;
+	if ( null !== $items ) {
+		return $items;
+	}
+
+	$query = new WP_Query(
+		array(
+			'post_type'      => 'attachment',
+			'post_status'    => 'inherit',
+			'post_mime_type' => array( 'image', 'video' ),
+			// Albums are hand-picked, so every file is read at once: the
+			// filters need counts for the whole gallery.
+			'posts_per_page' => -1,
+			'no_found_rows'  => true,
+			'orderby'        => array(
+				'date' => 'DESC',
+				'ID'   => 'DESC',
+			),
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- the album is what puts a file in the gallery.
+			'tax_query'      => array(
+				array(
+					'taxonomy' => 'media_album',
+					'operator' => 'EXISTS',
+				),
+			),
+		)
+	);
+
+	$items = array();
+	foreach ( $query->posts as $media ) {
+		$albums  = get_the_terms( $media, 'media_album' );
+		$years   = is_array( $albums ) ? array_map( static fn( WP_Term $album ): int => tekseries_blocks_album_year( $album->term_id ), $albums ) : array();
+		$items[] = array(
+			'post' => $media,
+			'kind' => str_starts_with( $media->post_mime_type, 'video/' ) ? 'video' : 'photo',
+			'year' => $years ? max( $years ) : 0,
+		);
+	}
+	// A stable sort: the upload order survives within each year.
+	usort( $items, static fn( array $a, array $b ): int => $b['year'] <=> $a['year'] );
+
+	return $items;
+}
+
+/**
+ * Returns the text shown with a gallery item: its caption, else its alt text,
+ * else its title.
+ *
+ * @param WP_Post $media Attachment.
+ * @return string
+ */
+function tekseries_blocks_media_label( WP_Post $media ): string {
+	$texts = array( $media->post_excerpt, get_post_meta( $media->ID, '_wp_attachment_image_alt', true ), $media->post_title );
+	foreach ( $texts as $text ) {
+		$text = trim( wp_strip_all_tags( (string) $text ) );
+		if ( '' !== $text ) {
+			return $text;
+		}
+	}
+	return '';
+}
+
+/**
+ * Returns the value of a `tekseries/media-stats` binding.
+ *
+ * Keys `photos` and `videos`: how many the gallery holds, e.g. "32 photos".
+ * With none it gives an empty string, so a template can hide the figure.
+ *
+ * @param array $args Binding arguments; `key` names the figure.
+ * @return string|null
+ */
+function tekseries_blocks_media_stats_value( array $args ): ?string {
+	$key = $args['key'] ?? '';
+	if ( 'photos' !== $key && 'videos' !== $key ) {
+		return null;
+	}
+
+	$kind  = 'photos' === $key ? 'photo' : 'video';
+	$count = count( array_filter( tekseries_blocks_gallery_items(), static fn( array $item ): bool => $kind === $item['kind'] ) );
+	if ( ! $count ) {
+		return '';
+	}
+	return 'photo' === $kind
+		/* translators: %s: number of photos. */
+		? sprintf( _n( '%s photo', '%s photos', $count, 'tekseries-blocks' ), number_format_i18n( $count ) )
+		/* translators: %s: number of videos. */
+		: sprintf( _n( '%s video', '%s videos', $count, 'tekseries-blocks' ), number_format_i18n( $count ) );
+}
+
+/**
+ * Registers the `tekseries/media-stats` binding source.
+ */
+function tekseries_blocks_register_media_stats_source(): void {
+	register_block_bindings_source(
+		'tekseries/media-stats',
+		array(
+			'label'              => __( 'Gallery figures', 'tekseries-blocks' ),
+			'get_value_callback' => 'tekseries_blocks_media_stats_value',
+		)
+	);
+}
+add_action( 'init', 'tekseries_blocks_register_media_stats_source' );

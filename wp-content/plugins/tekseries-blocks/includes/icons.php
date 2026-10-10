@@ -79,6 +79,7 @@ function tekseries_blocks_icon_labels(): array {
 		'format_list_numbered' => __( 'Numbered list', 'tekseries-blocks' ),
 		'forum'                => __( 'Forum', 'tekseries-blocks' ),
 		'gavel'                => __( 'Gavel', 'tekseries-blocks' ),
+		'grid_view'            => __( 'Grid', 'tekseries-blocks' ),
 		'groups'               => __( 'Groups', 'tekseries-blocks' ),
 		'handshake'            => __( 'Handshake', 'tekseries-blocks' ),
 		'help'                 => __( 'Help', 'tekseries-blocks' ),

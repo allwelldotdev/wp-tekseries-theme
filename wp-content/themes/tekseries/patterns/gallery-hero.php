@@ -20,7 +20,25 @@
 
 <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.5"}},"textColor":"lilac-deep","fontSize":"lead"} -->
 <p class="has-lilac-deep-color has-text-color has-lead-font-size" style="line-height:1.5"><?php echo esc_html__( 'Moments from our camps, workshops and sessions across South East Nigeria.', 'tekseries' ); ?></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|8","margin":{"top":"var:preset|spacing|4"}}},"layout":{"type":"flex","flexWrap":"wrap"}} -->
+<div class="wp-block-group" style="margin-top:var(--wp--preset--spacing--4)"><!-- wp:group {"className":"ts-media-chip","style":{"spacing":{"blockGap":"6px"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+<div class="wp-block-group ts-media-chip"><!-- wp:icon {"icon":"tekseries/photo_library","style":{"dimensions":{"width":"18px"}},"textColor":"saffron"} /-->
+
+<!-- wp:paragraph {"metadata":{"bindings":{"content":{"source":"tekseries/media-stats","args":{"key":"photos"}}}}} -->
+<p></p>
 <!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"ts-media-chip","style":{"spacing":{"blockGap":"6px"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+<div class="wp-block-group ts-media-chip"><!-- wp:icon {"icon":"tekseries/smart_display","style":{"dimensions":{"width":"18px"}},"textColor":"saffron"} /-->
+
+<!-- wp:paragraph {"metadata":{"bindings":{"content":{"source":"tekseries/media-stats","args":{"key":"videos"}}}}} -->
+<p></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
 <!-- /wp:group -->
 
 <!-- wp:group {"metadata":{"blockVisibility":{"viewport":{"tablet":false,"mobile":false}}},"className":"ts-collage","layout":{"type":"default"}} -->

@@ -101,7 +101,6 @@ function tekseries_enqueue_block_styles(): void {
 	$blocks = array(
 		'core/breadcrumbs'          => 'breadcrumbs',
 		'core/buttons'              => 'buttons',
-		'core/gallery'              => 'gallery',
 		'core/group'                => 'group',
 		'core/icon'                 => 'icon',
 		'core/image'                => 'image',

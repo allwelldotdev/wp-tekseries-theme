@@ -130,6 +130,20 @@
 	transform: rotate(-2deg);
 }
 
+/* Gallery hero chips: the photo and video totals; an empty one hides. */
+.ts-media-chip {
+	padding: 8px 14px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background-color: var(--wp--custom--alpha--white-12);
+	color: var(--wp--preset--color--white);
+	font-size: var(--wp--preset--font-size--eyebrow);
+	font-weight: 700;
+}
+
+.ts-media-chip:not(:has(p:not(:empty))) {
+	display: none;
+}
+
 /* Legal hero chips. */
 .ts-legal-chip {
 	padding: 6px 14px;

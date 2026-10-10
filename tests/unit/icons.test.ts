@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const PLUGIN = new URL(
@@ -76,18 +76,25 @@ describe( 'tekseries icon collection', () => {
 	} );
 
 	it( "covers every icon the plugin's PHP names", () => {
-		const used = [ 'includes/', 'templates/wpjm/' ].flatMap( ( path ) => {
-			const dir = new URL( path, PLUGIN );
-			return readdirSync( dir ).flatMap( ( file ) =>
-				[
-					...readFileSync( new URL( file, dir ), 'utf8' ).matchAll(
-						/(?:tekseries_blocks_icon_svg\( '|'tekseries\/)([a-z0-9_]+)'/g
-					),
-				].map( ( [ , name = '' ] ) => name )
-			);
-		} );
+		const files = [
+			...[ 'includes/', 'templates/wpjm/' ].flatMap( ( path ) =>
+				readdirSync( new URL( path, PLUGIN ) ).map(
+					( file ) => path + file
+				)
+			),
+			...readdirSync( new URL( 'src/', PLUGIN ) )
+				.map( ( block ) => `src/${ block }/render.php` )
+				.filter( ( file ) => existsSync( new URL( file, PLUGIN ) ) ),
+		];
+		const used = files.flatMap( ( file ) =>
+			[
+				...readFileSync( new URL( file, PLUGIN ), 'utf8' ).matchAll(
+					/(?:tekseries_blocks_icon_svg\( '|'tekseries\/)([a-z0-9_]+)'/g
+				),
+			].map( ( [ , name = '' ] ) => name )
+		);
 		expect( used ).toEqual(
-			expect.arrayContaining( [ 'apps', 'arrow_outward' ] )
+			expect.arrayContaining( [ 'apps', 'arrow_outward', 'grid_view' ] )
 		);
 		expect( names ).toEqual( expect.arrayContaining( used ) );
 	} );
