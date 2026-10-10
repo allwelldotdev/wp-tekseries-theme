@@ -5,13 +5,13 @@ import {
 	useInnerBlocksProps,
 } from '@wordpress/block-editor';
 import type { BlockEditProps } from '@wordpress/blocks';
-import { PanelBody, TextControl } from '@wordpress/components';
+import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 
-export type Attributes = { ariaLabel?: string };
+export type Attributes = { ariaLabel?: string; autoplay: boolean };
 
 // Editors see every slide, one under the other; the site shows one at a time.
 export default function Edit( {
-	attributes: { ariaLabel },
+	attributes: { ariaLabel, autoplay },
 	setAttributes,
 }: BlockEditProps< Attributes > ) {
 	const innerBlocksProps = useInnerBlocksProps( useBlockProps(), {
@@ -36,6 +36,21 @@ export default function Edit( {
 						value={ ariaLabel ?? '' }
 						onChange={ ( next: string ) =>
 							setAttributes( { ariaLabel: next || undefined } )
+						}
+					/>
+					<ToggleControl
+						__nextHasNoMarginBottom
+						label={ __(
+							'Change slides automatically',
+							'tekseries-blocks'
+						) }
+						help={ __(
+							'Every 7 seconds, with a pause button. Visitors who ask for less motion get still slides.',
+							'tekseries-blocks'
+						) }
+						checked={ autoplay }
+						onChange={ ( next: boolean ) =>
+							setAttributes( { autoplay: next } )
 						}
 					/>
 				</PanelBody>

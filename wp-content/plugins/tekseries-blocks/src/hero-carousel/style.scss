@@ -1,6 +1,6 @@
 // Hero Carousel: slides side by side in a track that snaps to one at a time,
-// with the dots over its bottom right corner (Home hero board). In the editor
-// the slides simply stack.
+// with the dots over its bottom right corner (Home hero board). The block's
+// corner radius frames the slides. In the editor the slides simply stack.
 
 .wp-block-tekseries-hero-carousel {
 	position: relative;
@@ -9,6 +9,7 @@
 .ts-carousel__track {
 	display: flex;
 	overflow-x: auto;
+	border-radius: inherit;
 	scroll-snap-type: x mandatory;
 	scrollbar-width: none;
 
@@ -26,9 +27,14 @@
 	}
 }
 
-// In the editor the slides are the block's own children: keep them apart.
-.wp-block-tekseries-hero-carousel > .wp-block-cover + .wp-block-cover {
-	margin-block-start: 16px;
+// In the editor the slides are the block's own children: each takes the
+// block's corners, and they keep apart.
+.wp-block-tekseries-hero-carousel > .wp-block-cover {
+	border-radius: inherit;
+
+	+ .wp-block-cover {
+		margin-block-start: 16px;
+	}
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -38,12 +44,62 @@
 	}
 }
 
-// Each dot is a link with a full-size tap target; the dot itself is drawn
-// inside it. The current slide's dot is the saffron pill.
-.ts-carousel__dots {
+.ts-carousel__controls {
 	position: absolute;
 	right: 24px;
 	bottom: 14px;
+	display: flex;
+	align-items: center;
+}
+
+// The pause button for slides that change by themselves; the script shows it.
+.ts-carousel__pause {
+	display: grid;
+	place-items: center;
+	width: var(--wp--custom--touch-target);
+	height: var(--wp--custom--touch-target);
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: none;
+	color: var(--wp--preset--color--white);
+	cursor: pointer;
+
+	[hidden],
+	&[hidden] {
+		display: none;
+	}
+
+	// A dark disc keeps the icon clear of a bright photo.
+	> span {
+		display: grid;
+		place-items: center;
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background: color-mix(in srgb, var(--wp--preset--color--ink) 72%, transparent);
+		transition: background-color var(--wp--custom--motion--duration);
+	}
+
+	&:hover > span {
+		background: var(--wp--preset--color--ink);
+	}
+
+	&:focus-visible {
+		outline: var(--wp--custom--focus--width) solid var(--wp--preset--color--saffron);
+		outline-offset: calc(-1 * var(--wp--custom--focus--offset));
+	}
+
+	svg {
+		width: 18px;
+		height: 18px;
+		fill: currentcolor;
+	}
+}
+
+// Each dot is a link with a full-size tap target; the dot itself is drawn
+// inside it. The current slide's dot is the saffron pill.
+.ts-carousel__dots {
 	display: flex;
 
 	a {
@@ -75,21 +131,27 @@
 	}
 }
 
-// Without JavaScript the current slide is the one a dot last pointed to
-// (:target), or the first. Up to eight slides.
 @mixin current-dot {
 	width: 28px;
 	background: var(--wp--preset--color--saffron);
 }
 
-.wp-block-tekseries-hero-carousel:not(:has(.ts-carousel__track > :target)) .ts-carousel__dots a:first-child::before {
+// The script marks the dot of the slide in view.
+.ts-carousel__dots a[aria-current="true"]::before {
+
+	@include current-dot;
+}
+
+// Without JavaScript the current slide is the one a dot last pointed to
+// (:target), or the first. Up to eight slides.
+.wp-block-tekseries-hero-carousel:not(:has(.ts-carousel__dots [aria-current], .ts-carousel__track > :target)) .ts-carousel__dots a:first-child::before {
 
 	@include current-dot;
 }
 
 @for $i from 1 through 8 {
 
-	.wp-block-tekseries-hero-carousel:has(.ts-carousel__track > :nth-child(#{$i}):target) .ts-carousel__dots a:nth-child(#{$i})::before {
+	.wp-block-tekseries-hero-carousel:not(:has(.ts-carousel__dots [aria-current])):has(.ts-carousel__track > :nth-child(#{$i}):target) .ts-carousel__dots a:nth-child(#{$i})::before {
 
 		@include current-dot;
 	}
@@ -97,7 +159,7 @@
 
 @media (width <= 640px) {
 
-	.ts-carousel__dots {
+	.ts-carousel__controls {
 		right: 8px;
 		bottom: 6px;
 	}

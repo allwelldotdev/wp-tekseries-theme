@@ -12,9 +12,12 @@ const NO_JS = {
 const MOVING = { ...NO_JS, reducedMotion: 'no-preference' } as const;
 
 // The Home blocks that move: the stat count-up, the logo marquee and the hero
-// carousel. All three are complete on the server and need no JavaScript.
+// carousel. All three are complete on the server and need no JavaScript; the
+// carousel's script only adds to it.
 test.describe( 'home motion blocks', () => {
 	let home: Linked;
+	// A slide: the first Cover of the theme's Home hero.
+	let slide = '';
 	const extras: number[] = [];
 
 	test.beforeAll( async ( { requestUtils } ) => {
@@ -25,7 +28,10 @@ test.describe( 'home motion blocks', () => {
 		const content = ( name: string ) =>
 			patterns.find( ( pattern ) => pattern.name === name )?.content ??
 			'';
-		const slide = content( 'tekseries/home-hero' );
+		slide =
+			content( 'tekseries/home-hero' ).match(
+				/<!-- wp:cover[\s\S]*?<!-- \/wp:cover -->/
+			)?.[ 0 ] ?? '';
 		const logos = (
 			content( 'tekseries/home-partners' ).match(
 				/<!-- wp:image[\s\S]*?<!-- \/wp:image -->/g
@@ -41,6 +47,7 @@ test.describe( 'home motion blocks', () => {
 				content: [
 					`<!-- wp:tekseries/hero-carousel -->${ slide }${ slide }<!-- /wp:tekseries/hero-carousel -->`,
 					`<!-- wp:tekseries/hero-carousel {"className":"e2e-single"} -->${ slide }<!-- /wp:tekseries/hero-carousel -->`,
+					`<!-- wp:tekseries/hero-carousel {"autoplay":true,"ariaLabel":"E2E moving"} -->${ slide }${ slide }<!-- /wp:tekseries/hero-carousel -->`,
 					'<!-- wp:tekseries/stat {"value":312} /-->',
 					'<!-- wp:tekseries/stat {"value":40,"suffix":"%"} /-->',
 					`<!-- wp:tekseries/logo-marquee {"ariaLabel":"E2E partners"} -->${ logos }<!-- /wp:tekseries/logo-marquee -->`,
@@ -235,6 +242,216 @@ test.describe( 'home motion blocks', () => {
 		await context.close();
 	} );
 
+	test( 'with its script the dots follow the slides, which can change by themselves', async ( {
+		browser,
+	} ) => {
+		const scrolled = ( track: Element ) => Math.round( track.scrollLeft );
+		const open = async ( reducedMotion: 'reduce' | 'no-preference' ) => {
+			const context = await browser.newContext( {
+				storageState: { cookies: [], origins: [] },
+				reducedMotion,
+			} );
+			const page = await context.newPage();
+			await page.goto( home.link );
+			// Slides move at once, so a check right after is a fair one.
+			await page.addStyleTag( {
+				content: '.ts-carousel__track{scroll-behavior:auto!important}',
+			} );
+			return page;
+		};
+
+		let page = await open( 'no-preference' );
+		const plain = page.getByRole( 'region', { name: 'Highlights' } );
+		let track = plain.locator( '.ts-carousel__track' );
+		let dots = plain
+			.getByRole( 'navigation', { name: 'Slides' } )
+			.getByRole( 'link' );
+		await expect( dots.first() ).toHaveAttribute( 'aria-current', 'true' );
+		// Without the editor's switch there is nothing to pause.
+		await expect( plain.getByRole( 'button' ) ).toHaveCount( 0 );
+
+		// A dot moves the slides where they are: no jump, no new address.
+		await dots.nth( 1 ).scrollIntoViewIfNeeded();
+		const top = await page.evaluate( () => window.scrollY );
+		await dots.nth( 1 ).click();
+		await expect( dots.nth( 1 ) ).toHaveAttribute( 'aria-current', 'true' );
+		await expect( dots.first() ).toHaveAttribute( 'aria-current', 'false' );
+		expect( page.url() ).toBe( home.link );
+		expect( await page.evaluate( () => window.scrollY ) ).toBe( top );
+		// A swipe back, and the first dot takes the mark again.
+		await track.evaluate( ( element ) => element.scrollTo( { left: 0 } ) );
+		await expect( dots.first() ).toHaveAttribute( 'aria-current', 'true' );
+
+		const moving = page.getByRole( 'region', { name: 'E2E moving' } );
+		track = moving.locator( '.ts-carousel__track' );
+		dots = moving
+			.getByRole( 'navigation', { name: 'Slides' } )
+			.getByRole( 'link' );
+		const pause = moving.getByRole( 'button', {
+			name: 'Pause the slides',
+		} );
+		const play = moving.getByRole( 'button', { name: 'Play the slides' } );
+		// Leaves the slides to themselves: off the button, pointer away.
+		const letGo = async () => {
+			await moving.getByRole( 'button' ).blur();
+			await page.mouse.move( 0, 0 );
+		};
+		const width = await track.evaluate(
+			( element ) => element.clientWidth
+		);
+
+		// The test's clock can only take over once the page's scripts have
+		// started (WordPress reads the real one), so the slides wait paused.
+		await pause.click();
+		await page.clock.install();
+		await play.click();
+		await letGo();
+
+		// With the switch on, the next slide comes after seven seconds.
+		await page.clock.fastForward( 6000 );
+		expect( await track.evaluate( scrolled ) ).toBe( 0 );
+		await page.clock.fastForward( 1000 );
+		await expect( dots.nth( 1 ) ).toHaveAttribute( 'aria-current', 'true' );
+		expect( await track.evaluate( scrolled ) ).toBe( width );
+
+		// Not under the pointer.
+		await moving.hover();
+		await page.clock.fastForward( 7000 );
+		expect( await track.evaluate( scrolled ) ).toBe( width );
+		// Not while paused, and the button says what it will do next.
+		await pause.click();
+		await expect( play ).toBeVisible();
+		await letGo();
+		await page.clock.fastForward( 15000 );
+		expect( await track.evaluate( scrolled ) ).toBe( width );
+		// Playing again, the last slide gives way to the first.
+		await play.click();
+		await letGo();
+		await page.clock.fastForward( 7000 );
+		await expect( dots.first() ).toHaveAttribute( 'aria-current', 'true' );
+		expect( await track.evaluate( scrolled ) ).toBe( 0 );
+		await page.context().close();
+
+		// Less motion: the dots still follow, and nothing is there to pause
+		// because nothing moves by itself.
+		page = await open( 'reduce' );
+		const still = page.getByRole( 'region', { name: 'E2E moving' } );
+		await expect(
+			still
+				.getByRole( 'navigation', { name: 'Slides' } )
+				.getByRole( 'link' )
+				.first()
+		).toHaveAttribute( 'aria-current', 'true' );
+		await expect( still.getByRole( 'button' ) ).toHaveCount( 0 );
+		await page.context().close();
+	} );
+
+	test( 'an editor adds, removes and sets the slides in the Site Editor', async ( {
+		admin,
+		browser,
+		editor,
+		page,
+		requestUtils,
+	} ) => {
+		const made = await requestUtils.rest< Linked >( {
+			method: 'POST',
+			path: '/wp/v2/pages',
+			data: {
+				title: 'E2E Slides',
+				status: 'publish',
+				content: `<!-- wp:tekseries/hero-carousel -->${ slide }<!-- /wp:tekseries/hero-carousel -->`,
+			},
+		} );
+		extras.push( made.id );
+		// Appearance > Editor > Pages: the page inside its template.
+		await admin.visitSiteEditor( {
+			postId: made.id,
+			postType: 'page',
+			canvas: 'edit',
+		} );
+
+		const carousel = editor.canvas.locator(
+			'.wp-block-tekseries-hero-carousel'
+		);
+		const slides = carousel.locator( '> .wp-block-cover' );
+		await expect( slides ).toHaveCount( 1 );
+
+		// A slide is a Cover and nothing else.
+		const id = ( await carousel.getAttribute( 'data-block' ) ) ?? '';
+		expect(
+			await page.evaluate( ( root ) => {
+				const { wp } = window as unknown as {
+					wp: {
+						data: {
+							select: ( store: string ) => {
+								canInsertBlockType: (
+									name: string,
+									parent: string
+								) => boolean;
+							};
+						};
+					};
+				};
+				return [ 'core/cover', 'core/paragraph' ].map( ( name ) =>
+					wp.data
+						.select( 'core/block-editor' )
+						.canInsertBlockType( name, root )
+				);
+			}, id )
+		).toEqual( [ true, false ] );
+
+		// Duplicating a slide adds one with the same layout.
+		await editor.selectBlocks( slides.first() );
+		await editor.clickBlockOptionsMenuItem( 'Duplicate' );
+		await editor.selectBlocks( slides.first() );
+		await editor.clickBlockOptionsMenuItem( 'Duplicate' );
+		await expect( slides ).toHaveCount( 3 );
+
+		// The block's own setting makes the slides change by themselves.
+		await editor.selectBlocks( carousel );
+		await editor.openDocumentSettingsSidebar();
+		await page
+			.getByRole( 'checkbox', { name: 'Change slides automatically' } )
+			.check();
+		await editor.saveSiteEditorEntities( {
+			isOnlyCurrentEntityDirty: true,
+		} );
+
+		const visit = async () => {
+			const context = await browser.newContext( {
+				storageState: { cookies: [], origins: [] },
+				reducedMotion: 'no-preference',
+			} );
+			const visitor = await context.newPage();
+			await visitor.goto( made.link );
+			const hero = visitor.getByRole( 'region', { name: 'Highlights' } );
+			const found = {
+				slides: await hero.getByRole( 'group' ).count(),
+				dots: await hero
+					.getByRole( 'navigation', { name: 'Slides' } )
+					.getByRole( 'link' )
+					.count(),
+				pause: await hero
+					.getByRole( 'button', { name: 'Pause the slides' } )
+					.count(),
+			};
+			await context.close();
+			return found;
+		};
+		await expect.poll( visit ).toEqual( { slides: 3, dots: 3, pause: 1 } );
+
+		// Deleting a slide takes its dot with it.
+		await editor.selectBlocks( slides.last() );
+		await editor.clickBlockOptionsMenuItem( 'Delete' );
+		await expect( slides ).toHaveCount( 2 );
+		await editor.saveSiteEditorEntities( {
+			isOnlyCurrentEntityDirty: true,
+		} );
+		// (Asked until it is so: the save notice of the first save is still up.)
+		await expect.poll( visit ).toEqual( { slides: 2, dots: 2, pause: 1 } );
+		expect( await invalidBlocks( page ) ).toEqual( [] );
+	} );
+
 	test( 'the Home page pattern uses the stats and the logo marquee', async ( {
 		browser,
 		requestUtils,
@@ -266,7 +483,7 @@ test.describe( 'home motion blocks', () => {
 		await context.close();
 	} );
 
-	test( 'loads no scripts for them and opens cleanly in the editor', async ( {
+	test( 'loads only the carousel script for them and opens cleanly in the editor', async ( {
 		admin,
 		browser,
 		editor,
@@ -280,10 +497,12 @@ test.describe( 'home motion blocks', () => {
 		visitor.on( 'request', ( request ) => scripts.push( request.url() ) );
 		await visitor.goto( home.link );
 		expect(
-			scripts.filter( ( url ) =>
-				/react|jquery|tekseries-blocks\/build\/.*\.js/i.test( url )
-			)
-		).toEqual( [] );
+			scripts
+				.filter( ( url ) =>
+					/react|jquery|tekseries-blocks\/build\/.*\.js/i.test( url )
+				)
+				.map( ( url ) => url.replace( /^.*\/build\/|\?.*$/g, '' ) )
+		).toEqual( [ 'hero-carousel/view.js' ] );
 		await context.close();
 
 		await admin.editPost( home.id );

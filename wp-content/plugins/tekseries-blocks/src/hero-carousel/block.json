@@ -6,13 +6,17 @@
 	"title": "Hero Carousel",
 	"category": "design",
 	"icon": "slides",
-	"description": "Cover blocks shown one at a time as slides. Visitors swipe or use the dots to move between them; it works without JavaScript.",
+	"description": "Cover blocks shown one at a time as slides. Visitors swipe or use the dots to move between them, and the slides can change by themselves; it works without JavaScript.",
 	"keywords": [ "slider", "slides", "carousel", "hero" ],
 	"textdomain": "tekseries-blocks",
 	"allowedBlocks": [ "core/cover" ],
 	"attributes": {
 		"ariaLabel": {
 			"type": "string"
+		},
+		"autoplay": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"supports": {
@@ -21,9 +25,17 @@
 		"ariaLabel": true,
 		"spacing": {
 			"margin": true
-		}
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"__experimentalDefaultControls": {
+				"radius": true
+			}
+		},
+		"interactivity": true
 	},
 	"editorScript": "file:./index.js",
+	"viewScriptModule": "file:./view.js",
 	"style": "file:./style-index.css",
 	"render": "file:./render.php"
 }
