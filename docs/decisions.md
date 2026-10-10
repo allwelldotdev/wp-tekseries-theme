@@ -730,7 +730,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-045: Build the Media Gallery as a dynamic block that filters in PHP, with links for every state
 
-**Status:** Accepted
+**Status:** Superseded by ADR-050 (masonry layout only)
 
 **Context:** ADR-015 chose a custom block, and ADR-030 shipped core Gallery blocks per album as an interim. The design has type (All / Photos / Videos) and year filters with counts, a masonry of tiles, "Showing N of M" with Load more, and a lightbox. Server HTML must be complete and usable without JavaScript.
 
@@ -755,7 +755,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-046: Build the Home motion blocks with CSS only
 
-**Status:** Accepted
+**Status:** Superseded by ADR-052 (Home's static patterns only)
 
 **Context:** ADR-014 decided Home motion ships in two versions: static core blocks first, moving plugin blocks later (hero carousel, count-up stat, logo marquee). The design's count-up is CSS. Its marquee pauses only on hover, with no keyboard or touch control, which fails WCAG 2.2.2. Its slider dots have nothing to slide. Server HTML must work without JavaScript, and motion must respect `prefers-reduced-motion`.
 
@@ -772,28 +772,137 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Rationale:** CSS covers what the design shows, so nothing waits on a later phase and nothing breaks without JavaScript. A checkbox gives a real pause control with no script, where an inert button would be worse than none. Anchor dots plus native scrolling make a usable carousel without script. This delivers the blocks that ADR-014 deferred. Later, optional behaviour is listed in Future work.
 
+## ADR-047: Give each behaving block one Interactivity API script module
+
+**Status:** Accepted
+
+**Context:** ADR-005 allows frontend behaviour only through the Interactivity API. Several blocks now need it: Share Links, Table of Contents, Media Gallery and Job Listings. Script modules have no translation loading. Core enqueues a view module on every render of a block that supports interactivity, and Share Links sits on every post and event, where most of its services have no behaviour.
+
+**Options:**
+- jQuery or hand-written DOM scripts.
+- Bundle our own Preact and a store.
+- One `view.ts` per block, with WordPress supplying the Interactivity API runtime.
+
+**Decision:**
+- A block that behaves has `src/<block>/view.ts`, declared as `viewScriptModule` in `block.json` with `supports.interactivity: true`. `@wordpress/interactivity` and `@wordpress/interactivity-router` are type-only devDependencies of the plugin workspace (ADR-034). Nothing is bundled.
+- Behaviour hooks onto the markup `render.php` already prints, using `data-wp-*` attributes. The page without JavaScript is the same page, and every JavaScript-off test stayed unchanged (ADR-005).
+- Translated strings reach a script through `wp_interactivity_state()` or `wp_interactivity_config()`.
+- A block's script loads only on pages that contain the block. Share Links also dequeues its module in a `render_block_tekseries/share-links` filter (`includes/share-links.php`) unless a block offers "Link to this page".
+- `specs/visitor-scripts.spec.ts` checks each kind of public page: no React, no jQuery (except the job submission form, ADR-007), and block scripts only with their block.
+- Share Links behaviour: "Link to this page" copies the link with the Clipboard API, shows "Link copied" for 2.5 seconds and announces it in a status element. Once the script runs, its accessible name becomes "Copy the link to this page". A modified click, an insecure page or a refused copy keep the plain link.
+
+**Rationale:** The Interactivity API ships no React to visitors and adds no second runtime. Hooking onto existing markup keeps the no-JavaScript page complete. Passing strings through state works around the missing translation loading. Dequeuing the unused module keeps the extra request off every post and event. The scripts spec turns the "no React, no jQuery" rule into a test. This delivers the copy-link item that ADR-038 deferred.
+
+## ADR-048: Build the gallery lightbox as a native modal dialog that reads the tiles on the page
+
+**Status:** Accepted
+
+**Context:** ADR-045 deferred the lightbox. The boards show captions, a counter, Previous and Next, thumbnails and video. Focus handling, Escape and an inert page behind are easy to get wrong by hand.
+
+**Options:**
+- Core's image lightbox, which has no captions, counter, thumbnails or video.
+- A hand-written focus trap over a positioned element.
+- A REST call for the item data.
+- A native `<dialog>` rendered by the block, reading the tiles.
+
+**Decision:**
+- `render.php` of `tekseries/media-gallery` prints a `<dialog>`, opened with `showModal()`. The browser provides the focus trap, Escape, the inert page and the return of focus to the tile.
+- The lightbox steps through the tiles loaded under the current filter. When it opens, it reads each item (file, caption, picture, proportions) from the tile's own markup. There is no second data source and no request.
+- Features: a counter, Previous and Next that wrap, thumbnails, arrow keys and a sideways swipe. Photos use the tile's `srcset`. Videos play in `<video controls>` and pause when the viewer moves on or closes. A polite live region reads "3 of 12: caption". The opening fade runs only without a reduced-motion preference. A modified click still opens the file.
+- The phone layout has a bottom bar instead of side buttons and thumbnails, as on the boards. On tablets the side buttons get a dark backing so they stay visible over a photo. The boards do not show that backing.
+
+**Rationale:** The browser already does the hard accessibility work for a modal dialog. Reading the tiles keeps one source of truth, so filters and Load more (ADR-049) need no extra wiring. Tiles stay real links, so the page works without JavaScript (ADR-047).
+
+## ADR-049: Update lists in place through the Interactivity router, with the server building every list
+
+**Status:** Accepted
+
+**Context:** ADR-045 and ADR-042 left filtering, Load more and paging as full page loads and deferred in-place updates. Those views are real links and form addresses. WPJM's statistics script binds to the first `ul.job_listings` it finds and watches rows (ADR-042).
+
+**Options:**
+- Re-implement the filters in JavaScript over REST or embedded JSON.
+- Use `@wordpress/interactivity-router` with `data-wp-router-region`, following the addresses the page already has.
+
+**Decision:**
+- A block, or part of it, is a `data-wp-router-region`. The script follows the same links and form addresses, and the router swaps in what the server rendered. The address still changes, so views can be shared and Back and Forward work. A failed fetch falls back to loading the page. The router's generic "Page loaded" announcement is turned off in both blocks.
+- Media Gallery: the whole block is the region. Filter links and Load more are fetched without their `#media...` fragment, so the page does not jump, and get it back afterwards. Tiles are keyed. After Load more, focus goes to the first new tile. A visually hidden status element reads the server's summary ("Showing 4 of 6", "No videos from 2019 yet") after each update, taken from the server state of the page the router last showed.
+- Job Listings: only the results section is the region. The search form stays outside it, because a region is redrawn from the server's HTML and would overwrite a field while someone types. Typing in Keywords or Location is followed after a 400 ms pause and replaces the history entry. Chips, the remote switch, the category and Enter add an entry. After an update the script sets checkboxes and the select from the address, and text fields only on Back and Forward and on "Clear filters". Empty fields, and a checkbox group with every box ticked, are left out of the address. A page change moves focus and the view to the results. The count line is a status element.
+- WPJM statistics keep working. Job rows are keyed, so a row that arrives in place is a new element that the observer sees. `ul.job_listings` is always rendered, hidden when empty, because the script binds to the first list. The statistics script now loads even when the first view finds nothing.
+
+**Rationale:** The server stays the only place that builds lists. Two implementations of the filters would drift, and a REST or JSON version would not keep WPJM's query, caching and statistics (ADR-012). Following existing addresses keeps every state shareable and the no-JavaScript page unchanged (ADR-047). Keeping the form outside the region protects what people type. This delivers the in-place behaviour that ADR-045 and ADR-042 deferred.
+
+## ADR-050: Lay out the gallery masonry as a CSS grid of thin rows
+
+**Status:** Accepted
+
+**Context:** ADR-045 chose CSS columns for the masonry. Columns read and tab down each column and rebalance when items are added, so every tile moved on Load more. That became unacceptable once Load more updates in place (ADR-049). The rest of ADR-045 stands.
+
+**Options:**
+- Keep CSS columns.
+- A script that measures and places tiles.
+- `grid-template-rows: masonry`, which is not widely supported.
+- A CSS grid with thin rows and tiles that span several rows.
+
+**Decision:**
+- A row is 1/40 of a column's width, using a container query unit on the block. `render.php` computes the number of rows from the file's width and height, adds two for the gap, and passes it as `--ts-media-rows`. Auto-placement in document order puts each tile in the shortest column, left to right, as the boards do. Appended tiles never move earlier ones. No script is involved.
+- The tile fills its rows minus the gap and the picture covers it. Gaps are exact and the picture is cropped by a few pixels at most.
+- Browsers without container units keep the CSS columns layout (`@supports (width: 1cqw)`).
+
+**Rationale:** Document-order placement matches the boards' reading order and makes Load more additive. Spanning rows needs only CSS, so the block stays script-free for layout (ADR-005). A measuring script would add a second layout engine and a flash on load.
+
+## ADR-051: Highlight the current section and fold the table of contents on phones
+
+**Status:** Accepted
+
+**Context:** ADR-038 deferred two Table of Contents behaviours: folding on phones, as on the board, and marking the section being read. Without a script the `<details>` must arrive open. Closing it from the script alone made the article jump up after first paint on every phone visit.
+
+**Options:**
+- Close the `<details>` from the script only.
+- Render it closed, which leaves larger screens with an unusable default without JavaScript.
+- Hold the list shut with CSS where scripts run, until the script closes the element.
+
+**Decision:**
+- The link of the section being read gets `aria-current`. That is the last heading to have reached the top 30% of the screen, found with an IntersectionObserver. A share of the screen height means the plugin does not depend on the theme's header height. A picked link is marked at once and keeps the mark for a second, because a section near the end of a page cannot reach the top.
+- On phones (640px and narrower) the list starts folded. The `<details>` still arrives open. Where scripts run (`@media (scripting: enabled)`), CSS holds the list shut until the script has closed the element, so nothing moves. The hold is a 5-second animation, so the list opens by itself if the script never arrives.
+
+**Rationale:** The CSS hold removes the layout shift and still fails open without JavaScript (ADR-005). A fixed header offset would tie the plugin to the theme (ADR-047). This delivers the behaviour deferred in ADR-038.
+
+## ADR-052: Use the Stat and Logo Marquee blocks on Home
+
+**Status:** Accepted
+
+**Context:** ADR-046 built the Stat, Logo Marquee and Hero Carousel blocks and kept Home's static patterns until the owner asked for the switch. The site owner decided on 2026-10-10 to switch.
+
+**Options:**
+- Keep the static patterns.
+- Switch the stat and logo sections and wait on the hero.
+- Switch all three, including a two-slide hero.
+
+**Decision:** `home-impact` uses `tekseries/stat` for 312+, 675+, 25+ and 100's. `home-partners` wraps its logos in `tekseries/logo-marquee`. Both are CSS-only, so Home still loads no script of ours. The hero stays one static Cover. The Hero Carousel waits for a second slide, so carousel controls (autoplay, Previous and Next, dots that follow swipes) were not built.
+
+**Rationale:** The stat and marquee blocks are complete and need nothing more. A carousel with one slide has nothing to show. This changes only the "Home keeps its static patterns" part of ADR-046.
+
 ## Future work
 
 - **Hosting and deploy:** not decided. The options are a git pull on the server or CI-built theme and plugin zips; no remote or CI exists yet. A release must ship only the theme and plugin, never the repository root (ADR-001).
 - **PHP 8.3+:** ask the host to move to PHP 8.3 or newer before PHP 8.2 security support ends on 2026-12-31, then raise the floor in a new ADR (ADR-003).
 - **Schibsted Grotesk glyph gap:** Igbo ị, ọ and ụ fall back to the system sans in headings (ADR-021). Find a font file that covers them, or accept the fallback.
 - **Gallery captions and alt text:** write descriptive captions and alt text for the gallery photos. Nine share one caption, and the alt texts are file names (ADR-045).
-- **Gallery behaviour:** a lightbox, and filtering and Load more without a page reload, using the Interactivity API (ADR-045).
+- **Gallery Load more size:** it still adds 12 on every screen, where the boards show 10 on phones (ADR-045, ADR-049).
+- **Gallery hero chips:** the totals on the Gallery page do not follow the year filter (ADR-045).
 - **Gallery video:** a webinar highlights video sits in the Media Library. Putting it in an album makes the Photos/Videos filter and the video chip appear (owner; ADR-045).
-- **Album years:** confirm with the owner. The "2021 Junior Camp" photos carry captions that say 2022, and the "2023-2024" album is filed under 2024 (ADR-044).
+- **Album years:** the owner confirmed "2023-2024" under 2024. Confirm the Junior Camp album with the owner. It is filed under 2022 on the development site, because its captions, alt text and matching event say 2022, while only the file names say 2021 (ADR-044).
 - **Bulk album action:** a bulk "add to album" action in the Media Library, if editors need it (ADR-044).
-- **Home motion switch:** swap Home's static patterns for the moving blocks. This is the owner's decision, and the carousel also needs a second slide (ADR-046).
-- **Motion behaviour:** carousel dots that follow swipes, previous/next buttons and autoplay with a pause control, and an in-view start for the stat count, if wanted (ADR-046).
+- **Home hero carousel:** swap the static hero for the Hero Carousel once a second slide exists (ADR-046, ADR-052).
+- **Motion behaviour:** carousel controls (autoplay with a pause control, Previous and Next, dots that follow swipes), built when a page uses the carousel, and an in-view start for the stat count, if wanted (ADR-046, ADR-052).
 - **Lost emoji:** fix the emoji that became `????` in posts and events.
-- **Interactivity:** a copy-link button for Share Links, and a table of contents folded on phones that highlights the current section (ADR-038).
 - **Past-event and registration-closed states:** replace the interim "This event has ended" note when the designer delivers (ADR-035).
 - **Event type icon picker:** add one to wp-admin (ADR-037).
 - **Event page on phones:** show the poster before the details and Register at the end of the article, as on the board. Today the poster follows the details card and Register sits in the card.
 - **Time and venue for older events:** editors fill the new fields, since the old bodies hold them as text (ADR-035).
-- **Job Series live filtering:** filter as you type and change pages without a reload, using the Interactivity API (Phase 6; ADR-012, ADR-042).
 - **Statistics dialog redesign:** restyle WPJM's dialog to dashboard board 7, which needs its overlay templates rewritten (ADR-043).
 - **Logged-out job dashboard:** replace the plain sign-in card when the designer delivers the state (ADR-043).
-- **Job categories:** a curated list to replace the 76 imported terms (owner; ADR-043).
+- **Job categories:** a curated list to replace the 76 imported terms (owner; ADR-043). The Job Series category filter lists only what the owner curates (ADR-049).
 - **Pending jobs:** decide whether employers may edit them, a WPJM setting (owner; ADR-043).
 - **"Upload your CV" links:** hidden until a target exists (ADR-043).
 - **Employer self-registration:** only if the owner wants it (ADR-043).
