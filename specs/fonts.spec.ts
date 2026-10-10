@@ -24,6 +24,21 @@ test.describe( 'self-hosted fonts', () => {
 			expect.arrayContaining( [ 'Schibsted Grotesk', 'Onest' ] )
 		);
 		expect( fontRequests.length ).toBeGreaterThan( 0 );
+
+		// The Latin file of each family is asked for early, so the first
+		// paint is already set in them.
+		const preloaded = await page
+			.locator( 'link[rel="preload"][as="font"]' )
+			.evaluateAll( ( links ) =>
+				links.map( ( link ) => link.getAttribute( 'href' ) )
+			);
+		expect( preloaded ).toEqual( [
+			expect.stringMatching(
+				/\/schibsted-grotesk-latin-wght-normal\.woff2$/
+			),
+			expect.stringMatching( /\/onest-latin-wght-normal\.woff2$/ ),
+		] );
+		expect( fontRequests ).toEqual( expect.arrayContaining( preloaded ) );
 		for ( const url of fontRequests ) {
 			expect( url ).toContain( '/themes/tekseries/assets/fonts/' );
 		}

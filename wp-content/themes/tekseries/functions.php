@@ -26,6 +26,30 @@ function tekseries_enqueue_styles(): void {
 add_action( 'wp_enqueue_scripts', 'tekseries_enqueue_styles' );
 
 /**
+ * Asks the browser for the two text fonts early, so the first paint is
+ * already set in them and nothing shifts when they arrive. Only the Latin
+ * files: the other ranges load when a page needs them.
+ *
+ * @param array $resources Resources to preload.
+ */
+function tekseries_preload_fonts( array $resources ): array {
+	$fonts = array(
+		'schibsted-grotesk/schibsted-grotesk-latin-wght-normal',
+		'onest/onest-latin-wght-normal',
+	);
+	foreach ( $fonts as $font ) {
+		$resources[] = array(
+			'href'        => get_theme_file_uri( "assets/fonts/{$font}.woff2" ),
+			'as'          => 'font',
+			'type'        => 'font/woff2',
+			'crossorigin' => 'anonymous',
+		);
+	}
+	return $resources;
+}
+add_filter( 'wp_preload_resources', 'tekseries_preload_fonts' );
+
+/**
  * Registers the theme's block style variations.
  *
  * The style data lives in theme.json (`styles.blocks.*.variations`), which
