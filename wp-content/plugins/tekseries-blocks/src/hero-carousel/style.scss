@@ -109,12 +109,14 @@
 		height: var(--wp--custom--touch-target);
 		border-radius: var(--wp--preset--border-radius--pill);
 
+		// The dark ring keeps a dot clear of a bright photo.
 		&::before {
 			content: "";
 			width: 8px;
 			height: 8px;
 			border-radius: var(--wp--preset--border-radius--pill);
 			background: var(--wp--custom--alpha--white-50);
+			box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--wp--preset--color--ink) 72%, transparent);
 			transition:
 				width var(--wp--custom--motion--duration),
 				background-color var(--wp--custom--motion--duration);

@@ -28,7 +28,7 @@
 
 // Coral beside the default plum; with a colour picked, it follows the number.
 .ts-stat__suffix {
-	color: var(--wp--preset--color--coral);
+	color: var(--wp--preset--color--coral-text);
 
 	.has-text-color > &,
 	.has-text-color > span > & {

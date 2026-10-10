@@ -282,8 +282,10 @@
 	background: var(--wp--preset--color--lilac);
 }
 
+/* Coral text is too light on lilac: a deeper mix of it. */
 .ts-signin__how .ts-job-eyebrow {
 	margin: 0;
+	color: color-mix(in srgb, var(--wp--preset--color--coral-text) 85%, var(--wp--preset--color--ink));
 }
 
 .ts-signin__how ol {

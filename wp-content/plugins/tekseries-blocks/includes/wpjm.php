@@ -150,6 +150,25 @@ function tekseries_blocks_demote_job_description_h1( $description ) {
 add_filter( 'wpjm_the_job_description', 'tekseries_blocks_demote_job_description_h1' );
 
 /**
+ * Gives images in a job description an empty alt when they have none:
+ * imported descriptions carry logos without one, and a screen reader would
+ * read out the file's address instead.
+ *
+ * @param string $description Job description HTML.
+ * @return string
+ */
+function tekseries_blocks_job_description_image_alt( $description ) {
+	$tags = new WP_HTML_Tag_Processor( (string) $description );
+	while ( $tags->next_tag( 'img' ) ) {
+		if ( null === $tags->get_attribute( 'alt' ) ) {
+			$tags->set_attribute( 'alt', '' );
+		}
+	}
+	return $tags->get_updated_html();
+}
+add_filter( 'wpjm_the_job_description', 'tekseries_blocks_job_description_image_alt' );
+
+/**
  * Gives single jobs, the submission page and the job dashboard the
  * Home / Job Series / title breadcrumbs.
  *
