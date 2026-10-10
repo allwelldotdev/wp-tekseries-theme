@@ -44,8 +44,9 @@ h3 {
 	}
 }
 
-/* Anchor targets clear the sticky header. */
-:target {
+/* Anchor targets and whatever the keyboard focuses clear the sticky header. */
+:target,
+:focus-visible {
 	scroll-margin-top: 96px;
 }
 

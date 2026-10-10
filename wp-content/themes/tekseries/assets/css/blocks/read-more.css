@@ -14,8 +14,10 @@
 	text-decoration: none;
 }
 
+/* The arrow is decoration: the second value keeps it out of the link's name. */
 .wp-block-read-more.ts-read-more::after {
 	content: "\2192";
+	content: "\2192" / "";
 	transition: transform var(--wp--custom--motion--duration);
 }
 

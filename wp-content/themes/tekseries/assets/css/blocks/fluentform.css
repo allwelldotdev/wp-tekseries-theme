@@ -85,6 +85,12 @@
 	accent-color: var(--wp--preset--color--saffron);
 }
 
+/* The radio inside is small: keyboard focus rings the whole chip. */
+.ff_guten_block .ff-el-form-check-label:has(input:focus-visible) {
+	outline: 2px solid var(--wp--preset--color--saffron);
+	outline-offset: 2px;
+}
+
 .ff_guten_block form.frm-fluent-form .ff-btn-submit:not(.ff_btn_no_style) {
 	min-height: 52px;
 	padding: 0 28px;
@@ -99,6 +105,13 @@
 .ff_guten_block form.frm-fluent-form .ff-btn-submit:not(.ff_btn_no_style):hover {
 	background-color: var(--wp--preset--color--saffron);
 	color: var(--wp--preset--color--ink);
+}
+
+/* Fluent Forms only fades a focused button. */
+.ff_guten_block form.frm-fluent-form .ff-btn-submit:not(.ff_btn_no_style):focus-visible {
+	outline: 2px solid var(--wp--preset--color--plum);
+	outline-offset: 2px;
+	opacity: 1;
 }
 
 .ff_guten_block .ff-message-success {

@@ -49,10 +49,10 @@
 <!-- wp:tekseries/share-links /--></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|16"},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":2,"minimumColumnWidth":null},"ariaLabel":"<?php echo esc_attr__( 'More posts', 'tekseries' ); ?>"} -->
-<div aria-label="<?php echo esc_attr__( 'More posts', 'tekseries' ); ?>" class="wp-block-group"><!-- wp:post-navigation-link {"type":"previous","label":"<?php echo esc_html__( 'Previous post', 'tekseries' ); ?>","showTitle":true,"linkLabel":true,"arrow":"arrow","className":"ts-post-nav"} /-->
+<!-- wp:group {"tagName":"nav","style":{"spacing":{"blockGap":"var:preset|spacing|16"},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":2,"minimumColumnWidth":null},"ariaLabel":"<?php echo esc_attr__( 'More posts', 'tekseries' ); ?>"} -->
+<nav aria-label="<?php echo esc_attr__( 'More posts', 'tekseries' ); ?>" class="wp-block-group"><!-- wp:post-navigation-link {"type":"previous","label":"<?php echo esc_html__( 'Previous post', 'tekseries' ); ?>","showTitle":true,"linkLabel":true,"arrow":"arrow","className":"ts-post-nav"} /-->
 
-<!-- wp:post-navigation-link {"label":"<?php echo esc_html__( 'Next post', 'tekseries' ); ?>","showTitle":true,"linkLabel":true,"arrow":"arrow","className":"ts-post-nav ts-post-nav\u002d\u002dnext"} /--></div>
+<!-- wp:post-navigation-link {"label":"<?php echo esc_html__( 'Next post', 'tekseries' ); ?>","showTitle":true,"linkLabel":true,"arrow":"arrow","className":"ts-post-nav ts-post-nav\u002d\u002dnext"} /--></nav>
 <!-- /wp:group --></div>
 <!-- /wp:group -->
 

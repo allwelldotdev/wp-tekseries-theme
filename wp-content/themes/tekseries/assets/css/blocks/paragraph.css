@@ -15,3 +15,9 @@
 .is-style-card-saffron .is-style-eyebrow:not(.has-text-color) {
 	color: var(--wp--preset--color--ink);
 }
+
+/* Coral text is too light on lilac: a deeper mix of it. */
+.is-style-card-lilac .is-style-eyebrow:not(.has-text-color),
+.has-lilac-background-color .is-style-eyebrow:not(.has-text-color) {
+	color: color-mix(in srgb, var(--wp--preset--color--coral-text) 85%, var(--wp--preset--color--ink));
+}
