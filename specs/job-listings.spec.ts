@@ -219,6 +219,101 @@ test.describe( 'Job Listings block', () => {
 		await context.close();
 	} );
 
+	// With JavaScript, the same form and links update the results in place.
+	test( 'searches and pages in place, and still counts impressions', async ( {
+		browser,
+	} ) => {
+		const context = await browser.newContext( {
+			storageState: { cookies: [], origins: [] },
+		} );
+		const page = await context.newPage();
+		const scripts: string[] = [];
+		// What WP Job Manager's statistics script sends.
+		const counted: string[] = [];
+		page.on( 'request', ( request ) => {
+			scripts.push( request.url() );
+			if ( request.url().includes( 'admin-ajax.php' ) ) {
+				counted.push( decodeURIComponent( request.postData() ?? '' ) );
+			}
+		} );
+		await page.goto( listing.link );
+		// Lost if the browser loads a new page.
+		await page.evaluate( () => {
+			( window as unknown as { stays?: boolean } ).stays = true;
+		} );
+
+		const search = page.getByRole( 'search', { name: 'Search jobs' } );
+		const results = page.getByRole( 'region', { name: 'Job listings' } );
+		const titles = results
+			.locator( 'ul.job_listings > li.job_listing' )
+			.getByRole( 'heading' );
+		// A status, so the new count is read out.
+		const count = results.getByRole( 'status' );
+		await expect( count ).toHaveText( '3 open jobs' );
+
+		// Typing is enough: the list follows, and the field keeps focus.
+		await search.getByLabel( 'Location' ).pressSequentially( 'Lagos' );
+		await expect( count ).toHaveText( '2 jobs match your search' );
+		await expect( page ).toHaveURL( /\?search_location=Lagos$/ );
+		await expect( search.getByLabel( 'Location' ) ).toBeFocused();
+		await expect( search.getByLabel( 'Location' ) ).toHaveValue( 'Lagos' );
+
+		// So is a chip.
+		await search.getByText( 'Internship', { exact: true } ).click();
+		await expect( titles ).toHaveText( [ 'E2E Listing C Remote' ] );
+		await expect( page ).toHaveURL( /filter_job_type/ );
+
+		// Nothing found: "Clear filters" empties the form too.
+		await search.getByLabel( 'Keywords' ).fill( 'nothing-like-this' );
+		await page.keyboard.press( 'Enter' );
+		await expect(
+			results.getByText( 'No jobs match these filters' )
+		).toBeVisible();
+		await results.getByRole( 'link', { name: 'Clear filters' } ).click();
+		await expect( count ).toHaveText( '3 open jobs' );
+		await expect( search.getByLabel( 'Keywords' ) ).toHaveValue( '' );
+		await expect( search.getByLabel( 'Location' ) ).toHaveValue( '' );
+		await expect( search.getByLabel( 'Internship' ) ).toBeChecked();
+		await expect( search.getByLabel( 'Keywords' ) ).toBeFocused();
+
+		// The next page replaces the list, takes focus to the results, and
+		// its job is counted as seen.
+		await results
+			.getByRole( 'navigation', { name: 'Job pages' } )
+			.getByRole( 'link', { name: 'Next page' } )
+			.click();
+		await expect( titles ).toHaveText( [ 'E2E Listing A Welder' ] );
+		await expect( page ).toHaveURL( /[?&]pg=2/ );
+		await expect( results ).toBeFocused();
+		await expect
+			.poll(
+				() =>
+					counted.some(
+						( sent ) =>
+							sent.includes( 'job_search_impression' ) &&
+							sent.includes( `"post_id":${ jobs[ 0 ] }` )
+					),
+				{ timeout: 15000 }
+			)
+			.toBe( true );
+
+		// Back undoes it, and none of this loaded a new page.
+		await page.goBack();
+		await expect( titles ).toHaveText( [
+			'E2E Listing C Remote',
+			'E2E Listing B Intern',
+		] );
+		expect(
+			await page.evaluate(
+				() => ( window as unknown as { stays?: boolean } ).stays
+			)
+		).toBe( true );
+		expect(
+			scripts.filter( ( url ) => /react|jquery/i.test( url ) )
+		).toEqual( [] );
+		await context.close();
+	} );
+
 	test( 'is insertable and valid in the page editor', async ( {
 		admin,
 		editor,

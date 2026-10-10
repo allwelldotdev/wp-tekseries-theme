@@ -3,7 +3,9 @@
  * A job in the Job Listings block (WP Job Manager template override): the
  * company tile, title and company, location, then the type and when it was
  * posted. The whole row is the link; `li.job_listing` with its post class is
- * what WP Job Manager counts search impressions on.
+ * what WP Job Manager counts search impressions on. The key gives each job
+ * its own element when the block updates in place, so a new row is seen as
+ * new by that count.
  *
  * @package TekSeries
  */
@@ -20,7 +22,7 @@ if ( post_password_required( $post ) || ! job_manager_user_can_view_job_listing(
 
 $tekseries_type = get_option( 'job_manager_enable_types' ) ? tekseries_blocks_job_type( $post ) : null;
 ?>
-<li <?php job_listing_class( 'ts-job-row' ); ?>>
+<li <?php job_listing_class( 'ts-job-row' ); ?> data-wp-key="job-<?php echo esc_attr( (string) $post->ID ); ?>">
 	<a class="ts-job-row__link" href="<?php the_job_permalink(); ?>">
 		<?php echo tekseries_blocks_company_tile( $post ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by the helper. ?>
 		<span class="position">

@@ -5,6 +5,10 @@
  * so both work without JavaScript; each row is WP Job Manager's
  * content-job_listing.php (this plugin's override).
  *
+ * With JavaScript (view.ts) the same addresses are fetched and only the
+ * results are swapped in: they are a router region. The form stays outside
+ * it, so an update never rewrites a field someone is typing in.
+ *
  * URL parameters: search_keywords, search_location, search_category (slug),
  * filter_job_type[] (slugs; none means every type), remote_position, pg.
  *
@@ -70,14 +74,24 @@ $tekseries_filters  = array_filter(
 );
 $tekseries_base     = (string) get_permalink();
 $tekseries_found    = (int) $tekseries_jobs->found_posts;
+$tekseries_listed   = $tekseries_jobs->have_posts();
 $tekseries_filtered = (bool) $tekseries_filters;
 
-if ( $tekseries_found ) {
-	tekseries_blocks_track_job_search( (int) get_the_ID() );
-}
+// Also with nothing found: a search made in place from here can find jobs.
+tekseries_blocks_track_job_search( (int) get_the_ID() );
 ?>
-<div <?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes the wrapper attributes. ?>>
-	<form class="job_filters ts-job-filters" method="get" action="<?php echo esc_url( $tekseries_base ); ?>" role="search" aria-label="<?php esc_attr_e( 'Search jobs', 'tekseries-blocks' ); ?>">
+<div <?php echo get_block_wrapper_attributes( array( 'data-wp-interactive' => 'tekseries/job-listings' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes the wrapper attributes. ?>>
+	<form
+		class="job_filters ts-job-filters"
+		method="get"
+		action="<?php echo esc_url( $tekseries_base ); ?>"
+		role="search"
+		aria-label="<?php esc_attr_e( 'Search jobs', 'tekseries-blocks' ); ?>"
+		data-wp-on--submit="actions.submit"
+		data-wp-on--input="actions.type"
+		data-wp-on--change="actions.change"
+		data-wp-on-window--popstate="actions.restore"
+	>
 		<div class="search_jobs">
 			<label class="ts-job-field">
 				<span class="screen-reader-text"><?php esc_html_e( 'Keywords', 'tekseries-blocks' ); ?></span>
@@ -132,9 +146,17 @@ if ( $tekseries_found ) {
 		</div>
 	</form>
 
-	<section class="ts-job-results" aria-label="<?php esc_attr_e( 'Job listings', 'tekseries-blocks' ); ?>">
+	<?php // Focusable by the script, which sends focus here after a change of page. ?>
+	<section
+		class="ts-job-results"
+		aria-label="<?php esc_attr_e( 'Job listings', 'tekseries-blocks' ); ?>"
+		tabindex="-1"
+		data-wp-interactive="tekseries/job-listings"
+		data-wp-router-region="tekseries/job-listings"
+	>
 		<div class="ts-job-results__head">
-			<p class="showing_jobs">
+			<?php // A status, so the new count is read out when the results change in place. ?>
+			<p class="showing_jobs" role="status">
 				<?php
 				$tekseries_count = '<strong>' . esc_html( number_format_i18n( $tekseries_found ) ) . '</strong>';
 				echo wp_kses_post(
@@ -152,16 +174,17 @@ if ( $tekseries_found ) {
 			</p>
 		</div>
 
-		<?php if ( $tekseries_jobs->have_posts() ) : ?>
-			<ul class="job_listings">
-				<?php
-				while ( $tekseries_jobs->have_posts() ) {
-					$tekseries_jobs->the_post();
-					get_job_manager_template_part( 'content', 'job_listing' );
-				}
-				wp_reset_postdata();
-				?>
-			</ul>
+		<?php // Always there, if empty: WP Job Manager counts impressions on the first list it finds, for as long as the page lives. ?>
+		<ul class="job_listings" <?php echo $tekseries_listed ? '' : 'hidden'; ?>>
+			<?php
+			while ( $tekseries_jobs->have_posts() ) {
+				$tekseries_jobs->the_post();
+				get_job_manager_template_part( 'content', 'job_listing' );
+			}
+			wp_reset_postdata();
+			?>
+		</ul>
+		<?php if ( $tekseries_listed ) : ?>
 			<?php
 			$tekseries_links = paginate_links(
 				array(
@@ -177,7 +200,7 @@ if ( $tekseries_found ) {
 			);
 			?>
 			<?php if ( $tekseries_links ) : ?>
-				<nav class="job-manager-pagination ts-job-pages" aria-label="<?php esc_attr_e( 'Job pages', 'tekseries-blocks' ); ?>">
+				<nav class="job-manager-pagination ts-job-pages" aria-label="<?php esc_attr_e( 'Job pages', 'tekseries-blocks' ); ?>" data-wp-on--click="actions.page">
 					<?php echo $tekseries_links; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by core's paginate_links(). ?>
 				</nav>
 			<?php endif; ?>
@@ -186,7 +209,7 @@ if ( $tekseries_found ) {
 				<?php echo tekseries_blocks_icon_svg( 'work_off' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
 				<?php if ( $tekseries_filtered ) : ?>
 					<p class="ts-job-empty__title"><?php esc_html_e( 'No jobs match these filters', 'tekseries-blocks' ); ?></p>
-					<a class="ts-job-empty__clear" href="<?php echo esc_url( $tekseries_base ); ?>"><?php esc_html_e( 'Clear filters', 'tekseries-blocks' ); ?></a>
+					<a class="ts-job-empty__clear" href="<?php echo esc_url( $tekseries_base ); ?>" data-wp-on--click="actions.clear"><?php esc_html_e( 'Clear filters', 'tekseries-blocks' ); ?></a>
 				<?php else : ?>
 					<p class="ts-job-empty__title"><?php esc_html_e( 'There are no open jobs right now', 'tekseries-blocks' ); ?></p>
 				<?php endif; ?>

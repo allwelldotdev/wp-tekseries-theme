@@ -21,9 +21,11 @@
 		"align": [ "wide", "full" ],
 		"spacing": {
 			"margin": true
-		}
+		},
+		"interactivity": true
 	},
 	"editorScript": "file:./index.js",
+	"viewScriptModule": "file:./view.js",
 	"style": [ "file:./style-index.css", "tekseries-blocks-job" ],
 	"render": "file:./render.php"
 }

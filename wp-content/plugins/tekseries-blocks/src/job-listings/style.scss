@@ -223,11 +223,17 @@
 	}
 }
 
-// Results line, list and rows.
+// Results line, list and rows. The script sends focus and the view here after
+// a change of page: no ring for that, and room for the sticky header.
 .ts-job-results {
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
+	scroll-margin-top: 96px;
+
+	&:focus {
+		outline: none;
+	}
 }
 
 .ts-job-results__head {
@@ -264,6 +270,10 @@
 	margin: 0;
 	padding: 0;
 	list-style: none;
+
+	&[hidden] {
+		display: none;
+	}
 }
 
 .ts-job-row {
