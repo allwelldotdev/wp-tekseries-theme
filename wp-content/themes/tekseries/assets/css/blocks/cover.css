@@ -1,0 +1,14 @@
+/*
+ * Text over a photo: the plum overlay thins to 15% at its far side, so text
+ * that reaches that far carries a soft halo in the overlay's colour and stays
+ * readable whatever the photo. Chips and filled buttons have their own ground.
+ */
+.has-overlay-plum-gradient-background ~ .wp-block-cover__inner-container :is(h1, h2, h3, p:not(.has-background, .is-style-chip), .is-style-outline > a) {
+	text-shadow:
+		0 0 3px var(--wp--preset--color--plum),
+		0 0 3px var(--wp--preset--color--plum),
+		0 0 6px var(--wp--preset--color--plum),
+		0 0 6px var(--wp--preset--color--plum),
+		0 0 12px var(--wp--preset--color--plum),
+		0 0 12px var(--wp--preset--color--plum);
+}

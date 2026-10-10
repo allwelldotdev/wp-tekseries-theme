@@ -35,6 +35,20 @@
 	text-transform: uppercase;
 }
 
+/*
+ * Over a photo the tone overlay thins towards the right, so the month carries
+ * a soft halo in the tone's colour and stays readable whatever the photo.
+ */
+.ts-tone--card:has(> .wp-block-post-featured-image) .ts-card-date__month {
+	text-shadow:
+		0 0 3px var(--ts-tone-bg),
+		0 0 3px var(--ts-tone-bg),
+		0 0 6px var(--ts-tone-bg),
+		0 0 6px var(--ts-tone-bg),
+		0 0 12px var(--ts-tone-bg),
+		0 0 12px var(--ts-tone-bg);
+}
+
 .ts-card-media--latest .ts-card-date {
 	flex-direction: column;
 	align-items: flex-start;
