@@ -1,0 +1,41 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tekseries/stat",
+	"version": "0.1.0",
+	"title": "Stat",
+	"category": "text",
+	"icon": "chart-bar",
+	"description": "A figure such as “312+” that counts up to its number when the page loads. Visitors who prefer less motion see the number at once.",
+	"keywords": [ "number", "count", "figure", "impact" ],
+	"textdomain": "tekseries-blocks",
+	"attributes": {
+		"value": {
+			"type": "integer",
+			"default": 100
+		},
+		"suffix": {
+			"type": "string",
+			"default": "+"
+		}
+	},
+	"supports": {
+		"html": false,
+		"color": {
+			"text": true,
+			"background": false
+		},
+		"typography": {
+			"fontSize": true
+		},
+		"spacing": {
+			"margin": true
+		},
+		"interactivity": {
+			"clientNavigation": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

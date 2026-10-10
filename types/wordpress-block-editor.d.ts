@@ -10,6 +10,7 @@ declare module '@wordpress/block-editor' {
 		props?: BlockProps,
 		options?: {
 			allowedBlocks?: string[];
+			orientation?: 'horizontal' | 'vertical';
 			template?: Array< [ string, Record< string, unknown >? ] >;
 			templateLock?: false | 'all' | 'insert' | 'contentOnly';
 		}

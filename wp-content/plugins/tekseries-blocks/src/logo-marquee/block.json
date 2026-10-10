@@ -1,0 +1,29 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tekseries/logo-marquee",
+	"version": "0.1.0",
+	"title": "Logo Marquee",
+	"category": "media",
+	"icon": "slides",
+	"description": "A strip of logos that moves sideways on its own, with a pause button. Visitors who prefer less motion get a still row.",
+	"keywords": [ "logos", "partners", "marquee", "scroll" ],
+	"textdomain": "tekseries-blocks",
+	"allowedBlocks": [ "core/image" ],
+	"attributes": {
+		"ariaLabel": {
+			"type": "string"
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide" ],
+		"ariaLabel": true,
+		"spacing": {
+			"margin": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

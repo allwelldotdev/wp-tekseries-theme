@@ -105,6 +105,7 @@ function tekseries_blocks_icon_labels(): array {
 		'newspaper'            => __( 'Newspaper', 'tekseries-blocks' ),
 		'open_in_full'         => __( 'Open full size', 'tekseries-blocks' ),
 		'open_in_new'          => __( 'Open in new tab', 'tekseries-blocks' ),
+		'pause'                => __( 'Pause', 'tekseries-blocks' ),
 		'payments'             => __( 'Payments', 'tekseries-blocks' ),
 		'person_play'          => __( 'Freelancer', 'tekseries-blocks' ),
 		'photo_camera'         => __( 'Camera', 'tekseries-blocks' ),

@@ -1,0 +1,104 @@
+// Hero Carousel: slides side by side in a track that snaps to one at a time,
+// with the dots over its bottom right corner (Home hero board). In the editor
+// the slides simply stack.
+
+.wp-block-tekseries-hero-carousel {
+	position: relative;
+}
+
+.ts-carousel__track {
+	display: flex;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scrollbar-width: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+
+	> * {
+		flex: 0 0 100%;
+		box-sizing: border-box;
+		min-width: 0;
+		margin: 0;
+		scroll-snap-align: start;
+		scroll-snap-stop: always;
+	}
+}
+
+// In the editor the slides are the block's own children: keep them apart.
+.wp-block-tekseries-hero-carousel > .wp-block-cover + .wp-block-cover {
+	margin-block-start: 16px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+	.ts-carousel__track {
+		scroll-behavior: smooth;
+	}
+}
+
+// Each dot is a link with a full-size tap target; the dot itself is drawn
+// inside it. The current slide's dot is the saffron pill.
+.ts-carousel__dots {
+	position: absolute;
+	right: 24px;
+	bottom: 14px;
+	display: flex;
+
+	a {
+		display: grid;
+		place-items: center;
+		min-width: var(--wp--custom--touch-target);
+		height: var(--wp--custom--touch-target);
+		border-radius: var(--wp--preset--border-radius--pill);
+
+		&::before {
+			content: "";
+			width: 8px;
+			height: 8px;
+			border-radius: var(--wp--preset--border-radius--pill);
+			background: var(--wp--custom--alpha--white-50);
+			transition:
+				width var(--wp--custom--motion--duration),
+				background-color var(--wp--custom--motion--duration);
+		}
+
+		&:hover::before {
+			background: var(--wp--preset--color--white);
+		}
+
+		&:focus-visible {
+			outline: var(--wp--custom--focus--width) solid var(--wp--preset--color--saffron);
+			outline-offset: calc(-1 * var(--wp--custom--focus--offset));
+		}
+	}
+}
+
+// Without JavaScript the current slide is the one a dot last pointed to
+// (:target), or the first. Up to eight slides.
+@mixin current-dot {
+	width: 28px;
+	background: var(--wp--preset--color--saffron);
+}
+
+.wp-block-tekseries-hero-carousel:not(:has(.ts-carousel__track > :target)) .ts-carousel__dots a:first-child::before {
+
+	@include current-dot;
+}
+
+@for $i from 1 through 8 {
+
+	.wp-block-tekseries-hero-carousel:has(.ts-carousel__track > :nth-child(#{$i}):target) .ts-carousel__dots a:nth-child(#{$i})::before {
+
+		@include current-dot;
+	}
+}
+
+@media (width <= 640px) {
+
+	.ts-carousel__dots {
+		right: 8px;
+		bottom: 6px;
+	}
+}

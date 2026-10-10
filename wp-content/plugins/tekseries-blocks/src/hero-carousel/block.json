@@ -1,0 +1,29 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tekseries/hero-carousel",
+	"version": "0.1.0",
+	"title": "Hero Carousel",
+	"category": "design",
+	"icon": "slides",
+	"description": "Cover blocks shown one at a time as slides. Visitors swipe or use the dots to move between them; it works without JavaScript.",
+	"keywords": [ "slider", "slides", "carousel", "hero" ],
+	"textdomain": "tekseries-blocks",
+	"allowedBlocks": [ "core/cover" ],
+	"attributes": {
+		"ariaLabel": {
+			"type": "string"
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"ariaLabel": true,
+		"spacing": {
+			"margin": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

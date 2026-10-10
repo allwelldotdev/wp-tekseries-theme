@@ -1,0 +1,56 @@
+// Stat: a large figure that counts up from 0 (Home impact tiles). The number
+// is a CSS counter fed by a custom property, so it can be animated.
+
+@property --ts-stat-n {
+	syntax: "<integer>";
+	inherits: false;
+	initial-value: 0;
+}
+
+.wp-block-tekseries-stat {
+	color: var(--wp--preset--color--plum);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: var(--wp--preset--font-size--stat);
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+	letter-spacing: var(--wp--custom--letter-spacing--display);
+}
+
+// The finished number, for visitors who prefer less motion.
+.ts-stat__number {
+	counter-reset: ts-stat var(--ts-stat-to);
+
+	&::after {
+		content: counter(ts-stat);
+	}
+}
+
+// Coral beside the default plum; with a colour picked, it follows the number.
+.ts-stat__suffix {
+	color: var(--wp--preset--color--coral);
+
+	.has-text-color > &,
+	.has-text-color > span > & {
+		color: inherit;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+	.ts-stat__number {
+		counter-reset: ts-stat var(--ts-stat-n);
+		animation: ts-stat-count 2.2s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s both;
+	}
+}
+
+@keyframes ts-stat-count {
+
+	from {
+		--ts-stat-n: 0;
+	}
+
+	to {
+		--ts-stat-n: var(--ts-stat-to);
+	}
+}

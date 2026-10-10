@@ -1,0 +1,173 @@
+// Logo Marquee: a white pill of logos (Home partners board). A still, wrapping
+// row by default and in the editor; the strip moves only for visitors who
+// haven't asked for less motion.
+
+.wp-block-tekseries-logo-marquee {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	box-sizing: border-box;
+	padding: 24px 32px;
+	overflow: hidden;
+	border: 1px solid var(--wp--preset--color--line);
+	border-radius: var(--wp--preset--border-radius--xl);
+	background: var(--wp--preset--color--white);
+}
+
+.ts-marquee__viewport {
+	flex: 1;
+	min-width: 0;
+}
+
+// One set of logos.
+.ts-marquee__set {
+	display: flex;
+	flex: 1;
+	flex-wrap: wrap;
+	gap: 24px 40px;
+	align-items: center;
+	justify-content: center;
+
+	.wp-block-image {
+		flex: none;
+		margin: 0;
+	}
+
+	&[aria-hidden] {
+		display: none;
+	}
+}
+
+// Each logo fits the same box, whatever its own shape (and whatever size the
+// Image block or its style asks for). The max-height is for the editor, whose
+// Image block sets an inline `height: auto`.
+.wp-block-tekseries-logo-marquee .ts-marquee__set .wp-block-image img {
+	display: block;
+	width: 160px;
+	max-width: none;
+	height: 40px;
+	max-height: 40px;
+	object-fit: contain;
+}
+
+// The pause control: a checkbox drawn as a round button, before the logos in
+// the page and after them on screen.
+.ts-marquee__pause {
+	position: relative;
+	display: none;
+	flex: none;
+	order: 1;
+	place-items: center;
+	width: var(--wp--custom--touch-target);
+	height: var(--wp--custom--touch-target);
+	border-radius: 50%;
+	background: var(--wp--preset--color--lilac);
+	color: var(--wp--preset--color--plum);
+	transition: background-color var(--wp--custom--motion--duration);
+
+	&:hover {
+		background: var(--wp--preset--color--lilac-deep);
+	}
+
+	&:has(input:focus-visible) {
+		outline: var(--wp--custom--focus--width) solid var(--wp--preset--color--plum);
+		outline-offset: var(--wp--custom--focus--offset);
+	}
+
+	input {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		opacity: 0;
+		cursor: pointer;
+	}
+
+	svg {
+		width: 22px;
+		height: 22px;
+		fill: currentcolor;
+		pointer-events: none;
+	}
+
+	// Pause while it moves, play once paused.
+	svg:last-of-type,
+	&:has(input:checked) svg:first-of-type {
+		display: none;
+	}
+
+	&:has(input:checked) svg:last-of-type {
+		display: block;
+	}
+}
+
+@media (width <= 1100px) {
+
+	.wp-block-tekseries-logo-marquee .ts-marquee__set .wp-block-image img {
+		width: 140px;
+		height: 34px;
+		max-height: 34px;
+	}
+}
+
+@media (width <= 640px) {
+
+	.wp-block-tekseries-logo-marquee {
+		padding: 16px 20px;
+	}
+
+	.wp-block-tekseries-logo-marquee .ts-marquee__set .wp-block-image img {
+		width: 110px;
+		height: 30px;
+		max-height: 30px;
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+	.wp-block-tekseries-logo-marquee:has(> .ts-marquee__viewport) {
+		border-radius: var(--wp--preset--border-radius--pill);
+	}
+
+	.ts-marquee__viewport {
+		overflow: hidden;
+		mask-image: linear-gradient(90deg, transparent 0, #000 56px, #000 calc(100% - 56px), transparent 100%);
+	}
+
+	// Sets side by side at a fixed pitch, so sliding by half the strip lands
+	// exactly on a repeat.
+	.ts-marquee__strip {
+		display: flex;
+		width: max-content;
+		animation: ts-marquee 32s linear infinite;
+
+		.ts-marquee__set,
+		.ts-marquee__set[aria-hidden] {
+			display: flex;
+			flex: none;
+			flex-wrap: nowrap;
+			gap: 0;
+		}
+
+		.wp-block-image {
+			margin-right: 40px;
+		}
+	}
+
+	.ts-marquee__pause {
+		display: grid;
+	}
+
+	.wp-block-tekseries-logo-marquee:hover .ts-marquee__strip,
+	.wp-block-tekseries-logo-marquee:has(.ts-marquee__toggle:checked) .ts-marquee__strip {
+		animation-play-state: paused;
+	}
+}
+
+@keyframes ts-marquee {
+
+	to {
+		transform: translateX(-50%);
+	}
+}
