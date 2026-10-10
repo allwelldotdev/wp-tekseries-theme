@@ -79,20 +79,21 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 └── package.json, composer.json, phpcs.xml.dist, .wp-env.json and other root config
 ```
 
-The plugin has eight blocks: `post-tone` (ADR-033), `share-links`, `toc` (ADR-038), `job-listings` (ADR-042), `media-gallery` (ADR-045) and the CSS-only `stat`, `logo-marquee` and `hero-carousel` (ADR-046). Four send visitors a small script module on the Interactivity API, `src/<block>/view.ts` (ADR-047), and each works without JavaScript:
+The plugin has eight blocks: `post-tone` (ADR-033), `share-links`, `toc` (ADR-038), `job-listings` (ADR-042), `media-gallery` (ADR-045), `hero-carousel` (ADR-053) and the CSS-only `stat` and `logo-marquee` (ADR-046). Five send visitors a small script module on the Interactivity API, `src/<block>/view.ts` (ADR-047), and each works without JavaScript:
 
 - `share-links` copies "Link to this page", and loads only when a block offers that link.
 - `media-gallery` has a lightbox (ADR-048), and its filters and Load more update in place (ADR-049).
 - `job-listings` updates search and paging in place (ADR-049).
 - `toc` marks the section being read and starts folded on phones (ADR-051).
+- `hero-carousel` dots follow the slide in view and move the slides in place. "Change slides automatically" (off by default) advances every 7 seconds with a pause button, never under reduced motion.
 
-The other four have no script, and the motion blocks stand still under `prefers-reduced-motion`.
+The other three have no script, and the motion blocks stand still under `prefers-reduced-motion`.
 
 Event templates show the ACF fields through Block Bindings. Job pages read WP Job Manager data through the `tekseries/job-field` and `tekseries/job-stats` sources (ADR-040), and the gallery reads totals through `tekseries/media-stats`. Only media in an album (Media → Albums) appears in the gallery (ADR-044).
 
 The theme holds design tokens, fonts, header and footer parts, page patterns, templates for every screen (`single-job_listing.html` is ADR-041) and per-block CSS. The job submission flow and dashboard are WP Job Manager overrides (ADR-043).
 
-Gallery tiles sit in a CSS grid that fills the shortest column (ADR-050). Home uses Stat and Logo Marquee (ADR-052); the hero carousel waits for a second slide.
+Gallery tiles sit in a CSS grid that fills the shortest column (ADR-050). Home uses Stat and Logo Marquee (ADR-052), and its hero is a two-slide Hero Carousel (ADR-053).
 
 The repo root is the WordPress root. `.gitignore` is a whitelist, so WordPress core, uploads and other plugins and themes are never tracked (ADR-001).
 

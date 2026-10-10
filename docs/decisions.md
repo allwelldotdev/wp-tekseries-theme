@@ -755,7 +755,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-046: Build the Home motion blocks with CSS only
 
-**Status:** Superseded by ADR-052 (Home's static patterns only)
+**Status:** Superseded by ADR-052 (Home's static patterns only); by ADR-053 ("the carousel ships no script" only)
 
 **Context:** ADR-014 decided Home motion ships in two versions: static core blocks first, moving plugin blocks later (hero carousel, count-up stat, logo marquee). The design's count-up is CSS. Its marquee pauses only on hover, with no keyboard or touch control, which fails WCAG 2.2.2. Its slider dots have nothing to slide. Server HTML must work without JavaScript, and motion must respect `prefers-reduced-motion`.
 
@@ -869,7 +869,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-052: Use the Stat and Logo Marquee blocks on Home
 
-**Status:** Accepted
+**Status:** Superseded by ADR-053 (the hero part only)
 
 **Context:** ADR-046 built the Stat, Logo Marquee and Hero Carousel blocks and kept Home's static patterns until the owner asked for the switch. The site owner decided on 2026-10-10 to switch.
 
@@ -882,6 +882,28 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Rationale:** The stat and marquee blocks are complete and need nothing more. A carousel with one slide has nothing to show. This changes only the "Home keeps its static patterns" part of ADR-046.
 
+## ADR-053: Make the Home hero a two-slide carousel that can change slides by itself
+
+**Status:** Accepted
+
+**Context:** ADR-052 kept the Home hero a single Cover until a second slide existed. On 2026-10-10 the site owner decided that Home shows the carousel the design board draws: a hero with slider dots. The current live site's slider already rotates by itself. ADR-046 built the carousel with CSS only, with dots as `:target` links.
+
+**Options:**
+- Keep one static Cover.
+- A carousel with dots only and no automatic change. This matches the board exactly.
+- A carousel whose automatic change is an editor setting, with a pause control.
+
+**Decision:**
+- `patterns/home-hero.php` is a `tekseries/hero-carousel` block with two Cover slides and "Change slides automatically" on. Slide 2 is the live site's second slide: "One Youth Career At A Time" over the 2025 Jr. Rural Camp photo (`assets/images/home/hero-camp.jpg`). Only slide 1 holds the page's H1. Slide 2's headline is an H2 with the H1's size. Slide 2's chip, lead and buttons are a first draft from existing site copy, for the owner to edit.
+- The carousel now has an Interactivity API script module (`view.ts`, ADR-047). This ends "ships no script" for the carousel in ADR-046. Stat and Logo Marquee are unchanged and stay CSS-only.
+- Dots: the track's scroll position names the slide in view, and that slide's dot gets `aria-current`. The no-JavaScript `:target` styling applies only while no dot has `aria-current`. A dot click moves the track alone, so the page does not jump and the address gets no fragment.
+- New attribute `autoplay`, an editor switch, off by default. Each slide waits 7 seconds. The wait restarts when the slide changes or the visitor pauses. A turn is skipped while the pointer is over the carousel, focus is inside it or the tab is hidden. The server renders a pause/play button hidden, and the script shows it. Under `prefers-reduced-motion: reduce` nothing starts and the button stays hidden.
+- Corner radius is a block support of the carousel. The track clips the slides to it, so they move inside one rounded frame.
+- Not built, on purpose: Previous and Next arrows, which the board does not show. Dot spacing stays at the design system's 44px tap target (ADR-005), though the board draws 8px gaps.
+- Editors add a slide by duplicating a Cover inside the carousel and remove one by deleting it (`specs/home-motion.spec.ts`). Inserted from the theme pattern, the hero is treated as a pattern in WordPress 7.1, which asks for "Edit pattern" before structural changes. Page content that holds the blocks directly is edited freely.
+
+**Rationale:** The board shows the dots, and the live slider already rotates. Motion that starts by itself needs a pause control (WCAG 2.2.2), the reasoning ADR-046 used for the marquee. An off-by-default setting leaves the choice with editors, and the Home pattern turns it on to match the live site. Everything is an enhancement of the server markup, so the page without JavaScript is unchanged (ADR-005). This reverses the hero part of ADR-052 and delivers the carousel items in Future work.
+
 ## Future work
 
 - **Hosting and deploy:** not decided. The options are a git pull on the server or CI-built theme and plugin zips; no remote or CI exists yet. A release must ship only the theme and plugin, never the repository root (ADR-001).
@@ -890,11 +912,10 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - **Gallery captions and alt text:** write descriptive captions and alt text for the gallery photos. Nine share one caption, and the alt texts are file names (ADR-045).
 - **Gallery Load more size:** it still adds 12 on every screen, where the boards show 10 on phones (ADR-045, ADR-049).
 - **Gallery hero chips:** the totals on the Gallery page do not follow the year filter (ADR-045).
-- **Gallery video:** a webinar highlights video sits in the Media Library. Putting it in an album makes the Photos/Videos filter and the video chip appear (owner; ADR-045).
+- **Gallery video on live:** done on the development site (album "2026 Empower Her Webinar", year 2026, with a poster as featured image). Repeat it on the live site (owner; ADR-045).
 - **Album years:** the owner confirmed "2023-2024" under 2024. Confirm the Junior Camp album with the owner. It is filed under 2022 on the development site, because its captions, alt text and matching event say 2022, while only the file names say 2021 (ADR-044).
 - **Bulk album action:** a bulk "add to album" action in the Media Library, if editors need it (ADR-044).
-- **Home hero carousel:** swap the static hero for the Hero Carousel once a second slide exists (ADR-046, ADR-052).
-- **Motion behaviour:** carousel controls (autoplay with a pause control, Previous and Next, dots that follow swipes), built when a page uses the carousel, and an in-view start for the stat count, if wanted (ADR-046, ADR-052).
+- **Motion behaviour:** an in-view start for the stat count, and Previous and Next arrows on the carousel, if wanted (ADR-046, ADR-053).
 - **Lost emoji:** fix the emoji that became `????` in posts and events.
 - **Past-event and registration-closed states:** replace the interim "This event has ended" note when the designer delivers (ADR-035).
 - **Event type icon picker:** add one to wp-admin (ADR-037).
