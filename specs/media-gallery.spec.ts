@@ -449,6 +449,85 @@ test.describe( 'Media Gallery block', () => {
 		await context.close();
 	} );
 
+	// With JavaScript, the same links update the block where it stands.
+	test( 'filters and loads more in place, keeping the address and Back', async ( {
+		browser,
+	} ) => {
+		const context = await browser.newContext( {
+			storageState: { cookies: [], origins: [] },
+		} );
+		const page = await context.newPage();
+		await page.goto( gallery.link );
+		// Lost if the browser loads a new page.
+		await page.evaluate( () => {
+			( window as unknown as { stays?: boolean } ).stays = true;
+		} );
+		const stayed = () =>
+			page.evaluate(
+				() =>
+					( window as unknown as { stays?: boolean } ).stays === true
+			);
+		const [ , two ] = media;
+
+		const block = page.locator( '.wp-block-tekseries-media-gallery' );
+		const types = block
+			.getByRole( 'group', { name: 'Show' } )
+			.getByRole( 'link' );
+		const years = block
+			.getByRole( 'group', { name: 'Filter by year' } )
+			.getByRole( 'link' );
+		const tiles = block.locator( '.ts-media__grid .ts-media__tile' );
+		const showing = block.locator( '.ts-media__showing' );
+		// What assistive technology hears after each update.
+		const heard = block.locator( '> [role="status"]' );
+		await expect( heard ).toHaveText( '' );
+
+		await years.nth( 2 ).click();
+		await expect( showing ).toHaveText( 'Showing 2 of 2' );
+		await expect( page ).toHaveURL( /media_year=2019#media$/ );
+		await expect( heard ).toHaveText( 'Showing 2 of 2' );
+		await expect( years.nth( 2 ) ).toHaveAttribute(
+			'aria-current',
+			'true'
+		);
+		await expect( years.nth( 2 ) ).toBeFocused();
+		await expect( types ).toHaveText( [ 'All 2', 'Photos 2', 'Videos 0' ] );
+
+		// Nothing to show: the way back is in place too, and focus is not lost
+		// with the link that led there.
+		await types.nth( 2 ).click();
+		await expect( heard ).toHaveText( 'No videos from 2019 yet' );
+		await block.getByRole( 'link', { name: 'Show all media' } ).click();
+		await expect( showing ).toHaveText( 'Showing 2 of 6' );
+		await expect( types.first() ).toBeFocused();
+
+		// Load more adds tiles and hands focus to the first new one.
+		await block.getByRole( 'link', { name: 'Load more' } ).click();
+		await expect( showing ).toHaveText( 'Showing 4 of 6' );
+		await expect( heard ).toHaveText( 'Showing 4 of 6' );
+		await expect( tiles ).toHaveCount( 4 );
+		await expect( tiles.nth( 2 ) ).toBeFocused();
+		await expect( page ).toHaveURL(
+			new RegExp( `media_shown=4#media-${ two?.id }$` )
+		);
+
+		// The viewer steps through what is loaded now.
+		await tiles.nth( 3 ).click();
+		await expect(
+			page.locator( '.ts-lightbox__counter [aria-hidden="true"]' )
+		).toHaveText( '4 / 4' );
+		await page.keyboard.press( 'Escape' );
+
+		// Back undoes the last update, still without a page load.
+		await page.goBack();
+		await expect( showing ).toHaveText( 'Showing 2 of 6' );
+		await expect( heard ).toHaveText( 'Showing 2 of 6' );
+		await expect( tiles ).toHaveCount( 2 );
+		expect( await stayed() ).toBe( true );
+
+		await context.close();
+	} );
+
 	test( 'gives templates the totals and loads no React or jQuery', async ( {
 		browser,
 	} ) => {

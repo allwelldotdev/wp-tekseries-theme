@@ -2,6 +2,7 @@ import {
 	getConfig,
 	getContext,
 	getElement,
+	getServerState,
 	store,
 	withSyncEvent,
 } from '@wordpress/interactivity';
@@ -26,6 +27,8 @@ type Item = {
 type ThumbContext = { thumb: Item };
 // Translated by render.php.
 type Config = { position: string; thumb: string };
+// From render.php, for the page the router last showed: "Showing 12 of 32".
+type ServerState = { summary?: string };
 
 const NAMESPACE = 'tekseries/media-gallery';
 // A swipe is a mostly sideways drag of at least this many pixels.
@@ -71,6 +74,16 @@ const step = ( by: number ) => {
 
 const { state } = store( NAMESPACE, {
 	state: {
+		// The block has been updated in place; another update is on its way.
+		isUpdated: false,
+		isLoading: false,
+		// The summary of what is now shown, for assistive technology. Empty on
+		// arrival (the page says it already) and while loading, so that the
+		// same words after another filter are still read out.
+		get status(): string {
+			const { summary = '' } = getServerState< ServerState >( NAMESPACE );
+			return state.isUpdated && ! state.isLoading ? summary : '';
+		},
 		isOpen: false,
 		index: 0,
 		items: [] as Item[],
@@ -154,6 +167,59 @@ const { state } = store( NAMESPACE, {
 			state.items = tiles.map( toItem );
 			state.index = tiles.indexOf( tile );
 			state.isOpen = true;
+		} ),
+		// The filters and Load more: fetches the link's page and swaps the
+		// block's content in place, instead of loading the whole page. The
+		// address still changes, so a filtered view can be shared and Back
+		// works; if the fetch fails the router loads the page as the link would.
+		navigate: withSyncEvent( function* ( event: MouseEvent ) {
+			const link = getElement().ref as HTMLAnchorElement | null;
+			if ( ! link || ! isPlainClick( event ) ) {
+				return;
+			}
+			event.preventDefault();
+
+			const block = link.closest< HTMLElement >(
+				'.wp-block-tekseries-media-gallery'
+			);
+			// Without its fragment, so the page stays where it is scrolled.
+			const { href } = link;
+			const url = new URL( href );
+			const target = url.hash;
+			url.hash = '';
+
+			state.isLoading = true;
+			const router =
+				( yield import( '@wordpress/interactivity-router' ) ) as typeof import( '@wordpress/interactivity-router' );
+			yield router.actions.navigate( url.href, {
+				screenReaderAnnouncement: false,
+			} );
+			// A later click has taken over.
+			if ( ! block || window.location.href !== url.href ) {
+				return;
+			}
+
+			// The fragment goes back on for reloads and shared links.
+			window.history.replaceState( window.history.state, '', href );
+			state.isUpdated = true;
+			state.isLoading = false;
+
+			// Load more names its first new tile: focus goes there. A link
+			// that the new content no longer has hands focus to the filters.
+			const first = target.startsWith( '#media-' )
+				? block.querySelector< HTMLElement >( `${ target } a` )
+				: null;
+			if ( first ) {
+				first.focus();
+			} else if (
+				! block.contains( block.ownerDocument.activeElement )
+			) {
+				block
+					.querySelector< HTMLElement >(
+						'.ts-media__filters [aria-current], .ts-media__tile'
+					)
+					?.focus();
+			}
 		} ),
 		// Also runs on the dialog's own close event (the Escape key).
 		close() {
