@@ -79,6 +79,16 @@
 			background-color: var(--wp--preset--color--lilac);
 			color: var(--wp--preset--color--plum);
 		}
+
+		// The section being read (marked by the script).
+		&[aria-current="true"] {
+			background-color: var(--wp--preset--color--plum);
+			color: var(--wp--preset--color--white);
+
+			.ts-toc__number {
+				color: var(--wp--preset--color--saffron);
+			}
+		}
 	}
 }
 
@@ -88,4 +98,38 @@
 	color: var(--wp--preset--color--coral-text);
 	font-variant-numeric: tabular-nums;
 	font-weight: 700;
+}
+
+// Phones start with the list folded. The <details> can't arrive closed (with
+// no script it must be open), so where scripts run the list is held shut
+// until the script has closed it properly: nothing moves when it does. If the
+// script never comes, the hold ends by itself and the list opens.
+@media (width <= 640px) and (scripting: enabled) {
+
+	.ts-toc:not(.is-ready) > .ts-toc__list {
+		animation: ts-toc-hold 5s step-end;
+	}
+
+	.ts-toc:not(.is-ready) > .ts-toc__summary > svg {
+		animation: ts-toc-hold-icon 5s step-end;
+	}
+}
+
+@keyframes ts-toc-hold {
+
+	from,
+	to {
+		overflow: hidden;
+		max-height: 0;
+		padding-block: 0;
+		visibility: hidden;
+	}
+}
+
+@keyframes ts-toc-hold-icon {
+
+	from,
+	to {
+		rotate: none;
+	}
 }

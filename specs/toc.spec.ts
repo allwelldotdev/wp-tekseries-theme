@@ -60,6 +60,102 @@ test.describe( 'Table of Contents block', () => {
 		await context.close();
 	} );
 
+	// With JavaScript: the mark on the section being read, and the phone fold.
+	test( 'marks the section being read and starts folded on phones', async ( {
+		browser,
+		requestUtils,
+	} ) => {
+		// Tall enough to scroll from one section to the next.
+		const filler =
+			'<!-- wp:spacer {"height":"1400px"} --><div style="height:1400px" aria-hidden="true" class="wp-block-spacer"></div><!-- /wp:spacer -->';
+		const long = await requestUtils.rest< Linked >( {
+			method: 'POST',
+			path: '/wp/v2/pages',
+			data: {
+				title: 'E2E Legal Long',
+				status: 'publish',
+				template: 'page-legal',
+				content:
+					heading( 'Purpose', 'purpose' ) +
+					filler +
+					heading( 'Cookies', 'cookies' ) +
+					filler +
+					heading( 'Contact', 'contact' ),
+			},
+		} );
+		pages.push( long.id );
+
+		const visitor = { storageState: { cookies: [], origins: [] } };
+		const desktop = await browser.newContext( visitor );
+		let page = await desktop.newPage();
+		const scripts: string[] = [];
+		page.on( 'request', ( request ) => scripts.push( request.url() ) );
+		await page.goto( long.link );
+		let toc = page.getByRole( 'navigation', { name: 'On this page' } );
+		const link = ( name: string ) => toc.getByRole( 'link', { name } );
+		await expect( toc.locator( 'details' ) ).toHaveAttribute( 'open', '' );
+
+		// Scrolling to a section marks its link, and only that one.
+		await page
+			.locator( '#cookies' )
+			.evaluate( ( section ) => section.scrollIntoView() );
+		await expect( link( 'Cookies' ) ).toHaveAttribute(
+			'aria-current',
+			'true'
+		);
+		await expect( toc.locator( '[aria-current="true"]' ) ).toHaveCount( 1 );
+
+		// The last section can't reach the top of the screen; picking its
+		// link marks it all the same.
+		await link( 'Contact' ).click();
+		await expect( page ).toHaveURL( /#contact$/ );
+		await expect( link( 'Contact' ) ).toHaveAttribute(
+			'aria-current',
+			'true'
+		);
+		await expect( link( 'Cookies' ) ).toHaveAttribute(
+			'aria-current',
+			'false'
+		);
+		expect(
+			scripts.filter( ( url ) => /react|jquery/i.test( url ) )
+		).toEqual( [] );
+		await desktop.close();
+
+		// A phone: folded on arrival, opened by its summary.
+		const phone = await browser.newContext( {
+			...visitor,
+			viewport: { width: 390, height: 844 },
+		} );
+		page = await phone.newPage();
+		await page.goto( long.link );
+		toc = page.getByRole( 'navigation', { name: 'On this page' } );
+		await expect( toc.locator( 'details' ) ).toHaveClass( /\bis-ready\b/ );
+		await expect( toc.locator( 'details' ) ).not.toHaveAttribute( 'open' );
+		await expect( toc.getByRole( 'link' ).first() ).toBeHidden();
+		await toc.locator( 'summary' ).click();
+		await expect( toc.getByRole( 'link' ) ).toHaveText( [
+			'01Purpose',
+			'02Cookies',
+			'03Contact',
+		] );
+		await expect( toc.getByRole( 'link' ).first() ).toBeVisible();
+		await phone.close();
+
+		// The same phone without JavaScript keeps the list open and in view.
+		const plain = await browser.newContext( {
+			...visitor,
+			javaScriptEnabled: false,
+			viewport: { width: 390, height: 844 },
+		} );
+		page = await plain.newPage();
+		await page.goto( long.link );
+		toc = page.getByRole( 'navigation', { name: 'On this page' } );
+		await expect( toc.locator( 'details' ) ).toHaveAttribute( 'open', '' );
+		await expect( toc.getByRole( 'link' ).first() ).toBeVisible();
+		await plain.close();
+	} );
+
 	test( 'renders nothing when no heading has an anchor', async ( {
 		page,
 		requestUtils,

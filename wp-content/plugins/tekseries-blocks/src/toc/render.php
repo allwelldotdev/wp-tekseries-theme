@@ -3,6 +3,8 @@
  * Table of Contents: a numbered list of links to the post's H2 headings that
  * have an HTML anchor, read from the saved content. It sits in a <details>
  * element, open by default, so readers can fold it away without JavaScript.
+ * With it (view.ts) the list starts folded on phones and the link of the
+ * section being read is marked.
  *
  * @package TekSeries
  *
@@ -41,16 +43,31 @@ if ( ! $tekseries_items ) {
 
 $tekseries_label = __( 'On this page', 'tekseries-blocks' );
 $tekseries_index = 0;
+
+// For the script: the section being read, how long a picked link keeps the
+// mark, and whether the script has taken over.
+$tekseries_wrapper = array(
+	'aria-label'          => $tekseries_label,
+	'data-wp-interactive' => 'tekseries/toc',
+	'data-wp-context'     => wp_json_encode(
+		array(
+			'current'   => '',
+			'heldUntil' => 0,
+			'ready'     => false,
+		)
+	),
+	'data-wp-init'        => 'callbacks.watch',
+);
 ?>
-<nav <?php echo get_block_wrapper_attributes( array( 'aria-label' => $tekseries_label ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes the wrapper attributes. ?>>
-	<details class="ts-toc" open>
+<nav <?php echo get_block_wrapper_attributes( $tekseries_wrapper ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes the wrapper attributes. ?>>
+	<details class="ts-toc" open data-wp-init="callbacks.fold" data-wp-class--is-ready="context.ready">
 		<summary class="ts-toc__summary">
 			<span class="ts-toc__title"><?php echo tekseries_blocks_icon_svg( 'toc' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?><?php echo esc_html( $tekseries_label ); ?></span>
 			<?php echo tekseries_blocks_icon_svg( 'expand_more' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
 		</summary>
 		<ol class="ts-toc__list">
 			<?php foreach ( $tekseries_items as $tekseries_id => $tekseries_title ) : ?>
-				<li><a href="#<?php echo esc_attr( (string) $tekseries_id ); ?>"><span class="ts-toc__number" aria-hidden="true"><?php echo esc_html( sprintf( '%02d', ++$tekseries_index ) ); ?></span><span><?php echo esc_html( $tekseries_title ); ?></span></a></li>
+				<li <?php echo wp_interactivity_data_wp_context( array( 'id' => (string) $tekseries_id ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes the context attribute. ?>><a href="#<?php echo esc_attr( (string) $tekseries_id ); ?>" data-wp-bind--aria-current="state.isCurrent" data-wp-on--click="actions.pick"><span class="ts-toc__number" aria-hidden="true"><?php echo esc_html( sprintf( '%02d', ++$tekseries_index ) ); ?></span><span><?php echo esc_html( $tekseries_title ); ?></span></a></li>
 			<?php endforeach; ?>
 		</ol>
 	</details>
