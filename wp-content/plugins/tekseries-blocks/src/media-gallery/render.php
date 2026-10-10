@@ -128,9 +128,14 @@ $tekseries_wrapper = array(
 				$tekseries_video = 'video' === $tekseries_item['kind'];
 				$tekseries_label = tekseries_blocks_media_label( $tekseries_media );
 				$tekseries_meta  = wp_get_attachment_metadata( $tekseries_media->ID );
-				$tekseries_ratio = ! empty( $tekseries_meta['width'] ) && ! empty( $tekseries_meta['height'] )
-					? (int) $tekseries_meta['width'] . ' / ' . (int) $tekseries_meta['height']
-					: ( $tekseries_video ? '16 / 9' : '4 / 3' );
+				$tekseries_wide  = (int) ( $tekseries_meta['width'] ?? 0 );
+				$tekseries_high  = (int) ( $tekseries_meta['height'] ?? 0 );
+				if ( ! $tekseries_wide || ! $tekseries_high ) {
+					list( $tekseries_wide, $tekseries_high ) = $tekseries_video ? array( 16, 9 ) : array( 4, 3 );
+				}
+				$tekseries_ratio = $tekseries_wide . ' / ' . $tekseries_high;
+				// Masonry rows the tile takes (style.scss): 40 to a column's width, and 2 for the gap under it.
+				$tekseries_rows = max( 1, (int) round( 40 * $tekseries_high / $tekseries_wide ) ) + 2;
 				// A video shows its featured image, if it has one, as the poster.
 				$tekseries_image = wp_get_attachment_image(
 					$tekseries_video ? (int) get_post_thumbnail_id( $tekseries_media ) : $tekseries_media->ID,
@@ -149,7 +154,7 @@ $tekseries_wrapper = array(
 					$tekseries_name = '' !== $tekseries_label ? sprintf( __( 'View photo: %s', 'tekseries-blocks' ), $tekseries_label ) : __( 'View photo', 'tekseries-blocks' );
 				}
 				?>
-				<li class="ts-media__item" id="media-<?php echo esc_attr( (string) $tekseries_media->ID ); ?>">
+				<li class="ts-media__item" id="media-<?php echo esc_attr( (string) $tekseries_media->ID ); ?>" style="<?php echo esc_attr( '--ts-media-rows:' . $tekseries_rows ); ?>">
 					<a class="ts-media__tile<?php echo $tekseries_video ? ' ts-media__tile--video' : ''; ?>" href="<?php echo esc_url( (string) wp_get_attachment_url( $tekseries_media->ID ) ); ?>" aria-label="<?php echo esc_attr( $tekseries_name ); ?>" style="<?php echo esc_attr( 'aspect-ratio:' . $tekseries_ratio ); ?>">
 						<?php echo $tekseries_image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by core's wp_get_attachment_image(). ?>
 						<?php if ( $tekseries_video ) : ?>

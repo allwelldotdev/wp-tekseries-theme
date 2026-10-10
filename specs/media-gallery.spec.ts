@@ -264,6 +264,55 @@ test.describe( 'Media Gallery block', () => {
 		await context.close();
 	} );
 
+	test( 'deals tiles across the columns and keeps them in place as more load', async ( {
+		browser,
+	} ) => {
+		const context = await browser.newContext( {
+			javaScriptEnabled: false,
+			storageState: { cookies: [], origins: [] },
+			viewport: { width: 1280, height: 720 },
+		} );
+		const page = await context.newPage();
+		// Where each tile sits in the grid: [ left, top ].
+		const places = () =>
+			page
+				.locator( '.ts-media__grid' )
+				.evaluate( ( grid ) =>
+					[ ...grid.querySelectorAll( '.ts-media__item' ) ].map(
+						( item ): [ number, number ] => [
+							Math.round(
+								item.getBoundingClientRect().left -
+									grid.getBoundingClientRect().left
+							),
+							Math.round(
+								item.getBoundingClientRect().top -
+									grid.getBoundingClientRect().top
+							),
+						]
+					)
+				);
+
+		await page.goto( gallery.link );
+		const two = await places();
+		await page.goto( `${ gallery.link }?media_shown=6` );
+		const six = await places();
+
+		// Four columns: the first four tiles start one each, left to right,
+		// and the next two go under the shortest ones.
+		const lefts = six.slice( 0, 4 ).map( ( [ left ] ) => left );
+		expect( six.slice( 0, 4 ).map( ( [ , top ] ) => top ) ).toEqual( [
+			0, 0, 0, 0,
+		] );
+		expect( lefts ).toEqual( [ ...lefts ].sort( ( a, b ) => a - b ) );
+		expect( new Set( lefts ).size ).toBe( 4 );
+		expect( six[ 4 ]?.[ 1 ] ).toBeGreaterThan( 0 );
+		expect( six[ 5 ]?.[ 1 ] ).toBeGreaterThan( 0 );
+		// Loading more moved nothing that was already there.
+		expect( six.slice( 0, 2 ) ).toEqual( two );
+
+		await context.close();
+	} );
+
 	// With JavaScript, a tile opens in a viewer instead of leaving the page.
 	test( 'opens the loaded media in a viewer that works from the keyboard', async ( {
 		browser,

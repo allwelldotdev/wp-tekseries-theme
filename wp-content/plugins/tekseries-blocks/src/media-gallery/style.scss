@@ -125,7 +125,8 @@
 	}
 }
 
-// Masonry: CSS columns, each tile keeping its file's own proportions.
+// Masonry for browsers without container units: CSS columns, each tile
+// keeping its file's own proportions. The others get the grid further down.
 .ts-media__grid {
 	margin: 0;
 	padding: 0;
@@ -418,6 +419,57 @@
 		svg {
 			width: 28px;
 			height: 28px;
+		}
+	}
+}
+
+// Masonry as on the boards: each tile goes to the shortest column, so tiles
+// read across and stay where they are when more load. A grid of thin rows
+// does it without a script: a row is 1/40 of a column's width, and a tile
+// spans the rows its proportions need plus two for the gap (render.php sets
+// the number). Placing tiles in order then fills the shortest column first.
+@supports (width: 1cqw) {
+
+	.wp-block-tekseries-media-gallery {
+		container-type: inline-size;
+	}
+
+	.ts-media__grid {
+		--ts-media-columns: 4;
+		--ts-media-gap: 16px;
+		--ts-media-gaps: calc((var(--ts-media-columns) - 1) * var(--ts-media-gap));
+		--ts-media-column: calc((100cqw - var(--ts-media-gaps)) / var(--ts-media-columns));
+
+		display: grid;
+		grid-template-columns: repeat(var(--ts-media-columns), minmax(0, 1fr));
+		grid-auto-rows: calc(var(--ts-media-column) / 40);
+		column-gap: var(--ts-media-gap);
+	}
+
+	.ts-media__item {
+		grid-row: span var(--ts-media-rows, 32);
+		margin: 0;
+	}
+
+	// The tile fills its rows but for the gap, and its picture covers it. Both
+	// sizes are given, so the inline aspect ratio no longer sets one.
+	.ts-media__tile {
+		width: 100%;
+		height: calc(100% - var(--ts-media-gap));
+	}
+
+	@media (width <= 1100px) {
+
+		.ts-media__grid {
+			--ts-media-columns: 3;
+		}
+	}
+
+	@media (width <= 640px) {
+
+		.ts-media__grid {
+			--ts-media-columns: 2;
+			--ts-media-gap: 8px;
 		}
 	}
 }
