@@ -66,3 +66,17 @@ describe( 'tekseries-blocks plugin', () => {
 		);
 	} );
 } );
+
+// The theme and the plugin are released together, under one number.
+describe( 'release version', () => {
+	it( 'is the same in the theme, the plugin and both package files', () => {
+		const versions = [
+			header( read( `${ THEME }/style.css` ), 'Version' ),
+			header( read( `${ PLUGIN }/tekseries-blocks.php` ), 'Version' ),
+			JSON.parse( read( `${ PLUGIN }/package.json` ) ).version,
+			JSON.parse( read( '../../package.json' ) ).version,
+		];
+		expect( versions[ 0 ] ).toMatch( /^\d+\.\d+\.\d+$/ );
+		expect( new Set( versions ) ).toEqual( new Set( [ versions[ 0 ] ] ) );
+	} );
+} );

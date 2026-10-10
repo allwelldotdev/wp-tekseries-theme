@@ -1,6 +1,6 @@
 {
 	"name": "tekseries",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"private": true,
 	"description": "TekSeries block theme and companion blocks plugin.",
 	"license": "GPL-2.0-or-later",
@@ -25,6 +25,7 @@
 		"build": "npm run build --workspace=tekseries-blocks",
 		"start": "npm run start --workspace=tekseries-blocks",
 		"plugin-zip": "npm run plugin-zip --workspace=tekseries-blocks",
+		"theme-zip": "cd wp-content/themes && zip -qr -FS tekseries.zip tekseries",
 		"wp-env": "wp-env"
 	},
 	"devDependencies": {
