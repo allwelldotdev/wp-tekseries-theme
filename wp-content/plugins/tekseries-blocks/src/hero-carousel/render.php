@@ -37,6 +37,13 @@ foreach ( $block->inner_blocks as $tekseries_index => $tekseries_inner ) {
 		/* translators: 1: this slide's number, 2: number of slides. */
 		$tekseries_tags->set_attribute( 'aria-label', sprintf( __( '%1$d of %2$d', 'tekseries-blocks' ), $tekseries_index + 1, $tekseries_total ) );
 	}
+	// Only the first slide is in view at first: the photos of the others load
+	// behind it, so they are there before their slide comes.
+	if ( $tekseries_index > 0 ) {
+		while ( $tekseries_tags->next_tag( array( 'class_name' => 'wp-block-cover__image-background' ) ) ) {
+			$tekseries_tags->set_attribute( 'fetchpriority', 'low' );
+		}
+	}
 	$tekseries_slides[ $tekseries_id ] = $tekseries_tags->get_updated_html();
 }
 

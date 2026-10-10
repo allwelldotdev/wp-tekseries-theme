@@ -198,6 +198,15 @@ test.describe( 'home motion blocks', () => {
 		const track = carousel.locator( '.ts-carousel__track' );
 		const slides = track.locator( '> .wp-block-cover' );
 		await expect( slides ).toHaveCount( 2 );
+		// Only the first slide's photo is fetched ahead; the others follow.
+		await expect( slides.nth( 0 ).locator( 'img' ) ).not.toHaveAttribute(
+			'fetchpriority',
+			'low'
+		);
+		await expect( slides.nth( 1 ).locator( 'img' ) ).toHaveAttribute(
+			'fetchpriority',
+			'low'
+		);
 		await expect( slides.nth( 1 ) ).toHaveAttribute( 'role', 'group' );
 		await expect( slides.nth( 1 ) ).toHaveAttribute(
 			'aria-label',
