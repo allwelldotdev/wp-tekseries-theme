@@ -452,7 +452,7 @@ test.describe( 'home motion blocks', () => {
 		expect( await invalidBlocks( page ) ).toEqual( [] );
 	} );
 
-	test( 'the Home page pattern uses the stats and the logo marquee', async ( {
+	test( 'the Home page pattern uses the carousel, the stats and the logo marquee', async ( {
 		browser,
 		requestUtils,
 	} ) => {
@@ -470,6 +470,15 @@ test.describe( 'home motion blocks', () => {
 		const context = await browser.newContext( NO_JS );
 		const page = await context.newPage();
 		await page.goto( front.link );
+		// Two slides; only the first holds a top-level heading.
+		const hero = page.getByRole( 'region', { name: 'Highlights' } );
+		await expect( hero.getByRole( 'group' ) ).toHaveCount( 2 );
+		await expect( hero.getByRole( 'heading', { level: 1 } ) ).toHaveText(
+			'Expanding Opportunity, Empowering Our Future'
+		);
+		await expect( hero.getByRole( 'heading', { level: 2 } ) ).toHaveText(
+			'One Youth Career At A Time'
+		);
 		await expect(
 			page.locator( '.wp-block-tekseries-stat .screen-reader-text' )
 		).toHaveText( [ '312+', '675+', '25+', '100’s' ] );

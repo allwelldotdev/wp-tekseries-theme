@@ -6,7 +6,7 @@ type Linked = { id: number; link: string };
 // Each kind of public page, and the plugin scripts its blocks should bring.
 const PAGES: [ name: string, scripts: string[] ][] = [
 	[ 'front page', [] ],
-	[ 'Home page pattern', [] ],
+	[ 'Home page pattern', [ 'hero-carousel/view.js' ] ],
 	[ 'events archive', [] ],
 	[ 'event', [] ],
 	[ 'news post', [] ],
