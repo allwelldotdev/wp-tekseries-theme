@@ -161,3 +161,70 @@ h3 {
 		justify-content: center;
 	}
 }
+
+/*
+ * Reveal on scroll: a block with the class "ts-reveal" rises in the first time
+ * a visitor scrolls to it (Home board). The plugin's script marks a block
+ * still below the screen as pending, then as revealed once it is in view, and
+ * gives blocks that arrive together their place in turn. Without the script
+ * neither class is set and the block is simply there.
+ */
+@media screen and (prefers-reduced-motion: no-preference) {
+
+	.ts-reveal.is-reveal-pending {
+		opacity: 0;
+	}
+
+	.ts-reveal.is-revealed {
+		--ts-reveal-distance: var(--wp--custom--motion--reveal--distance);
+		animation: ts-reveal-rise var(--wp--custom--motion--reveal--duration) var(--wp--custom--motion--ease--out) calc(var(--ts-reveal-place, 0) * var(--wp--custom--motion--reveal--stagger)) backwards;
+	}
+
+	/* A group (a card) comes from further down and its contents follow, one
+	   after another. A decorative icon stays where it is. */
+	.wp-block-group.ts-reveal.is-revealed {
+		--ts-reveal-distance: 64px;
+		animation-duration: 0.9s;
+		animation-timing-function: var(--wp--custom--motion--ease--out-strong);
+	}
+
+	.wp-block-group.ts-reveal.is-revealed > :not([class*="is-style-deco"]) {
+		--ts-reveal-distance: 20px;
+		animation: ts-reveal-rise 0.7s var(--wp--custom--motion--ease--out) calc(0.2s + var(--ts-reveal-step, 0) * 0.1s) backwards;
+	}
+
+	.wp-block-group.ts-reveal.is-revealed > :nth-child(2) {
+		--ts-reveal-step: 1;
+	}
+
+	.wp-block-group.ts-reveal.is-revealed > :nth-child(3) {
+		--ts-reveal-step: 2;
+	}
+
+	.wp-block-group.ts-reveal.is-revealed > :nth-child(4) {
+		--ts-reveal-step: 3;
+	}
+
+	.wp-block-group.ts-reveal.is-revealed > :nth-child(n + 5) {
+		--ts-reveal-step: 4;
+	}
+
+	/* A block the keyboard has reached is shown at once: focus is never on
+	   something still fading in. */
+	.ts-reveal.is-reveal-pending:focus-within {
+		opacity: 1;
+	}
+
+	.ts-reveal.is-revealed:focus-within,
+	.wp-block-group.ts-reveal.is-revealed:focus-within > * {
+		animation: none;
+	}
+}
+
+@keyframes ts-reveal-rise {
+
+	from {
+		opacity: 0;
+		translate: 0 var(--ts-reveal-distance);
+	}
+}

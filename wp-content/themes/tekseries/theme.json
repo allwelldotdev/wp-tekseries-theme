@@ -252,7 +252,16 @@
 				"offset": "2px"
 			},
 			"motion": {
-				"duration": "150ms"
+				"duration": "150ms",
+				"ease": {
+					"out": "cubic-bezier(0.215, 0.61, 0.355, 1)",
+					"out-strong": "cubic-bezier(0.165, 0.84, 0.44, 1)"
+				},
+				"reveal": {
+					"duration": "0.8s",
+					"distance": "24px",
+					"stagger": "0.12s"
+				}
 			},
 			"letter-spacing": {
 				"display": "-0.03em",
