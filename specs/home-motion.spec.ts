@@ -548,6 +548,15 @@ test.describe( 'home motion blocks', () => {
 				} )
 				.getByRole( 'img' )
 		).toHaveCount( 4 );
+		// The section headings and the three pillar cards rise in when a
+		// visitor scrolls to them (specs/reveal.spec.ts).
+		await expect( page.locator( 'h2.ts-reveal' ) ).toHaveText( [
+			'Get Involved, Help Grow Our Impact',
+			'Who We Are',
+			'What We Do',
+			'Team',
+		] );
+		await expect( page.locator( 'article.ts-reveal' ) ).toHaveCount( 3 );
 		await context.close();
 	} );
 

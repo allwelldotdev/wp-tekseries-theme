@@ -17,8 +17,8 @@
 <p class="is-style-eyebrow"><?php echo esc_html__( 'Our impact', 'tekseries' ); ?></p>
 <!-- /wp:paragraph -->
 
-<!-- wp:heading {"fontSize":"card-title"} -->
-<h2 class="wp-block-heading has-card-title-font-size"><?php echo esc_html__( 'Get Involved, Help Grow Our Impact', 'tekseries' ); ?></h2>
+<!-- wp:heading {"className":"ts-reveal","fontSize":"card-title"} -->
+<h2 class="wp-block-heading ts-reveal has-card-title-font-size"><?php echo esc_html__( 'Get Involved, Help Grow Our Impact', 'tekseries' ); ?></h2>
 <!-- /wp:heading --></div>
 <!-- /wp:group -->
 
