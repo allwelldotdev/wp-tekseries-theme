@@ -6,7 +6,7 @@
 	"title": "Stat",
 	"category": "text",
 	"icon": "chart-bar",
-	"description": "A figure such as “312+” that counts up to its number when the page loads. Visitors who prefer less motion see the number at once.",
+	"description": "A figure such as “312+” that counts up to its number when a visitor reaches it. Visitors who prefer less motion see the number at once.",
 	"keywords": [ "number", "count", "figure", "impact" ],
 	"textdomain": "tekseries-blocks",
 	"attributes": {
@@ -31,11 +31,10 @@
 		"spacing": {
 			"margin": true
 		},
-		"interactivity": {
-			"clientNavigation": true
-		}
+		"interactivity": true
 	},
 	"editorScript": "file:./index.js",
+	"viewScriptModule": "tekseries-blocks-reveal",
 	"style": "file:./style-index.css",
 	"render": "file:./render.php"
 }

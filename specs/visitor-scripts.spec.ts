@@ -6,7 +6,7 @@ type Linked = { id: number; link: string };
 // Each kind of public page, and the plugin scripts its blocks should bring.
 const PAGES: [ name: string, scripts: string[] ][] = [
 	[ 'front page', [] ],
-	[ 'Home page pattern', [ 'hero-carousel/view.js' ] ],
+	[ 'Home page pattern', [ 'hero-carousel/view.js', 'reveal/view.js' ] ],
 	[ 'events archive', [] ],
 	[ 'event', [] ],
 	[ 'news post', [] ],
@@ -115,7 +115,8 @@ test.describe( 'scripts sent to visitors', () => {
 					.filter( ( url ) =>
 						/\/tekseries-blocks\/build\/.*\.js/.test( url )
 					)
-					.map( ( url ) => url.replace( /^.*\/build\/|\?.*$/g, '' ) ),
+					.map( ( url ) => url.replace( /^.*\/build\/|\?.*$/g, '' ) )
+					.sort(),
 			};
 		};
 

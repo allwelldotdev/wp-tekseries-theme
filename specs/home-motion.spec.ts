@@ -13,7 +13,7 @@ const MOVING = { ...NO_JS, reducedMotion: 'no-preference' } as const;
 
 // The Home blocks that move: the stat count-up, the logo marquee and the hero
 // carousel. All three are complete on the server and need no JavaScript; the
-// carousel's script only adds to it.
+// carousel's script and the reveal script (specs/reveal.spec.ts) only add to it.
 test.describe( 'home motion blocks', () => {
 	let home: Linked;
 	// A slide: the first Cover of the theme's Home hero.
@@ -501,7 +501,7 @@ test.describe( 'home motion blocks', () => {
 		await context.close();
 	} );
 
-	test( 'loads only the carousel script for them and opens cleanly in the editor', async ( {
+	test( 'loads only the carousel and reveal scripts for them and opens cleanly in the editor', async ( {
 		admin,
 		browser,
 		editor,
@@ -520,7 +520,8 @@ test.describe( 'home motion blocks', () => {
 					/react|jquery|tekseries-blocks\/build\/.*\.js/i.test( url )
 				)
 				.map( ( url ) => url.replace( /^.*\/build\/|\?.*$/g, '' ) )
-		).toEqual( [ 'hero-carousel/view.js' ] );
+				.sort()
+		).toEqual( [ 'hero-carousel/view.js', 'reveal/view.js' ] );
 		await context.close();
 
 		await admin.editPost( home.id );
