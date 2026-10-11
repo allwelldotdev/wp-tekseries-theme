@@ -93,7 +93,15 @@ Event templates show the ACF fields through Block Bindings. Job pages read WP Jo
 
 ## Release
 
-Releases ship as two zips uploaded in wp-admin (ADR-058). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip`. Upload `tekseries-blocks.zip` under Plugins, then `tekseries.zip` under Themes. The content that lives in the database (page content, albums, topic icons, the contact form's fields) moves separately, as a scripted bundle with a dry run (ADR-058).
+Release 1.0.0 is tagged `v1.0.0`. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip` for the first two.
+
+1. `tekseries-blocks.zip` under Plugins. Activate it.
+2. `tekseries.zip` under Themes. Don't activate it.
+3. `tekseries-migration.zip` under Plugins. Activate it.
+
+The third is a one-off plugin, "TekSeries Migration". It carries the content that lives in the database: page content, gallery albums, topic icons and the contact form's fields. It's built from the development site by a script kept outside this repository.
+
+Open Tools → TekSeries migration for a dry run that changes nothing. A button then applies the changes, gives existing events and posts their tones, and switches the theme. Delete the plugin afterwards.
 
 ## Design reference
 
@@ -114,6 +122,6 @@ Releases ship as two zips uploaded in wp-admin (ADR-058). From a clean install, 
 | 6 | Frontend behaviour | done |
 | 7 | QA and release | done |
 
-The build plan is complete at version 1.0.0. Lighthouse on the development site scores 95 to 99 on mobile and 100 on desktop for Home, Gallery, Job Series and an event page (ADR-057). What is still to do is outside the code: the release tag, made once the site owner approves, and moving the site to the live server, which means uploading the two zips and the first run of the content bundle (ADR-058).
+The build plan is complete at version 1.0.0. Lighthouse on the development site scores 95 to 99 on mobile and 100 on desktop for Home, Gallery, Job Series and an event page (ADR-057). What is still to do is outside the code: moving the site to the live server with the three zips (ADR-059).
 
 Architecture decisions and future work are in [docs/decisions.md](docs/decisions.md). Changes are in [docs/changelog.md](docs/changelog.md).

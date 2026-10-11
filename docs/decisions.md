@@ -1001,7 +1001,7 @@ Mobile results, before to after:
 
 ## ADR-058: Release 1.0.0 as two uploaded zips, with database content as a scripted bundle
 
-**Status:** Accepted
+**Status:** Superseded by ADR-059 (the apply step: the WP-CLI script and the WP-CLI tone backfill on the live site)
 
 **Context:** On 2026-10-10 the site owner chose to deploy by uploading zips, not by pulling git on the server. The theme and the plugin are always released together. Much of the new site also lives in the development site's database: page content built from the patterns, gallery albums, topic icons and the contact form's fields. Zips do not carry it, and the development database must not replace the live one, because it is an old copy.
 
@@ -1023,9 +1023,48 @@ Verified: both zips were installed through WordPress's own installer on a fresh 
 
 **Rationale:** Zips match the owner's choice and carry only what ships (ADR-001). A checked, dry-run-first script moves database content without overwriting live content, and a second run changes nothing. One equal version keeps the two packages from drifting.
 
+## ADR-059: Apply the release bundle from wp-admin with a one-off migration plugin
+
+**Status:** Accepted
+
+**Context:** ADR-058 had a WP-CLI script apply the bundle on the live site, and the plugin's `wp tekseries backfill-tones` set the tones of existing posts. On 2026-10-11 the site owner said the live host has no SSH and no WP-CLI, because the account is not on a plan with SSH. Neither step can run there. The rest of ADR-058 stands: one version, two release zips, a bundle exported from the development site, no copy of the development database, and a tag only after the owner approves (`v1.0.0` was tagged on 2026-10-11).
+
+**Options:**
+- Apply the bundle by hand in wp-admin (paste ten pages, create seven albums, pick icons). It is slow, error-prone, has no dry run and cannot set the tones of existing posts in bulk.
+- Put a migration screen inside TekSeries Blocks. The released plugin would carry one-off code and one site's content for good.
+- Ask the host for SSH on a different plan. It costs money, needs an owner decision and is not needed.
+- A one-off plugin, uploaded as a third zip.
+
+**Decision:**
+- The bundle is applied from wp-admin by "TekSeries Migration (one-off)": folder `tekseries-migration`, zip `tekseries-migration.zip`. The export script builds it from the development site. It holds the plugin's code plus the bundle, written for one site address.
+- It adds one screen, Tools → TekSeries migration. Opening the screen is the dry run: it lists what would change and changes nothing. A button, behind a required "I took a backup" tick, applies the changes.
+- It refuses the whole run when the site's address is not the one the bundle was written for, TekSeries Blocks is not active, the TekSeries theme is not installed, Advanced Custom Fields is older than 6.8.10, or a bundle file is missing or fails its SHA-1 checksum in the manifest.
+- Every step looks first. Items already right are left alone, so a second run makes 0 changes. Items not found as expected (ID, type and address) are listed as skipped and left alone. Changes that do not go through are listed as failed.
+- It stores each old page as a revision before replacing it. WordPress on its own keeps a revision of what it saves, not of what was there.
+- Page content is saved byte for byte. WordPress's HTML filter for accounts without `unfiltered_html` is switched off during the save and restored after, and the stored content is compared with the bundle. Measured: that filter would alter 3 of the 10 pages (Home, Gallery, Terms), which gives broken blocks in the editor.
+- When WordPress updates a page it re-checks the page's current template against the active theme, and fails the save with "Invalid page template." if that theme does not have it. That can happen on a second run while Divi is still active, on a page that already has its new template. The plugin skips that re-check during the save and sets the template itself. Measured without the skip: the run reported that page as failed although its content had been saved.
+- Tones for existing events and news posts come from the plugin's own planner, `tekseries_blocks_plan_tones()`, the function the WP-CLI command uses. The migration saves its result. The WP-CLI command stays, for development sites.
+- It also sets the site logo option. It switches the theme to TekSeries last, in the same request as the content, so visitors never see the new content under Divi or the Divi content under the new theme.
+- Only administrators (`manage_options`) can open the screen or run it, and the apply request needs the screen's nonce.
+- Deleting the plugin removes its files and the one option it stores, the report of its last run. Nothing it changed is undone.
+- Like the export script and the runbook (ADR-058), the migration plugin is kept outside the repository with the site's private working files. Released TekSeries Blocks 1.0.0 and the theme are unchanged by it.
+
+Verified in a rehearsal on 2026-10-11, run again from a fresh site on the final code: 46 checks, 0 failed (4 refusals + 16 browser checks + 16 database and uploads checks + 2 leftover checks + 8 edge cases). A throwaway WordPress was set up like the live site before the move: WordPress 7.1.3 on PHP 8.2, a copy of Divi 4.27.9 with its child theme active, Divi-built stand-in pages, ACF 6.8.10, WP Job Manager 2.4.8, Fluent Forms 6.2.15, Rank Math 1.0.279, and the live site's page, post and media IDs, addresses and dates (9 pages, 19 events, 20 posts, 35 media rows). The seeded pages carried a page template as saved pages do (Divi's blank page template on Contact, `default` on the rest). A browser did what the owner will do: uploaded the three zips, read the dry run, pressed the button and deleted the plugin.
+- 4 of 4 refusals gave the right reason: plugin not active, theme not installed, a bundle file with one byte added, a bundle written for another site.
+- 16 of 16 browser checks: the dry run listed 50 changes and nothing skipped. A request without the nonce got 403, and an editor got 403 on the screen and on the apply request. A request without the backup tick changed nothing. The run made 50 changes, 0 skipped, 0 failed, and a second look found nothing left. Ten public pages returned 200 with no Divi shortcode and no PHP message. The block editor reported no broken block on the eight pages. The plugin deactivated and deleted from the Plugins screen.
+- 16 of 16 checks of the database and uploads folder: all ten pages and posts match the bundle and each keeps its old content as a revision; 16 icons; 7 albums with their years and 33 files; the poster uploaded with thumbnails; the duplicate video and its file gone and the other video's file kept; the contact form's title and fields; and all 39 events and posts got exactly the tone the same post has on the development site.
+- 2 of 2 leftover checks: the deleted plugin left no folder and no option (1), and the debug log named none of our code (1).
+- 8 of 8 edge cases: with the HTML filter on, Home still landed byte for byte. A save that something altered was reported as failed, the screen offered it again, and pressing again finished it. With Divi active again and Contact already on its new template, the page was saved all the same and the theme switched (2 checks).
+
+Separate from the 46: on the development site, a bundle written for that site reports 0 to change, 0 skipped, 43 already done.
+
+Not verified: the plugin has never run on the live site or on a copy of its database. Read-only facts about the live site, from its public REST API and home page: its address is `https://tekseries.com`, the Divi child theme is active, and the IDs compared in ADR-058 match.
+
+**Rationale:** The host allows uploads in wp-admin and nothing else, and a plugin zip is that route. It keeps ADR-058's checked, dry-run-first, second-run-changes-nothing behaviour without WP-CLI. Keeping it as a third zip keeps one-off code and one site's content out of the released plugin and theme (ADR-001). The refusals, the backup tick, the nonce and the capability check stop it from running against the wrong site or by the wrong person. The byte-for-byte save and the single-request theme switch protect the pages and the visitors during the move.
+
 ## Future work
 
-- **Hosting and deploy:** the release method is decided (ADR-058). Still open on the host: a page cache and longer cache lifetimes for static files on the development site's host, and the first real run of the apply script against the live site (owner).
+- **Hosting and deploy:** the release method is decided (ADR-058, ADR-059). Still open on the host: a page cache and longer cache lifetimes for static files on the development site's host, and the first real run of the migration plugin on the live site (owner; ADR-059).
 - **Accessibility leftovers:** captions for the gallery video (content), and a hand scan of the Contact form after each change to it, as the suite cannot reach it (ADR-055, ADR-056).
 - **Image formats:** convert uploads to WebP or AVIF (content and host work; ADR-057).
 - **PHP 8.3+:** ask the host to move to PHP 8.3 or newer before PHP 8.2 security support ends on 2026-12-31, then raise the floor in a new ADR (ADR-003).
