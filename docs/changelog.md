@@ -2,6 +2,11 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.1.1] — 2026-10-11
+### Improved
+- On tablets and phones (screens up to 1100px wide), the menu now unrolls from under the header bar when a visitor opens it, with the links appearing one after another and the two buttons last, and the menu button's bars turn into the close cross and swing back when the menu closes, where before the menu appeared at once.
+- The menu's links, order, look and ways of closing are unchanged, it still opens at once for visitors who have asked their device for reduced motion, and a keyboard user finds the first link there at once.
+
 ## [1.1.0] — 2026-10-11
 ### New
 - Visitors see the Home banner's text (the chip, the headline, the line under it, the buttons and the three labels) rise and fade in one item after another when the page opens, while the photo stays still.
