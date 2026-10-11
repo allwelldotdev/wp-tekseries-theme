@@ -755,7 +755,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-046: Build the Home motion blocks with CSS only
 
-**Status:** Superseded by ADR-052 (Home's static patterns only); by ADR-053 ("the carousel ships no script" only)
+**Status:** Superseded by ADR-052 (Home's static patterns only); by ADR-053 ("the carousel ships no script" only); by ADR-060 ("the Stat ships no script and counts on page load" only)
 
 **Context:** ADR-014 decided Home motion ships in two versions: static core blocks first, moving plugin blocks later (hero carousel, count-up stat, logo marquee). The design's count-up is CSS. Its marquee pauses only on hover, with no keyboard or touch control, which fails WCAG 2.2.2. Its slider dots have nothing to slide. Server HTML must work without JavaScript, and motion must respect `prefers-reduced-motion`.
 
@@ -774,7 +774,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-047: Give each behaving block one Interactivity API script module
 
-**Status:** Accepted
+**Status:** Superseded by ADR-060 (one module that is no block's own only)
 
 **Context:** ADR-005 allows frontend behaviour only through the Interactivity API. Several blocks now need it: Share Links, Table of Contents, Media Gallery and Job Listings. Script modules have no translation loading. Core enqueues a view module on every render of a block that supports interactivity, and Share Links sits on every post and event, where most of its services have no behaviour.
 
@@ -1062,6 +1062,49 @@ Not verified: the plugin has never run on the live site or on a copy of its data
 
 **Rationale:** The host allows uploads in wp-admin and nothing else, and a plugin zip is that route. It keeps ADR-058's checked, dry-run-first, second-run-changes-nothing behaviour without WP-CLI. Keeping it as a third zip keeps one-off code and one site's content out of the released plugin and theme (ADR-001). The refusals, the backup tick, the nonce and the capability check stop it from running against the wrong site or by the wrong person. The byte-for-byte save and the single-request theme switch protect the pages and the visitors during the move.
 
+## ADR-060: Animate Home in CSS, with one small script that only says when a block is in view
+
+**Status:** Accepted
+
+**Context:** The design canvas pulled on 2026-10-11 animates the three Home boards with GSAP 3.15.0 (core only, no ScrollTrigger). Four animations:
+- On load, the hero chip, headline, lead, buttons and pillar labels rise 28px and fade in over 0.8s, 0.12s apart, starting at 0.15s. The photo stays still.
+- The impact counters count from 0 over 2s, 0.12s apart, when their grid is in view.
+- Each of the three pillar cards rises 64px and fades in over 0.9s, then its contents follow (20px, 0.7s, 0.1s apart, after 0.2s).
+- The four section headings rise 24px and fade in over 0.8s.
+
+"In view" on the boards is a plain `IntersectionObserver` at 18% of the element. GSAP only moves, fades and counts. With reduced motion the boards animate nothing. No other board animates, and the design system has no motion tokens.
+
+`gsap.min.js` is 72,927 bytes (28,268 gzipped), against 8,476 bytes for all five visitor script modules together (ADR-047). Its standard licence is free for commercial sites but proprietary, not GPL. Pure CSS cannot yet start a timed animation on scroll everywhere (MDN browser-compat-data, 2026-10-11). `animation-trigger` is in Chrome 146+ only. `animation-timeline: view()` is in Chrome 115+, Safari 26 and Firefox preview builds only, and it ties the animation to scroll position, so it does not play for a set time and runs backwards when scrolling up.
+
+Before this, the impact figures counted on page load (ADR-046). Measured on the development site, they sit just below the first screen at 1440x900 and at 390x844, so the count had usually finished unseen.
+
+**Options:**
+- Ship GSAP.
+- Pure-CSS `animation-trigger`. Chrome only today.
+- Pure-CSS scroll-linked timelines. Wrong feel, no stable Firefox.
+- Hide blocks with CSS under `@media (scripting: enabled)` before the script runs. A failed script would leave content hidden unless a timed fallback were added.
+- CSS does every animation; one small script marks a block when it enters view.
+
+**Decision:** The last option, chosen by the site owner.
+- `theme.json` `settings.custom.motion` gains `ease.out` (cubic ease-out, GSAP's power2.out), `ease.out-strong` (quartic, power3.out), and `reveal.duration` 0.8s, `reveal.distance` 24px and `reveal.stagger` 0.12s. Single-use values stay beside the rule that uses them. A unit test checks that every motion token used in styles is defined.
+- The last section of `assets/css/global.css` holds the look. A block with the class `ts-reveal` rises in the first time it is scrolled to. A marked Group comes from further down and its direct children follow in turn. Decorative icons stay put. The states are `is-reveal-pending` and `is-revealed`. Rules sit under `prefers-reduced-motion: no-preference` and are screen-only, so print is unaffected. `:focus-within` shows a waiting block at once.
+- `src/reveal/view.ts` (684 bytes built) is an Interactivity API script module. It is not a block's, so it is a module entry in `webpack.config.js`. `includes/reveal.php` is a `render_block` filter: blocks with the class get `data-wp-init---reveal="tekseries/reveal::callbacks.watch"`, plus `data-wp-interactive` only when they have none. The module is enqueued only on pages with such a block.
+- The script marks a block still below the screen as pending and watches it with one observer. Once 18% of it is on screen, or 18% of the screen for a block taller than that, it is marked revealed. Blocks arriving in the same observer batch get `--ts-reveal-place` 0, 1, 2, and so on, which CSS turns into 0.12s steps.
+- The Stat block lists the same module by id and carries the directive. Below the screen at load it waits at 0 and counts (2s) when revealed. On screen at load it counts from load, as before.
+- The hero animation is CSS only, in `hero-carousel/style.scss`, on whatever sits beside the first slide's H1.
+- The Home patterns `home-about`, `home-impact`, `home-services` and `home-team` carry the class on the four section headings and the three pillar cards.
+- The in-page link offsets stay at 96px, although the boards now use 100, 96 and 88px. GSAP is not installed and its file is not copied into the design reference.
+- Deliberate differences from the boards:
+  - A block already on screen when the script starts does not animate in. The boards hide such blocks after load and then animate them, which flashes.
+  - Tall blocks are measured against the screen. The pillar cards are about 1,800px tall on phones and would sit blank for a third of the screen.
+  - Counters start per figure as it comes into view, not all four with the grid.
+- Known limit: a fast jump (a hero link to a pillar card) can pass blocks before the observer sees them. They play when the visitor scrolls back to them.
+- Visitor scripts are now six modules, 9,160 bytes together. `specs/visitor-scripts.spec.ts` covers them, `specs/reveal.spec.ts` and `specs/home-motion.spec.ts` cover the behaviour and the Home marks.
+
+Measured on the development site: the largest paint is the hero photo with and without motion (desktop medians 616 ms without and 572 ms with; phone 588 ms both; three loads each), so hiding the hero text briefly does not delay it.
+
+**Rationale:** The boards' trigger is an `IntersectionObserver` and the library only tweens, which CSS does natively, so 72.9 KB of library buys nothing here. It also avoids a proprietary, non-GPL licence. Server HTML stays complete without JavaScript (ADR-005): nothing is hidden unless the script is running and the block is off screen. No script, a failed script or JavaScript off leave the page as it was, and counters count on load. With reduced motion the script marks nothing and the CSS is guarded too. This changes ADR-046, where the Stat ships no script and counts on page load. Without the script it still counts on load. The marquee is unchanged. It also changes ADR-047: one module is now no block's own, but nothing is bundled and it still loads only with the blocks that need it.
+
 ## Future work
 
 - **Hosting and deploy:** the release method is decided (ADR-058, ADR-059). Still open on the host: a page cache and longer cache lifetimes for static files on the development site's host, and the first real run of the migration plugin on the live site (owner; ADR-059).
@@ -1075,7 +1118,8 @@ Not verified: the plugin has never run on the live site or on a copy of its data
 - **Gallery video on live:** done on the development site (album "2026 Empower Her Webinar", year 2026, with a poster as featured image). Repeat it on the live site (owner; ADR-045). The release bundle carries the poster and the album (ADR-058).
 - **Album years:** the owner confirmed "2023-2024" under 2024. Confirm the Junior Camp album with the owner. It is filed under 2022 on the development site, because its captions, alt text and matching event say 2022, while only the file names say 2021 (ADR-044).
 - **Bulk album action:** a bulk "add to album" action in the Media Library, if editors need it (ADR-044).
-- **Motion behaviour:** an in-view start for the stat count, and Previous and Next arrows on the carousel, if wanted (ADR-046, ADR-053).
+- **Motion behaviour:** Previous and Next arrows on the carousel, if wanted (ADR-053). The in-view start for the stat count is delivered by ADR-060.
+- **Reveal after a fast jump:** blocks passed by a quick jump play only when the visitor scrolls back to them. Add a catch-up if that proves a problem (ADR-060).
 - **Lost emoji:** fix the emoji that became `????` in posts and events.
 - **Past-event and registration-closed states:** replace the interim "This event has ended" note when the designer delivers (ADR-035).
 - **Event type icon picker:** add one to wp-admin (ADR-037).
