@@ -251,6 +251,56 @@ test.describe( 'home motion blocks', () => {
 		await context.close();
 	} );
 
+	test( 'the first slide’s text rises in when the page opens', async ( {
+		browser,
+	} ) => {
+		const rise = ( items: Element[] ) =>
+			items.map( ( item ) => {
+				const style = window.getComputedStyle( item );
+				return `${ style.animationName } ${ parseFloat(
+					style.animationDelay
+				).toFixed( 2 ) }`;
+			} );
+		// CSS alone, so it needs no script.
+		const open = async ( reducedMotion: 'reduce' | 'no-preference' ) => {
+			const context = await browser.newContext( {
+				...NO_JS,
+				reducedMotion,
+			} );
+			const page = await context.newPage();
+			await page.goto( home.link );
+			return page
+				.getByRole( 'region', { name: 'Highlights' } )
+				.locator( '.ts-carousel__track > .wp-block-cover' );
+		};
+
+		// Whatever sits beside the main heading, one item after another.
+		let slides = await open( 'no-preference' );
+		expect(
+			await slides.first().locator( ':has(> h1) > *' ).evaluateAll( rise )
+		).toEqual( [
+			'ts-carousel-rise 0.15',
+			'ts-carousel-rise 0.27',
+			'ts-carousel-rise 0.39',
+			'ts-carousel-rise 0.51',
+			'ts-carousel-rise 0.63',
+		] );
+		// The other slides are out of sight then, and stay as they are.
+		expect(
+			await slides
+				.nth( 1 )
+				.locator( ':has(> h1) > *' )
+				.evaluateAll( rise )
+		).toEqual( Array( 5 ).fill( 'none 0.00' ) );
+		await slides.page().context().close();
+
+		slides = await open( 'reduce' );
+		expect(
+			await slides.first().locator( ':has(> h1) > *' ).evaluateAll( rise )
+		).toEqual( Array( 5 ).fill( 'none 0.00' ) );
+		await slides.page().context().close();
+	} );
+
 	test( 'with its script the dots follow the slides, which can change by themselves', async ( {
 		browser,
 	} ) => {
