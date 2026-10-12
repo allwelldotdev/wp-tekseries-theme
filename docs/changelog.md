@@ -2,6 +2,16 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.8.0] — 2026-10-12
+### New
+- Editors can now use a video as the background of a slide in the Home banner: select the slide, choose "Replace" or "Add media", and pick a video; short, silent clips work best, because the video is muted and loops.
+- Editors get a new style for the Video block, "Photo frame (4:3)", under the block's Styles; it crops the video to 4:3 with the large rounded corners, so a video can stand where a photo stands, for example in place of the picture beside the Mission card on Home.
+- When a banner slide has a video, only the slide in view plays it; the videos of the other slides do not download or start until their slide comes, so the page is not slowed by them.
+- When a banner slide has a video, a pause button appears in the corner of the banner, even when the slides do not change by themselves and when there is only one slide; it stops the slides and the video, and pressing it again starts them.
+- Visitors who have asked their device for less motion see still videos and no pause button.
+- Without JavaScript, the first slide's video plays by itself, which is the browser's own behaviour, and the other videos stay still.
+- Nothing changes on the site until an editor adds a video; no page uses one yet.
+
 ## [1.7.0] — 2026-10-12
 ### New
 - Editors can now set how long the Home banner stays on each slide: with "Change slides automatically" on, a new "Seconds on each slide" slider in the banner's Settings panel runs from 3 to 30 seconds, and stays at 7 seconds, as before, until it is moved.

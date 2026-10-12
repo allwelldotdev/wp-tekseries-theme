@@ -87,6 +87,9 @@ function tekseries_register_block_styles(): void {
 		'core/post-terms' => array(
 			'badge' => __( 'Badge', 'tekseries' ),
 		),
+		'core/video'      => array(
+			'frame' => __( 'Photo frame (4:3)', 'tekseries' ),
+		),
 		'core/paragraph'  => array(
 			'eyebrow' => __( 'Eyebrow', 'tekseries' ),
 			'chip'    => __( 'Chip', 'tekseries' ),
@@ -139,6 +142,7 @@ function tekseries_enqueue_block_styles(): void {
 		'core/read-more'            => 'read-more',
 		'core/search'               => 'search',
 		'core/social-links'         => 'social-links',
+		'core/video'                => 'video',
 		'fluentfom/guten-block'     => 'fluentform',
 		'tekseries/post-tone'       => 'post-tone',
 	);
