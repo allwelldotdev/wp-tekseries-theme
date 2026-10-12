@@ -187,6 +187,89 @@
 }
 
 /*
+ * The event poster's frame (.ts-poster): a white card around the picture, with
+ * "Event poster" and "View full size" in a row under it. The plugin puts a
+ * link to the full-size file around the picture; both open it in the viewer.
+ * The link's touch target is taller than the row, so its margin takes that
+ * height back. Phones get the design's tighter frame.
+ */
+.ts-poster .wp-block-post-featured-image {
+	margin: 0;
+}
+
+.ts-poster .wp-block-post-featured-image a {
+	display: block;
+	border-radius: inherit;
+}
+
+.ts-poster .wp-block-post-featured-image img {
+	display: block;
+	width: 100%;
+}
+
+.ts-poster__caption {
+	padding: 0 8px 6px;
+}
+
+.ts-poster__caption p {
+	font-size: 0.875rem;
+}
+
+.ts-poster__caption .wp-block-button {
+	margin-block: -12px;
+}
+
+@media (width <= 640px) {
+
+	.wp-block-group.ts-poster > * + * {
+		margin-block-start: 8px;
+	}
+
+	.ts-poster__caption {
+		padding: 0 6px 2px;
+	}
+
+	.ts-poster__caption p {
+		font-size: 0.8125rem;
+	}
+
+	.ts-poster__caption .wp-block-button {
+		--ts-button-icon-size: 16px;
+	}
+}
+
+/*
+ * A photo with a button over its bottom corner (.ts-photo-pill): the Case
+ * Study's "See video". The button takes no room of its own, so the card
+ * around the photo keeps its height.
+ */
+.ts-photo-pill {
+	position: relative;
+}
+
+.ts-photo-pill > .wp-block-image {
+	margin: 0;
+}
+
+.ts-photo-pill > .wp-block-image img {
+	display: block;
+	width: 100%;
+}
+
+.ts-photo-pill > .wp-block-buttons {
+	position: absolute;
+	bottom: 12px;
+	left: 12px;
+	margin: 0;
+}
+
+.ts-photo-pill > .wp-block-buttons .wp-block-button__link {
+	min-height: var(--wp--custom--touch-target);
+	padding: 0 18px 0 14px;
+	font-size: 0.875rem;
+}
+
+/*
  * Single job (fields bound to the plugin's job field source). The hero has
  * the plum circle and a large "work" watermark instead of the saffron circle;
  * a chip whose field is empty, such as a job without a type, is left out.

@@ -81,9 +81,17 @@
 <!-- /wp:group -->
 
 <!-- wp:group {"className":"is-style-card-saffron","style":{"spacing":{"blockGap":"var:preset|spacing|24","padding":{"top":"var:preset|spacing|16","right":"var:preset|spacing|16","bottom":"var:preset|spacing|16","left":"var:preset|spacing|16"}},"border":{"radius":"var:preset|border-radius|xl"},"@tablet":{"layout":{"columnCount":1}},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
-<div class="wp-block-group is-style-card-saffron" style="border-radius:var(--wp--preset--border-radius--xl);padding-top:var(--wp--preset--spacing--16);padding-right:var(--wp--preset--spacing--16);padding-bottom:var(--wp--preset--spacing--16);padding-left:var(--wp--preset--spacing--16)"><!-- wp:image {"aspectRatio":"4/3","scale":"cover","style":{"border":{"radius":"var:preset|border-radius|md"}}} -->
+<div class="wp-block-group is-style-card-saffron" style="border-radius:var(--wp--preset--border-radius--xl);padding-top:var(--wp--preset--spacing--16);padding-right:var(--wp--preset--spacing--16);padding-bottom:var(--wp--preset--spacing--16);padding-left:var(--wp--preset--spacing--16)"><!-- wp:group {"className":"ts-photo-pill","layout":{"type":"default"}} -->
+<div class="wp-block-group ts-photo-pill"><!-- wp:image {"aspectRatio":"4/3","scale":"cover","style":{"border":{"radius":"var:preset|border-radius|md"}}} -->
 <figure class="wp-block-image has-custom-border"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/home/case-study.jpg' ) ); ?>" alt="<?php echo esc_attr__( 'Eziama Rural Jr. Boot Camp students with their instructor', 'tekseries' ); ?>" style="border-radius:var(--wp--preset--border-radius--md);aspect-ratio:4/3;object-fit:cover"/></figure>
 <!-- /wp:image -->
+
+<!-- wp:buttons -->
+<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-dark ts-lightbox-open ts-icon-play_arrow ts-icon-small"} -->
+<div class="wp-block-button is-style-dark ts-lightbox-open ts-icon-play_arrow ts-icon-small"><a class="wp-block-button__link wp-element-button" href="#"><?php echo esc_html__( 'See video', 'tekseries' ); ?></a></div>
+<!-- /wp:button --></div>
+<!-- /wp:buttons --></div>
+<!-- /wp:group -->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|12","padding":{"top":"var:preset|spacing|12","right":"var:preset|spacing|16","bottom":"var:preset|spacing|12"}},"layout":{"columnSpan":2},"@tablet":{"layout":{"columnSpan":1}},"@mobile":{"layout":{"columnSpan":1}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap","verticalAlignment":"center"}} -->
 <div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--12);padding-right:var(--wp--preset--spacing--16);padding-bottom:var(--wp--preset--spacing--12)"><!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|8"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->

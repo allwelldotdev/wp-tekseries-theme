@@ -738,6 +738,25 @@ html:has(.ts-lightbox[open]) {
 	display: none;
 }
 
+// One item (a link elsewhere on the page opened it, or the Gallery holds a
+// single file): there is nothing to step through, so the counter, Previous
+// and Next, the thumbnails and the phone's step bar go, and the media takes
+// the room they leave.
+.ts-lightbox.is-single {
+	--ts-lightbox-chrome: 200px;
+
+	.ts-lightbox__counter > [aria-hidden],
+	.ts-lightbox__step,
+	.ts-lightbox__thumbs,
+	.ts-lightbox__foot {
+		display: none;
+	}
+
+	.ts-lightbox__stage {
+		padding-bottom: 28px;
+	}
+}
+
 @media (prefers-reduced-motion: no-preference) {
 
 	.ts-lightbox[open] {
@@ -807,6 +826,10 @@ html:has(.ts-lightbox[open]) {
 		--ts-lightbox-chrome: 270px;
 	}
 
+	.ts-lightbox.is-single {
+		--ts-lightbox-chrome: 180px;
+	}
+
 	.ts-lightbox__bar {
 		padding: 14px 16px;
 	}
@@ -872,7 +895,8 @@ html:has(.ts-lightbox[open]) {
 // the thumbnails and the caption do.
 @media (height <= 560px) {
 
-	.ts-lightbox {
+	.ts-lightbox,
+	.ts-lightbox.is-single {
 		--ts-lightbox-chrome: 110px;
 	}
 

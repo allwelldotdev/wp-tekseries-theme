@@ -2,6 +2,22 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.12.0] — 2026-10-12
+### New
+- Visitors can now open an event's poster full screen: on each event's page the poster sits in a white frame with rounded corners, as in the design, with the words "Event poster" and a "View full size" link under it, and selecting the poster or the link opens it in the Gallery's viewer.
+- Escape or the close button returns to the page, and keyboard focus goes back to where it was.
+- Without JavaScript the "View full size" link opens the image file itself.
+- An event without a featured image shows no frame.
+- On Home, the Case Study card has a "See video" button over the bottom-left corner of the photo, which opens the video in the same viewer; the card keeps its height at every width.
+- When the viewer is opened on one file, it drops the counter, the Previous and Next buttons and the thumbnail strip, and gives the picture or video the room they took; a Gallery that holds a single file gets the same.
+- Editors can make a Button, or an Image that links to its media file, open the viewer by adding the class `ts-lightbox-open` under Advanced, then Additional CSS class(es); it opens the file when the link leads to a photo or video, and other links stay ordinary links.
+- A Featured Image block with that class gets a link to its full-size file.
+- On Home the "See video" button links to "#" until an editor puts the address of a video file in its link; on the development site it links to a video from the Media Library.
+- "Open full size" is a new choice in the Button's Icon panel, which now offers 17 icons.
+
+### Fixed
+- On an event's page, a poster file narrower than its column, for example a small 600px image on a tablet, could be drawn over the content under it; the picture now always stays inside its box.
+
 ## [1.11.0] — 2026-10-12
 ### New
 - Visitors can now turn a list round: the "Newest first" label above the lists on the Events page, on each event type page (Webinars, Workshops and Makers' Prize) and on the Job Series page is now a switch that lists the oldest first, reads "Oldest first" while it does, and goes back when selected again.

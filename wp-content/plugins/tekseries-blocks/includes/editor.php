@@ -64,6 +64,7 @@ function tekseries_blocks_button_icons(): array {
 		'search',
 		'play_arrow',
 		'swap_vert',
+		'open_in_full',
 	);
 }
 

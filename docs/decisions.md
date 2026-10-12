@@ -795,7 +795,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-048: Build the gallery lightbox as a native modal dialog that reads the tiles on the page
 
-**Status:** Accepted
+**Status:** Superseded by ADR-071 (where the dialog is printed only)
 
 **Context:** ADR-045 deferred the lightbox. The boards show captions, a counter, Previous and Next, thumbnails and video. Focus handling, Escape and an inert page behind are easy to get wrong by hand.
 
@@ -1384,6 +1384,39 @@ Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 
   - `?order=asc` on any page reaches WordPress's main query too. On singular pages that changes nothing visible.
   - A Button with the class `ts-sort` that is not bound to the source would get a misleading `aria-label`. The class is for the bound switch only.
   - The switch's wording and addresses come from the plugin. Without the plugin, the pattern's fallback link `?order=asc` still orders the type archives through core.
+
+## ADR-071: Share the Gallery's viewer with links elsewhere, marked by the class `ts-lightbox-open`
+
+**Status:** Accepted
+
+**Context:**
+- The viewer (a modal `<dialog>`, ADR-048) was part of the Media Gallery block's render output and could only show the Gallery's tiles.
+- On 2026-10-11 and 2026-10-12 the owner asked for two things that need it elsewhere: the event poster in the design's frame with a "View full size" link, and a "See video" pill on the Home page's Case Study card that opens a video. This is release 1.12.0 on branch `feat/viewer-anywhere` (commit 9604b8b).
+
+**Options:**
+- A second, separate lightbox for single files.
+- Core's "Expand on click" for Image blocks. It shows photos only, no video, and it is a different viewer from the Gallery's.
+- A new block for each opener.
+- A class on core blocks, with one shared dialog.
+
+**Decision:** The last option.
+- A block with the class `ts-lightbox-open` is an opener. A `render_block` filter in `includes/lightbox.php` looks at its first link. When the link leads to a photo or a video file, the link gets `data-wp-interactive`, a `data-wp-context` describing the file (address, kind, size, caption, a photo's `srcset`, a video's poster) and `data-wp-on--click="actions.openOne"`. The Gallery block's view module and stylesheet are enqueued. The attachment is looked up by address, and an unknown file is judged by its extension. Any other link (a page, `#`) stays an ordinary link. Without JavaScript the link opens the file.
+- A Featured Image block with the class has no link to its file, so the filter puts one around the picture, to the full-size file, with an `aria-label` built from the alt text.
+- The dialog moved to `includes/lightbox.php` and is printed once per page. The Gallery block prints it inside its router region (ADR-049) when the page has one. Otherwise it is printed in `wp_footer`, run through `wp_interactivity_process_directives`, when an opener asked for it.
+- The viewer has a single-item mode. `state.isSingle` puts `is-single` on the dialog, which hides the counter, Previous and Next, the thumbnails and the phone's step bar and gives the media their room. A Gallery with one tile gets it too.
+- Event poster: a Group `ts-poster` (card style, flow layout) holds the Featured Image and a caption row with "Event poster" and "View full size". "View full size" is a core Button drawn as plain text (`ts-poster-link`), with the `open_in_full` icon of ADR-067, which now has 17 icons. Its URL is bound to a new Block Bindings source, `tekseries/featured-image` (key `url`). A `render_block_core/group` filter leaves the frame out when the post has no featured image.
+- "See video": a Group `ts-photo-pill` holds the photo and a Buttons block positioned over the photo's bottom-left corner, so the card keeps its height. The pattern's link is `#`, because a theme pattern has no video of its own. A site's page links it to a video file.
+- The event sidebar stack is now `flexWrap: nowrap`. A vertical stack in WordPress is a wrapping column flexbox unless told otherwise. A wrapping column measures each item at its own content width before stretching it, so a poster file narrower than the column got a box shorter than the square picture, and the picture spilled over what followed. Measured on the test site with a 218px-wide file in a 379px column: the box was 218px tall and the picture 379px.
+
+**Rationale:**
+- One dialog and one script: the Gallery's viewer already handles photos, videos, focus, Escape and reduced motion, and is tested for accessibility.
+- A class on core blocks keeps templates and patterns core blocks an editor can change (ADR-005), and lets an editor make any link to a media file an opener. It follows the class-keyed filters of ADR-037.
+- Printing the dialog in the footer only when asked keeps it off pages that have no opener.
+- Block Bindings give the Button its address without a custom block.
+- Consequences:
+  - A page with an opener loads the Gallery block's whole stylesheet (about 13 KB before compression) and its view module, though only the viewer's part is used.
+  - The attachment lookup by address (`attachment_url_to_postid`) is one database query per opener per page view.
+  - Other vertical stacks in the patterns still wrap (the generator's default). None holds a picture sized this way today. A stack that gets one needs `flexWrap: nowrap` too.
 
 ## Future work
 

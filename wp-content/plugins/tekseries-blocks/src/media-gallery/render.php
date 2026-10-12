@@ -3,8 +3,9 @@
  * Media Gallery: the photos and videos in albums, newest year first, with
  * type and year filters and a "Load more" link. The filters and Load more are
  * plain links and each tile links to its full file, so the gallery works
- * without JavaScript. With it (view.ts), a tile opens in the viewer below (a
- * <dialog> that steps through the tiles on the page), and the filters and
+ * without JavaScript. With it (view.ts), a tile opens in the viewer (a
+ * <dialog> that steps through the tiles on the page; includes/lightbox.php),
+ * and the filters and
  * Load more fetch their page and swap this block's content in place: the
  * block is a router region, so the server stays the one place that builds it.
  *
@@ -81,25 +82,9 @@ if ( $tekseries_total ) {
 	$tekseries_summary = __( 'No media yet', 'tekseries-blocks' );
 }
 
-// For the script: text the viewer fills in as it steps, and the summary, which
-// it reads out after an in-place update. The empty caption keeps `alt` on the
-// viewer's image until the script takes over.
-wp_interactivity_config(
-	'tekseries/media-gallery',
-	array(
-		/* translators: 1: position of the item on show, 2: number of items loaded. */
-		'position' => __( '%1$s of %2$s', 'tekseries-blocks' ),
-		/* translators: %s: position of an item among the loaded ones. */
-		'thumb'    => __( 'Show item %s', 'tekseries-blocks' ),
-	)
-);
-wp_interactivity_state(
-	'tekseries/media-gallery',
-	array(
-		'caption' => '',
-		'summary' => $tekseries_summary,
-	)
-);
+// For the script: the summary, which it reads out after an in-place update.
+// The viewer's own texts come with tekseries_blocks_lightbox_markup().
+wp_interactivity_state( 'tekseries/media-gallery', array( 'summary' => $tekseries_summary ) );
 
 $tekseries_wrapper = array(
 	'id'                    => 'media',
@@ -210,68 +195,8 @@ $tekseries_wrapper = array(
 			<?php endif; ?>
 		</div>
 
-		<?php // The viewer. Closed, a <dialog> is not rendered, so it changes nothing without JavaScript. ?>
-		<dialog
-			class="ts-lightbox"
-			aria-label="<?php esc_attr_e( 'Media viewer', 'tekseries-blocks' ); ?>"
-			data-wp-watch="callbacks.syncDialog"
-			data-wp-on--close="actions.close"
-			data-wp-on--keydown="actions.key"
-		>
-			<div class="ts-lightbox__bar">
-				<p class="ts-lightbox__brand">
-					<?php echo tekseries_blocks_icon_svg( 'photo_library' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
-					<?php esc_html_e( 'TekSeries Gallery', 'tekseries-blocks' ); ?>
-				</p>
-				<p class="ts-lightbox__counter">
-					<span aria-hidden="true"><span data-wp-text="state.position"></span> <span class="ts-lightbox__of">/ <span data-wp-text="state.count"></span></span></span>
-					<span class="screen-reader-text" aria-live="polite" data-wp-text="state.announcement"></span>
-				</p>
-				<button type="button" class="ts-lightbox__button ts-lightbox__close" aria-label="<?php esc_attr_e( 'Close viewer', 'tekseries-blocks' ); ?>" data-wp-on--click="actions.close">
-					<?php echo tekseries_blocks_icon_svg( 'close' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
-				</button>
-			</div>
-
-			<div class="ts-lightbox__stage" data-wp-on--pointerdown="actions.press" data-wp-on--pointerup="actions.release">
-				<figure class="ts-lightbox__figure">
-					<div class="ts-lightbox__frame" data-wp-bind--style="state.frameStyle">
-						<img class="ts-lightbox__photo" alt="" sizes="(max-width: 640px) 100vw, 1100px" data-wp-bind--alt="state.caption" data-wp-bind--src="state.photoSrc" data-wp-bind--srcset="state.photoSrcset" data-wp-bind--hidden="state.isVideo">
-						<video class="ts-lightbox__video" controls playsinline preload="metadata" data-wp-bind--src="state.videoSrc" data-wp-bind--poster="state.poster" data-wp-bind--hidden="!state.isVideo" data-wp-watch="callbacks.stopVideo"></video>
-					</div>
-					<figcaption class="ts-lightbox__caption" data-wp-text="state.caption"></figcaption>
-				</figure>
-				<button type="button" class="ts-lightbox__button ts-lightbox__step ts-lightbox__step--previous" aria-label="<?php esc_attr_e( 'Previous', 'tekseries-blocks' ); ?>" data-wp-on--click="actions.previous">
-					<?php echo tekseries_blocks_icon_svg( 'chevron_left' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
-				</button>
-				<button type="button" class="ts-lightbox__button ts-lightbox__step ts-lightbox__step--next" aria-label="<?php esc_attr_e( 'Next', 'tekseries-blocks' ); ?>" data-wp-on--click="actions.next">
-					<?php echo tekseries_blocks_icon_svg( 'chevron_right' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
-				</button>
-			</div>
-
-			<?php // One thumbnail per loaded tile, built by the script. ?>
-			<div class="ts-lightbox__thumbs" role="group" aria-label="<?php esc_attr_e( 'All items', 'tekseries-blocks' ); ?>" data-wp-watch="callbacks.revealThumb">
-				<template data-wp-each--thumb="state.items" data-wp-each-key="context.thumb.id">
-					<button type="button" class="ts-lightbox__thumb" data-wp-on--click="actions.show" data-wp-bind--aria-label="context.thumb.label" data-wp-bind--aria-current="state.isThumbCurrent">
-						<img alt="" data-wp-bind--src="context.thumb.thumb" data-wp-bind--hidden="!context.thumb.thumb">
-						<span class="ts-lightbox__thumb-play" data-wp-bind--hidden="!context.thumb.video"><?php echo tekseries_blocks_icon_svg( 'play_arrow' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?></span>
-					</button>
-				</template>
-			</div>
-
-			<?php // Phones: the side buttons give way to this bar. ?>
-			<div class="ts-lightbox__foot">
-				<button type="button" class="ts-lightbox__button" aria-label="<?php esc_attr_e( 'Previous', 'tekseries-blocks' ); ?>" data-wp-on--click="actions.previous">
-					<?php echo tekseries_blocks_icon_svg( 'chevron_left' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
-				</button>
-				<p class="ts-lightbox__hint">
-					<?php echo tekseries_blocks_icon_svg( 'swipe' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
-					<?php esc_html_e( 'Swipe to browse', 'tekseries-blocks' ); ?>
-				</p>
-				<button type="button" class="ts-lightbox__button ts-lightbox__button--next" aria-label="<?php esc_attr_e( 'Next', 'tekseries-blocks' ); ?>" data-wp-on--click="actions.next">
-					<?php echo tekseries_blocks_icon_svg( 'chevron_right' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
-				</button>
-			</div>
-		</dialog>
+		<?php // The viewer: here when this block is the first on the page to ask for it. ?>
+		<?php echo tekseries_blocks_lightbox_markup(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built by the plugin from escaped parts. ?>
 	<?php else : ?>
 		<div class="ts-media__empty">
 			<?php echo tekseries_blocks_icon_svg( 'photo_library' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>

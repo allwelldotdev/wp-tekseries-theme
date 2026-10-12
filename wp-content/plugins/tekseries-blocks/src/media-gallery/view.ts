@@ -25,6 +25,14 @@ type Item = {
 	label: string;
 };
 type ThumbContext = { thumb: Item };
+// A link elsewhere on the page that opens one file: what the server knows of
+// the file (includes/lightbox.php).
+type OpenerContext = {
+	opener?: Pick<
+		Item,
+		'href' | 'video' | 'caption' | 'thumb' | 'srcset' | 'width' | 'height'
+	>;
+};
 // Translated by render.php.
 type Config = { position: string; thumb: string };
 // From render.php, for the page the router last showed: "Showing 12 of 32".
@@ -96,6 +104,11 @@ const { state } = store( NAMESPACE, {
 		get count(): string {
 			return state.current ? String( state.items.length ) : '';
 		},
+		// One item: nothing to step through, so the viewer drops the
+		// counter, the Previous and Next buttons and the thumbnails.
+		get isSingle(): boolean {
+			return state.items.length === 1;
+		},
 		get caption(): string {
 			return state.current?.caption ?? '';
 		},
@@ -103,6 +116,9 @@ const { state } = store( NAMESPACE, {
 		get announcement(): string {
 			if ( ! state.isOpen || ! state.current ) {
 				return '';
+			}
+			if ( state.isSingle ) {
+				return state.caption;
 			}
 			const position = getConfig< Config >( NAMESPACE )
 				.position.replace( '%1$s', state.position )
@@ -166,6 +182,20 @@ const { state } = store( NAMESPACE, {
 			];
 			state.items = tiles.map( toItem );
 			state.index = tiles.indexOf( tile );
+			state.isOpen = true;
+		} ),
+		// A link elsewhere on the page ("View full size", "See video") opens
+		// the viewer on its one file. A modified click still opens the file.
+		openOne: withSyncEvent( ( event: MouseEvent ) => {
+			const { opener } = getContext< OpenerContext >();
+			if ( ! opener || ! isPlainClick( event ) ) {
+				return;
+			}
+			event.preventDefault();
+			state.items = [
+				{ ...opener, id: 'opener', position: 0, label: '' },
+			];
+			state.index = 0;
 			state.isOpen = true;
 		} ),
 		// The filters and Load more: fetches the link's page and swaps the

@@ -115,15 +115,20 @@
 	--ts-button-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M331.5-451.5Q320-463 320-480v-247l-75 75q-11 11-27.5 11T189-652q-12-12-12-28.5t12-28.5l143-143q6-6 13-8.5t15-2.5q8 0 15 2.5t13 8.5l144 144q12 12 11.5 28T531-652q-12 11-28 11.5T475-652l-75-75v247q0 17-11.5 28.5T360-440q-17 0-28.5-11.5ZM585-99.5q-7-2.5-13-8.5L428-252q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l75 75v-247q0-17 11.5-28.5T600-520q17 0 28.5 11.5T640-480v247l75-75q11-11 27.5-11t28.5 11q12 12 12 28.5T771-251L628-108q-6 6-13 8.5T600-97q-8 0-15-2.5Z'/%3E%3C/svg%3E");
 }
 
+.wp-block-button.ts-icon-open_in_full {
+	--ts-button-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M160-120q-17 0-28.5-11.5T120-160v-240q0-17 11.5-28.5T160-440q17 0 28.5 11.5T200-400v144l504-504H560q-17 0-28.5-11.5T520-800q0-17 11.5-28.5T560-840h240q17 0 28.5 11.5T840-800v240q0 17-11.5 28.5T800-520q-17 0-28.5-11.5T760-560v-144L256-200h144q17 0 28.5 11.5T440-160q0 17-11.5 28.5T400-120H160Z'/%3E%3C/svg%3E");
+}
+
 /* End of the button icons. */
 
 /*
- * The order switch above a list: a Button with the class ts-sort, drawn as
- * plain text with its icon, as the design does. The plugin fills in the order
- * on show and the address of the other one.
+ * Buttons drawn as plain text with an icon, as the design does: the order
+ * switch above a list (ts-sort; the plugin fills in the order on show and the
+ * address of the other one) and "View full size" under the event poster
+ * (ts-poster-link).
  */
-.wp-block-button.ts-sort > .wp-block-button__link,
-.wp-block-button.ts-sort > .wp-block-button__link:hover {
+.wp-block-button:is(.ts-sort, .ts-poster-link) > .wp-block-button__link,
+.wp-block-button:is(.ts-sort, .ts-poster-link) > .wp-block-button__link:hover {
 	gap: 6px;
 	box-sizing: border-box;
 	min-height: var(--wp--custom--touch-target);
@@ -137,6 +142,18 @@
 
 .wp-block-button.ts-sort > .wp-block-button__link:hover {
 	color: var(--wp--preset--color--plum);
+}
+
+.wp-block-button.ts-poster-link > .wp-block-button__link,
+.wp-block-button.ts-poster-link > .wp-block-button__link:hover {
+	gap: 4px;
+	color: var(--wp--preset--color--plum);
+	font-size: 0.875rem;
+	font-weight: 700;
+}
+
+.wp-block-button.ts-poster-link > .wp-block-button__link:hover {
+	text-decoration: underline;
 }
 
 @media (width <= 1100px) {
@@ -164,6 +181,10 @@
 
 	.wp-block-button.ts-sort > .wp-block-button__link {
 		gap: 5px;
+		font-size: 0.8125rem;
+	}
+
+	.wp-block-button.ts-poster-link > .wp-block-button__link {
 		font-size: 0.8125rem;
 	}
 }
