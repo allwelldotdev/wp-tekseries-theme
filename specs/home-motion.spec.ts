@@ -576,6 +576,17 @@ test.describe( 'home motion blocks', () => {
 			'Team',
 		] );
 		await expect( page.locator( 'article.ts-reveal' ) ).toHaveCount( 3 );
+		// The Mission card ends with its text: under the last paragraph
+		// there is its padding and nothing more.
+		const [ under, padding ] = await page
+			.locator( '#about .is-style-card-plum.ts-fit' )
+			.evaluate( ( card ) => [
+				card.getBoundingClientRect().bottom -
+					( card.lastElementChild?.getBoundingClientRect().bottom ??
+						0 ),
+				parseFloat( getComputedStyle( card ).paddingBottom ),
+			] );
+		expect( under ).toBeCloseTo( padding ?? NaN, 0 );
 		await context.close();
 	} );
 

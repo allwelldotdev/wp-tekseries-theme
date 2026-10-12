@@ -161,6 +161,11 @@
 	margin: 0;
 }
 
+/* A card that ends with its content instead of stretching to its grid row. */
+.ts-fit {
+	align-self: start;
+}
+
 /*
  * Legal pages: "On this page" and the questions card stay in view beside the
  * article; on tablet and mobile they sit above it and scroll away.

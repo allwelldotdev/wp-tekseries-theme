@@ -3,7 +3,7 @@
  * Plugin Name:       TekSeries Blocks
  * Plugin URI:        https://tekseries.com/
  * Description:       Custom blocks for tekseries.com.
- * Version:           1.2.4
+ * Version:           1.2.5
  * Requires at least: 7.1
  * Requires PHP:      8.2
  * Requires Plugins:  advanced-custom-fields
