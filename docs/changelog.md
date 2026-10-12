@@ -2,6 +2,21 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.7.0] — 2026-10-12
+### New
+- Editors can now set how long the Home banner stays on each slide: with "Change slides automatically" on, a new "Seconds on each slide" slider in the banner's Settings panel runs from 3 to 30 seconds, and stays at 7 seconds, as before, until it is moved.
+- Editors can turn off "Hold while the pointer is over the slides" in the same panel, so the slides keep changing under the mouse; it is on by default, as before.
+- The slides always hold while keyboard focus is inside them, in a browser tab nobody is looking at, and for visitors who ask their device for less motion, whatever this setting says.
+- Editors can choose "Space between dots" in the same panel: "Easy to tap (44px each)", the default and as before, or "Close together (8px apart)", which is how the design draws them.
+- The help text under that choice warns that close dots are harder to tap on a phone and, with three or more slides, smaller than the smallest tap size the accessibility guideline (WCAG 2.2) allows; with two slides, as on Home, close dots still pass.
+- Editors get an "Add slide" button under the slides of the Home banner, which adds a complete slide: the plum overlay, a short label, a heading, a line of text, two buttons and the "Share", "Create", "Solve" row.
+- The label, heading and line of a new slide show as greyed prompts to type over, and any left empty does not show on the site.
+- The two buttons of a new slide link to "#" until an editor changes them, and the editor still chooses the photo.
+- A new Home banner now starts with the same complete slide, and a Cover block added from the block library becomes one too; duplicating a slide still works.
+
+### Fixed
+- On Home, the second slide of the banner now also shows the "Share", "Create", "Solve" row under its buttons, like the first.
+
 ## [1.6.0] — 2026-10-12
 ### New
 - Editors can now give any Button an icon: select the Button and open the new "Icon" panel in the settings sidebar, choose one of 15 icons (Arrow forward, Arrow back, Arrow outward, Add business, Upload file, Edit note, Send, Directions, Dashboard, Volunteer, Mail, Phone, Calendar, Search, Play) or "None", and the icon shows in the editor at once.

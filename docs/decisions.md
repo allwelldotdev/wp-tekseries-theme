@@ -884,7 +884,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-053: Make the Home hero a two-slide carousel that can change slides by itself
 
-**Status:** Accepted
+**Status:** Superseded by ADR-068 (the fixed 7-second stay, the unconditional hold under the pointer and the dot spacing only)
 
 **Context:** ADR-052 kept the Home hero a single Cover until a second slide existed. On 2026-10-10 the site owner decided that Home shows the carousel the design board draws: a hero with slider dots. The current live site's slider already rotates by itself. ADR-046 built the carousel with CSS only, with dots as `:target` links.
 
@@ -1284,6 +1284,40 @@ Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 
 - Mask icons disappear in forced-colours mode, as the Register button's arrow already does. The buttons keep their text, so nothing is lost.
 - The contact form's topic chips hide the radio dot, except under forced colours. There the dot stays, because the chip's fill is not drawn.
 - This closes the unrecorded design difference. The icons now match the boards.
+
+## ADR-068: Make the Hero Carousel's stay, pointer hold and dot spacing editor settings, and give a new slide whole
+
+**Status:** Accepted
+
+**Context:** ADR-053 fixed the stay at 7 seconds, always held the slides under the pointer, and kept every dot a 44px tap target although the board draws the dots 8px apart. Editors added a slide by duplicating one. On 2026-10-11 and 2026-10-12 the owner asked for the timing, the hover hold and the dot spacing to be settings, and for an "Add slide" control that gives a complete slide. This is release 1.7.0 on branch `feat/carousel-settings` (commit 4ff1b98), not merged yet.
+
+**Options:**
+- A free "seconds" number field with no limits. Under 3 seconds nobody can read a slide, and over 30 it no longer reads as a carousel.
+- Refuse `close` dots when there are three or more slides, to enforce the tap target. The owner asked for the board's look, so the help text informs instead.
+- Core's `defaultBlock` for the appender. In WordPress 7.1.3 a default block cannot carry inner blocks.
+- Offer the slide only as a block variation or a pattern. The appender is where an editor looks, and a variation of `core/cover` would show up everywhere Covers can go.
+- Attributes with settings controls, a custom appender and a slide template (chosen).
+
+**Decision:** The last option, for the block `tekseries/hero-carousel`.
+- Attributes: `interval` (integer seconds, default 7, clamped by the server to 3 to 30), `pauseOnHover` (boolean, default true) and `dotSpacing` (`touch`, the default, or `close`). The defaults reproduce 1.6.0 exactly, so no stored block changes behaviour.
+- `render.php` puts `stay` and `hover` in the block's Interactivity context and adds the class `has-close-dots`. `view.ts` reads them: one timeout of `stay` seconds per slide, and the pointer over the carousel passes a turn only when `hover` is true. Focus inside the carousel, a hidden tab and `prefers-reduced-motion: reduce` hold or stop the slides whatever the settings.
+- Close dots (`style.scss`): each dot link is only as wide as its dot (28px for the slide in view, 8px otherwise), 8px apart and still 44px tall. The controls sit 40px in from the corner (24px on phones) and 8px from the pause button. The focus ring goes outside the dot.
+- "Add slide": `edit.tsx` renders its own appender, a button that inserts a slide built from a template (`slide.ts`) with `createBlocksFromInnerBlocksTemplate` and `insertBlocks`. The slide is a Cover with the plum overlay, a label, an H2 at the H1's size, a line, two "#" buttons and the Share / Create / Solve row. The block's `template` is the same slide.
+- A bare Cover inserted from the block library is replaced by a whole slide in the same undo step (`__unstableMarkNextChangeAsNotPersistent`). Undo then removes the slide, and does not bring back a bare Cover to fill in again.
+- Empty placeholders draw nothing on the site (`:empty`).
+- ADR-060's entrance of the first slide is unchanged.
+
+**Rationale:**
+- It is the owner's request. The defaults keep the accessible behaviour, and the control's help text tells an editor who loosens it what it costs.
+- WCAG 2.2 success criterion 2.5.8 (Target Size, Minimum, level AA) asks for 24 by 24 CSS pixels, or enough room that a 24px circle centred on a smaller target touches no other target.
+  - With close dots and two slides the dots pass. The 8px dot's centre is 12px from its neighbour (4px plus the 8px gap). The 8px gap to the pause button was added for the same reason. The accessibility suite (ADR-056) measures this with axe on the close-dots hero with the second slide in view and the slides paused, the worst case because the 8px dot then sits beside the pause button, at 1280 and 390px. It does not scan that page with the first slide in view.
+  - With three or more slides two 8px dots sit 16px apart centre to centre, and they fail it. The automated test would report such a page.
+  - The default, `touch`, keeps 44px, which also meets the design system's own rule (ADR-005). The setting's help text says close dots are harder to tap and fall under the guideline's smallest target with three or more slides.
+- Turning off the pointer hold does not affect WCAG 2.2.2 (Pause, Stop, Hide). The pause button stays.
+- Consequences:
+  - The slide template exists twice, in `slide.ts` (the editor) and in the pattern generator (the Home pattern), and the two must be kept alike by hand.
+  - The template names theme presets (overlay gradient, font sizes, spacing), like the rest of the plugin's blocks (ADR-046).
+  - `__unstableMarkNextChangeAsNotPersistent` is an unstable editor API. If it goes, the fallback is a visible extra undo step.
 
 ## Future work
 
