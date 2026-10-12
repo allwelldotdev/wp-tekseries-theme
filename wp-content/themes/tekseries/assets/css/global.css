@@ -181,15 +181,17 @@ h3 {
 	}
 
 	/* A group (a card) comes from further down and its contents follow, one
-	   after another. A decorative icon stays where it is. */
+	   after another. A decorative icon stays where it is, and a block inside
+	   that is marked itself waits for its own turn. */
 	.wp-block-group.ts-reveal.is-revealed {
 		--ts-reveal-distance: 64px;
 		animation-duration: 0.9s;
 		animation-timing-function: var(--wp--custom--motion--ease--out-strong);
 	}
 
-	.wp-block-group.ts-reveal.is-revealed > :not([class*="is-style-deco"]) {
+	.wp-block-group.ts-reveal.is-revealed > :not([class*="is-style-deco"], .ts-reveal) {
 		--ts-reveal-distance: 20px;
+		--ts-reveal-step: 0;
 		animation: ts-reveal-rise 0.7s var(--wp--custom--motion--ease--out) calc(0.2s + var(--ts-reveal-step, 0) * 0.1s) backwards;
 	}
 

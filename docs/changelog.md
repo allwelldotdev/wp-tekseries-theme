@@ -2,6 +2,12 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.1.2] — 2026-10-12
+### Fixed
+- A block marked to rise in on scroll, placed directly inside a marked Group such as a card, now plays its own rise when a visitor reaches it, where before it could appear at once or jump in part-way, most often on phones where cards are tall.
+- When a marked Group sits inside another marked Group, the inner contents now rise in order from the first item, where before the first item arrived after the second.
+- Blocks that are not nested, and visitors with reduced motion or without JavaScript, see no difference.
+
 ## [1.1.1] — 2026-10-11
 ### Improved
 - On tablets and phones (screens up to 1100px wide), the menu now unrolls from under the header bar when a visitor opens it, with the links appearing one after another and the two buttons last, and the menu button's bars turn into the close cross and swing back when the menu closes, where before the menu appeared at once.
