@@ -13,7 +13,11 @@
 <!-- wp:group {"className":"ts-footer","style":{"spacing":{"padding":{"bottom":"var:preset|spacing|32"},"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group ts-footer" style="padding-bottom:var(--wp--preset--spacing--32)"><!-- wp:group {"align":"wide","className":"is-style-card-plum ts-footer__panel","style":{"border":{"radius":"var:preset|border-radius|footer"}},"textColor":"lilac-deep","layout":{"type":"grid","columnCount":4}} -->
 <div class="wp-block-group alignwide is-style-card-plum ts-footer__panel has-lilac-deep-color has-text-color" style="border-radius:var(--wp--preset--border-radius--footer)"><!-- wp:group {"className":"ts-footer__brand","style":{"spacing":{"blockGap":"14px"}},"layout":{"type":"flex","orientation":"vertical"}} -->
-<div class="wp-block-group ts-footer__brand"><!-- wp:paragraph {"style":{"typography":{"fontWeight":"800","lineHeight":"1.05","letterSpacing":"-0.02em"}},"textColor":"white","fontSize":"footer-display","fontFamily":"display"} -->
+<div class="wp-block-group ts-footer__brand"><!-- wp:image {"className":"ts-footer__logo"} -->
+<figure class="wp-block-image ts-footer__logo"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/logo-stacked.png' ) ); ?>" alt="<?php echo esc_attr__( 'TekSeries', 'tekseries' ); ?>"/></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph {"style":{"typography":{"fontWeight":"800","lineHeight":"1.05","letterSpacing":"-0.02em"}},"textColor":"white","fontSize":"footer-display","fontFamily":"display"} -->
 <p class="has-white-color has-text-color has-display-font-family has-footer-display-font-size" style="font-weight:800;letter-spacing:-0.02em;line-height:1.05"><?php echo esc_html__( 'Share. Create.', 'tekseries' ); ?> <mark style="background-color:rgba(0, 0, 0, 0)" class="has-inline-color has-saffron-color"><?php echo esc_html__( 'Solve.', 'tekseries' ); ?></mark></p>
 <!-- /wp:paragraph -->
 
