@@ -46,6 +46,7 @@ function tekseries_blocks_icon_labels(): array {
 		'call'                 => __( 'Phone', 'tekseries-blocks' ),
 		'category'             => __( 'Category', 'tekseries-blocks' ),
 		'celebration'          => __( 'Celebration', 'tekseries-blocks' ),
+		'chat'                 => __( 'Chat', 'tekseries-blocks' ),
 		'check'                => __( 'Check', 'tekseries-blocks' ),
 		'check_circle'         => __( 'Check circle', 'tekseries-blocks' ),
 		'chevron_left'         => __( 'Chevron left', 'tekseries-blocks' ),

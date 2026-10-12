@@ -391,6 +391,19 @@ test.describe( 'listing and post controls', () => {
 		await expect( next.locator( 'time' ) ).toHaveText( 'March 15, 2020' );
 		await expect( next ).toHaveCSS( 'text-align', 'right' );
 
+		// "View all news" ends in a 20px arrow, drawn by the stylesheet.
+		expect(
+			await page
+				.getByRole( 'link', { name: 'View all news' } )
+				.evaluate( ( el ) => {
+					const arrow = getComputedStyle( el, '::after' );
+					return [
+						arrow.width,
+						arrow.maskImage.startsWith( 'url(' ),
+					];
+				} )
+		).toEqual( [ '20px', true ] );
+
 		// The arrows are drawn on the labels, not printed as text.
 		await expect( nav.locator( '[class*="__arrow-"]' ) ).toHaveCount( 0 );
 		expect(

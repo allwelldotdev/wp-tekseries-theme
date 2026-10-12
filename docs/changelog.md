@@ -2,6 +2,25 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.6.0] — 2026-10-12
+### New
+- Editors can now give any Button an icon: select the Button and open the new "Icon" panel in the settings sidebar, choose one of 15 icons (Arrow forward, Arrow back, Arrow outward, Add business, Upload file, Edit note, Send, Directions, Dashboard, Volunteer, Mail, Phone, Calendar, Search, Play) or "None", and the icon shows in the editor at once.
+- The "Icon after the text" switch in that panel puts the icon after the text when on and before it when off.
+- The icon is 20px, takes the button's text colour, and needs no code; screen readers read only the button text.
+- Buttons that were given an arrow by hand in the editor keep working, and the Icon panel now shows their icon.
+- Visitors now see the icons the design gives these buttons:
+- Contact: "Send a message" (pencil), "Support our work" (hand with heart), "See upcoming events" (arrow after) and "Get directions" (directions sign).
+- Contact form: each topic choice ("General question", "Workshops", "Job Series", "Support or sponsorship") shows an icon for its topic, and "Send message" ends in a paper-plane icon.
+- Event page: "All events" (arrow back) in the banner and "View all events" (arrow after) above "More events"; news post: "View all news" (arrow after); job page: "View all" (small arrow after).
+- Job Series: "Post a job" (shop with a plus) and "Upload your CV" (file with an arrow) in the plum band, and "Post a job" and "Employer job view" (dashboard) in the saffron employers band.
+- On Home, in the Job Series card, and on the Job Series page, "Upload your CV" shows a small file icon.
+- On the job submission form, the "Choose file" button for the company logo shows an upload icon.
+
+### Changed
+- On the Contact form, the small round dot inside each topic choice is gone; the chosen topic is still the filled plum one, the arrow keys still move between topics, and the focused topic still shows a ring.
+- In Windows high-contrast mode the dot is kept, because the fill is not drawn there.
+- The buttons in the rows of the job dashboard are unchanged, because the design draws no icon there.
+
 ## [1.5.0] — 2026-10-12
 ### New
 - Four buttons from the design are back; they had been left out because the site has no page for them to lead to yet, and until those pages exist each one links to "#", so pressing it does nothing.
@@ -169,7 +188,6 @@ This file records what visitors and site editors of tekseries.com will notice in
 - Event pages on phones will show the poster before the details and the register button at the end, as in the design.
 - Past events and events with closed registration will get their own designed look, and the logged-out job dashboard will get a designed sign-in page.
 - Editors will get a picker for an event type's icon in the admin area.
-- Editors will be able to choose from more icons for a Button, with a control in the sidebar instead of typing class names.
 - The statistics window of the job dashboard will be restyled to match the design.
 - Job categories will be reduced to a curated list, and the "Upload your CV" and "Apply for the Maker's Prize" buttons, which now show but lead nowhere, will get real pages to go to.
 - Photos will load faster once uploads are converted to a lighter picture format.

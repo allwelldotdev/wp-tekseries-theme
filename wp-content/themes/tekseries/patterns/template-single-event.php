@@ -48,8 +48,8 @@
 <div class="wp-block-button ts-register"><a class="wp-block-button__link wp-element-button" href="" target="_blank" rel="noopener"><?php echo esc_html__( 'Register', 'tekseries' ); ?></a></div>
 <!-- /wp:button -->
 
-<!-- wp:button {"className":"is-style-outline"} -->
-<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/events/"><?php echo esc_html__( 'All events', 'tekseries' ); ?></a></div>
+<!-- wp:button {"className":"is-style-outline ts-icon-arrow_back"} -->
+<div class="wp-block-button is-style-outline ts-icon-arrow_back"><a class="wp-block-button__link wp-element-button" href="/events/"><?php echo esc_html__( 'All events', 'tekseries' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group -->
@@ -173,8 +173,8 @@
 <!-- /wp:heading -->
 
 <!-- wp:buttons -->
-<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-soft"} -->
-<div class="wp-block-button is-style-soft"><a class="wp-block-button__link wp-element-button" href="/events/"><?php echo esc_html__( 'View all events', 'tekseries' ); ?></a></div>
+<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-soft ts-icon-arrow_forward ts-icon-after"} -->
+<div class="wp-block-button is-style-soft ts-icon-arrow_forward ts-icon-after"><a class="wp-block-button__link wp-element-button" href="/events/"><?php echo esc_html__( 'View all events', 'tekseries' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group -->

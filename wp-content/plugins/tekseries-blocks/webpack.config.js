@@ -1,5 +1,6 @@
-// wp-scripts builds the scripts each block.json lists. The post sidebar and the
-// reveal script are not blocks, so they are added to those entries here.
+// wp-scripts builds the scripts each block.json lists. The post sidebar, the
+// Button block's icon panel and the reveal script are not blocks, so they are
+// added to those entries here.
 const [
 	scriptConfig,
 	moduleConfig,
@@ -11,6 +12,7 @@ module.exports = [
 		entry: () => ( {
 			...scriptConfig.entry(),
 			'post-settings/index': './src/post-settings/index.tsx',
+			'button-icon/index': './src/button-icon/index.tsx',
 		} ),
 	},
 	{

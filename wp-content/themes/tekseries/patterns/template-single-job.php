@@ -53,8 +53,8 @@
 <!-- /wp:heading -->
 
 <!-- wp:buttons -->
-<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-soft"} -->
-<div class="wp-block-button is-style-soft"><a class="wp-block-button__link wp-element-button" href="/jobs/"><?php echo esc_html__( 'View all', 'tekseries' ); ?></a></div>
+<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-soft ts-icon-arrow_forward ts-icon-after ts-icon-small"} -->
+<div class="wp-block-button is-style-soft ts-icon-arrow_forward ts-icon-after ts-icon-small"><a class="wp-block-button__link wp-element-button" href="/jobs/"><?php echo esc_html__( 'View all', 'tekseries' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group -->

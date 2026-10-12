@@ -28,12 +28,12 @@
 <!-- /wp:group -->
 
 <!-- wp:buttons -->
-<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-dark"} -->
-<div class="wp-block-button is-style-dark"><a class="wp-block-button__link wp-element-button" href="/submit-job/"><?php echo esc_html__( 'Post a job', 'tekseries' ); ?></a></div>
+<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-dark ts-icon-add_business"} -->
+<div class="wp-block-button is-style-dark ts-icon-add_business"><a class="wp-block-button__link wp-element-button" href="/submit-job/"><?php echo esc_html__( 'Post a job', 'tekseries' ); ?></a></div>
 <!-- /wp:button -->
 
-<!-- wp:button {"className":"is-style-outline"} -->
-<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/job-dashboard/"><?php echo esc_html__( 'Employer job view', 'tekseries' ); ?></a></div>
+<!-- wp:button {"className":"is-style-outline ts-icon-dashboard"} -->
+<div class="wp-block-button is-style-outline ts-icon-dashboard"><a class="wp-block-button__link wp-element-button" href="/job-dashboard/"><?php echo esc_html__( 'Employer job view', 'tekseries' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></section>
 <!-- /wp:group -->

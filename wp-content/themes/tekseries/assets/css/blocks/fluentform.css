@@ -61,6 +61,7 @@
 }
 
 .ff_guten_block .ff-el-form-check-label {
+	position: relative;
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
@@ -85,7 +86,54 @@
 	accent-color: var(--wp--preset--color--saffron);
 }
 
-/* The radio inside is small: keyboard focus rings the whole chip. */
+/*
+ * Topic chips carry an icon for their topic (by the radio's value), drawn as
+ * a mask in the chip's text colour. A topic without a rule here gets none.
+ */
+.ff_guten_block .ff-el-form-check-label:has(input[name="topic"])::before {
+	content: "";
+	flex: none;
+	order: -1;
+	width: 18px;
+	height: 18px;
+	background-color: currentcolor;
+	-webkit-mask: var(--ts-chip-icon, linear-gradient(transparent, transparent)) center / contain no-repeat;
+	mask: var(--ts-chip-icon, linear-gradient(transparent, transparent)) center / contain no-repeat;
+}
+
+.ff_guten_block .ff-el-form-check-label:has(input[name="topic"][value="general"]) {
+	--ts-chip-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='m240-240-92 92q-19 19-43.5 8.5T80-177v-623q0-33 23.5-56.5T160-880h640q33 0 56.5 23.5T880-800v480q0 33-23.5 56.5T800-240H240Zm-34-80h594v-480H160v525l46-45Zm-46 0v-480 480Zm120-80h240q17 0 28.5-11.5T560-440q0-17-11.5-28.5T520-480H280q-17 0-28.5 11.5T240-440q0 17 11.5 28.5T280-400Zm0-120h400q17 0 28.5-11.5T720-560q0-17-11.5-28.5T680-600H280q-17 0-28.5 11.5T240-560q0 17 11.5 28.5T280-520Zm0-120h400q17 0 28.5-11.5T720-680q0-17-11.5-28.5T680-720H280q-17 0-28.5 11.5T240-680q0 17 11.5 28.5T280-640Z'/%3E%3C/svg%3E");
+}
+
+.ff_guten_block .ff-el-form-check-label:has(input[name="topic"][value="workshop"]) {
+	--ts-chip-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M840-120v-640H120v280q0 17-11.5 28.5T80-440q-17 0-28.5-11.5T40-480v-280q0-33 23.5-56.5T120-840h720q33 0 56.5 23.5T920-760v560q0 33-23.5 56.5T840-120ZM247-447q-47-47-47-113t47-113q47-47 113-47t113 47q47 47 47 113t-47 113q-47 47-113 47t-113-47Zm169.5-56.5Q440-527 440-560t-23.5-56.5Q393-640 360-640t-56.5 23.5Q280-593 280-560t23.5 56.5Q327-480 360-480t56.5-23.5ZM120-80q-33 0-56.5-23.5T40-160v-32q0-34 17.5-62.5T104-298q62-31 126-46.5T360-360q66 0 130 15.5T616-298q29 15 46.5 43.5T680-192v32q0 33-23.5 56.5T600-80H120Zm0-80h480v-32q0-11-5.5-20T580-226q-54-27-109-40.5T360-280q-56 0-111 13.5T140-226q-9 5-14.5 14t-5.5 20v32Zm240-400Zm0 400Z'/%3E%3C/svg%3E");
+}
+
+.ff_guten_block .ff-el-form-check-label:has(input[name="topic"][value="jobs"]) {
+	--ts-chip-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M160-120q-33 0-56.5-23.5T80-200v-440q0-33 23.5-56.5T160-720h160v-80q0-33 23.5-56.5T400-880h160q33 0 56.5 23.5T640-800v80h160q33 0 56.5 23.5T880-640v440q0 33-23.5 56.5T800-120H160Zm0-80h640v-440H160v440Zm240-520h160v-80H400v80ZM160-200v-440 440Z'/%3E%3C/svg%3E");
+}
+
+.ff_guten_block .ff-el-form-check-label:has(input[name="topic"][value="support"]) {
+	--ts-chip-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='m558-144 238-74q-5-9-14.5-15.5T760-240H558q-27 0-43-2t-33-8l-57-19q-16-5-23-20t-2-31q5-16 19.5-23.5T450-346l42 14q17 5 38.5 8t58.5 4h11q0-11-6.5-21T578-354l-234-86h-64v220l278 76Zm-21 78-257-72q-8 26-31.5 42T200-80h-80q-33 0-56.5-23.5T40-160v-280q0-33 23.5-56.5T120-520h224q7 0 14 1.5t13 3.5l235 87q33 12 53.5 42t20.5 66h80q50 0 85 33t35 87q0 22-11.5 34.5T833-145L583-67q-11 4-23 4t-23-3Zm-417-94h80v-280h-80v280Zm490.5-317.5Q596-483 584-494L474-602q-31-30-52.5-66.5T400-748q0-55 38.5-93.5T532-880q32 0 60 13.5t48 36.5q20-23 48-36.5t60-13.5q55 0 93.5 38.5T880-748q0 43-21 79.5T807-602L696-494q-12 11-26.5 16.5T640-472q-15 0-29.5-5.5ZM640-552l109-107q19-19 35-40.5t16-48.5q0-22-15-37t-37-15q-14 0-26.5 5.5T700-778l-29 35q-12 14-31 14t-31-14l-29-35q-9-11-21.5-16.5T532-800q-22 0-37 15t-15 37q0 27 16 48.5t35 40.5l109 107Zm0-154Z'/%3E%3C/svg%3E");
+}
+
+/*
+ * The chip's fill says which topic is picked, so the radio's own dot is taken
+ * out of sight; it still takes clicks and keyboard focus. Where the system
+ * replaces colours (forced colours), the fill is gone, so the dot stays.
+ */
+@media not (forced-colors: active) {
+
+	.ff_guten_block .ff-el-form-check-label input[name="topic"] {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: 0;
+		clip-path: inset(50%);
+	}
+}
+
+/* The radio inside is out of sight: keyboard focus rings the whole chip. */
 .ff_guten_block .ff-el-form-check-label:has(input:focus-visible) {
 	outline: 2px solid var(--wp--preset--color--saffron);
 	outline-offset: 2px;
@@ -100,6 +148,19 @@
 	color: var(--wp--preset--color--white);
 	font-size: var(--wp--preset--font-size--body);
 	font-weight: 700;
+}
+
+/* "Send message" ends in the send icon. */
+.ff_guten_block form.frm-fluent-form .ff-btn-submit:not(.ff_btn_no_style)::after {
+	content: "";
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	margin-left: 8px;
+	background-color: currentcolor;
+	vertical-align: -4px;
+	-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M792-443 176-183q-20 8-38-3.5T120-220v-520q0-22 18-33.5t38-3.5l616 260q25 11 25 37t-25 37ZM200-280l474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z'/%3E%3C/svg%3E") center / contain no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M792-443 176-183q-20 8-38-3.5T120-220v-520q0-22 18-33.5t38-3.5l616 260q25 11 25 37t-25 37ZM200-280l474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .ff_guten_block form.frm-fluent-form .ff-btn-submit:not(.ff_btn_no_style):hover {

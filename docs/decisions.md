@@ -1254,6 +1254,37 @@ Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 
 - The development site's header and footer are saved copies in the database (edited in the Site Editor on 2026-10-12), so they were patched there by hand as well as in the patterns. A site with saved copies of these parts does not pick up pattern changes by itself (ADR-017). The release bundle does not yet carry saved template parts.
 - The footer is 32px taller on desktop.
 
+## ADR-067: Draw icons on core Buttons with classes in theme CSS, set by an editor-only panel in the plugin
+
+**Status:** Accepted
+
+**Context:** The boards put a Material Symbols icon on many buttons. Core's Button block has no icon in WordPress 7.1, and the first build left the icons off. That difference from the design was never recorded. On 2026-10-11 and 2026-10-12 the owner asked for every missing design icon and for a way to pick one in the editor. This is release 1.6.0 on branch `feat/button-icons` (commit e8b20e1), not merged yet. The first rule of the mechanism landed in 1.3.0 (commit 8402f6c).
+
+**Options:**
+- Classes on the core Button, drawn by theme CSS, with an editor panel that sets the class.
+- A `render_block` filter that injects an inline SVG. It runs PHP on every button render, its markup differs from the editor's, and the colour would still need CSS.
+- A custom "icon button" block. Every existing Button would need converting, and block styles such as outline and glass would be rebuilt.
+- Core's Icon block beside the text in a Row. It is not a link target and splits the button's hover and focus into two controls.
+- An icon font. ADR-024 forbids it.
+
+**Decision:** The first option, in 1.6.0.
+- A core Button with the class `ts-icon-<name>` draws that icon before its text. With `ts-icon-after` as well, it draws it after. `ts-icon-small` draws it at 18px instead of 20px.
+- Theme, `assets/css/blocks/buttons.css`: one generic rule (a `::before` or `::after` box with `mask: var(--ts-button-icon, <transparent gradient>)` and `background-color: currentcolor`), plus one rule per icon that sets `--ts-button-icon` to a data URI. A name with no rule draws nothing, never a solid square.
+- A local script produces the data URIs from the plugin's SVG files in `assets/icons/`, so the artwork has one source.
+- Plugin, editor only: `src/button-icon/index.tsx`, a webpack entry like the post sidebar's (ADR-034), loaded on `enqueue_block_editor_assets`. An `editor.BlockEdit` filter adds an "Icon" panel to `core/button` with a dropdown and an "Icon after the text" switch. It only rewrites `className`.
+- The icon list is `tekseries_blocks_button_icons()` in `includes/editor.php` (15 names), passed to the script with their labels. A unit test checks that this list and the theme's per-icon rules name exactly the same icons.
+- The same technique, without the panel, draws the contact form's topic chip icons (by the radio's value) and the "Send message" icon in `fluentform.css` (ADR-029). It also draws an upload icon on the job form's file button, as a background image, because `::file-selector-button` takes no pseudo-element.
+- The job dashboard's row buttons get no icon, because no board draws one.
+
+**Rationale:**
+- No new attribute means the saved markup is exactly core's. A button stays valid with the plugin off, in patterns, and on a site that never had the plugin. Block validity is tested for every pattern and template.
+- Nothing ships to visitors: no script, no render filter, no inline SVG per button. Rule 1, that React never ships to visitors, is untouched.
+- Patterns carry icons as plain class names, which the pattern generator and the editor's "Additional CSS class(es)" field both handle.
+- Cost, measured: with 15 icons `buttons.css` is 12.2 KB (3.75 KB gzipped), and WordPress no longer inlines it in the page head, as it did at 3.2 KB. It is now one more linked stylesheet on every page with a button. First contentful paint on a throttled connection (150 ms latency, 1.6 Mbps, median of five cold loads on the development site) was 1096 ms with it against 1076 ms without on Home, and 1304 ms against 1392 ms on Contact. That is no difference outside the noise. Each icon added to the list costs about 0.5 KB.
+- Mask icons disappear in forced-colours mode, as the Register button's arrow already does. The buttons keep their text, so nothing is lost.
+- The contact form's topic chips hide the radio dot, except under forced colours. There the dot stays, because the chip's fill is not drawn.
+- This closes the unrecorded design difference. The icons now match the boards.
+
 ## Future work
 
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).

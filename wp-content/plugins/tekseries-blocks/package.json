@@ -1,6 +1,6 @@
 {
 	"name": "tekseries-blocks",
-	"version": "1.5.0",
+	"version": "1.6.0",
 	"private": true,
 	"description": "Custom blocks for tekseries.com.",
 	"license": "GPL-2.0-or-later",
@@ -24,6 +24,7 @@
 		"@wordpress/data": "^10.57.0",
 		"@wordpress/editor": "^15.2.0",
 		"@wordpress/element": "^9.0.0",
+		"@wordpress/hooks": "^4.57.0",
 		"@wordpress/i18n": "^6.30.0",
 		"@wordpress/interactivity": "^7.0.0",
 		"@wordpress/interactivity-router": "^2.57.0",

@@ -134,6 +134,35 @@ describe( 'tekseries icon collection', () => {
 		);
 	} );
 
+	// The Button block's "Icon" panel offers a list from PHP; the theme draws
+	// each one from a rule of its own. The two must name the same icons.
+	it( 'has a theme rule for every icon the Button panel offers, and no other', () => {
+		const php = readFileSync(
+			new URL( 'includes/editor.php', PLUGIN ),
+			'utf8'
+		);
+		const list =
+			php.match(
+				/function tekseries_blocks_button_icons\(\): array \{\s*return array\((.*?)\);/s
+			)?.[ 1 ] ?? '';
+		const offered = [ ...list.matchAll( /'([a-z0-9_]+)'/g ) ].map(
+			( [ , name = '' ] ) => name
+		);
+		const css = readFileSync(
+			new URL( 'assets/css/blocks/buttons.css', THEME ),
+			'utf8'
+		);
+		const drawn = [
+			...css.matchAll(
+				/^\.wp-block-button\.ts-icon-([a-z0-9_]+) \{\n\t--ts-button-icon: url\(/gm
+			),
+		].map( ( [ , name = '' ] ) => name );
+
+		expect( offered.length ).toBeGreaterThan( 5 );
+		expect( drawn.sort() ).toEqual( [ ...offered ].sort() );
+		expect( names ).toEqual( expect.arrayContaining( offered ) );
+	} );
+
 	it( 'covers every tekseries icon the theme references', () => {
 		const dirs = [ 'patterns', 'parts', 'templates' ];
 		for ( const dir of dirs ) {
