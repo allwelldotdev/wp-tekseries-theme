@@ -292,6 +292,25 @@ test.describe( 'home motion blocks', () => {
 				.locator( ':has(> h1) > *' )
 				.evaluateAll( rise )
 		).toEqual( Array( 5 ).fill( 'none 0.00' ) );
+
+		// An item the keyboard reaches is there at once, and it does not rise
+		// in again once the focus has moved on.
+		const item = slides.first().locator( ':has(> h1) > :has(a)' ).first();
+		const shown = ( element: Element ) => {
+			const style = window.getComputedStyle( element );
+			return [ style.opacity, style.translate ];
+		};
+		const playing = () =>
+			item.evaluate( ( element ) => element.getAnimations().length );
+		await item.locator( 'a' ).first().focus();
+		expect( await item.evaluate( shown ) ).toEqual( [ '1', 'none' ] );
+		await expect.poll( playing ).toBe( 0 );
+		await item
+			.locator( 'a' )
+			.first()
+			.evaluate( ( link: HTMLElement ) => link.blur() );
+		expect( await playing() ).toBe( 0 );
+		expect( await item.evaluate( shown ) ).toEqual( [ '1', 'none' ] );
 		await slides.page().context().close();
 
 		slides = await open( 'reduce' );

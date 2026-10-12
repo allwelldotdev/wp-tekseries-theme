@@ -212,14 +212,16 @@ h3 {
 	}
 
 	/* A block the keyboard has reached is shown at once: focus is never on
-	   something still fading in. */
+	   something still fading in. Its animation is left alone: taken away, it
+	   would play again once the focus moved on. */
 	.ts-reveal.is-reveal-pending:focus-within {
 		opacity: 1;
 	}
 
 	.ts-reveal.is-revealed:focus-within,
-	.wp-block-group.ts-reveal.is-revealed:focus-within > * {
-		animation: none;
+	.wp-block-group.ts-reveal.is-revealed:focus-within > :not([class*="is-style-deco"], .ts-reveal) {
+		opacity: 1 !important;
+		translate: none !important;
 	}
 }
 

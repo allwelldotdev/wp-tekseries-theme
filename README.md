@@ -1,6 +1,6 @@
 # TekSeries
 
-This repo holds the `tekseries` block theme and the `tekseries-blocks` plugin that rebuild tekseries.com, version 1.1.2. Site editors change text, images, links, header, footer and colours in the Site Editor without code, and React never ships to visitors: it runs only in wp-admin (ADR-005). `specs/visitor-scripts.spec.ts` checks this on every kind of public page, and jQuery loads only on the Contact form and the job submission form (ADR-007).
+This repo holds the `tekseries` block theme and the `tekseries-blocks` plugin that rebuild tekseries.com, version 1.1.3. Site editors change text, images, links, header, footer and colours in the Site Editor without code, and React never ships to visitors: it runs only in wp-admin (ADR-005). `specs/visitor-scripts.spec.ts` checks this on every kind of public page, and jQuery loads only on the Contact form and the job submission form (ADR-007).
 
 ## Requirements
 
@@ -96,7 +96,7 @@ Event templates show the ACF fields through Block Bindings. Job pages read WP Jo
 
 ## Release
 
-The current version is 1.1.2, and the `v1.0.0` tag marks release 1.0.0. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip` for the first two.
+The current version is 1.1.3, and the `v1.0.0` tag marks release 1.0.0. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip` for the first two.
 
 1. `tekseries-blocks.zip` under Plugins. Activate it.
 2. `tekseries.zip` under Themes. Don't activate it.

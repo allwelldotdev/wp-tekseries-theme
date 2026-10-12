@@ -257,10 +257,32 @@ test.describe( 'reveal on scroll', () => {
 				link.focus( { preventScroll: true } )
 			);
 		expect( await card.evaluate( opacity ) ).toBe( '1' );
-		// On screen with the focus still in it, it does not fade in under it.
+		// On screen with the focus still in it, it does not fade in under it,
+		// and nor do its contents.
+		const shown = ( items: Element[] ) =>
+			items.map( ( item ) => {
+				const style = window.getComputedStyle( item );
+				return `${ style.opacity } ${ style.translate }`;
+			} );
+		const playing = () =>
+			card.evaluate(
+				( group ) => group.getAnimations( { subtree: true } ).length
+			);
 		await card.scrollIntoViewIfNeeded();
 		await expect( card ).toHaveClass( /is-revealed/ );
-		expect( await card.evaluate( animation ) ).toBe( 'none' );
+		expect( await card.evaluateAll( shown ) ).toEqual( [ '1 none' ] );
+		expect( await card.locator( '> p' ).evaluateAll( shown ) ).toEqual( [
+			'1 none',
+			'1 none',
+		] );
+
+		// Nor does it rise in again once the focus has moved on.
+		await expect.poll( playing ).toBe( 0 );
+		await card
+			.locator( 'a' )
+			.evaluate( ( link: HTMLElement ) => link.blur() );
+		expect( await playing() ).toBe( 0 );
+		expect( await card.evaluateAll( shown ) ).toEqual( [ '1 none' ] );
 		await context.close();
 	} );
 

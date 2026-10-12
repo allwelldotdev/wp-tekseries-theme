@@ -60,9 +60,11 @@
 		}
 	}
 
-	// Focus is never on something still fading in.
+	// Focus is never on something still fading in. The animation itself is
+	// left alone: taken away, it would play again once the focus moved on.
 	.ts-carousel__track > :first-child :has(> h1) > :focus-within {
-		animation: none;
+		opacity: 1 !important;
+		translate: none !important;
 	}
 }
 

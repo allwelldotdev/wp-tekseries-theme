@@ -1064,7 +1064,7 @@ Not verified: the plugin has never run on the live site or on a copy of its data
 
 ## ADR-060: Animate Home in CSS, with one small script that only says when a block is in view
 
-**Status:** Accepted
+**Status:** Superseded by ADR-062 (how a focused block is kept shown while its entrance plays only)
 
 **Context:** The design canvas pulled on 2026-10-11 animates the three Home boards with GSAP 3.15.0 (core only, no ScrollTrigger). Four animations:
 - On load, the hero chip, headline, lead, buttons and pillar labels rise 28px and fade in over 0.8s, 0.12s apart, starting at 0.15s. The photo stays still.
@@ -1107,7 +1107,7 @@ Measured on the development site: the largest paint is the hero photo with and w
 
 ## ADR-061: Animate the compact menu's opening in CSS, and let it close instantly
 
-**Status:** Accepted
+**Status:** Superseded by ADR-062 (how a focused link is shown at once only)
 
 **Context:** At 1100px and below, the header menu is core's Navigation overlay restyled into a panel under the header bar (ADR-018). Core keeps the toggle, focus trap, Escape and ARIA state. The close button sits over the menu button, 54 to 56px above the panel's top edge. The panel appeared with no motion, and the site owner asked for an animation at tablet and phone widths, built in CSS. The motion tokens from ADR-060 (`ease.out`, `ease.out-strong`) are reused. This is their first use outside Home, and the menu is on every page.
 
@@ -1127,7 +1127,32 @@ Measured on the development site: the largest paint is the hero photo with and w
 
 **Rationale:** The clip reaches 80px above the panel so it never cuts the close button. This is also why `overflow: hidden` is not used. Core moves focus to the first link when the menu opens, and a keyboard user must not see a focus ring on a link still fading in. Pointer users get the whole cascade. The panel does not animate out because core closes the menu by removing the class that also lays the panel out, so the contents collapse into a row at once (seen in the browser). The bars' swing gives the closing some motion without depending on that class. Core's overlay class names are still relied on, as in ADR-018.
 
+## ADR-062: Show a focused block by overriding its animated properties, never by removing the animation
+
+**Status:** Accepted
+
+**Context:** ADR-060 and ADR-061 say a block that holds keyboard focus is shown at once. It was built as `animation: none` on `:focus-within` (the hero's first-slide text in the hero carousel block's stylesheet; a revealed `ts-reveal` block and a revealed Group's children in the theme's `assets/css/global.css`) and on `li:has(:focus-visible)` (the compact menu's links in `assets/css/blocks/navigation.css`). Found on 2026-10-12, in 1.1.0 and 1.1.1: when focus moved on, `animation-name` came back and the browser started a new animation. The block vanished and rose in again. In Chromium, after focus left, the hero item, the first menu link and a revealed card were each at opacity 0 with a running animation.
+
+**Options:**
+- Cut the animation short on focus by changing `animation-duration` or `animation-delay`. It depends on browsers updating a running animation, and after an early blur the animation resumes from where it was cut.
+- Animate a registered custom property and override it normally. It runs off the compositor and needs `@property`.
+- Replace the keyframes with `@starting-style` transitions. They cannot replay, but it rewrites three shipped mechanisms and has narrower browser support.
+- Keep the animation and override the properties it animates while focus is inside.
+
+**Decision:** The last option. The animation is never removed. While focus is inside, the rule sets `opacity: 1 !important; translate: none !important` (1.1.3).
+- An important author declaration ranks above animation declarations in the cascade (CSS Cascade, cascade sorting order). The block shows at once, the animation runs out on its own clock, and nothing restarts when focus leaves. If focus leaves before the animation's natural end, the block joins the animation where it then is.
+- In the reveal rule the override names only the animated children: `> :not([class*="is-style-deco"], .ts-reveal)`. Decorative icons have their own low opacity (0.06 to 0.1) and must not be forced to 1. Children marked `ts-reveal` have their own turn.
+- This replaces how a block is kept shown while its entrance plays: in ADR-060, a revealed `ts-reveal` block, a revealed Group's animated children and the hero's first-slide text; in ADR-061, "A link with `:focus-visible` drops its animation". The rule for a waiting block in ADR-060 is unchanged: a block still marked `is-reveal-pending` that takes focus is shown with a plain `opacity: 1`, because nothing is animating yet. The rest of both stands.
+- These are the only `!important` declarations on animated properties in the theme and plugin. Any future entrance animation uses the same pattern, never `animation: none` on a focus state.
+- `specs/home-motion.spec.ts`, `specs/reveal.spec.ts` and `specs/header.spec.ts` move the focus on after the entrance has played and assert that no animation is running and the block is fully shown. Each failed before the fix.
+
+Checked in Chromium 156 and Firefox 157: important beats the animation while focused, and nothing replays after. WebKit could not be run on the development machine (missing system library), so Safari is unverified here.
+
+**Rationale:** The important override is the smallest change and is what the cascade specifies. It removes the cause of the replay, which was the animation coming back, instead of racing it. If an engine did not honour the override, a focused block would finish fading in under the focus ring, and it still would not replay.
+
 ## Future work
+
+- **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062).
 
 - **Hosting and deploy:** the release method is decided (ADR-058, ADR-059). Still open on the host: a page cache and longer cache lifetimes for static files on the development site's host, and the first real run of the migration plugin on the live site (owner; ADR-059).
 - **Accessibility leftovers:** captions for the gallery video (content), and a hand scan of the Contact form after each change to it, as the suite cannot reach it (ADR-055, ADR-056).
