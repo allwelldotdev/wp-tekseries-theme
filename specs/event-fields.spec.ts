@@ -183,6 +183,116 @@ test.describe( 'event fields', () => {
 		}
 	} );
 
+	test( 'the order switch lists the oldest first, and undated events come last either way', async ( {
+		browser,
+		requestUtils,
+	} ) => {
+		const type = await requestUtils.rest< { id: number; link: string } >( {
+			method: 'POST',
+			path: '/wp/v2/event_type',
+			data: { name: 'E2E Sorted', slug: 'e2e-sorted' },
+		} );
+		// Newer than any other test's event, older than any, and one with no
+		// date: published last, so its publish date would put it first.
+		for ( const [ title, date ] of [
+			[ 'E2E Sort 2103', '21030101' ],
+			[ 'E2E Sort 1991', '19910101' ],
+			[ 'E2E Sort 1990', '19900101' ],
+			[ 'E2E Sort Undated', '' ],
+		] ) {
+			const event = await publish( requestUtils, title ?? '', {
+				event_date: date,
+			} );
+			await requestUtils.rest( {
+				method: 'POST',
+				path: `/wp/v2/event/${ event.id }`,
+				data: { event_type: [ type.id ] },
+			} );
+		}
+
+		const context = await browser.newContext( {
+			javaScriptEnabled: false,
+			storageState: { cookies: [], origins: [] },
+		} );
+		const page = await context.newPage();
+		const titles = page.locator( '.ts-post-card .wp-block-post-title' );
+		const path = ( url: string ) => {
+			const { pathname, search } = new URL( url );
+			return pathname + search;
+		};
+
+		try {
+			// An event type page lists only these four.
+			await page.goto( type.link );
+			await expect( titles ).toHaveText( [
+				'E2E Sort 2103',
+				'E2E Sort 1991',
+				'E2E Sort 1990',
+				'E2E Sort Undated',
+			] );
+			const newest = page.getByRole( 'link', {
+				name: 'Newest first. Show oldest first',
+			} );
+			await expect( newest ).toHaveText( 'Newest first' );
+			expect(
+				path( ( await newest.getAttribute( 'href' ) ) ?? '' )
+			).toBe( `${ path( type.link ) }?order=asc` );
+
+			await newest.click();
+			await expect( titles ).toHaveText( [
+				'E2E Sort 1990',
+				'E2E Sort 1991',
+				'E2E Sort 2103',
+				'E2E Sort Undated',
+			] );
+			const oldest = page.getByRole( 'link', {
+				name: 'Oldest first. Show newest first',
+			} );
+			await expect( oldest ).toHaveText( 'Oldest first' );
+			expect(
+				path( ( await oldest.getAttribute( 'href' ) ) ?? '' )
+			).toBe( path( type.link ) );
+			// The filter chips keep the order.
+			await expect(
+				page
+					.getByRole( 'navigation', { name: 'Filter events' } )
+					.getByRole( 'link', { name: 'All events' } )
+			).toHaveAttribute( 'href', /\/events\/\?order=asc$/ );
+
+			// The Events page: the Latest card stays the newest event, and
+			// the grid under it lists the rest from the oldest.
+			await page.goto( '/events/?order=asc' );
+			await expect( titles.nth( 0 ) ).toHaveText( 'E2E Sort 2103' );
+			await expect( titles.nth( 1 ) ).toHaveText( 'E2E Sort 1990' );
+			await expect( titles.nth( 2 ) ).toHaveText( 'E2E Sort 1991' );
+			await expect(
+				page.getByRole( 'link', {
+					name: 'Oldest first. Show newest first',
+				} )
+			).toHaveAttribute( 'href', /\/events\/$/ );
+
+			// Page links keep the order, and no later page lists the Latest
+			// card's event again.
+			const last = page
+				.locator( '.wp-block-query-pagination-numbers a' )
+				.last();
+			await expect( last ).toHaveAttribute( 'href', /order=asc/ );
+			await last.click();
+			await expect( page ).toHaveURL( /query-2-page=\d+/ );
+			await expect(
+				titles.filter( { hasText: 'E2E Sort 2103' } )
+			).toHaveCount( 1 );
+			await expect( titles.last() ).toHaveText( 'E2E Sort Undated' );
+		} finally {
+			await context.close();
+			await requestUtils.rest( {
+				method: 'DELETE',
+				path: `/wp/v2/event_type/${ type.id }`,
+				params: { force: true },
+			} );
+		}
+	} );
+
 	test( 'leaves out rows whose field is empty', async ( {
 		page,
 		requestUtils,

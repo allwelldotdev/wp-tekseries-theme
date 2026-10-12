@@ -3,7 +3,7 @@
  * Plugin Name:       TekSeries Blocks
  * Plugin URI:        https://tekseries.com/
  * Description:       Custom blocks for tekseries.com.
- * Version:           1.10.0
+ * Version:           1.11.0
  * Requires at least: 7.1
  * Requires PHP:      8.2
  * Requires Plugins:  advanced-custom-fields
@@ -23,6 +23,7 @@ require_once __DIR__ . '/includes/content-types.php';
 require_once __DIR__ . '/includes/icons.php';
 require_once __DIR__ . '/includes/meta.php';
 require_once __DIR__ . '/includes/acf.php';
+require_once __DIR__ . '/includes/list-order.php';
 require_once __DIR__ . '/includes/events.php';
 require_once __DIR__ . '/includes/event-types.php';
 require_once __DIR__ . '/includes/job-fields.php';

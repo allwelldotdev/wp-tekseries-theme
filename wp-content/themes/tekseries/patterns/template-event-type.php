@@ -49,13 +49,11 @@
 <!-- wp:navigation-link {"label":"<?php echo esc_html__( 'Makers’ Prize', 'tekseries' ); ?>","url":"/event_type/makers-prize/","kind":"custom","isTopLevelLink":true,"className":"ts-type-chip"} /-->
 <!-- /wp:navigation -->
 
-<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|4"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
-<div class="wp-block-group"><!-- wp:icon {"icon":"tekseries/swap_vert","style":{"dimensions":{"width":"20px"}},"textColor":"muted"} /-->
-
-<!-- wp:paragraph {"style":{"typography":{"fontWeight":"600"}},"textColor":"muted","fontSize":"body-s"} -->
-<p class="has-muted-color has-text-color has-body-s-font-size" style="font-weight:600"><?php echo esc_html__( 'Newest first', 'tekseries' ); ?></p>
-<!-- /wp:paragraph --></div>
-<!-- /wp:group --></div>
+<!-- wp:buttons -->
+<div class="wp-block-buttons"><!-- wp:button {"metadata":{"bindings":{"text":{"source":"tekseries/list-order","args":{"key":"label"}},"url":{"source":"tekseries/list-order","args":{"key":"url"}}}},"className":"ts-sort ts-icon-swap_vert"} -->
+<div class="wp-block-button ts-sort ts-icon-swap_vert"><a class="wp-block-button__link wp-element-button" href="?order=asc"><?php echo esc_html__( 'Newest first', 'tekseries' ); ?></a></div>
+<!-- /wp:button --></div>
+<!-- /wp:buttons --></div>
 <!-- /wp:group -->
 
 <!-- wp:query {"queryId":3,"query":{"perPage":5,"pages":0,"offset":0,"postType":"event","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":true,"taxQuery":null,"parents":[],"format":[]},"align":"wide","layout":{"type":"default"},"style":{"spacing":{"margin":{"top":"var:preset|spacing|24"}}}} -->

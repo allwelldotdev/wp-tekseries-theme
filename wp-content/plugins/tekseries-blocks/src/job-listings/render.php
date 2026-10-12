@@ -1,7 +1,8 @@
 <?php
 /**
- * Job Listings: WP Job Manager's open jobs, newest first, with a search form
- * and page links. Searching submits the form (GET) and paging follows links,
+ * Job Listings: WP Job Manager's open jobs, newest first (or oldest first,
+ * by a link above the list), with a search form and page links. Searching
+ * submits the form (GET) and paging follows links,
  * so both work without JavaScript; each row is WP Job Manager's
  * content-job_listing.php (this plugin's override).
  *
@@ -10,7 +11,8 @@
  * it, so an update never rewrites a field someone is typing in.
  *
  * URL parameters: search_keywords, search_location, search_category (slug),
- * filter_job_type[] (slugs; none means every type), remote_position, pg.
+ * filter_job_type[] (slugs; none means every type), remote_position, pg,
+ * order (asc lists the oldest first).
  *
  * @package TekSeries
  *
@@ -35,6 +37,7 @@ $tekseries_chosen   = isset( $_GET['filter_job_type'] ) ? array_filter( (array) 
 $tekseries_remote   = ! empty( $_GET['remote_position'] );
 $tekseries_page     = isset( $_GET['pg'] ) ? max( 1, absint( $_GET['pg'] ) ) : 1;
 // phpcs:enable WordPress.Security.NonceVerification.Recommended
+$tekseries_order = tekseries_blocks_list_order();
 
 $tekseries_types      = get_option( 'job_manager_enable_types' ) ? get_job_listing_types() : array();
 $tekseries_type_slugs = wp_list_pluck( $tekseries_types, 'slug' );
@@ -58,7 +61,7 @@ $tekseries_jobs     = get_job_listings(
 		'posts_per_page'    => $tekseries_per_page,
 		'offset'            => ( $tekseries_page - 1 ) * $tekseries_per_page,
 		'orderby'           => 'date',
-		'order'             => 'DESC',
+		'order'             => strtoupper( $tekseries_order ),
 	)
 );
 
@@ -76,6 +79,10 @@ $tekseries_base     = (string) get_permalink();
 $tekseries_found    = (int) $tekseries_jobs->found_posts;
 $tekseries_listed   = $tekseries_jobs->have_posts();
 $tekseries_filtered = (bool) $tekseries_filters;
+
+// The order travels with the filters, but is not one: "Clear filters" keeps it.
+$tekseries_sorted = 'asc' === $tekseries_order ? array( 'order' => 'asc' ) : array();
+$tekseries_other  = 'asc' === $tekseries_order ? array() : array( 'order' => 'asc' );
 
 // Also with nothing found: a search made in place from here can find jobs.
 tekseries_blocks_track_job_search( (int) get_the_ID() );
@@ -144,6 +151,8 @@ tekseries_blocks_track_job_search( (int) get_the_ID() );
 				</label>
 			<?php endif; ?>
 		</div>
+		<?php // Carries the order through a search; the script keeps it in step with the address. Last, so the first field is still one to type in. ?>
+		<input type="hidden" name="order" value="<?php echo esc_attr( 'asc' === $tekseries_order ? 'asc' : '' ); ?>">
 	</form>
 
 	<?php
@@ -173,10 +182,16 @@ tekseries_blocks_track_job_search( (int) get_the_ID() );
 				);
 				?>
 			</p>
-			<p class="ts-job-results__order">
-				<?php esc_html_e( 'Newest first', 'tekseries-blocks' ); ?>
+			<?php // The order on show; the link lists the same jobs the other way round, from the first page. ?>
+			<a
+				class="ts-job-results__order<?php echo 'asc' === $tekseries_order ? ' is-oldest' : ''; ?>"
+				href="<?php echo esc_url( add_query_arg( $tekseries_filters + $tekseries_other, $tekseries_base ) ); ?>"
+				aria-label="<?php echo esc_attr( tekseries_blocks_list_order_hint( $tekseries_order ) ); ?>"
+				data-wp-on--click="actions.order"
+			>
+				<?php echo esc_html( tekseries_blocks_list_order_label( $tekseries_order ) ); ?>
 				<?php echo tekseries_blocks_icon_svg( 'south' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
-			</p>
+			</a>
 		</div>
 
 		<?php // Always there, if empty: WP Job Manager counts impressions on the first list it finds, for as long as the page lives. ?>
@@ -193,7 +208,7 @@ tekseries_blocks_track_job_search( (int) get_the_ID() );
 			<?php
 			$tekseries_links = paginate_links(
 				array(
-					'base'      => add_query_arg( 'pg', '%#%', add_query_arg( $tekseries_filters, $tekseries_base ) ),
+					'base'      => add_query_arg( 'pg', '%#%', add_query_arg( $tekseries_filters + $tekseries_sorted, $tekseries_base ) ),
 					'format'    => '',
 					'current'   => $tekseries_page,
 					'total'     => (int) $tekseries_jobs->max_num_pages,
@@ -214,7 +229,7 @@ tekseries_blocks_track_job_search( (int) get_the_ID() );
 				<?php echo tekseries_blocks_icon_svg( 'work_off' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
 				<?php if ( $tekseries_filtered ) : ?>
 					<p class="ts-job-empty__title"><?php esc_html_e( 'No jobs match these filters', 'tekseries-blocks' ); ?></p>
-					<a class="ts-job-empty__clear" href="<?php echo esc_url( $tekseries_base ); ?>" data-wp-on--click="actions.clear"><?php esc_html_e( 'Clear filters', 'tekseries-blocks' ); ?></a>
+					<a class="ts-job-empty__clear" href="<?php echo esc_url( add_query_arg( $tekseries_sorted, $tekseries_base ) ); ?>" data-wp-on--click="actions.clear"><?php esc_html_e( 'Clear filters', 'tekseries-blocks' ); ?></a>
 				<?php else : ?>
 					<p class="ts-job-empty__title"><?php esc_html_e( 'There are no open jobs right now', 'tekseries-blocks' ); ?></p>
 				<?php endif; ?>

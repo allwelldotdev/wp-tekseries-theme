@@ -245,7 +245,8 @@
 	color: var(--wp--preset--color--muted);
 	font-size: var(--wp--preset--font-size--caption);
 
-	p {
+	p,
+	.ts-job-results__order {
 		display: flex;
 		gap: 6px;
 		align-items: center;
@@ -260,6 +261,26 @@
 		width: 18px;
 		height: 18px;
 		fill: currentcolor;
+	}
+
+	// The order switch. Its padding makes it a comfortable target, and the
+	// margin takes that space back so the row stays as tall as its text.
+	.ts-job-results__order {
+		margin: -12px -8px;
+		padding: 12px 8px;
+		border-radius: 8px;
+		color: inherit;
+		font-weight: 600;
+		text-decoration: none;
+
+		&:hover {
+			color: var(--wp--preset--color--plum);
+		}
+
+		// Oldest first: the arrow points up.
+		&.is-oldest svg {
+			rotate: 180deg;
+		}
 	}
 }
 
@@ -563,10 +584,6 @@
 
 	.ts-job-type-toggle {
 		flex: none;
-	}
-
-	.ts-job-results__order {
-		display: none !important;
 	}
 
 	.ts-job-row__link {
