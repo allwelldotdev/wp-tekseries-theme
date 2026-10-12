@@ -146,6 +146,7 @@ test.describe( 'single job', () => {
 			'Mail Co',
 			'Full Time',
 			'Abuja',
+			/^Posted .+ ago$/,
 		] );
 
 		// No jQuery and no WP Job Manager styles on this page.

@@ -2,6 +2,13 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.2.6] — 2026-10-12
+### Improved
+- On each job's page, the three cards under "More jobs" now show when that job was posted, for example "Posted 1 week ago", after the job type and location, with a small clock icon; before, they showed only the title, company, type and location.
+- The posted time is worded the same way as the "Posted" chip at the top of the job page, so it follows the job board's date setting (time ago, or a date).
+- When a card's location is long, the posted time wraps onto a second line and the cards in that row grow a little; in the example checked at 1440px wide they went from 128px to 155px tall.
+- This is made on purpose at the site owner's request and differs from the design board for the job page, which shows no posted time on these cards.
+
 ## [1.2.5] — 2026-10-12
 ### Changed
 - On Home, in the "Who We Are" section on desktops (screens wider than 1100px), the plum Mission card now ends where its text ends, where before it stretched to the height of the photo and "Get Involved" card beside it and left about 55px of empty plum under the last paragraph; at 1440px wide it is 568px tall, where it was 624px, and only the card's own 44px of padding is left under the text.
