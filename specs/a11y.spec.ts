@@ -88,12 +88,22 @@ const flatPng = ( name: string, shade: number, size = 64 ) => {
 	return file;
 };
 
-const visitor = ( browser: Browser, viewport: Size, motion = false ) =>
-	browser.newContext( {
+const visitor = async ( browser: Browser, viewport: Size, motion = false ) => {
+	const context = await browser.newContext( {
 		storageState: { cookies: [], origins: [] },
 		viewport,
 		reducedMotion: motion ? 'no-preference' : 'reduce',
 	} );
+	// The Contact page's map is Google's: the scan is of our frame around
+	// it, and must not hang on their servers.
+	await context.route( 'https://www.google.com/maps/**', ( route ) =>
+		route.fulfill( {
+			contentType: 'text/html',
+			body: '<!doctype html><html lang="en"><head><title>Map</title></head><body><main><h1>Map</h1></main></body></html>',
+		} )
+	);
+	return context;
+};
 
 // What axe finds wrong on the page as it is now, one line per rule.
 const violations = async ( page: Page, exclude: string[] = [] ) => {

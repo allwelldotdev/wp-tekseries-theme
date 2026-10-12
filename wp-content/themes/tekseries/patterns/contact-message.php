@@ -38,9 +38,10 @@
 <!-- /wp:buttons --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"is-style-card-plum ts-map","style":{"border":{"radius":"var:preset|border-radius|lg"},"dimensions":{"minHeight":"280px"},"spacing":{"padding":{"top":"var:preset|spacing|20","right":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|20"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","verticalAlignment":"bottom"}} -->
-<div class="wp-block-group is-style-card-plum ts-map" style="border-radius:var(--wp--preset--border-radius--lg);min-height:280px;padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|12","padding":{"top":"var:preset|spacing|20","right":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|20"}},"border":{"radius":"var:preset|border-radius|md"}},"backgroundColor":"white","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
-<div class="wp-block-group has-white-background-color has-background" style="border-radius:var(--wp--preset--border-radius--md);padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><!-- wp:group {"style":{"spacing":{"blockGap":"2px"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
+<!-- wp:tekseries/map {"src":"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3024.572480535527!2d-73.801149023883!3d40.70541233801876!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c260dee879afd5%3A0x1ba35895e2168a65!2s89-44%20162nd%20St%2C%20Jamaica%2C%20NY%2011432%2C%20USA!5e0!3m2!1sen!2sng!4v1682183385833!5m2!1sen!2sng","title":"<?php echo esc_attr__( 'Map: TekSeries, 89-44 162nd Street, Queens, New York', 'tekseries' ); ?>","style":{"border":{"radius":"var:preset|border-radius|lg"}}} /-->
+
+<!-- wp:group {"className":"is-style-card","style":{"spacing":{"blockGap":"var:preset|spacing|12","padding":{"top":"var:preset|spacing|20","right":"var:preset|spacing|20","bottom":"var:preset|spacing|20","left":"var:preset|spacing|20"}},"border":{"radius":"var:preset|border-radius|md"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"center"}} -->
+<div class="wp-block-group is-style-card" style="border-radius:var(--wp--preset--border-radius--md);padding-top:var(--wp--preset--spacing--20);padding-right:var(--wp--preset--spacing--20);padding-bottom:var(--wp--preset--spacing--20);padding-left:var(--wp--preset--spacing--20)"><!-- wp:group {"style":{"spacing":{"blockGap":"2px"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
 <div class="wp-block-group"><!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"}},"textColor":"plum","fontSize":"body-l","fontFamily":"display"} -->
 <p class="has-plum-color has-text-color has-display-font-family has-body-l-font-size" style="font-weight:700">TekSeries</p>
 <!-- /wp:paragraph -->
@@ -55,7 +56,6 @@
 <div class="wp-block-button is-style-soft ts-icon-directions"><a class="wp-block-button__link wp-element-button" href="https://www.google.com/maps/search/?api=1&amp;query=89-44+162nd+Street+Queens+NY+11432" target="_blank" rel="noreferrer noopener"><?php echo esc_html__( 'Get directions', 'tekseries' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
-<!-- /wp:group --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group -->
 

@@ -1,0 +1,13 @@
+// Map: the frame clips the map to the block's corners. 450px tall, as the
+// live site's map was.
+.wp-block-tekseries-map {
+	overflow: hidden;
+	background-color: var(--wp--preset--color--lilac);
+
+	iframe {
+		display: block;
+		width: 100%;
+		height: 450px;
+		border: 0;
+	}
+}
