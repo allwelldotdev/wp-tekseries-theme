@@ -22,6 +22,9 @@ const count = ( stat: Element ) =>
 // without it the page is simply all there.
 test.describe( 'reveal on scroll', () => {
 	let made: Linked;
+	// A marked group holding marked blocks: one deeper in, one of its own
+	// children far down.
+	let nested: Linked;
 
 	test.beforeAll( async ( { requestUtils } ) => {
 		made = await requestUtils.rest< Linked >( {
@@ -41,14 +44,51 @@ test.describe( 'reveal on scroll', () => {
 				].join( '' ),
 			},
 		} );
+
+		const group = ( className: string, inner: string ) =>
+			`<!-- wp:group {${
+				className ? `"className":"${ className }",` : ''
+			}"layout":{"type":"constrained"}} --><div class="wp-block-group${
+				className ? ` ${ className }` : ''
+			}">${ inner }</div><!-- /wp:group -->`;
+		const paragraph = ( text: string ) =>
+			`<!-- wp:paragraph --><p>${ text }</p><!-- /wp:paragraph -->`;
+		const spacer = ( height: number ) =>
+			`<!-- wp:spacer {"height":"${ height }px"} --><div style="height:${ height }px" aria-hidden="true" class="wp-block-spacer"></div><!-- /wp:spacer -->`;
+		nested = await requestUtils.rest< Linked >( {
+			method: 'POST',
+			path: '/wp/v2/pages',
+			data: {
+				title: 'E2E Reveal Nested',
+				status: 'publish',
+				content:
+					spacer( 2000 ) +
+					group(
+						'ts-reveal e2e-outer',
+						paragraph( 'First' ) +
+							paragraph( 'Second' ) +
+							group(
+								'',
+								group(
+									'ts-reveal e2e-inner',
+									paragraph( 'One' ) + paragraph( 'Two' )
+								)
+							) +
+							spacer( 1500 ) +
+							'<!-- wp:paragraph {"className":"ts-reveal e2e-last"} --><p class="ts-reveal e2e-last">Last</p><!-- /wp:paragraph -->'
+					),
+			},
+		} );
 	} );
 
 	test.afterAll( async ( { requestUtils } ) => {
-		await requestUtils.rest( {
-			method: 'DELETE',
-			path: `/wp/v2/pages/${ made.id }`,
-			params: { force: true },
-		} );
+		for ( const { id } of [ made, nested ] ) {
+			await requestUtils.rest( {
+				method: 'DELETE',
+				path: `/wp/v2/pages/${ id }`,
+				params: { force: true },
+			} );
+		}
 	} );
 
 	test( 'a block below the screen waits, then rises in when it is scrolled to', async ( {
@@ -96,6 +136,54 @@ test.describe( 'reveal on scroll', () => {
 					)
 				)
 		).toEqual( [ '0.20', '0.30' ] );
+		await context.close();
+	} );
+
+	test( 'a marked block inside a marked group keeps its own turn', async ( {
+		browser,
+	} ) => {
+		const context = await browser.newContext( MOVING );
+		const page = await context.newPage();
+		await page.goto( nested.link );
+		const outer = page.locator( '.e2e-outer' );
+		const inner = page.locator( '.e2e-inner' );
+		const last = page.locator( '.e2e-last' );
+		const delays = ( items: Element[] ) =>
+			items.map( ( item ) =>
+				parseFloat(
+					window.getComputedStyle( item ).animationDelay
+				).toFixed( 2 )
+			);
+		await expect( outer ).toHaveClass( /is-reveal-pending/ );
+
+		await outer.locator( '> p' ).first().scrollIntoViewIfNeeded();
+		await expect( outer ).toHaveClass( /is-revealed/ );
+		await expect( inner ).toHaveClass( /is-revealed/ );
+		// The group's own contents follow it; so do the inner group's, from
+		// its first, whatever place the inner group has in the outer one.
+		expect(
+			await outer.locator( '> p:not(.ts-reveal)' ).evaluateAll( delays )
+		).toEqual( [ '0.20', '0.30' ] );
+		expect( await inner.locator( '> p' ).evaluateAll( delays ) ).toEqual( [
+			'0.20',
+			'0.30',
+		] );
+		// The marked child far down has not been reached: it still waits,
+		// and does not play as part of the group's contents.
+		await expect( last ).toHaveClass( /is-reveal-pending/ );
+		expect( await last.evaluate( animation ) ).toBe( 'none' );
+		expect( await last.evaluate( opacity ) ).toBe( '0' );
+
+		// Scrolled to, it plays its own entrance.
+		await last.scrollIntoViewIfNeeded();
+		await expect( last ).toHaveClass( /is-revealed/ );
+		expect(
+			await last.evaluate( ( element ) => {
+				const style = window.getComputedStyle( element );
+				return [ style.animationName, style.animationDuration ];
+			} )
+		).toEqual( [ 'ts-reveal-rise', '0.8s' ] );
+		await expect.poll( () => last.evaluate( opacity ) ).toBe( '1' );
 		await context.close();
 	} );
 
