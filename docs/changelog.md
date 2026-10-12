@@ -2,6 +2,16 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.2.0] — 2026-10-12
+### New
+- Editors can make any block rise in when the page opens, the way the Home banner's text does, by adding the class `ts-intro` under Advanced, then Additional CSS class(es), in the editor; this is meant for the top of a page, such as the hero, because lower down it would play before anyone sees it, and `ts-reveal` is the class for blocks that should rise when a visitor scrolls to them.
+- On a Group (Row, Stack and Grid are Groups too), the blocks directly inside rise in one after another while the Group and its background stay still; the first six take turns and any after that come in with the sixth.
+- On any other block, that block rises in by itself, and several marked blocks side by side take turns in their order.
+- A marked block inside another marked block is ignored, so the outer one decides, and decorative corner icons stay still.
+- Nothing moves for visitors who have asked their device for reduced motion, in print, or in the editor, a block the keyboard reaches is shown at once, and it needs no JavaScript.
+- Editors should know that text which rises in only counts as shown, for the "largest paint" speed measure Google uses, once it has finished rising: on a hero led by a photo, as on Home, there is no cost, but on Contact and Job Series, where the hero's text is the largest thing on screen, marking the whole text Group moved that time from about 0.4 seconds to about 1.6 seconds, while marking only the heading and the buttons and leaving the large paragraph unmarked cost nothing.
+- No page uses the class yet, so nothing on the site changes until an editor adds it, and the Home banner keeps its own built-in effect.
+
 ## [1.1.3] — 2026-10-12
 ### Fixed
 - For visitors moving through the page with the keyboard, the Home banner's text, any block marked to rise in on scroll, and the first link of the tablet and phone menu no longer rise in a second time: a block the keyboard has reached is still shown at once, and it now stays in place when the focus moves on, where before it vanished and rose in again.

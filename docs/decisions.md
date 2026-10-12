@@ -1150,9 +1150,50 @@ Checked in Chromium 156 and Firefox 157: important beats the animation while foc
 
 **Rationale:** The important override is the smallest change and is what the cascade specifies. It removes the cause of the replay, which was the animation coming back, instead of racing it. If an engine did not honour the override, a focused block would finish fading in under the focus ring, and it still would not replay.
 
+## ADR-063: Offer the Home hero's on-load entrance as a class, `ts-intro`
+
+**Status:** Accepted
+
+**Context:** ADR-060 built two entrances. The hero carousel block raises the first slide's text when the page opens (CSS inside the block: `:has(> h1) > *`, 28px, 0.8s, 0.12s apart, from 0.15s). Any block with the class `ts-reveal` rises in when scrolled to (theme CSS plus a small script). The owner liked `ts-reveal` being a class and marked 38 Home blocks with it by hand. On 2026-10-12 the owner asked for the hero's on-load effect as a class too, so other pages' heroes can use it. Those heroes are a Group with the style `is-style-hero-plum` (decorative circles as pseudo-elements) holding a Group of text (breadcrumbs, H1, paragraph, buttons) and sometimes a card.
+
+**Options:**
+- Make `ts-reveal` also play for blocks on screen at load. ADR-060 leaves those alone on purpose, because hiding them after load flashes. It also needs the script, so the top of the page would depend on JavaScript.
+- Move the hero carousel's rule onto the class and mark the Home slide. The block lives in the plugin and must work without a theme class (ADR-001), and Home's content is the owner's, in the database.
+- A class for containers only. The owner marks single blocks with `ts-reveal`, and a class that did nothing on a single heading would confuse. Single marks also matter for speed (see the measurements below).
+- One class that reads the block it is on.
+
+**Decision:** The last option, in version 1.2.0. It is the last section of the theme's `assets/css/global.css`, under `screen and (prefers-reduced-motion: no-preference)`. CSS only: no script, no markup, no server code. It works with JavaScript off and prints whole.
+- On a Group (`.wp-block-group.ts-intro`; Row, Stack and Grid are Groups), the direct children rise in one after another and the Group itself does not move, so a hero's background and circles stay still.
+- On any other block, the block rises in itself. Marked siblings take turns with `:nth-child(n of .ts-intro)` (Chrome 111, Firefox 113, Safari 9). Where unsupported, the rule is dropped and they rise together.
+- The values are the hero's: 28px, `reveal.duration` 0.8s, `ease.out-strong`, start 0.15s, `reveal.stagger` 0.12s apart. There are six places (`--ts-intro-place` 0 to 5); later blocks come with the sixth. No new token: 28px and 0.15s sit beside the rule, as in the hero carousel. The design system's own motion tokens are still to come.
+- The outermost mark wins. A marked block inside a marked block is not animated on its own (`:not(.ts-intro *)`), so two animations never stack on one element. A marked Group inside a marked Group rises as one of the outer Group's blocks.
+- Decorative icons (`[class*="is-style-deco"]`) are left out, as in the reveal rules.
+- The place rules for a Group's children come after those for single marks, because both can match a marked block inside a marked Group and the Group's must win. A Group's first child gets place 0 explicitly, because custom properties inherit: a marked Group that is the second marked sibling carries place 1.
+- The editor stays still. The selectors exclude `.block-editor-block-list__block`, because the theme stylesheet is also loaded as an editor style. Otherwise the entrance would play on every editor load and for every inserted or moved block.
+- Keyboard focus follows ADR-062: the animated properties are overridden with important declarations while focus is inside, and the animation is never removed.
+- The hero carousel keeps its built-in rule. The two share values but not code (`ts-carousel-rise` in the plugin, `ts-intro-rise` in the theme).
+- No page carries the class yet. On a text-led hero, mark the pieces (heading, buttons, card) and leave the large paragraph unmarked.
+- `specs/intro.spec.ts` has four tests:
+  - A Group's blocks come in turn (0.15s to 0.75s) and all are shown once played.
+  - Single marks take turns, a nested mark is left to the outer one, and a decorative icon stays still.
+  - A block the keyboard reaches is shown at once with no replay.
+  - Nothing moves under reduced motion, in print or in the editor, and no script is loaded.
+  - The editor test and the focus test were each checked to fail when their rule is broken.
+
+Measured cost (Chrome 156 on the development site, three loads each, medians). Chrome records a text block for Largest Contentful Paint only when its fade from opacity 0 has finished.
+- Contact at 1440px: unmarked 0.40s; the hero's text Group marked 1.78s; only the H1 and the buttons marked 0.33s. At 390px: 0.32s, 1.55s and 0.32s. On both, the largest element is the hero's lead paragraph.
+- Job Series at 1440 and 834px: about 0.4s unmarked, about 1.5s with the text Group marked. At 390px the largest element is outside the hero and the time did not change (about 0.28s).
+- Home is not affected: its largest element is the hero photo.
+- Starting the fade at a tiny non-zero opacity would hide the cost from the measure without changing what visitors see. That was not done.
+
+Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 834 and 390px by adding the class to the HTML on its way to the browser (no page was changed). The text rose in order, the background, circles and card stayed, and nothing was left hidden. Checked in Chromium 156 and Firefox 157. Safari is unverified, as in ADR-062.
+
+**Rationale:** One class that adapts to the block it is on matches how the owner already marks `ts-reveal`, and covers both a whole hero and single pieces. Pure CSS keeps the top of the page independent of JavaScript (ADR-005) and avoids the flash ADR-060 avoided. Keeping the hero carousel's own rule leaves the plugin working without the theme (ADR-001). The outermost-mark rule and the place ordering prevent stacked animations and wrong delays. The measured cost is why the class is opt-in and the advice is to leave a large lead paragraph unmarked.
+
 ## Future work
 
-- **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062).
+- **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).
+- **Intro motion tokens:** when the design system delivers its motion tokens, move the 28px distance and 0.15s start of `ts-intro` (and the hero carousel) onto them (ADR-063).
 
 - **Hosting and deploy:** the release method is decided (ADR-058, ADR-059). Still open on the host: a page cache and longer cache lifetimes for static files on the development site's host, and the first real run of the migration plugin on the live site (owner; ADR-059).
 - **Accessibility leftovers:** captions for the gallery video (content), and a hand scan of the Contact form after each change to it, as the suite cannot reach it (ADR-055, ADR-056).
