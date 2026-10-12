@@ -392,6 +392,16 @@ test.describe( 'accessibility', () => {
 				page.getByRole( 'dialog', { name: 'Media viewer' } )
 			).toBeVisible();
 			expect( await violations( page ) ).toEqual( [] );
+
+			// And on one file, from an event's poster: no steps or thumbnails.
+			await page.goto( urls.get( 'event' ) ?? '' );
+			await page
+				.getByRole( 'link', { name: 'View full size', exact: true } )
+				.click();
+			await expect(
+				page.getByRole( 'dialog', { name: 'Media viewer' } )
+			).toHaveClass( /\bis-single\b/ );
+			expect( await violations( page ) ).toEqual( [] );
 			await context.close();
 		}
 	} );

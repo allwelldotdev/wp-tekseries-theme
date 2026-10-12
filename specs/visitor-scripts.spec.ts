@@ -1,7 +1,13 @@
+import { join } from 'node:path';
 import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 import { setUpJobPages } from './utils/wpjm';
 
 type Linked = { id: number; link: string };
+
+const PHOTO = join(
+	__dirname,
+	'../wp-content/themes/tekseries/assets/images/home/about.jpg'
+);
 
 // Each kind of public page, and the plugin scripts its blocks should bring.
 const PAGES: [ name: string, scripts: string[] ][] = [
@@ -9,6 +15,8 @@ const PAGES: [ name: string, scripts: string[] ][] = [
 	[ 'Home page pattern', [ 'hero-carousel/view.js', 'reveal/view.js' ] ],
 	[ 'events archive', [] ],
 	[ 'event', [] ],
+	// Its poster opens in the Gallery's viewer.
+	[ 'event with a poster', [ 'media-gallery/view.js' ] ],
 	[ 'news post', [] ],
 	[ 'gallery', [ 'media-gallery/view.js' ] ],
 	[ 'legal page', [ 'toc/view.js' ] ],
@@ -25,6 +33,7 @@ const PAGES: [ name: string, scripts: string[] ][] = [
 test.describe( 'scripts sent to visitors', () => {
 	const made: [ path: string, id: number ][] = [];
 	const urls = new Map< string, string >();
+	let photo: number | undefined;
 
 	test.beforeAll( async ( { requestUtils, browser } ) => {
 		const publish = async (
@@ -60,6 +69,11 @@ test.describe( 'scripts sent to visitors', () => {
 		await publish( 'event', '/wp/v2/event', {
 			title: 'E2E Scripts Event',
 		} );
+		photo = ( await requestUtils.uploadMedia( PHOTO ) ).id;
+		await publish( 'event with a poster', '/wp/v2/event', {
+			title: 'E2E Scripts Poster Event',
+			featured_media: photo,
+		} );
 		await publish( 'news post', '/wp/v2/posts', {
 			title: 'E2E Scripts Post',
 			content: 'A post.',
@@ -89,6 +103,9 @@ test.describe( 'scripts sent to visitors', () => {
 				path: `${ path }/${ id }`,
 				params: { force: true },
 			} );
+		}
+		if ( photo ) {
+			await requestUtils.deleteMedia( photo );
 		}
 	} );
 
