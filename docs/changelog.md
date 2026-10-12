@@ -2,6 +2,14 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.10.0] — 2026-10-12
+### New
+- On the Contact page, the grey hint in the Subject field now follows the topic a visitor picks under "What is this about?": "How can we help?" for General question, "e.g. Joining the next Eziama boot camp" for Workshops, "e.g. Posting an internship" for Job Series, and "e.g. Sponsoring a workshop" for Support or sponsorship.
+- A link that opens the form on a topic, such as "Talk to us about sponsoring", shows that topic's hint straight away, also without JavaScript.
+- What a visitor has typed in the Subject field is never changed; only the hint is.
+- The email the form sends to the site now has a "Topic" line above the Subject line, naming the topic that was picked; this is a setting of the contact form itself, set on the development site, and the live site gets it when the site is moved over.
+- Developers can change the hints with the filter `tekseries_blocks_contact_subject_hints`; a topic without a hint shows the form's own placeholder.
+
 ## [1.9.0] — 2026-10-12
 ### New
 - Visitors now see a real Google map of the TekSeries address (89-44 162nd Street, Queens, New York) on the Contact page, 450px tall with rounded corners, where a drawn stand-in (a plum card with a street grid and a pin) used to be.
