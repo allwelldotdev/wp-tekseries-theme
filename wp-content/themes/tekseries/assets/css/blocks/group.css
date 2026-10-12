@@ -58,40 +58,6 @@
 	border-color: var(--wp--preset--color--saffron);
 }
 
-/* Contact map: a drawn street grid with a pin, behind the address card. */
-.ts-map {
-	position: relative;
-	overflow: hidden;
-	isolation: isolate;
-}
-
-.ts-map::before {
-	content: "";
-	position: absolute;
-	z-index: -1;
-	inset: 0;
-	background-image:
-		linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
-		linear-gradient(32deg, transparent 46%, rgba(244, 162, 97, 0.35) 46%, rgba(244, 162, 97, 0.35) 50%, transparent 50%),
-		linear-gradient(-58deg, transparent 60%, rgba(255, 255, 255, 0.12) 60%, rgba(255, 255, 255, 0.12) 63%, transparent 63%);
-	background-size: 36px 36px, 36px 36px, 100% 100%, 100% 100%;
-}
-
-.ts-map::after {
-	content: "";
-	position: absolute;
-	z-index: -1;
-	top: 38%;
-	left: 50%;
-	width: 56px;
-	height: 56px;
-	border-radius: 50% 50% 50% 0;
-	background-color: var(--wp--preset--color--saffron);
-	box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
-	transform: translate(-50%, -100%) rotate(-45deg);
-}
-
 /* Gallery hero collage: three tilted photos with white frames. */
 .ts-collage {
 	position: relative;

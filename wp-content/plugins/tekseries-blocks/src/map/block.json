@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tekseries/map",
+	"version": "0.1.0",
+	"title": "Map",
+	"category": "embed",
+	"icon": "location-alt",
+	"description": "A Google map of a place, from the embed code Google Maps gives under Share, Embed a map. The map loads only when a visitor scrolls near it.",
+	"keywords": [ "map", "google", "location", "directions" ],
+	"textdomain": "tekseries-blocks",
+	"attributes": {
+		"src": {
+			"type": "string",
+			"default": ""
+		},
+		"title": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"spacing": {
+			"margin": true
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"__experimentalDefaultControls": {
+				"radius": true
+			}
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}
