@@ -57,6 +57,9 @@ test.describe( 'Table of Contents block', () => {
 		await expect( links ).toHaveText( [ '01Purpose', '02Data & Cookies' ] );
 		await expect( links.first() ).toHaveAttribute( 'href', '#purpose' );
 		await expect( links.last() ).toHaveAttribute( 'href', '#cookies' );
+		// The heading row is a 44px target, padding included.
+		const summary = await toc.locator( 'summary' ).boundingBox();
+		expect( summary?.height ).toBe( 44 );
 		await context.close();
 	} );
 

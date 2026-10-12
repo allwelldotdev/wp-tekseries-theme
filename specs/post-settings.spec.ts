@@ -29,10 +29,14 @@ test.describe( 'Tone and icon panel', () => {
 			title: 'E2E Panel Event',
 		} );
 		await editor.openDocumentSettingsSidebar();
-		await page
+		// The editor remembers an open panel between visits: a click on one
+		// that is already open would close it.
+		const toggle = page
 			.getByRole( 'region', { name: 'Editor settings' } )
-			.getByRole( 'button', { name: 'Tone and icon' } )
-			.click();
+			.getByRole( 'button', { name: 'Tone and icon' } );
+		if ( ( await toggle.getAttribute( 'aria-expanded' ) ) !== 'true' ) {
+			await toggle.click();
+		}
 
 		const panel = page.locator( '.tekseries-post-tone-panel' );
 		await panel.getByRole( 'option', { name: 'Ink' } ).click();
