@@ -8,18 +8,18 @@ import {
 
 // The block: the id of the slide in view, whether the slides may change by
 // themselves here (the editor asked for it and the visitor accepts motion),
-// whether they are doing so, and how many waits were passed over.
+// whether they are doing so, how many waits were passed over, how many
+// seconds a slide stays, and whether the pointer over the slides holds them.
 type Context = {
 	current: string;
 	auto: boolean;
 	playing: boolean;
 	waits: number;
+	stay: number;
+	hover: boolean;
 };
 // One dot: the id of its slide.
 type DotContext = Context & { id: string };
-
-// How long a slide stays before the next one comes by itself, in milliseconds.
-const STAY = 7000;
 
 const isPlainClick = ( event: MouseEvent ) =>
 	event.button === 0 &&
@@ -92,7 +92,7 @@ store( 'tekseries/hero-carousel', {
 		// the waits passed over.
 		rotate() {
 			const context = getContext< Context >();
-			const { current, playing, waits } = context;
+			const { current, playing, waits, stay, hover } = context;
 			const carousel = getElement().ref;
 			if ( ! carousel || ! playing ) {
 				return;
@@ -100,11 +100,12 @@ store( 'tekseries/hero-carousel', {
 			const timer = window.setTimeout(
 				withScope( () => {
 					const { ownerDocument } = carousel;
-					// Not under the visitor's pointer or focus, nor in a
-					// tab nobody is looking at.
+					// Not under the visitor's focus, nor in a tab nobody is
+					// looking at, nor (where the editor left that on) under
+					// the pointer.
 					if (
 						ownerDocument.hidden ||
-						carousel.matches( ':hover' ) ||
+						( hover && carousel.matches( ':hover' ) ) ||
 						carousel.contains( ownerDocument.activeElement )
 					) {
 						context.waits = waits + 1;
@@ -125,7 +126,7 @@ store( 'tekseries/hero-carousel', {
 						reveal( next );
 					}
 				} ),
-				STAY
+				stay * 1000
 			);
 			return () => window.clearTimeout( timer );
 		},

@@ -229,6 +229,15 @@ test.describe( 'accessibility', () => {
 				photos.white.source_url
 			),
 		} );
+		// The same hero with its dots 8px apart instead of a tap target each.
+		await create( 'hero with close dots', '/wp/v2/pages', {
+			title: 'E2E A11y Close Dots',
+			template: 'page-no-title',
+			content: hero.replace(
+				'<!-- wp:tekseries/hero-carousel {',
+				'<!-- wp:tekseries/hero-carousel {"dotSpacing":"close",'
+			),
+		} );
 		await create( 'legal page', '/wp/v2/pages', {
 			title: 'E2E A11y Legal',
 			template: 'page-legal',
@@ -316,32 +325,36 @@ test.describe( 'accessibility', () => {
 		} );
 	}
 
-	// States only a script or a click reaches.
-	test( 'the Home hero on its second slide, paused', async ( {
-		browser,
-	} ) => {
-		for ( const viewport of [ DESKTOP, PHONE ] ) {
-			const context = await visitor( browser, viewport, true );
-			const page = await context.newPage();
-			await page.goto( urls.get( 'Home page pattern' ) ?? '' );
-			const dots = page
-				.getByRole( 'navigation', { name: 'Slides' } )
-				.getByRole( 'link' );
-			await dots.nth( 1 ).click();
-			await expect( dots.nth( 1 ) ).toHaveAttribute(
-				'aria-current',
-				'true'
-			);
-			await page
-				.getByRole( 'button', { name: 'Pause the slides' } )
-				.click();
-			await expect(
-				page.getByRole( 'button', { name: 'Play the slides' } )
-			).toBeVisible();
-			expect( await violations( page ) ).toEqual( [] );
-			await context.close();
-		}
-	} );
+	// States only a script or a click reaches. The hero is checked with its
+	// dots a tap target each and 8px apart: with two slides, close dots still
+	// keep the guideline's smallest spacing (three or more would not).
+	for ( const hero of [ 'Home page pattern', 'hero with close dots' ] ) {
+		test( `the Home hero on its second slide, paused (${ hero })`, async ( {
+			browser,
+		} ) => {
+			for ( const viewport of [ DESKTOP, PHONE ] ) {
+				const context = await visitor( browser, viewport, true );
+				const page = await context.newPage();
+				await page.goto( urls.get( hero ) ?? '' );
+				const dots = page
+					.getByRole( 'navigation', { name: 'Slides' } )
+					.getByRole( 'link' );
+				await dots.nth( 1 ).click();
+				await expect( dots.nth( 1 ) ).toHaveAttribute(
+					'aria-current',
+					'true'
+				);
+				await page
+					.getByRole( 'button', { name: 'Pause the slides' } )
+					.click();
+				await expect(
+					page.getByRole( 'button', { name: 'Play the slides' } )
+				).toBeVisible();
+				expect( await violations( page ) ).toEqual( [] );
+				await context.close();
+			}
+		} );
+	}
 
 	test( 'the header menu open on a tablet and a phone', async ( {
 		browser,
