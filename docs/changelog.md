@@ -2,6 +2,11 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.1.3] — 2026-10-12
+### Fixed
+- For visitors moving through the page with the keyboard, the Home banner's text, any block marked to rise in on scroll, and the first link of the tablet and phone menu no longer rise in a second time: a block the keyboard has reached is still shown at once, and it now stays in place when the focus moves on, where before it vanished and rose in again.
+- Mouse and touch visitors, visitors with reduced motion, and editors see no difference.
+
 ## [1.1.2] — 2026-10-12
 ### Fixed
 - A block marked to rise in on scroll, placed directly inside a marked Group such as a card, now plays its own rise when a visitor reaches it, where before it could appear at once or jump in part-way, most often on phones where cards are tall.
