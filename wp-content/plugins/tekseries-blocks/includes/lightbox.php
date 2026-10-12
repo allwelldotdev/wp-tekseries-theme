@@ -8,6 +8,11 @@
  * opens the file itself. A Featured Image block with the class gets such a
  * link around its picture, to the full-size file.
  *
+ * The viewer also plays a YouTube or Vimeo video in an embedded player (the
+ * Post Video block, includes/post-video.php). The player's frame is on the
+ * page only while the viewer shows it, so nothing is asked of those services
+ * before a visitor opens the video, and closing the viewer stops it.
+ *
  * The dialog is printed once per page: by the Gallery block where there is
  * one, otherwise in the footer of a page with an opener.
  *
@@ -48,6 +53,8 @@ function tekseries_blocks_lightbox_setup(): void {
 			'position' => __( '%1$s of %2$s', 'tekseries-blocks' ),
 			/* translators: %s: position of an item among the loaded ones. */
 			'thumb'    => __( 'Show item %s', 'tekseries-blocks' ),
+			// The title of an embedded player whose video has no caption.
+			'player'   => __( 'Video player', 'tekseries-blocks' ),
 		)
 	);
 	wp_interactivity_state( 'tekseries/media-gallery', array( 'caption' => '' ) );
@@ -93,8 +100,12 @@ function tekseries_blocks_lightbox_markup(): string {
 		<div class="ts-lightbox__stage" data-wp-on--pointerdown="actions.press" data-wp-on--pointerup="actions.release">
 			<figure class="ts-lightbox__figure">
 				<div class="ts-lightbox__frame" data-wp-bind--style="state.frameStyle">
-					<img class="ts-lightbox__photo" alt="" sizes="(max-width: 640px) 100vw, 1100px" data-wp-bind--alt="state.caption" data-wp-bind--src="state.photoSrc" data-wp-bind--srcset="state.photoSrcset" data-wp-bind--hidden="state.isVideo">
+					<img class="ts-lightbox__photo" alt="" sizes="(max-width: 640px) 100vw, 1100px" data-wp-bind--alt="state.caption" data-wp-bind--src="state.photoSrc" data-wp-bind--srcset="state.photoSrcset" data-wp-bind--hidden="!state.isPhoto">
 					<video class="ts-lightbox__video" controls playsinline preload="metadata" data-wp-bind--src="state.videoSrc" data-wp-bind--poster="state.poster" data-wp-bind--hidden="!state.isVideo" data-wp-watch="callbacks.stopVideo"></video>
+					<?php // A YouTube or Vimeo player: made when the viewer opens on one, taken away when it closes. ?>
+					<template data-wp-each--player="state.players" data-wp-each-key="context.player.src">
+						<iframe class="ts-lightbox__embed" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" data-wp-bind--src="context.player.src" data-wp-bind--title="context.player.title"></iframe>
+					</template>
 				</div>
 				<figcaption class="ts-lightbox__caption" data-wp-text="state.caption"></figcaption>
 			</figure>
@@ -157,6 +168,7 @@ function tekseries_blocks_lightbox_item( string $url, int $id = 0 ): ?array {
 	$item = array(
 		'href'    => $url,
 		'video'   => $video,
+		'embed'   => '',
 		'caption' => '',
 		'thumb'   => '',
 		'srcset'  => '',
@@ -222,23 +234,48 @@ function tekseries_blocks_lightbox_opener( $content, $block, $instance ) {
 		return $content;
 	}
 
-	$tags->set_attribute( 'data-wp-interactive', 'tekseries/media-gallery' );
-	$tags->set_attribute( 'data-wp-context', (string) wp_json_encode( array( 'opener' => $item ), JSON_HEX_TAG | JSON_HEX_AMP ) );
-	$tags->set_attribute( 'data-wp-on--click', 'actions.openOne' );
+	if ( ! tekseries_blocks_lightbox_request() ) {
+		return $content;
+	}
+	foreach ( tekseries_blocks_lightbox_directives( $item ) as $name => $value ) {
+		$tags->set_attribute( $name, $value );
+	}
 
-	// The viewer's script and styles are the Gallery block's.
+	return $tags->get_updated_html();
+}
+add_filter( 'render_block', 'tekseries_blocks_lightbox_opener', 10, 3 );
+
+/**
+ * Asks for the viewer on this page: loads its script and styles, which are
+ * the Gallery block's, and has the dialog printed.
+ *
+ * @return bool False when the Gallery block is not registered (the plugin is not built).
+ */
+function tekseries_blocks_lightbox_request(): bool {
 	$gallery = WP_Block_Type_Registry::get_instance()->get_registered( 'tekseries/media-gallery' );
 	if ( ! $gallery ) {
-		return $content;
+		return false;
 	}
 	array_map( 'wp_enqueue_script_module', $gallery->view_script_module_ids );
 	array_map( 'wp_enqueue_style', $gallery->style_handles );
 	tekseries_blocks_lightbox_setup();
 	tekseries_blocks_lightbox_flag( 'wanted', true );
-
-	return $tags->get_updated_html();
+	return true;
 }
-add_filter( 'render_block', 'tekseries_blocks_lightbox_opener', 10, 3 );
+
+/**
+ * The attributes that make a link open an item in the viewer.
+ *
+ * @param array<string, mixed> $item The item, as tekseries_blocks_lightbox_item() describes it.
+ * @return array<string, string> Attribute values by name, not yet escaped.
+ */
+function tekseries_blocks_lightbox_directives( array $item ): array {
+	return array(
+		'data-wp-interactive' => 'tekseries/media-gallery',
+		'data-wp-context'     => (string) wp_json_encode( array( 'opener' => $item ), JSON_HEX_TAG | JSON_HEX_AMP ),
+		'data-wp-on--click'   => 'actions.openOne',
+	);
+}
 
 /**
  * Prints the viewer in the footer of a page that has an opener and no

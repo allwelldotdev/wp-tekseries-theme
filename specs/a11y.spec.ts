@@ -29,6 +29,7 @@ const PAGES = [
 	'event type archive',
 	'event',
 	'news post',
+	'news post with a video',
 	'gallery',
 	'gallery with nothing to show',
 	'legal page',
@@ -100,6 +101,13 @@ const visitor = async ( browser: Browser, viewport: Size, motion = false ) => {
 		route.fulfill( {
 			contentType: 'text/html',
 			body: '<!doctype html><html lang="en"><head><title>Map</title></head><body><main><h1>Map</h1></main></body></html>',
+		} )
+	);
+	// The same for a news post's video, which the viewer plays from YouTube.
+	await context.route( 'https://www.youtube-nocookie.com/**', ( route ) =>
+		route.fulfill( {
+			contentType: 'text/html',
+			body: '<!doctype html><html lang="en"><head><title>Player</title></head><body><main><h1>Player</h1></main></body></html>',
 		} )
 	);
 	return context;
@@ -214,6 +222,16 @@ test.describe( 'accessibility', () => {
 			title: 'E2E A11y Post',
 			content: 'A post.',
 			featured_media: photos.white.id,
+		} );
+		// Its card opens a YouTube video in the viewer.
+		await create( 'news post with a video', '/wp/v2/posts', {
+			title: 'E2E A11y Video Post',
+			content: 'A post.',
+			acf: {
+				tekseries_video: true,
+				tekseries_video_link:
+					'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+			},
 		} );
 
 		// Pages built from the theme's patterns, and the hero over a white photo.
@@ -401,6 +419,16 @@ test.describe( 'accessibility', () => {
 			await expect(
 				page.getByRole( 'dialog', { name: 'Media viewer' } )
 			).toHaveClass( /\bis-single\b/ );
+			expect( await violations( page ) ).toEqual( [] );
+
+			// And on a news post's video, in its embedded player.
+			await page.goto( urls.get( 'news post with a video' ) ?? '' );
+			await page.locator( 'a.ts-post-video__card' ).click();
+			await expect(
+				page
+					.frameLocator( 'iframe.ts-lightbox__embed' )
+					.getByRole( 'heading', { name: 'Player' } )
+			).toBeVisible();
 			expect( await violations( page ) ).toEqual( [] );
 			await context.close();
 		}

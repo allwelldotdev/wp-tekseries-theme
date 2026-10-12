@@ -18,6 +18,8 @@ const PAGES: [ name: string, scripts: string[] ][] = [
 	// Its poster opens in the Gallery's viewer.
 	[ 'event with a poster', [ 'media-gallery/view.js' ] ],
 	[ 'news post', [] ],
+	// Its card opens the video in the Gallery's viewer.
+	[ 'news post with a video', [ 'media-gallery/view.js' ] ],
 	[ 'gallery', [ 'media-gallery/view.js' ] ],
 	[ 'legal page', [ 'toc/view.js' ] ],
 	[ 'job listings', [ 'job-listings/view.js' ] ],
@@ -77,6 +79,14 @@ test.describe( 'scripts sent to visitors', () => {
 		await publish( 'news post', '/wp/v2/posts', {
 			title: 'E2E Scripts Post',
 			content: 'A post.',
+		} );
+		await publish( 'news post with a video', '/wp/v2/posts', {
+			title: 'E2E Scripts Video Post',
+			content: 'A post.',
+			acf: {
+				tekseries_video: true,
+				tekseries_video_link: 'https://vimeo.com/76979871',
+			},
 		} );
 		await publish( 'job', '/wp/v2/job-listings', {
 			title: 'E2E Scripts Job',
