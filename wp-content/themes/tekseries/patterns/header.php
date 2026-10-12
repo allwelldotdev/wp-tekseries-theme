@@ -12,7 +12,7 @@
 ?>
 <!-- wp:group {"className":"ts-header","style":{"border":{"bottom":{"color":"var:preset|color|line","style":"solid","width":"1px"}}},"backgroundColor":"white","layout":{"type":"constrained"}} -->
 <div class="wp-block-group ts-header has-white-background-color has-background" style="border-bottom-color:var(--wp--preset--color--line);border-bottom-style:solid;border-bottom-width:1px"><!-- wp:group {"align":"wide","className":"ts-header__bar","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"space-between"}} -->
-<div class="wp-block-group alignwide ts-header__bar"><!-- wp:site-logo {"width":64} /-->
+<div class="wp-block-group alignwide ts-header__bar"><!-- wp:site-logo {"width":179} /-->
 
 <!-- wp:navigation {"overlayMenu":"never","metadata":{"blockVisibility":{"viewport":{"tablet":false,"mobile":false}}},"className":"ts-nav-primary","ariaLabel":"<?php echo esc_attr__( 'Main', 'tekseries' ); ?>"} -->
 <!-- wp:navigation-link {"label":"<?php echo esc_html__( 'Who We Are', 'tekseries' ); ?>","url":"/#about","kind":"custom","isTopLevelLink":true} /-->

@@ -1,4 +1,11 @@
+import path from 'node:path';
 import { test, expect } from '@wordpress/e2e-test-utils-playwright';
+
+// The theme's stacked logo, 218 by 150: any picture will do as a site logo.
+const LOGO = path.join(
+	__dirname,
+	'../wp-content/themes/tekseries/assets/images/logo-stacked.png'
+);
 
 const MAIN_LINKS = [
 	'Who We Are',
@@ -195,5 +202,65 @@ test.describe( 'header', () => {
 			'1',
 			'none',
 		] );
+	} );
+} );
+
+// The header's logo is sized by its height (44px on desktop, 40px on tablets,
+// 34px on phones) and takes the width its own proportions give, whatever file
+// an editor picks. The footer shows the stacked logo on a white plate.
+test.describe( 'logos', () => {
+	test( 'the header logo keeps its height and proportions at every width', async ( {
+		page,
+		requestUtils,
+	} ) => {
+		const logo = await requestUtils.uploadMedia( LOGO );
+		// The settings route, as the utilities' own type has no logo in it.
+		const setLogo = ( id: number ) =>
+			requestUtils.rest( {
+				method: 'POST',
+				path: '/wp/v2/settings',
+				data: { site_logo: id },
+			} );
+		await setLogo( logo.id );
+
+		for ( const [ width, height ] of [
+			[ 1440, 44 ],
+			[ 834, 40 ],
+			[ 390, 34 ],
+		] as const ) {
+			await page.setViewportSize( { width, height: 900 } );
+			await page.goto( '/' );
+			const box = await page
+				.getByRole( 'banner' )
+				.locator( '.wp-block-site-logo img' )
+				.boundingBox();
+			expect( box?.height ).toBe( height );
+			expect( box?.width ).toBeCloseTo( ( height * 218 ) / 150, 0 );
+		}
+
+		await setLogo( 0 );
+		await requestUtils.deleteMedia( logo.id );
+	} );
+
+	test( 'the footer shows the stacked logo on a white plate', async ( {
+		page,
+	} ) => {
+		await page.goto( '/' );
+		const logo = page
+			.getByRole( 'contentinfo' )
+			.getByRole( 'img', { name: 'TekSeries' } );
+		await logo.scrollIntoViewIfNeeded();
+		await expect
+			.poll( () =>
+				logo.evaluate( ( img: HTMLImageElement ) => img.naturalWidth )
+			)
+			.toBe( 218 );
+		expect( ( await logo.boundingBox() )?.height ).toBe( 44 );
+		const plate = page.locator( '.ts-footer__logo' );
+		expect( ( await plate.boundingBox() )?.height ).toBe( 56 );
+		await expect( plate ).toHaveCSS(
+			'background-color',
+			'rgb(255, 255, 255)'
+		);
 	} );
 } );

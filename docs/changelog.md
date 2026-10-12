@@ -2,6 +2,20 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.4.0] — 2026-10-12
+### New
+- On every page, the footer now starts with the stacked TekSeries logo at the top of the plum panel, above "Share. Create. Solve.", 44px tall on a white rounded plate that is 56px tall.
+- The footer logo has the alternative text "TekSeries" for screen readers.
+- The footer is 32px taller on desktops and 70px taller on tablets and phones.
+- Editors can replace or remove the footer logo in the Footer part of the Site Editor; it is a picture that comes with the theme.
+
+### Changed
+- On every page, the header now shows the horizontal TekSeries logo, the wordmark with "SHARE, CREATE, SOLVE" under it, in place of the stacked logo.
+- The header logo is 179px wide by 44px tall on desktops, 163 by 40 on tablets and 138 by 34 on phones; the header bar keeps its height (73px, 69px and 65px) and on a 360px wide phone there is still 146px between the logo and the menu button.
+- The header logo still links to the Home page, and editors still change it in the Site Editor by clicking the logo.
+- Note for the site owner: the horizontal logo file in the Media Library is 244 by 60 pixels, so on high-density screens, such as most phones and many laptops, it looks slightly soft at these sizes; a larger copy or an SVG copy of the same logo would fix that, and it can be swapped in the Site Editor by clicking the logo and choosing Replace, with no other change.
+- The sizes above were measured in a browser at 1440, 834, 390 and 360px wide.
+
 ## [1.3.0] — 2026-10-12
 ### New
 - On the Privacy Policy and Terms and Conditions pages, a lead line now sits under the page title in the plum band, as in the design: "How TekSeries collects, uses and protects the personal data of people who use our Site." on Privacy and "The rules for using TekSeries.com. By using the Site, you agree to abide by them." on Terms.
