@@ -10,3 +10,8 @@
 .wp-block-post-excerpt .wp-block-post-excerpt__excerpt {
 	margin: 0;
 }
+
+/* The lead line in a legal page's hero: the page's excerpt. */
+.wp-block-post-excerpt.ts-legal-lead {
+	max-width: 620px;
+}

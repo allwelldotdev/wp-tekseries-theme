@@ -159,6 +159,59 @@ test.describe( 'front-end templates', () => {
 	} );
 } );
 
+// A legal page's hero carries the page's excerpt as its lead line, and no
+// lead at all when the page has none (core would make one up from the text).
+test.describe( 'legal page lead', () => {
+	const pages: number[] = [];
+
+	test.afterAll( async ( { requestUtils } ) => {
+		for ( const id of pages ) {
+			await requestUtils.rest( {
+				method: 'DELETE',
+				path: `/wp/v2/pages/${ id }`,
+				params: { force: true },
+			} );
+		}
+	} );
+
+	test( 'shows the excerpt under the title, and nothing without one', async ( {
+		page,
+		requestUtils,
+	} ) => {
+		const legal = ( title: string, excerpt?: string ) =>
+			requestUtils.rest< Linked >( {
+				method: 'POST',
+				path: '/wp/v2/pages',
+				data: {
+					title,
+					excerpt,
+					status: 'publish',
+					template: 'page-legal',
+					content:
+						'<!-- wp:paragraph --><p>The first words of the page itself.</p><!-- /wp:paragraph -->',
+				},
+			} );
+		const withLead = await legal(
+			'E2E Legal Lead',
+			'How we look after personal data.'
+		);
+		const without = await legal( 'E2E Legal No Lead' );
+		pages.push( withLead.id, without.id );
+
+		await page.goto( withLead.link );
+		const lead = page.locator( '.is-style-hero-plum .ts-legal-lead' );
+		await expect( lead ).toHaveText( 'How we look after personal data.' );
+		await expect( lead ).toHaveCSS( 'max-width', '620px' );
+		await expect( lead.getByRole( 'link' ) ).toHaveCount( 0 );
+
+		await page.goto( without.link );
+		await expect( page.getByRole( 'heading', { level: 1 } ) ).toHaveText(
+			'E2E Legal No Lead'
+		);
+		await expect( lead ).toHaveCount( 0 );
+	} );
+} );
+
 // Controls drawn from the boards: pagination chevrons, the "Read more" arrow
 // and the previous/next post cards.
 test.describe( 'listing and post controls', () => {

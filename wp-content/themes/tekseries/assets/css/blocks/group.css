@@ -161,6 +161,14 @@
 	margin: 0;
 }
 
+/*
+ * The band that closes a legal page: its text gives way, down to 280px,
+ * before the button drops under it.
+ */
+.ts-legal-band > .wp-block-group {
+	flex: 1 1 280px;
+}
+
 /* A card that ends with its content instead of stretching to its grid row. */
 .ts-fit {
 	align-self: start;
