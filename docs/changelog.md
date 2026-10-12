@@ -2,6 +2,20 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.5.0] — 2026-10-12
+### New
+- Four buttons from the design are back; they had been left out because the site has no page for them to lead to yet, and until those pages exist each one links to "#", so pressing it does nothing.
+- On Home, in "What We Do", the Job Series Portal card (Pillar II) has a third button, "Upload your CV", outlined in white, after "Find a job" and "Post a job".
+- On Home, the Maker's Prize and Micro Seed Funding card (Pillar III) has a dark "Apply for the Maker's Prize" button, to the right of the card's heading on desktops and under the heading on tablets and phones.
+- On the Job Series page, the plum band at the top has an "Upload your CV" button beside "Post a job".
+- On each job's page, the side card has an outlined "Upload your CV to Job Series" link with a small icon under the "Apply for job" box; it is not shown when an employer previews their own listing.
+- Editors: the buttons on Home and Job Series are ordinary Buttons, so once a page for CV uploads or Maker's Prize applications exists, put its address in the button's link in the editor.
+- The link on each job's page is not in a page editors can open; a developer points it at the real page with one line of code (the filter `tekseries_blocks_cv_upload_url`).
+- The sizes and positions above were checked in a browser at 1440, 834 and 390px wide.
+
+### Fixed
+- On Home, the second impact figure in the theme's pattern now reads "Youths Trained" where it read "Youth Trained", matching the wording already used on the Home page.
+
 ## [1.4.0] — 2026-10-12
 ### New
 - On every page, the footer now starts with the stacked TekSeries logo at the top of the plum panel, above "Share. Create. Solve.", 44px tall on a white rounded plate that is 56px tall.
@@ -157,7 +171,7 @@ This file records what visitors and site editors of tekseries.com will notice in
 - Editors will get a picker for an event type's icon in the admin area.
 - Editors will be able to choose from more icons for a Button, with a control in the sidebar instead of typing class names.
 - The statistics window of the job dashboard will be restyled to match the design.
-- Job categories will be reduced to a curated list, and "Upload your CV" links will return once they have somewhere to go.
+- Job categories will be reduced to a curated list, and the "Upload your CV" and "Apply for the Maker's Prize" buttons, which now show but lead nowhere, will get real pages to go to.
 - Photos will load faster once uploads are converted to a lighter picture format.
 - Igbo letters (ị, ọ, ụ) in headings will show in the site's heading font once a font that covers them is found.
 - Time and venue still need to be filled in for older events, and the emoji lost from some posts and events need to be restored.

@@ -46,7 +46,7 @@
 <!-- wp:tekseries/stat {"value":675} /-->
 
 <!-- wp:paragraph {"style":{"typography":{"fontWeight":"600","lineHeight":"1.35"}},"textColor":"body","fontSize":"body"} -->
-<p class="has-body-color has-text-color has-body-font-size" style="font-weight:600;line-height:1.35"><?php echo esc_html__( 'Youth Trained', 'tekseries' ); ?></p>
+<p class="has-body-color has-text-color has-body-font-size" style="font-weight:600;line-height:1.35"><?php echo esc_html__( 'Youths Trained', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 

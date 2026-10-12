@@ -124,6 +124,11 @@ test.describe( 'single job', () => {
 			'href',
 			'https://example.com/apply'
 		);
+		// Under the apply box, the way to leave a CV with Job Series. The site
+		// has no page for it yet, so the link is "#" until one is filtered in.
+		await expect(
+			card.getByRole( 'link', { name: 'Upload your CV to Job Series' } )
+		).toHaveAttribute( 'href', '#' );
 
 		// Under the description: straight to the application, and back to the list.
 		const actions = page.locator( '.ts-job__actions' );

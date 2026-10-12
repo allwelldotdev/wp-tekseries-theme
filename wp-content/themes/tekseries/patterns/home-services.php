@@ -130,6 +130,10 @@
 
 <!-- wp:button {"className":"is-style-glass"} -->
 <div class="wp-block-button is-style-glass"><a class="wp-block-button__link wp-element-button" href="/submit-job/"><?php echo esc_html__( 'Post a job', 'tekseries' ); ?></a></div>
+<!-- /wp:button -->
+
+<!-- wp:button {"textColor":"white","className":"is-style-outline"} -->
+<div class="wp-block-button is-style-outline"><a class="wp-block-button__link has-white-color has-text-color wp-element-button" href="#"><?php echo esc_html__( 'Upload your CV', 'tekseries' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group -->
@@ -208,7 +212,8 @@
 <!-- wp:group {"tagName":"article","className":"is-style-card-saffron ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|28"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"},"anchor":"pillar-3"} -->
 <article id="pillar-3" class="wp-block-group is-style-card-saffron ts-reveal"><!-- wp:icon {"icon":"tekseries/emoji_events","className":"is-style-deco-bottom"} /-->
 
-<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
+<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"bottom"}} -->
+<div class="wp-block-group"><!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
 <div class="wp-block-group"><!-- wp:paragraph {"className":"is-style-chip","style":{"typography":{"letterSpacing":"0.08em","textTransform":"uppercase"}},"backgroundColor":"ink","textColor":"white"} -->
 <p class="is-style-chip has-white-color has-ink-background-color has-text-color has-background" style="letter-spacing:0.08em;text-transform:uppercase"><?php echo esc_html__( 'Pillar III', 'tekseries' ); ?></p>
 <!-- /wp:paragraph -->
@@ -216,6 +221,13 @@
 <!-- wp:heading {"level":3,"style":{"typography":{"fontWeight":"800"}},"textColor":"ink"} -->
 <h3 class="wp-block-heading has-ink-color has-text-color" style="font-weight:800"><?php echo esc_html__( 'Maker’s Prize & Micro Seed Funding', 'tekseries' ); ?></h3>
 <!-- /wp:heading --></div>
+<!-- /wp:group -->
+
+<!-- wp:buttons -->
+<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-dark"} -->
+<div class="wp-block-button is-style-dark"><a class="wp-block-button__link wp-element-button" href="#"><?php echo esc_html__( 'Apply for the Maker’s Prize', 'tekseries' ); ?></a></div>
+<!-- /wp:button --></div>
+<!-- /wp:buttons --></div>
 <!-- /wp:group -->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":2,"minimumColumnWidth":null}} -->
