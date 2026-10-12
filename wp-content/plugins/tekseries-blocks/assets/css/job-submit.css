@@ -542,13 +542,14 @@
 	font-size: var(--wp--preset--font-size--caption);
 }
 
+/* The upload icon is a background: this button takes no pseudo-element. */
 .ts-submit-fields input[type="file"]::file-selector-button {
 	min-height: 40px;
 	margin-right: 12px;
-	padding: 0 16px;
+	padding: 0 16px 0 38px;
 	border: 1px solid var(--wp--preset--color--line);
 	border-radius: var(--wp--preset--border-radius--pill);
-	background: var(--wp--preset--color--white);
+	background: var(--wp--preset--color--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath fill='%234A1D5E' d='M240-160q-33 0-56.5-23.5T160-240v-80q0-17 11.5-28.5T200-360q17 0 28.5 11.5T240-320v80h480v-80q0-17 11.5-28.5T760-360q17 0 28.5 11.5T800-320v80q0 33-23.5 56.5T720-160H240Zm200-486-75 75q-12 12-28.5 11.5T308-572q-11-12-11.5-28t11.5-28l144-144q6-6 13-8.5t15-2.5q8 0 15 2.5t13 8.5l144 144q12 12 11.5 28T652-572q-12 12-28.5 12.5T595-571l-75-75v286q0 17-11.5 28.5T480-320q-17 0-28.5-11.5T440-360v-286Z'/%3E%3C/svg%3E") 14px center / 18px no-repeat;
 	color: var(--wp--preset--color--plum);
 	font: inherit;
 	font-weight: 700;

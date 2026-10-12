@@ -142,6 +142,13 @@ test.describe( 'single job', () => {
 			'third-party sources'
 		);
 
+		// More jobs: "View all" ends in the smaller, 18px arrow.
+		expect(
+			await page
+				.getByRole( 'link', { name: 'View all', exact: true } )
+				.evaluate( ( el ) => getComputedStyle( el, '::after' ).width )
+		).toBe( '18px' );
+
 		// More jobs: other open jobs only.
 		const more = page.locator( '.ts-job-card' );
 		await expect( more.getByRole( 'heading' ) ).toHaveText( [

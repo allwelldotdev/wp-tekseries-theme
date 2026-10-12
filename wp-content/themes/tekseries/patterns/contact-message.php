@@ -28,8 +28,8 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|4"}}}} -->
-<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--4)"><!-- wp:button -->
-<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/events/"><?php echo esc_html__( 'See upcoming events', 'tekseries' ); ?></a></div>
+<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--4)"><!-- wp:button {"className":"ts-icon-arrow_forward ts-icon-after"} -->
+<div class="wp-block-button ts-icon-arrow_forward ts-icon-after"><a class="wp-block-button__link wp-element-button" href="/events/"><?php echo esc_html__( 'See upcoming events', 'tekseries' ); ?></a></div>
 <!-- /wp:button -->
 
 <!-- wp:button {"className":"is-style-chip"} -->
@@ -51,8 +51,8 @@
 <!-- /wp:group -->
 
 <!-- wp:buttons -->
-<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-soft"} -->
-<div class="wp-block-button is-style-soft"><a class="wp-block-button__link wp-element-button" href="https://www.google.com/maps/search/?api=1&amp;query=89-44+162nd+Street+Queens+NY+11432" target="_blank" rel="noreferrer noopener"><?php echo esc_html__( 'Get directions', 'tekseries' ); ?></a></div>
+<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-soft ts-icon-directions"} -->
+<div class="wp-block-button is-style-soft ts-icon-directions"><a class="wp-block-button__link wp-element-button" href="https://www.google.com/maps/search/?api=1&amp;query=89-44+162nd+Street+Queens+NY+11432" target="_blank" rel="noreferrer noopener"><?php echo esc_html__( 'Get directions', 'tekseries' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group --></div>

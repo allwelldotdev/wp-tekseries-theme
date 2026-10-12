@@ -23,12 +23,12 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|4"}}}} -->
-<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--4)"><!-- wp:button {"className":"is-style-accent"} -->
-<div class="wp-block-button is-style-accent"><a class="wp-block-button__link wp-element-button" href="#contact-form"><?php echo esc_html__( 'Send a message', 'tekseries' ); ?></a></div>
+<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--4)"><!-- wp:button {"className":"is-style-accent ts-icon-edit_note"} -->
+<div class="wp-block-button is-style-accent ts-icon-edit_note"><a class="wp-block-button__link wp-element-button" href="#contact-form"><?php echo esc_html__( 'Send a message', 'tekseries' ); ?></a></div>
 <!-- /wp:button -->
 
-<!-- wp:button {"className":"is-style-glass"} -->
-<div class="wp-block-button is-style-glass"><a class="wp-block-button__link wp-element-button" href="#support"><?php echo esc_html__( 'Support our work', 'tekseries' ); ?></a></div>
+<!-- wp:button {"className":"is-style-glass ts-icon-volunteer_activism"} -->
+<div class="wp-block-button is-style-glass ts-icon-volunteer_activism"><a class="wp-block-button__link wp-element-button" href="#support"><?php echo esc_html__( 'Support our work', 'tekseries' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group -->

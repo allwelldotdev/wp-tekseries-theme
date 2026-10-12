@@ -23,12 +23,12 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:buttons {"style":{"spacing":{"margin":{"top":"var:preset|spacing|4"}}}} -->
-<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--4)"><!-- wp:button {"className":"is-style-accent"} -->
-<div class="wp-block-button is-style-accent"><a class="wp-block-button__link wp-element-button" href="/submit-job/"><?php echo esc_html__( 'Post a job', 'tekseries' ); ?></a></div>
+<div class="wp-block-buttons" style="margin-top:var(--wp--preset--spacing--4)"><!-- wp:button {"className":"is-style-accent ts-icon-add_business"} -->
+<div class="wp-block-button is-style-accent ts-icon-add_business"><a class="wp-block-button__link wp-element-button" href="/submit-job/"><?php echo esc_html__( 'Post a job', 'tekseries' ); ?></a></div>
 <!-- /wp:button -->
 
-<!-- wp:button {"className":"is-style-glass"} -->
-<div class="wp-block-button is-style-glass"><a class="wp-block-button__link wp-element-button" href="#"><?php echo esc_html__( 'Upload your CV', 'tekseries' ); ?></a></div>
+<!-- wp:button {"className":"is-style-glass ts-icon-upload_file"} -->
+<div class="wp-block-button is-style-glass ts-icon-upload_file"><a class="wp-block-button__link wp-element-button" href="#"><?php echo esc_html__( 'Upload your CV', 'tekseries' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group -->

@@ -24,6 +24,7 @@
 		"@wordpress/data": "^10.57.0",
 		"@wordpress/editor": "^15.2.0",
 		"@wordpress/element": "^9.0.0",
+		"@wordpress/hooks": "^4.57.0",
 		"@wordpress/i18n": "^6.30.0",
 		"@wordpress/interactivity": "^7.0.0",
 		"@wordpress/interactivity-router": "^2.57.0",
