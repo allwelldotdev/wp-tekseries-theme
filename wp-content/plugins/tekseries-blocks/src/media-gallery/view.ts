@@ -15,6 +15,9 @@ type Item = {
 	position: number;
 	href: string;
 	video: boolean;
+	// The address of an embedded player (YouTube, Vimeo), for a video that
+	// is not a file; empty otherwise.
+	embed: string;
 	caption: string;
 	// The tile's picture, already downloaded: the thumbnail, a video's poster.
 	thumb: string;
@@ -25,16 +28,24 @@ type Item = {
 	label: string;
 };
 type ThumbContext = { thumb: Item };
+type Player = { src: string; title: string };
 // A link elsewhere on the page that opens one file: what the server knows of
 // the file (includes/lightbox.php).
 type OpenerContext = {
 	opener?: Pick<
 		Item,
-		'href' | 'video' | 'caption' | 'thumb' | 'srcset' | 'width' | 'height'
+		| 'href'
+		| 'video'
+		| 'embed'
+		| 'caption'
+		| 'thumb'
+		| 'srcset'
+		| 'width'
+		| 'height'
 	>;
 };
 // Translated by render.php.
-type Config = { position: string; thumb: string };
+type Config = { position: string; thumb: string; player: string };
 // From render.php, for the page the router last showed: "Showing 12 of 32".
 type ServerState = { summary?: string };
 
@@ -57,6 +68,7 @@ const toItem = ( tile: HTMLAnchorElement, index: number ): Item => {
 		position: index,
 		href: tile.href,
 		video: tile.classList.contains( 'ts-media__tile--video' ),
+		embed: '',
 		caption: tile.querySelector( '.ts-media__caption' )?.textContent ?? '',
 		thumb: image?.currentSrc || image?.src || '',
 		srcset: image?.srcset ?? '',
@@ -130,15 +142,34 @@ const { state } = store( NAMESPACE, {
 		get isVideo(): boolean {
 			return !! state.current?.video;
 		},
-		get photoSrc(): string | null {
+		get isPhoto(): boolean {
 			const item = state.current;
-			return item && ! item.video ? item.href : null;
+			return !! item && ! item.video && ! item.embed;
+		},
+		get photoSrc(): string | null {
+			return state.isPhoto ? ( state.current?.href ?? null ) : null;
 		},
 		// The sizes WordPress made of the photo, so a phone need not fetch
 		// the original.
 		get photoSrcset(): string | null {
+			return state.isPhoto ? state.current?.srcset || null : null;
+		},
+		// The embedded player, while the viewer shows it. Its frame is made
+		// when the viewer opens on such a video and taken away when it
+		// closes: that stops the video, adds nothing to the Back button's
+		// history, and asks nothing of the service before then.
+		get players(): Player[] {
 			const item = state.current;
-			return item && ! item.video && item.srcset ? item.srcset : null;
+			return state.isOpen && item?.embed
+				? [
+						{
+							src: item.embed,
+							title:
+								item.caption ||
+								getConfig< Config >( NAMESPACE ).player,
+						},
+					]
+				: [];
 		},
 		get videoSrc(): string | null {
 			const item = state.current;

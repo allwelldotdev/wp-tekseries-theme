@@ -1,0 +1,26 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tekseries/post-video",
+	"version": "0.1.0",
+	"title": "Post Video",
+	"category": "theme",
+	"icon": "video-alt3",
+	"description": "A card that opens the post's video in the viewer. The video is set in the post's Video fields: a file from the Media Library, or a YouTube or Vimeo link. Nothing is shown for a post without one.",
+	"keywords": [ "video", "youtube", "vimeo", "watch" ],
+	"textdomain": "tekseries-blocks",
+	"attributes": {},
+	"usesContext": [ "postId", "postType" ],
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"align": [ "wide", "full" ],
+		"spacing": {
+			"margin": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

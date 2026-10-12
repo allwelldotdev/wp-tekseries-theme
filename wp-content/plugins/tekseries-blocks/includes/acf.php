@@ -1,6 +1,6 @@
 <?php
 /**
- * Event fields (ACF).
+ * Event fields and news post video fields (ACF).
  *
  * The "Events" field group was created in the ACF admin and stored in the
  * database. It is registered here with the same group and field keys, so the
@@ -88,6 +88,85 @@ function tekseries_blocks_register_event_fields(): void {
 	);
 }
 add_action( 'acf/include_fields', 'tekseries_blocks_register_event_fields' );
+
+/**
+ * Registers the "Video" fields of news posts: a switch, then a video file or
+ * a YouTube or Vimeo link, and a thumbnail. The Post Video block shows them
+ * (includes/post-video.php).
+ */
+function tekseries_blocks_register_post_video_fields(): void {
+	// The file, the link and the thumbnail show once the switch is on.
+	$shown = array(
+		array(
+			array(
+				'field'    => 'field_tekseries_video',
+				'operator' => '==',
+				'value'    => '1',
+			),
+		),
+	);
+
+	acf_add_local_field_group(
+		array(
+			'key'                   => 'group_tekseries_post_video',
+			'title'                 => __( 'Video', 'tekseries-blocks' ),
+			'fields'                => array(
+				array(
+					'key'          => 'field_tekseries_video',
+					'label'        => __( 'Show a video', 'tekseries-blocks' ),
+					'name'         => 'tekseries_video',
+					'type'         => 'true_false',
+					'instructions' => __( 'Adds a "Watch the video" card under the post. Visitors open the video without leaving the page.', 'tekseries-blocks' ),
+					'ui'           => 1,
+				),
+				array(
+					'key'               => 'field_tekseries_video_file',
+					'label'             => __( 'Video file', 'tekseries-blocks' ),
+					'name'              => 'tekseries_video_file',
+					'type'              => 'file',
+					'instructions'      => __( 'A video from the Media Library. It is used before the link when both are set.', 'tekseries-blocks' ),
+					'return_format'     => 'id',
+					'library'           => 'all',
+					'mime_types'        => 'mp4, m4v, webm, mov, ogv',
+					'conditional_logic' => $shown,
+				),
+				array(
+					'key'               => 'field_tekseries_video_link',
+					'label'             => __( 'Video link', 'tekseries-blocks' ),
+					'name'              => 'tekseries_video_link',
+					'type'              => 'url',
+					'instructions'      => __( 'Or the address of a YouTube or Vimeo video, e.g. https://www.youtube.com/watch?v=… Other sites are not shown.', 'tekseries-blocks' ),
+					'conditional_logic' => $shown,
+				),
+				array(
+					'key'               => 'field_tekseries_video_thumbnail',
+					'label'             => __( 'Thumbnail', 'tekseries-blocks' ),
+					'name'              => 'tekseries_video_thumbnail',
+					'type'              => 'image',
+					'instructions'      => __( 'The picture on the card. Without one, a video file shows its own poster, and a link shows a plain card.', 'tekseries-blocks' ),
+					'return_format'     => 'id',
+					'preview_size'      => 'medium',
+					'library'           => 'all',
+					'conditional_logic' => $shown,
+				),
+			),
+			'location'              => array(
+				array(
+					array(
+						'param'    => 'post_type',
+						'operator' => '==',
+						'value'    => 'post',
+					),
+				),
+			),
+			'position'              => 'normal',
+			'label_placement'       => 'top',
+			'instruction_placement' => 'label',
+			'show_in_rest'          => 1,
+		)
+	);
+}
+add_action( 'acf/include_fields', 'tekseries_blocks_register_post_video_fields' );
 
 /**
  * Adapts bound ACF values to the blocks that show them.

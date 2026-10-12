@@ -651,6 +651,14 @@ html:has(.ts-lightbox[open]) {
 	object-fit: contain;
 }
 
+// A YouTube or Vimeo player fills the frame.
+.ts-lightbox__embed {
+	display: block;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
 .ts-lightbox__caption {
 	max-width: 720px;
 	color: var(--wp--preset--color--lilac-deep);
