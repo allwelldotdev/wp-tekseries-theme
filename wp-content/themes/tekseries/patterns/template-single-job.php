@@ -80,6 +80,14 @@
 <!-- wp:paragraph {"metadata":{"bindings":{"content":{"source":"tekseries/job-field","args":{"key":"location"}}}},"className":"ts-job-value"} -->
 <p class="ts-job-value"></p>
 <!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|4"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+<div class="wp-block-group"><!-- wp:icon {"icon":"tekseries/schedule","style":{"dimensions":{"width":"16px"}},"textColor":"coral"} /-->
+
+<!-- wp:paragraph {"metadata":{"bindings":{"content":{"source":"tekseries/job-field","args":{"key":"posted"}}}},"className":"ts-job-value"} -->
+<p class="ts-job-value"></p>
+<!-- /wp:paragraph --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group -->
