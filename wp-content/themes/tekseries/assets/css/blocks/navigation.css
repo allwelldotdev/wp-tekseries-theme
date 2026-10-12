@@ -162,9 +162,11 @@
 	}
 
 	/* Core moves the focus to the first link; from the keyboard that link
-	   is there at once, not fading in under the focus ring. */
+	   is there at once, not fading in under the focus ring. Its animation is
+	   left alone: taken away, it would play again once the focus moved on. */
 	.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__container > li:has(:focus-visible) {
-		animation: none;
+		opacity: 1 !important;
+		translate: none !important;
 	}
 
 	.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation-item__content {

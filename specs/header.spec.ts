@@ -137,18 +137,15 @@ test.describe( 'header', () => {
 		);
 
 		// Once it has played, nothing is left clipped or faded.
-		await expect
-			.poll( () =>
-				panel.evaluate(
-					( element ) =>
-						element
-							.getAnimations( { subtree: true } )
-							.filter(
-								( { playState } ) => playState === 'running'
-							).length
-				)
-			)
-			.toBe( 0 );
+		const running = () =>
+			panel.evaluate(
+				( element ) =>
+					element
+						.getAnimations( { subtree: true } )
+						.filter( ( { playState } ) => playState === 'running' )
+						.length
+			);
+		await expect.poll( running ).toBe( 0 );
 		expect(
 			await panel.evaluate( ( element ) => {
 				const style = window.getComputedStyle( element );
@@ -173,11 +170,30 @@ test.describe( 'header', () => {
 		await expect( open ).toBeFocused();
 
 		// From the keyboard, the link the focus lands on is there at once.
+		const shown = ( item: Element ) => {
+			const style = window.getComputedStyle( item );
+			return [ style.opacity, style.translate ];
+		};
 		await page.keyboard.press( 'Enter' );
 		await expect(
 			links.first().getByRole( 'link', { name: 'Who We Are' } )
 		).toBeFocused();
-		expect( await links.first().evaluate( name ) ).toBe( 'none' );
+		expect( await links.first().evaluate( shown ) ).toEqual( [
+			'1',
+			'none',
+		] );
 		expect( await links.nth( 1 ).evaluate( name ) ).toBe( 'ts-menu-rise' );
+
+		// And it does not rise in again once the focus has moved on.
+		await expect.poll( running ).toBe( 0 );
+		await page.keyboard.press( 'Tab' );
+		await expect(
+			links.nth( 1 ).getByRole( 'link', { name: 'What We Do' } )
+		).toBeFocused();
+		expect( await running() ).toBe( 0 );
+		expect( await links.first().evaluate( shown ) ).toEqual( [
+			'1',
+			'none',
+		] );
 	} );
 } );
