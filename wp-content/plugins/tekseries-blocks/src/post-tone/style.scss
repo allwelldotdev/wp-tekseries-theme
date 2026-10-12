@@ -71,13 +71,18 @@ $keys: text, badge-bg, badge-text, deco, sub, button-bg, button-text, line;
 	}
 }
 
+// The icon bleeds off the corner: 9% of it past the right edge and 15% under
+// the bottom one. On a surface too short for it, it shrinks until the part
+// above the bottom edge fits, so its top is never cut off.
 .ts-tone__icon {
 	position: absolute;
-	right: calc(var(--ts-tone-icon-size) * -0.09);
-	bottom: calc(var(--ts-tone-icon-size) * -0.15);
+	right: 0;
+	bottom: 0;
 	z-index: -1;
-	width: var(--ts-tone-icon-size);
-	height: var(--ts-tone-icon-size);
+	width: auto;
+	height: min(var(--ts-tone-icon-size), 100% / 0.85);
+	aspect-ratio: 1;
+	translate: 9% 15%;
 	color: var(--ts-tone-deco);
 	pointer-events: none;
 
