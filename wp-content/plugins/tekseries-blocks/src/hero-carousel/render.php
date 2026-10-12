@@ -8,7 +8,8 @@
  * without moving the page, and the slides can change by themselves, with a
  * pause button. One slide alone renders as it is, with no dots. Editors set
  * how long a slide stays, whether the pointer holds it, and how far apart the
- * dots sit.
+ * dots sit. A slide may have a video for its background: only the slide in
+ * view plays its own, and the pause button is there whenever one exists.
  *
  * @package TekSeries
  *
@@ -25,6 +26,7 @@ if ( ! $tekseries_total ) {
 // carousel roles.
 $tekseries_prefix = wp_unique_id( 'ts-slide-' );
 $tekseries_slides = array();
+$tekseries_video  = false;
 foreach ( $block->inner_blocks as $tekseries_index => $tekseries_inner ) {
 	$tekseries_tags = new WP_HTML_Tag_Processor( $tekseries_inner->render() );
 	if ( ! $tekseries_tags->next_tag() ) {
@@ -39,10 +41,17 @@ foreach ( $block->inner_blocks as $tekseries_index => $tekseries_inner ) {
 		/* translators: 1: this slide's number, 2: number of slides. */
 		$tekseries_tags->set_attribute( 'aria-label', sprintf( __( '%1$d of %2$d', 'tekseries-blocks' ), $tekseries_index + 1, $tekseries_total ) );
 	}
-	// Only the first slide is in view at first: the photos of the others load
-	// behind it, so they are there before their slide comes.
-	if ( $tekseries_index > 0 ) {
-		while ( $tekseries_tags->next_tag( array( 'class_name' => 'wp-block-cover__image-background' ) ) ) {
+	// Only the first slide is in view at first. The photos of the others load
+	// behind it, so they are there before their slide comes; their background
+	// videos neither load nor start until the script brings their slide.
+	while ( $tekseries_tags->next_tag() ) {
+		if ( $tekseries_tags->has_class( 'wp-block-cover__video-background' ) ) {
+			$tekseries_video = true;
+			if ( $tekseries_index > 0 ) {
+				$tekseries_tags->set_attribute( 'preload', 'none' );
+				$tekseries_tags->remove_attribute( 'autoplay' );
+			}
+		} elseif ( $tekseries_index > 0 && $tekseries_tags->has_class( 'wp-block-cover__image-background' ) ) {
 			$tekseries_tags->set_attribute( 'fetchpriority', 'low' );
 		}
 	}
@@ -65,9 +74,12 @@ if ( $tekseries_total > 1 ) {
 		$tekseries_extra['aria-label'] = __( 'Highlights', 'tekseries-blocks' );
 	}
 }
-if ( $tekseries_many ) {
+// The script has work wherever there are slides to move between or a video
+// to stop.
+$tekseries_live = $tekseries_many || $tekseries_video;
+if ( $tekseries_live ) {
 	// Dots 8px apart instead of a full tap target each: the editor's choice.
-	if ( 'close' === ( $attributes['dotSpacing'] ?? 'touch' ) ) {
+	if ( $tekseries_many && 'close' === ( $attributes['dotSpacing'] ?? 'touch' ) ) {
 		$tekseries_extra['class'] = 'has-close-dots';
 	}
 	// For the script: the slide in view, whether the slides may change by
@@ -84,21 +96,29 @@ if ( $tekseries_many ) {
 			'hover'   => $tekseries_hover,
 		)
 	);
+	// Motion that starts by itself: the slides changing, a video playing.
+	if ( $tekseries_auto || $tekseries_video ) {
+		$tekseries_extra['data-wp-init'] = 'callbacks.start';
+	}
 	if ( $tekseries_auto ) {
-		$tekseries_extra['data-wp-init']  = 'callbacks.start';
 		$tekseries_extra['data-wp-watch'] = 'callbacks.rotate';
 	}
-	$tekseries_track = ' data-wp-init="actions.follow" data-wp-on--scroll="actions.follow"';
+	if ( $tekseries_video ) {
+		$tekseries_extra['data-wp-watch--videos'] = 'callbacks.videos';
+	}
+	if ( $tekseries_many ) {
+		$tekseries_track = ' data-wp-init="actions.follow" data-wp-on--scroll="actions.follow"';
+	}
 }
 ?>
 <div <?php echo get_block_wrapper_attributes( $tekseries_extra ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes the wrapper attributes. ?>>
 	<div class="ts-carousel__track"<?php echo $tekseries_track; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed directive attributes. ?>>
 		<?php echo implode( '', $tekseries_slides ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- inner blocks are already rendered and escaped. ?>
 	</div>
-	<?php if ( $tekseries_many ) : ?>
+	<?php if ( $tekseries_live ) : ?>
 		<div class="ts-carousel__controls">
-			<?php if ( $tekseries_auto ) : ?>
-				<?php // Shown by the script, which is what changes the slides. ?>
+			<?php if ( $tekseries_auto || $tekseries_video ) : ?>
+				<?php // Shown by the script, which is what changes the slides and stops their videos. ?>
 				<button type="button" class="ts-carousel__pause" hidden data-wp-bind--hidden="!context.auto" data-wp-on--click="actions.toggle">
 					<span data-wp-bind--hidden="!context.playing">
 						<?php echo tekseries_blocks_icon_svg( 'pause' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
@@ -110,18 +130,20 @@ if ( $tekseries_many ) {
 					</span>
 				</button>
 			<?php endif; ?>
-			<nav class="ts-carousel__dots" aria-label="<?php esc_attr_e( 'Slides', 'tekseries-blocks' ); ?>">
-				<?php foreach ( array_keys( $tekseries_slides ) as $tekseries_index => $tekseries_id ) : ?>
-					<a href="#<?php echo esc_attr( $tekseries_id ); ?>" <?php echo wp_interactivity_data_wp_context( array( 'id' => (string) $tekseries_id ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes the context attribute. ?> data-wp-bind--aria-current="state.isCurrent" data-wp-on--click="actions.show">
-						<span class="screen-reader-text">
-							<?php
-							/* translators: %d: slide number. */
-							echo esc_html( sprintf( __( 'Slide %d', 'tekseries-blocks' ), $tekseries_index + 1 ) );
-							?>
-						</span>
-					</a>
-				<?php endforeach; ?>
-			</nav>
+			<?php if ( $tekseries_many ) : ?>
+				<nav class="ts-carousel__dots" aria-label="<?php esc_attr_e( 'Slides', 'tekseries-blocks' ); ?>">
+					<?php foreach ( array_keys( $tekseries_slides ) as $tekseries_index => $tekseries_id ) : ?>
+						<a href="#<?php echo esc_attr( $tekseries_id ); ?>" <?php echo wp_interactivity_data_wp_context( array( 'id' => (string) $tekseries_id ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core escapes the context attribute. ?> data-wp-bind--aria-current="state.isCurrent" data-wp-on--click="actions.show">
+							<span class="screen-reader-text">
+								<?php
+								/* translators: %d: slide number. */
+								echo esc_html( sprintf( __( 'Slide %d', 'tekseries-blocks' ), $tekseries_index + 1 ) );
+								?>
+							</span>
+						</a>
+					<?php endforeach; ?>
+				</nav>
+			<?php endif; ?>
 		</div>
 	<?php endif; ?>
 </div>

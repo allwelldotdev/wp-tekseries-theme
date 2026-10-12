@@ -1,0 +1,16 @@
+/*
+ * "Photo frame (4:3)": a video in a photo's place, cropped to 4:3 with the
+ * large corner, like the picture beside the Mission card on Home.
+ */
+
+.wp-block-video.is-style-frame {
+	margin: 0;
+}
+
+.wp-block-video.is-style-frame video {
+	display: block;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	border-radius: var(--wp--preset--border-radius--xl);
+	object-fit: cover;
+}

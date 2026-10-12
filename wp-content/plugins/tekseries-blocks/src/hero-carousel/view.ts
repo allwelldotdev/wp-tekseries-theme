@@ -76,7 +76,8 @@ store( 'tekseries/hero-carousel', {
 		},
 	},
 	callbacks: {
-		// The slides change by themselves only for visitors who accept motion.
+		// The slides change by themselves, and their videos play, only for
+		// visitors who accept motion.
 		start() {
 			const context = getContext< Context >();
 			if (
@@ -86,6 +87,26 @@ store( 'tekseries/hero-carousel', {
 				context.auto = true;
 				context.playing = true;
 			}
+		},
+		// Background videos: only the slide in view plays its own, and none
+		// plays while the slides are paused. Visitors who ask for less motion
+		// never reach "playing", so for them every video stays still.
+		videos() {
+			const { current, playing } = getContext< Context >();
+			getElement()
+				.ref?.querySelectorAll< HTMLVideoElement >(
+					'.ts-carousel__track > * video'
+				)
+				.forEach( ( video ) => {
+					const slide = video.closest( '.ts-carousel__track > *' );
+					if ( playing && slide?.id === current ) {
+						// A browser may refuse (data saver, a file it can't
+						// read): the slide then stays on its still.
+						video.play().catch( () => {} );
+					} else {
+						video.pause();
+					}
+				} );
 		},
 		// Brings the next slide once this one has stayed its time. Read here,
 		// so the wait starts again: the slide in view, the pause button, and

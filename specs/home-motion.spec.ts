@@ -1,3 +1,6 @@
+import { writeFileSync } from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 import { invalidBlocks } from './utils/blocks';
 
@@ -10,6 +13,17 @@ const NO_JS = {
 };
 // The test config asks for less motion everywhere; these pages want it on.
 const MOVING = { ...NO_JS, reducedMotion: 'no-preference' } as const;
+// The smallest file WordPress accepts as a video: an MP4 header and nothing
+// else. It never plays, so the video tests watch what the script asks of it.
+const CLIP = path.join( os.tmpdir(), 'e2e-slide-clip.mp4' );
+const MP4_HEADER =
+	'000000206674797069736f6d0000020069736f6d69736f32617663316d70343100000008667265650000';
+// A slide with a video for its background, as the Cover block saves it.
+const videoSlide = ( url: string, text: string ) =>
+	`<!-- wp:cover {"url":"${ url }","dimRatio":50,"backgroundType":"video","isDark":true} -->` +
+	`<div class="wp-block-cover"><video class="wp-block-cover__video-background intrinsic-ignore" autoplay muted loop playsinline src="${ url }" data-object-fit="cover"></video>` +
+	'<span aria-hidden="true" class="wp-block-cover__background has-background-dim"></span>' +
+	`<div class="wp-block-cover__inner-container"><!-- wp:paragraph --><p>${ text }</p><!-- /wp:paragraph --></div></div><!-- /wp:cover -->`;
 
 // The Home blocks that move: the stat count-up, the logo marquee and the hero
 // carousel. All three are complete on the server and need no JavaScript; the
@@ -497,6 +511,139 @@ test.describe( 'home motion blocks', () => {
 		await expect( dots.nth( 1 ) ).toHaveAttribute( 'aria-current', 'true' );
 		expect( await track.evaluate( scrolled ) ).toBeGreaterThan( 0 );
 		await context.close();
+	} );
+
+	// Slides with a video for their background: only the slide in view plays
+	// its own, later ones don't load theirs up front, and the pause button is
+	// there even when the slides don't change by themselves.
+	test( 'plays only the video of the slide in view, with a pause button', async ( {
+		browser,
+		requestUtils,
+	} ) => {
+		writeFileSync( CLIP, Buffer.from( MP4_HEADER, 'hex' ) );
+		const clip = await requestUtils.uploadMedia( CLIP );
+		const url = clip.source_url;
+		const films = await requestUtils.rest< Linked >( {
+			method: 'POST',
+			path: '/wp/v2/pages',
+			data: {
+				title: 'E2E Video Slides',
+				status: 'publish',
+				content: [
+					`<!-- wp:tekseries/hero-carousel {"ariaLabel":"E2E films"} -->${ videoSlide(
+						url,
+						'Film one'
+					) }${ videoSlide(
+						url,
+						'Film two'
+					) }<!-- /wp:tekseries/hero-carousel -->`,
+					`<!-- wp:tekseries/hero-carousel {"className":"e2e-one-film"} -->${ videoSlide(
+						url,
+						'Only film'
+					) }<!-- /wp:tekseries/hero-carousel -->`,
+					`<!-- wp:video {"className":"is-style-frame"} --><figure class="wp-block-video is-style-frame"><video controls src="${ url }"></video></figure><!-- /wp:video -->`,
+				].join( '' ),
+			},
+		} );
+		extras.push( films.id );
+
+		// Without JavaScript: the first slide's video starts by itself, the
+		// second neither loads nor starts, and the button stays hidden.
+		let context = await browser.newContext( MOVING );
+		let page = await context.newPage();
+		await page.goto( films.link );
+		let videos = page
+			.getByRole( 'region', { name: 'E2E films' } )
+			.locator( 'video' );
+		await expect( videos ).toHaveCount( 2 );
+		await expect( videos.first() ).toHaveAttribute( 'autoplay', '' );
+		await expect( videos.first() ).not.toHaveAttribute( 'preload' );
+		await expect( videos.last() ).toHaveAttribute( 'preload', 'none' );
+		await expect( videos.last() ).not.toHaveAttribute( 'autoplay' );
+		await expect(
+			page.locator( '.ts-carousel__pause' ).first()
+		).toBeHidden();
+		// "Photo frame (4:3)": a Video block cropped like a photo.
+		const framed = page.locator( '.wp-block-video.is-style-frame video' );
+		await expect( framed ).toHaveCSS( 'aspect-ratio', '4 / 3' );
+		await expect( framed ).toHaveCSS( 'object-fit', 'cover' );
+		await context.close();
+
+		// With JavaScript: what the script last asked of each video.
+		const open = async ( reducedMotion: 'reduce' | 'no-preference' ) => {
+			context = await browser.newContext( {
+				storageState: { cookies: [], origins: [] },
+				reducedMotion,
+			} );
+			page = await context.newPage();
+			await page.addInitScript( () => {
+				const media = HTMLMediaElement.prototype;
+				const { play, pause } = media;
+				media.play = function ( this: HTMLMediaElement ) {
+					this.dataset.asked = 'play';
+					return play.call( this );
+				};
+				media.pause = function ( this: HTMLMediaElement ) {
+					this.dataset.asked = 'pause';
+					pause.call( this );
+				};
+			} );
+			await page.goto( films.link );
+			await page.addStyleTag( {
+				content: '.ts-carousel__track{scroll-behavior:auto!important}',
+			} );
+		};
+		const asked = () =>
+			videos.evaluateAll( ( all ) =>
+				all.map( ( video ) => ( video as HTMLElement ).dataset.asked )
+			);
+
+		await open( 'no-preference' );
+		const carousel = page.getByRole( 'region', { name: 'E2E films' } );
+		videos = carousel.locator( 'video' );
+		const pause = carousel.getByRole( 'button', {
+			name: 'Pause the slides',
+		} );
+		// The slides here don't change by themselves; the videos move, so the
+		// button is offered all the same.
+		await expect( pause ).toBeVisible();
+		await expect.poll( asked ).toEqual( [ 'play', 'pause' ] );
+		// The second slide comes into view: its video takes over.
+		await carousel
+			.getByRole( 'navigation', { name: 'Slides' } )
+			.getByRole( 'link' )
+			.nth( 1 )
+			.click();
+		await expect.poll( asked ).toEqual( [ 'pause', 'play' ] );
+		await pause.click();
+		await expect.poll( asked ).toEqual( [ 'pause', 'pause' ] );
+		await carousel
+			.getByRole( 'button', { name: 'Play the slides' } )
+			.click();
+		await expect.poll( asked ).toEqual( [ 'pause', 'play' ] );
+		// One slide alone has no dots, and still a way to stop its video.
+		const single = page.locator( '.e2e-one-film' );
+		await expect( single.getByRole( 'navigation' ) ).toHaveCount( 0 );
+		await single
+			.getByRole( 'button', { name: 'Pause the slides' } )
+			.click();
+		await expect( single.locator( 'video' ) ).toHaveAttribute(
+			'data-asked',
+			'pause'
+		);
+		await context.close();
+
+		// Less motion: every video is stopped and there is nothing to pause.
+		await open( 'reduce' );
+		videos = page
+			.getByRole( 'region', { name: 'E2E films' } )
+			.locator( 'video' );
+		await expect.poll( asked ).toEqual( [ 'pause', 'pause' ] );
+		await expect(
+			page.locator( '.ts-carousel__pause' ).first()
+		).toBeHidden();
+		await context.close();
+		await requestUtils.deleteMedia( clip.id );
 	} );
 
 	test( 'an editor adds, removes and sets the slides in the Site Editor', async ( {
