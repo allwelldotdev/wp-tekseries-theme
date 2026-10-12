@@ -2,6 +2,11 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.2.3] — 2026-10-12
+### Fixed
+- On the "Submit a job" page, the drop-down fields that take one choice (Job type, and the salary unit where salary fields are on) now show the design's down arrow, 14px in from the right edge, where before each browser drew its own arrow tight against the edge; room is kept for the arrow so a long choice never runs under it, and it stays in place while the field is in use.
+- The field for job categories, where several choices can be picked, is unchanged.
+
 ## [1.2.2] — 2026-10-12
 ### Fixed
 - Under the lists on the Events and News pages, and on the archive and search pages, the previous and next page controls now show a chevron icon, 24px and centred in its 44px circle, where before they showed the characters « and », which sat 6.5px off centre.
