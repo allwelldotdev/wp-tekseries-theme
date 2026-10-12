@@ -2,6 +2,22 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.9.0] — 2026-10-12
+### New
+- Visitors now see a real Google map of the TekSeries address (89-44 162nd Street, Queens, New York) on the Contact page, 450px tall with rounded corners, where a drawn stand-in (a plum card with a street grid and a pin) used to be.
+- The map can be dragged, zoomed and opened in Google Maps, like the map on the old site.
+- Screen readers announce the map as "Map: TekSeries, 89-44 162nd Street, Queens, New York".
+- Editors get a new "Map" block, found under Embeds in the block inserter: paste the code Google Maps gives under Share, then "Embed a map", into the block, and it keeps only the map's address.
+- The Map block accepts Google Maps embed codes only, and says so if anything else is pasted.
+- The Map block has a field for the name screen readers hear, and its corner radius can be set under Styles.
+- In the editor the Map block shows a still card instead of the live map; the map itself shows on the site.
+- To change the map on the Contact page, editors select the Map block there and paste a new embed code.
+
+### Changed
+- On the Contact page, the address and the "Get directions" button now sit in their own white card under the map; before, they sat on top of the drawn stand-in.
+- The map comes from Google, so when the page shows it the visitor's browser contacts Google, which the drawn stand-in did not do; the browser loads it only when the visitor is near it on the page, which on Contact is usually straight away on a desktop.
+- Site owner: the Privacy Policy may need a line about the Google map.
+
 ## [1.8.0] — 2026-10-12
 ### New
 - Editors can now use a video as the background of a slide in the Home banner: select the slide, choose "Replace" or "Add media", and pick a video; short, silent clips work best, because the video is muted and loops.

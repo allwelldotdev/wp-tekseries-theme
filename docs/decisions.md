@@ -1319,6 +1319,37 @@ Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 
   - The template names theme presets (overlay gradient, font sizes, spacing), like the rest of the plugin's blocks (ADR-046).
   - `__unstableMarkNextChangeAsNotPersistent` is an unstable editor API. If it goes, the fallback is a visible extra undo step.
 
+## ADR-069: Show a real Google map on Contact through a small server-rendered Map block that frames Google Maps embeds only
+
+**Status:** Accepted
+
+**Context:** The Contact board draws a stand-in for a map: a plum card with a street grid and a pin, with the address card over it. The old live site had a real Google Maps embed. The first build followed the board (ADR-029). On 2026-10-11 and 2026-10-12 the owner chose the real map, in the design's frame, as one of the optional features of this batch. This is release 1.9.0 on branch `feat/contact-map` (commit 7ff2f7c), not merged yet.
+
+**Options:**
+- Core's Embed block. It has no Google Maps provider.
+- Core's Custom HTML block. It lets any markup in, is not something to hand to site editors, and the pattern would carry raw HTML.
+- A static map image linking to Google Maps. There is no third-party request until the click, but it is not the real map the owner asked for, and Google's static images need an API key.
+- OpenStreetMap or a JavaScript map library. Visitors would get a script and a different look from the live site's map.
+- Keep the address card over the map, as on the board. It would cover Google's own controls and attribution, which must stay visible.
+- A block of our own that frames Google Maps embeds only (chosen).
+
+**Decision:** The last option, in 1.9.0.
+- Block `tekseries/map` in the plugin (`src/map/`), with attributes `src` and `title`. It is dynamic: `save` returns nothing.
+- `render.php` prints an `<iframe>` only when `src` matches `^https://www.google.com/maps/embed` followed by `?` or `/`. The iframe has `loading="lazy"`, a `title` (the editor's, else "Map"), `referrerpolicy="no-referrer-when-downgrade"` and `allowfullscreen`. Any other `src` prints nothing.
+- The frame is 450px tall (the old site's height). The wrapper clips it to the block's corner radius, through a block support. There is no view script.
+- Editor (`edit.tsx`, `embed.ts`): the editor pastes Google's whole `<iframe ...>` snippet or the address alone. The block extracts and keeps the address. It refuses anything that is not a Google Maps embed, shows a notice and leaves the map as it was. The canvas shows a still card, not the live frame, so wp-admin asks nothing of Google and the pattern and editor tests stay self-contained.
+- Contact (`contact-message` pattern, through the pattern generator): the Map block with the large corner radius, using the embed address read from the live site's Contact page on 2026-10-11. The address and "Get directions" sit in their own card under it. The stand-in's CSS (`.ts-map` in the theme's `group.css`) is removed.
+- The development site's Contact page was patched by hand, because the owner has edited it.
+
+**Rationale:**
+- A server-side allow-list of one host and one path means the block cannot frame anything else, whatever is saved in the attribute.
+- Rule 3 holds: the frame is plain server HTML and works without JavaScript. Rule 1 holds: nothing of ours ships to visitors. ADR-047 holds: this block has no script.
+- Tests stub Google. `specs/map.spec.ts` covers the frame, three refused addresses, no script, the editor's paste and refusal, and no request to Google from the editor. The accessibility suite's visitor contexts also stub it (ADR-056).
+- Consequences:
+  - Privacy: the Contact page now loads content from Google for visitors, which the stand-in did not. `loading="lazy"` leaves the timing to the browser. Measured on the development site, the map was requested on page load at 1440, 834 and 390px, because it sits within the browser's lazy-loading distance. The owner has been told the Privacy Policy may need a line about it. A click-to-load consent step was not asked for and is not built.
+  - The height is fixed at 450px in the block's stylesheet. There is no height control.
+- This is a deliberate difference from the board (a real map instead of the drawn one), at the owner's request, like ADR-064 to ADR-066. A later design pull that shows the drawn map is not a regression to fix.
+
 ## Future work
 
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).
