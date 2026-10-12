@@ -3,7 +3,8 @@
  * Event dates and registration.
  *
  * An event's date is the ACF `event_date` field, stored as `Ymd`. Event lists
- * are ordered by it, newest first. Templates mark the blocks that only make
+ * are ordered by it, newest first, or oldest first when the address asks
+ * (includes/list-order.php). Templates mark the blocks that only make
  * sense before the event (the Register button and the "Join here" row) with
  * the `ts-register` class; once the date has passed, the button becomes "This
  * event has ended" and the rest is left out.
@@ -51,37 +52,45 @@ function tekseries_blocks_event_has_ended( int $post_id ): bool {
 }
 
 /**
- * Returns the query arguments that list events by event date.
+ * Returns the query argument that lists events by event date.
  *
- * Events without a date stay in the list, after the dated ones; posts on the
- * same date fall back to the publish date.
+ * Events without a date stay in the list, after the dated ones in either
+ * order; events on the same date fall back to the publish date. The argument
+ * marks the query for tekseries_blocks_event_order_clauses().
  *
- * @param string $order      ASC or DESC.
- * @param mixed  $meta_query The query's own meta query, kept alongside.
- * @return array{meta_query: array, orderby: array}
+ * @param string $order ASC or DESC.
+ * @return array{tekseries_event_order: string}
  */
-function tekseries_blocks_event_order_args( string $order, $meta_query ): array {
-	$by_date = array(
-		'relation'             => 'OR',
-		'tekseries_event_date' => array(
-			'key'     => 'event_date',
-			'compare' => 'EXISTS',
-		),
-		array(
-			'key'     => 'event_date',
-			'compare' => 'NOT EXISTS',
-		),
-	);
-	$order   = 'ASC' === strtoupper( $order ) ? 'ASC' : 'DESC';
-
-	return array(
-		'meta_query' => is_array( $meta_query ) && $meta_query ? array( $meta_query, $by_date ) : $by_date, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- one meta key, on event listings only.
-		'orderby'    => array(
-			'tekseries_event_date' => $order,
-			'date'                 => $order,
-		),
-	);
+function tekseries_blocks_event_order_args( string $order ): array {
+	return array( 'tekseries_event_order' => 'ASC' === strtoupper( $order ) ? 'ASC' : 'DESC' );
 }
+
+/**
+ * Orders a query marked by tekseries_blocks_event_order_args().
+ *
+ * The date is read through a join of its own. A meta query that also lets
+ * undated events through would order those by whichever of their other
+ * fields the database picks, which can put them first.
+ *
+ * @param string[] $clauses The query's clauses.
+ * @param WP_Query $query   The query.
+ * @return string[]
+ */
+function tekseries_blocks_event_order_clauses( array $clauses, WP_Query $query ): array {
+	global $wpdb;
+
+	$order = $query->get( 'tekseries_event_order' );
+	if ( 'ASC' !== $order && 'DESC' !== $order ) {
+		return $clauses;
+	}
+
+	$date               = 'MAX( tekseries_event_date.meta_value )';
+	$clauses['join']   .= " LEFT JOIN {$wpdb->postmeta} AS tekseries_event_date ON ( tekseries_event_date.post_id = {$wpdb->posts}.ID AND tekseries_event_date.meta_key = 'event_date' )";
+	$clauses['groupby'] = '' !== trim( (string) $clauses['groupby'] ) ? $clauses['groupby'] : "{$wpdb->posts}.ID";
+	$clauses['orderby'] = "( $date IS NULL OR $date = '' ), $date $order, {$wpdb->posts}.post_date $order";
+	return $clauses;
+}
+add_filter( 'posts_clauses', 'tekseries_blocks_event_order_clauses', 10, 2 );
 
 /**
  * Orders event Query Loops (Latest, the grid, More events) by event date.
@@ -89,20 +98,49 @@ function tekseries_blocks_event_order_args( string $order, $meta_query ): array 
  * Only loops left on the default "date" order are changed, so an editor's
  * other choice (title, random) still applies.
  *
- * @param array $query Query arguments built from the Query Loop block.
+ * A loop that skips the first events lists "the rest": the Events page's
+ * grid, under the Latest card. When the address asks for the oldest first it
+ * is turned round, and still leaves out the newest events, which the loop
+ * before it shows.
+ *
+ * @param array    $query Query arguments built from the Query Loop block.
+ * @param WP_Block $block The block asking: its context carries the loop's settings.
  * @return array
  */
-function tekseries_blocks_sort_event_query_loop( array $query ): array {
+function tekseries_blocks_sort_event_query_loop( array $query, WP_Block $block ): array {
 	if ( 'event' !== ( $query['post_type'] ?? '' ) || 'date' !== ( $query['orderby'] ?? 'date' ) ) {
 		return $query;
 	}
-	return array_merge( $query, tekseries_blocks_event_order_args( (string) ( $query['order'] ?? 'DESC' ), $query['meta_query'] ?? array() ) );
+
+	$order = (string) ( $query['order'] ?? 'DESC' );
+	$skip  = absint( $block->context['query']['offset'] ?? 0 );
+	if ( $skip && 'asc' === tekseries_blocks_list_order() ) {
+		$newest = new WP_Query(
+			array_merge(
+				$query,
+				tekseries_blocks_event_order_args( 'DESC' ),
+				array(
+					'posts_per_page' => $skip,
+					'offset'         => 0,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+				)
+			)
+		);
+
+		$query['post__not_in'] = array_merge( (array) ( $query['post__not_in'] ?? array() ), $newest->posts );
+		$query['offset']       = max( 0, (int) ( $query['offset'] ?? 0 ) - $skip );
+		$order                 = 'ASC';
+	}
+
+	return array_merge( $query, tekseries_blocks_event_order_args( $order ) );
 }
-add_filter( 'query_loop_block_query_vars', 'tekseries_blocks_sort_event_query_loop' );
+add_filter( 'query_loop_block_query_vars', 'tekseries_blocks_sort_event_query_loop', 10, 2 );
 
 /**
  * Orders the event archives' main query by event date: event type pages list
- * events with a Query Loop that inherits it.
+ * events with a Query Loop that inherits it. WordPress reads ?order=asc into
+ * that query itself.
  *
  * @param WP_Query $query Query being prepared.
  */
@@ -110,7 +148,7 @@ function tekseries_blocks_sort_event_archives( WP_Query $query ): void {
 	if ( is_admin() || ! $query->is_main_query() || ! ( $query->is_post_type_archive( 'event' ) || $query->is_tax( 'event_type' ) ) ) {
 		return;
 	}
-	foreach ( tekseries_blocks_event_order_args( (string) $query->get( 'order' ), $query->get( 'meta_query' ) ) as $key => $value ) {
+	foreach ( tekseries_blocks_event_order_args( (string) $query->get( 'order' ) ) as $key => $value ) {
 		$query->set( $key, $value );
 	}
 }

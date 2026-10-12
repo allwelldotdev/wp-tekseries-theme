@@ -23,6 +23,7 @@ require_once __DIR__ . '/includes/content-types.php';
 require_once __DIR__ . '/includes/icons.php';
 require_once __DIR__ . '/includes/meta.php';
 require_once __DIR__ . '/includes/acf.php';
+require_once __DIR__ . '/includes/list-order.php';
 require_once __DIR__ . '/includes/events.php';
 require_once __DIR__ . '/includes/event-types.php';
 require_once __DIR__ . '/includes/job-fields.php';

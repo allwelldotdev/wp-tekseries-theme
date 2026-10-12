@@ -63,6 +63,7 @@ function tekseries_blocks_button_icons(): array {
 		'calendar_month',
 		'search',
 		'play_arrow',
+		'swap_vert',
 	);
 }
 

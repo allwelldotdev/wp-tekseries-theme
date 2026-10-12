@@ -68,9 +68,15 @@ const fill = ( form: HTMLFormElement, texts: boolean ) => {
 				: chosen.includes( box.value );
 	}
 	for ( const field of form.elements ) {
-		const isText =
-			field instanceof HTMLInputElement && field.type !== 'checkbox';
-		if ( field instanceof HTMLSelectElement || ( texts && isText ) ) {
+		const isInput = field instanceof HTMLInputElement;
+		// The order is not typed: it follows the address every time.
+		const isOrder = isInput && field.type === 'hidden';
+		const isText = isInput && field.type !== 'checkbox' && ! isOrder;
+		if (
+			field instanceof HTMLSelectElement ||
+			isOrder ||
+			( texts && isText )
+		) {
 			field.value = params.get( field.name ) ?? '';
 		}
 	}
@@ -141,6 +147,22 @@ store( 'tekseries/job-listings', {
 			if ( ( yield go( link.href ) ) as boolean ) {
 				results.focus( { preventScroll: true } );
 				results.scrollIntoView();
+			}
+		} ),
+		// "Newest first" or "Oldest first": the same jobs the other way
+		// round. The form's hidden field follows, so the next search keeps
+		// the order.
+		order: withSyncEvent( function* ( event: MouseEvent ) {
+			const link = getElement().ref as HTMLAnchorElement | null;
+			const form = link
+				?.closest( '.wp-block-tekseries-job-listings' )
+				?.querySelector( 'form' );
+			if ( ! link || ! form || ! isPlainClick( event ) ) {
+				return;
+			}
+			event.preventDefault();
+			if ( ( yield go( link.href ) ) as boolean ) {
+				fill( form, false );
 			}
 		} ),
 		// "Clear filters" under an empty list: back to every job, with the

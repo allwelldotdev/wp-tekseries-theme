@@ -321,6 +321,118 @@ test.describe( 'Job Listings block', () => {
 		await context.close();
 	} );
 
+	test( 'the order link lists the oldest first, with JavaScript off', async ( {
+		browser,
+	} ) => {
+		const context = await browser.newContext( {
+			javaScriptEnabled: false,
+			storageState: { cookies: [], origins: [] },
+		} );
+		const page = await context.newPage();
+		await page.goto( listing.link );
+		const results = page.getByRole( 'region', { name: 'Job listings' } );
+		const titles = results
+			.locator( 'ul.job_listings > li.job_listing' )
+			.getByRole( 'heading' );
+
+		// The link shows the order on show and says what it does.
+		const newest = results.getByRole( 'link', {
+			name: 'Newest first. Show oldest first',
+		} );
+		await expect( newest ).toHaveText( 'Newest first' );
+		await newest.click();
+		await expect( page ).toHaveURL( /[?&]order=asc/ );
+		await expect( titles ).toHaveText( [
+			'E2E Listing A Welder',
+			'E2E Listing B Intern',
+		] );
+
+		// Page links and a search keep the order.
+		await expect(
+			page
+				.getByRole( 'navigation', { name: 'Job pages' } )
+				.getByRole( 'link', { name: '2' } )
+		).toHaveAttribute( 'href', /order=asc/ );
+		const search = page.getByRole( 'search', { name: 'Search jobs' } );
+		await search.getByLabel( 'Location' ).fill( 'Lagos' );
+		await search.getByRole( 'button', { name: 'Search jobs' } ).click();
+		await expect( page ).toHaveURL( /order=asc/ );
+		await expect( titles ).toHaveText( [
+			'E2E Listing B Intern',
+			'E2E Listing C Remote',
+		] );
+
+		// And back, with the search kept.
+		const oldest = results.getByRole( 'link', {
+			name: 'Oldest first. Show newest first',
+		} );
+		await expect( oldest ).toHaveText( 'Oldest first' );
+		await oldest.click();
+		await expect( page ).not.toHaveURL( /order=/ );
+		await expect( page ).toHaveURL( /search_location=Lagos/ );
+		await expect( titles ).toHaveText( [
+			'E2E Listing C Remote',
+			'E2E Listing B Intern',
+		] );
+		await context.close();
+	} );
+
+	test( 'the order link turns the list round in place, and a search keeps the order', async ( {
+		browser,
+	} ) => {
+		const context = await browser.newContext( {
+			storageState: { cookies: [], origins: [] },
+		} );
+		const page = await context.newPage();
+		await page.goto( listing.link );
+		// Lost if the browser loads a new page.
+		await page.evaluate( () => {
+			( window as unknown as { stays?: boolean } ).stays = true;
+		} );
+
+		const search = page.getByRole( 'search', { name: 'Search jobs' } );
+		const results = page.getByRole( 'region', { name: 'Job listings' } );
+		const titles = results
+			.locator( 'ul.job_listings > li.job_listing' )
+			.getByRole( 'heading' );
+
+		await results.getByRole( 'link', { name: /^Newest first/ } ).click();
+		await expect( titles ).toHaveText( [
+			'E2E Listing A Welder',
+			'E2E Listing B Intern',
+		] );
+		await expect( page ).toHaveURL( /[?&]order=asc/ );
+		// The same link, now the way back; focus has not moved.
+		const oldest = results.getByRole( 'link', { name: /^Oldest first/ } );
+		await expect( oldest ).toHaveText( 'Oldest first' );
+		await expect( oldest ).toBeFocused();
+
+		// A filter set after that still lists the oldest first.
+		await search.getByText( 'Internship', { exact: true } ).click();
+		await expect( titles ).toHaveText( [
+			'E2E Listing A Welder',
+			'E2E Listing C Remote',
+		] );
+		await expect( page ).toHaveURL( /order=asc/ );
+
+		// Back twice: the newest first again, and the form knows it.
+		await page.goBack();
+		await page.goBack();
+		await expect( titles ).toHaveText( [
+			'E2E Listing C Remote',
+			'E2E Listing B Intern',
+		] );
+		await expect( search.locator( 'input[name="order"]' ) ).toHaveValue(
+			''
+		);
+		expect(
+			await page.evaluate(
+				() => ( window as unknown as { stays?: boolean } ).stays
+			)
+		).toBe( true );
+		await context.close();
+	} );
+
 	test( 'is insertable and valid in the page editor', async ( {
 		admin,
 		editor,
