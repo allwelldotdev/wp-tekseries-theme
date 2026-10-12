@@ -1025,7 +1025,7 @@ Verified: both zips were installed through WordPress's own installer on a fresh 
 
 ## ADR-059: Apply the release bundle from wp-admin with a one-off migration plugin
 
-**Status:** Accepted
+**Status:** Superseded by ADR-073 (what the bundle carries, the refusals, and what stays after the plugin is deleted only)
 
 **Context:** ADR-058 had a WP-CLI script apply the bundle on the live site, and the plugin's `wp tekseries backfill-tones` set the tones of existing posts. On 2026-10-11 the site owner said the live host has no SSH and no WP-CLI, because the account is not on a plan with SSH. Neither step can run there. The rest of ADR-058 stands: one version, two release zips, a bundle exported from the development site, no copy of the development database, and a tag only after the owner approves (`v1.0.0` was tagged on 2026-10-11).
 
@@ -1452,12 +1452,70 @@ Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 
   - Tests stub YouTube and Vimeo. Real playback from the two services is not exercised by the test suite.
   - The development site has dummy content for it: news post 284259 with the Media Library video 284253. It does not travel to live, because the migration leaves posts alone.
 
+## ADR-073: Carry what the owner saved in the Site Editor, and the media made on the development site, in the release bundle
+
+**Status:** Accepted
+
+**Context:**
+- The owner edits the development site in the page editor and the Site Editor to set up how the live site should look. On 2026-10-12 the owner said the idea of that editing "was to prepare the theme for how I want it to look and behave on live", and asked that the saved header and footer "and any other such changes I make in the Editor to text, additional CSS styles and the like" go into the bundle.
+- The live host takes only wp-admin uploads (ADR-059). Until now the bundle (ADR-058, ADR-059) carried ten pages and posts, two options, topic icons, one event's fields, gallery albums, one video's poster and the contact form. It did not carry template parts, templates, menus, Site Editor styles, or media uploaded on the development site.
+- Found on the development site on 2026-10-12:
+  - The header and footer are saved copies in the database. The owner reworded the footer's line. The header points to a menu saved as its own post, by ID.
+  - Four templates are saved copies: `home`, `archive-event`, `single-event` and `page-legal`. Three carry an owner change (the class `ts-intro` on the plum hero band). `single-event` differs from the theme's file only by the editor's own re-serialisation.
+  - Home uses two photos and a 47 MB video uploaded there that day. A new gallery album holds those plus one more photo.
+  - The live site's public REST API returns 404 for those media IDs (its newest media is ID 293234), and live keeps creating posts. An ID given on the development site will belong to an unrelated post on live.
+- A saved copy of a template or part is used in place of the theme's file, so it stops following later theme releases.
+
+**Options:**
+- Leave the bundle as it was and redo the editor work by hand on live. It is slow and error-prone, and the photos and video would have to be re-picked in every block.
+- Move every owner edit into the theme's patterns and reset the saved copies. This is right for edits that belong to the design (still open as a follow-up, see Future work), but it needs a release for each wording change and cannot carry media or menus.
+- Carry every saved template and part as it is. That would also freeze `single-event` on live, a copy with no change in it.
+- Put a large video inside the migration plugin's zip. A plugin zip of about 48 MB may be refused by wp-admin's upload limit, which is unknown for the live host.
+- Extend the bundle and the one-off migration plugin (now version 1.1.0) (chosen).
+
+**Decision:** The last option. The export script and the migration plugin both stay outside the repository, as in ADR-058 and ADR-059. Released TekSeries Blocks and the theme (1.13.0) are unchanged by this.
+- What the export adds, for the TekSeries theme: template parts and templates saved in the Site Editor; the menus (navigation posts) that those texts point to by ID; and the theme's Site Editor styles, including Additional CSS, when they hold anything. On 2026-10-12 they hold nothing, so none is carried.
+- A saved template or part is left out when it says what the theme's file says. Both are parsed into block trees with patterns expanded and compared. Only the editor's own rewriting is set aside: pattern labels in block metadata, attributes with a null value, whitespace, how a character is written as an entity, and http against https for the site's own address. Anything else counts as the owner's change, so a mistake in the comparison can only carry too much, never too little. Result on 2026-10-12: header, footer, `archive-event`, `home` and `page-legal` carried; `single-event` not carried.
+- The export adds every Media Library file that the carried texts or the albums use and that live lacks. It asks live's public REST API which of the files in use it lists under the same ID and path, then makes a HEAD request for the path of each one not listed. A file live serves but does not list is treated as present. An answer that is neither 200 nor 404 stops the export. Each carried file travels with its title, caption and alternative text. Result: five files (three photos, one video poster, one video).
+- A file over 5 MB stays out of the zip. The export copies it to a folder `upload-first` beside the zip, and the owner uploads it to live's Media Library by hand before running the migration. Today that is the one 47 MB video.
+- On the live site the plugin uploads the carried files, or finds a file that was uploaded by hand by comparing size and SHA-1 among the newest files of the same type, under whatever name WordPress gave it. It marks each upload and each menu it creates with a hidden post meta, `_tekseries_migration_source`, holding the ID the same thing has on the development site.
+- Before saving any text (page, post, template, template part, menu, styles) it rewrites three things to their values on that site: media IDs where blocks write one (`"id":`, `"mediaId":`, `"posterId":`, `wp-image-…`, `data-id="…"`); media addresses including sized copies, each mapped to the same size name on that site; and menu IDs inside Navigation blocks. Each kind is replaced in a single pass, so an ID that is both an old and a new one is never replaced twice.
+- Album membership and video posters use the same mapping. The earlier single-purpose poster step is replaced by the general one.
+- Two more refusals come before anything is changed: a file from `upload-first` that is not in the Media Library yet (the screen names it and offers no button), and a TekSeries Blocks plugin or theme older than the version the bundle was written with. These add to the refusals of ADR-059.
+- The export prints what it carries and what it leaves out. It warns about any page, post or event saved on the development site since the copy that the bundle does not carry.
+- What changes in ADR-059 (the partial supersession): (1) what the bundle carries and the refusals, as above; (2) "Deleting the plugin removes its files and the one option it stores" still holds, but the `_tekseries_migration_source` marks on the posts it made stay on purpose, so a later bundle (after more edits on the development site) finds the same uploads and menu instead of making them a second time. The rest of ADR-059 stands.
+
+Verified in a rehearsal on 2026-10-12, run from a fresh throwaway site set up like live before the move, with the 1.13.0 release zips and migration plugin 1.1.0. It is the same kind of site as in ADR-059: WordPress 7.1.3, PHP 8.2, Divi child theme active, ACF 6.8.10, WP Job Manager 2.4.8, Fluent Forms 6.2.15, Rank Math 1.0.279, live's IDs, and without the five media files. A draft page was seeded under the ID one of the photos has on the development site, and a file was seeded at that photo's address, so the upload had to take another name.
+- 64 checks, 0 failed: 4 refusals, 22 browser checks, 23 checks of the database and uploads folder, 2 leftover checks, 13 edge cases.
+- The screen first asked for the 47 MB video and offered no button. After a browser uploaded it under Media, the dry run listed 64 changes with nothing skipped. The run made 64 changes, 0 skipped, 0 failed, and a second look found nothing left.
+- Read back: the five files are there once each with the same SHA-1, title, caption, alternative text and thumbnails. The draft page with a photo's development-site ID is untouched, and Home no longer names that ID. No page points at an address a file has only on the development site (22 addresses differed on the rehearsal site). 1 menu, 2 template parts and 3 templates are saved for the theme with content equal to the bundle's after the rewrite. The header's Navigation block points to a menu that exists there. 8 albums hold their files under the IDs they have there. The poster is set.
+- In the browser: the footer shows the owner's wording, the saved menu shows its links, the saved events template is in use, the Gallery counts 35 photos and 2 videos, and the three new files Home uses are served from the site.
+- Edge cases added: a later bundle with a changed footer updates the saved copy in place and keeps the old one as a revision. Styles with Additional CSS (a stand-in, because the development site has none) are saved for the theme, their CSS is in the site's stylesheet, and a second run leaves them alone.
+
+Separate from the 64: on the development site itself, a bundle written for that site reports 0 to change, 0 skipped, 51 already done.
+
+Not verified:
+- The plugin has still never run on the live site or on a copy of its database (as in ADR-059).
+- The live host's upload size limit. Live's Media Library already holds a 50 MB video dated April 2026; how it got there was not checked.
+- The carrying of real Site Editor styles from the development site (it has none yet). Only the stand-in was exercised.
+
+**Rationale:**
+- The editors are where the owner works, and wp-admin uploads are the only road to live, so the bundle has to carry what the editors save.
+- IDs made on the development site cannot be trusted on live, so every ID and address is rewritten to the live value before a text is saved.
+- An unchanged saved copy would only freeze a template, so it is left out. Comparing the parsed blocks errs towards carrying too much, never too little.
+- A file too big for a plugin upload goes the way large media already goes: by hand into the Media Library.
+- The marks let a second bundle be applied after more edits, without making the same upload or menu twice.
+- Consequences:
+  - After the migration, live's header, footer and three templates come from the database. When a later release changes one of them in the theme, the saved copy needs the same change (on the development site, then a new migration zip) or a reset in the Site Editor.
+  - The follow-up offered to the owner, not decided, is to move the `ts-intro` marks and the footer line into the theme's patterns in a small release, so the saved copies can be reset and both sites follow the theme's files again.
+
 ## Future work
 
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).
 - **Intro motion tokens:** when the design system delivers its motion tokens, move the 28px distance and 0.15s start of `ts-intro` (and the hero carousel) onto them (ADR-063).
 
-- **Saved header and footer on live:** the release bundle does not carry saved template parts, so the 1.4.0 logos reach a live site with saved copies only if the owner applies them (owner; ADR-066, ADR-059).
+- **Theme patterns instead of saved copies:** move the `ts-intro` marks on the three hero bands and the footer's reworded line into the theme's patterns in a small release, so the saved copies can be reset and both sites follow the theme's files again. Offered to the owner, not decided (ADR-073).
+- **Large uploads and Site Editor styles on live:** the live host's upload size limit is unknown, and carrying real Site Editor styles has not been exercised (owner; ADR-073).
 - **Hosting and deploy:** the release method is decided (ADR-058, ADR-059). Still open on the host: a page cache and longer cache lifetimes for static files on the development site's host, and the first real run of the migration plugin on the live site (owner; ADR-059).
 - **Accessibility leftovers:** captions for the gallery video (content), and a hand scan of the Contact form after each change to it, as the suite cannot reach it (ADR-055, ADR-056).
 - **Image formats:** convert uploads to WebP or AVIF (content and host work; ADR-057).

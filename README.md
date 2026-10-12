@@ -99,15 +99,26 @@ Event templates show the ACF fields through Block Bindings. Job pages read WP Jo
 
 ## Release
 
-The current version is 1.13.0. Each release is tagged `vX.Y.Z` when it is merged, and `git tag` lists the released versions. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip` for the first two.
+The current version is 1.13.0, merged to `main` and tagged `v1.13.0`. Each release is tagged `vX.Y.Z` when it is merged, and `git tag` lists the released versions. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059, ADR-073). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip` for the first two.
 
-1. `tekseries-blocks.zip` under Plugins. Activate it.
-2. `tekseries.zip` under Themes. Don't activate it.
-3. `tekseries-migration.zip` under Plugins. Activate it.
+Upload in this order:
 
-The third is a one-off plugin, "TekSeries Migration". It carries the content that lives in the database: page content, gallery albums, topic icons and the contact form's fields. It's built from the development site by a script kept outside this repository.
+1. Any file in the `upload-first` folder, into the Media Library.
+2. `tekseries-blocks.zip` under Plugins. Activate it.
+3. `tekseries.zip` under Appearance → Themes. Don't activate it.
+4. `tekseries-migration.zip` under Plugins. Activate it.
 
-Open Tools → TekSeries migration for a dry run that changes nothing. A button then applies the changes, gives existing events and posts their tones, and switches the theme. Delete the plugin afterwards.
+The third zip is a one-off plugin, "TekSeries Migration", built from the development site by a script kept outside this repository. It carries:
+
+- page content, gallery albums, topic icons and the contact form's fields;
+- what was saved in the Site Editor: the header, the footer, templates that differ from the theme's files, the menus they use, and Site Editor styles with Additional CSS;
+- Media Library files made on the development site that the pages and albums use.
+
+A media file over 5 MB is not put in the zip. The build script copies it to `upload-first` beside the zip, and you upload it by hand before you run the migration. The migration screen names any such file that is still missing and shows no button until it is there.
+
+The plugin refuses to run when TekSeries Blocks or the theme on the site is older than the version the bundle was written with. Open Tools → TekSeries migration for a dry run that changes nothing. A button then applies the changes, gives existing events and posts their tones, and switches the theme.
+
+Delete the plugin afterwards. It leaves a small hidden mark on the media files and the menu it created, so a later migration zip finds them instead of creating them again.
 
 ## Design reference
 
