@@ -555,7 +555,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 ## ADR-036: Sort events by event date
 
-**Status:** Accepted
+**Status:** Superseded by ADR-070 (the ordering mechanism only)
 
 **Context:** Events listed by publish date, which is not when they happen. Core runs `query_loop_block_query_vars` only for non-inherited Query Loops. The event archive and event type archives use an inherited loop (ADR-026), so that filter never fires for them. Some events have no date.
 
@@ -1349,6 +1349,41 @@ Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 
   - Privacy: the Contact page now loads content from Google for visitors, which the stand-in did not. `loading="lazy"` leaves the timing to the browser. Measured on the development site, the map was requested on page load at 1440, 834 and 390px, because it sits within the browser's lazy-loading distance. The owner has been told the Privacy Policy may need a line about it. A click-to-load consent step was not asked for and is not built.
   - The height is fixed at 450px in the block's stylesheet. There is no height control.
 - This is a deliberate difference from the board (a real map instead of the drawn one), at the owner's request, like ADR-064 to ADR-066. A later design pull that shows the drawn map is not a regression to fix.
+
+## ADR-070: Let visitors switch event and job lists between newest and oldest first with `?order=asc`
+
+**Status:** Accepted
+
+**Context:**
+- The boards draw a static "Newest first" label above the Events lists and the Job Series list. On 2026-10-11 the owner asked for the sort to work. This is release 1.11.0 on branch `feat/list-order` (commit cc4bcb4).
+- ADR-036 sorted on a meta query that was an OR of `event_date` EXISTS (named, used for ordering) and NOT EXISTS. For an event without a date, the join used for ordering holds the event's other meta rows. The database ordered it by whichever row it picked (its tone, for one), so it could be listed above every dated event. This was seen on the test site (wp-env), where three test events without a date led the Events page. Every event on the live site has a date.
+
+**Options:**
+- A private parameter name, such as `list_order`, instead of WordPress's public `order` query variable.
+- A select or a pair of links for the two orders.
+- Sorting in the browser.
+- For the Events page grid, keeping the offset and flipping the order. That would leave out the oldest event, not the newest.
+
+**Decision:**
+- The address carries the order. `?order=asc` is oldest first; anything else is newest first. `order` is WordPress's own public query variable, so the main query of the event type archives follows it with no extra code. `tekseries_blocks_list_order()` in `includes/list-order.php` reads it for everything else. On the development site, Rank Math's canonical link for `/events/?order=asc`, `/event_type/webinar/?order=asc` and `/jobs/?order=asc` is the address without the parameter, and nothing redirects. A private parameter is not needed.
+- The switch on event pages is a core Button with the class `ts-sort`, bound on `text` and `url` to a new Block Bindings source, `tekseries/list-order`. Key `label` is the order on show. Key `url` is the same list from its first page in the other order. It is a plain link, so it works without JavaScript. A `render_block_core/button` filter adds an `aria-label` that starts with the visible text and says what the link does ("Newest first. Show oldest first").
+- The theme draws `ts-sort` as plain text with the `swap_vert` icon at the design's sizes (15, 14 and 13px) and a 44px touch target. `swap_vert` joins the Button icon list of ADR-067, which now has 16 icons.
+- Events page: the Latest card stays the newest event in either order. The grid is the Query Loop with an offset (ADR-026). When the address asks for oldest first, the grid is turned round and leaves the newest events out with `post__not_in`, looked up with the same query arguments, instead of the offset. "The rest" is then the same set in both orders and the page count is exact. Only event loops with an offset follow the address; the Latest card and "More events" do not.
+- Event order mechanism, replacing ADR-036's meta query: `tekseries_blocks_event_order_args()` now only marks the query (`tekseries_event_order`). A `posts_clauses` filter joins `event_date` under its own alias and orders by "has no date" first, then the date, then the publish date. Undated events (no row or an empty value) come after the dated ones in either order. ADR-036's two filters (`query_loop_block_query_vars` and `pre_get_posts`) and its rule that only loops left on the default date orderby change stand.
+- Event type chips keep the chosen order: the existing `ts-type-chip` filter (ADR-037) adds the parameter.
+- Job Listings block: the label became a link inside the router region, with `actions.order`. A hidden `order` field at the end of the search form carries the order through a search, and the script keeps it in step with the address. Page links and "Clear filters" keep the order. The arrow icon turns for "Oldest first".
+- Departures from the design: on the Job Series phone board the label is hidden, and the switch is shown on phones because it now does something. The Job Series label is drawn at weight 600 (the board's static text is regular) to match the Events switch.
+
+**Rationale:**
+- A link with the state in the address works without JavaScript, can be shared and bookmarked, and needs no script on the event pages.
+- Core's own query variable means the inherited archive query needs no code. The canonical link keeps search engines on one address per list.
+- Block Bindings on a core Button keeps the templates core blocks (ADR-005, and the rule to try bindings before a dynamic block).
+- `post__not_in` keeps the Latest card and the grid from showing the same event and makes the oldest-first page count exact.
+- A join of its own makes the order deterministic for undated events.
+- Consequences:
+  - `?order=asc` on any page reaches WordPress's main query too. On singular pages that changes nothing visible.
+  - A Button with the class `ts-sort` that is not bound to the source would get a misleading `aria-label`. The class is for the bound switch only.
+  - The switch's wording and addresses come from the plugin. Without the plugin, the pattern's fallback link `?order=asc` still orders the type archives through core.
 
 ## Future work
 

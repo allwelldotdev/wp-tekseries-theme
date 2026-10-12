@@ -2,6 +2,22 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.11.0] — 2026-10-12
+### New
+- Visitors can now turn a list round: the "Newest first" label above the lists on the Events page, on each event type page (Webinars, Workshops and Makers' Prize) and on the Job Series page is now a switch that lists the oldest first, reads "Oldest first" while it does, and goes back when selected again.
+- The switch is a plain link whose address ends in `?order=asc` when the oldest come first, so it works without JavaScript and a list in either order can be shared or bookmarked.
+- On the Events page, the large "Latest" card stays the newest event in either order, and the grid under it lists the rest from the oldest.
+- The page links under the lists and the event type filter tabs keep the chosen order.
+- On Job Series the list changes in place, a search or filter made afterwards keeps the order, and "Clear filters" keeps it too.
+- Screen readers hear what the switch does, for example "Newest first. Show oldest first".
+- Editors who open the event page templates will find the switch is an ordinary Button with the class `ts-sort` that takes its text and link from a new "List order" source, and "Sort" is a new choice in the Button's Icon panel, which now offers 16 icons.
+
+### Fixed
+- An event with no date could be listed above events that have one; events without a date now always come after the dated ones, in either order.
+
+### Improved
+- On Job Series, the order switch now also shows on phones, where its label was hidden before, and its arrow points up for "Oldest first".
+
 ## [1.10.0] — 2026-10-12
 ### New
 - On the Contact page, the grey hint in the Subject field now follows the topic a visitor picks under "What is this about?": "How can we help?" for General question, "e.g. Joining the next Eziama boot camp" for Workshops, "e.g. Posting an internship" for Job Series, and "e.g. Sponsoring a workshop" for Support or sponsorship.
