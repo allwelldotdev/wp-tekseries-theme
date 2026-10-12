@@ -86,6 +86,23 @@ test.describe( 'job submission', () => {
 			.getByLabel( 'Application email/URL' )
 			.fill( 'https://example.com/apply' );
 		await company.getByLabel( 'Company name' ).fill( 'Acme Robotics' );
+
+		// A single select draws the design's arrow, with room for it, and
+		// keeps it while focused.
+		const select = page
+			.locator( '.ts-submit-fields select:not([multiple])' )
+			.first();
+		const arrow = /^url\("data:image\/svg\+xml/;
+		await expect( select ).toHaveCSS( 'appearance', 'none' );
+		await expect( select ).toHaveCSS( 'padding-right', '44px' );
+		await expect( select ).toHaveCSS( 'background-image', arrow );
+		await expect( select ).toHaveCSS( 'background-size', '22px auto' );
+		await select.focus();
+		await expect( select ).toHaveCSS( 'background-image', arrow );
+		await expect( select ).toHaveCSS(
+			'background-color',
+			'rgb(255, 255, 255)'
+		);
 		await page.getByRole( 'button', { name: 'Preview' } ).click();
 
 		// Step 2: the listing as it will appear, under the preview bar.
