@@ -1212,6 +1212,26 @@ Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 
 
 **Rationale:** The owner's review outranks the boards, and the boards' own values stay in `docs/design-reference/`. Changing block attributes keeps every change visible and editable in the Site Editor, and leaves the other uses of the 32px preset alone. Putting the change in the pattern generator means regenerated patterns keep it. The icon rule in the plugin is needed only because a banner can now be shorter than the icon, and it leaves the icon unchanged where it already fitted. These three points now differ from the boards on purpose. A later design pull that still shows 48px, centred text or a 480px minimum must not be read as a regression to fix.
 
+## ADR-065: Let the Home Mission card end with its text, with a class `ts-fit`
+
+**Status:** Accepted
+
+**Context:** On the Home board (`docs/design-reference/project/Main.dc.html`) the plum Mission card in "Who We Are" is as tall as the column beside it (the photo and the "Get Involved" card). As built, it stretched to the grid row and left about 55px of empty plum under its last paragraph at 1440px. On 2026-10-11 and 2026-10-12 the owner asked for the card to hug its text on desktop. This is release 1.2.5 on branch `feat/mission-fit` (commit 38e8e51), not merged yet.
+
+**Options:**
+- The block's own vertical alignment control. In WordPress 7.1 a grid child has no per-item "align self" control in the editor. Only the stack's content alignment exists, and it does not stop the stretch.
+- A rule aimed at that one card. A class any card can take is no more code, and editors can reuse or remove it under Advanced, Additional CSS class(es).
+- A utility class in the theme.
+
+**Decision:** The last option, in 1.2.5.
+- `assets/css/blocks/group.css` gains `.ts-fit { align-self: start; }`.
+- The `home-about` pattern sets the class on the Mission card, through the pattern generator, so regeneration keeps it.
+- The development site's Home page got the class by a surgical edit of that block. The page carries the owner's own edits, so it is never regenerated.
+- There is no media query. At 1100px and below the layout is one column and each card is alone in its row, so the class has no effect.
+- Measured on the development site: at 1440px the card is 568px tall (was 624px). It ends 55px above the column beside it, with exactly its 44px padding under the last paragraph. At 834px and 390px its height is unchanged (450px and 714px).
+
+**Rationale:** The class is the smallest change that works in 7.1 and stays visible and editable in the editor. It is an editor-facing convention alongside `ts-reveal` (ADR-060) and `ts-intro` (ADR-063). This is a deliberate difference from the board, like ADR-064: a later design pull that shows the stretched card is not a regression to fix. It refines the per-block layout approach of ADR-025.
+
 ## Future work
 
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).

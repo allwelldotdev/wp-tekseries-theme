@@ -2,6 +2,13 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.2.5] — 2026-10-12
+### Changed
+- On Home, in the "Who We Are" section on desktops (screens wider than 1100px), the plum Mission card now ends where its text ends, where before it stretched to the height of the photo and "Get Involved" card beside it and left about 55px of empty plum under the last paragraph; at 1440px wide it is 568px tall, where it was 624px, and only the card's own 44px of padding is left under the text.
+- Tablets and phones are unchanged, because the section is a single column there.
+- This is made on purpose at the site owner's request and differs from the design board, which shows the card as tall as the column beside it.
+- Editors can give any card in a row beside taller blocks the same behaviour by adding the class `ts-fit` under Advanced, then Additional CSS class(es), in the editor; removing the class brings the stretch back.
+
 ## [1.2.4] — 2026-10-12
 ### Improved
 - On a short banner, the large faint topic icon in the banner's corner now shrinks to fit instead of being cut off at the top; where it already fit, on banners and on listing cards, it looks as before.
