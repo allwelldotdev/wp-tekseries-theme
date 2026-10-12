@@ -2,6 +2,19 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.13.0] — 2026-10-12
+### New
+- Visitors can now watch a video on a news post: under the post's text, a 16:9 card with a play button and the words "Watch the video" opens the video full screen in the Gallery's viewer, and Escape or the close button returns to the post.
+- A linked YouTube or Vimeo video plays in that site's own player inside the viewer.
+- Nothing is loaded from YouTube or Vimeo until a visitor opens the video; YouTube's player is then loaded in its privacy-enhanced mode and Vimeo's with its "do not track" setting, and closing the viewer removes the player, which stops the video.
+- Without JavaScript the card is a link to the video file, or to the video's page on YouTube or Vimeo.
+- A post without a video, or with the switch off, looks as before.
+- Editors get a "Video" panel under each news post in the editor, with a "Show a video" switch, then a "Video file" from the Media Library or a "Video link" to a YouTube or Vimeo video, and a "Thumbnail" for the card.
+- The file is used when both a file and a link are set.
+- Without a thumbnail, a video file shows its own poster image and a link shows a plain plum card.
+- A link to any other site is not shown: the card does not appear.
+- Editors who open the single post template will find the card is a new block, "Post Video", placed after the post content.
+
 ## [1.12.0] — 2026-10-12
 ### New
 - Visitors can now open an event's poster full screen: on each event's page the poster sits in a white frame with rounded corners, as in the design, with the words "Event poster" and a "View full size" link under it, and selecting the poster or the link opens it in the Gallery's viewer.

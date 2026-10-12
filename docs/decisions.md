@@ -1418,6 +1418,40 @@ Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 
   - The attachment lookup by address (`attachment_url_to_postid`) is one database query per opener per page view.
   - Other vertical stacks in the patterns still wrap (the generator's default). None holds a picture sized this way today. A stack that gets one needs `flexWrap: nowrap` too.
 
+## ADR-072: Give news posts a video through ACF fields and a Post Video block, and play YouTube and Vimeo links in the viewer from an address the server builds
+
+**Status:** Accepted
+
+**Context:**
+- On 2026-10-12 the site owner asked for news posts to carry a video: a switch, then an uploaded file or a YouTube or Vimeo link, plus a thumbnail, opening in the Gallery's viewer. This is release 1.13.0 on branch `feat/post-video` (commit 2b366b0).
+- ADR-071 made the viewer available outside the Gallery, for photo and video files only.
+
+**Options:**
+- Core's Video and Embed blocks in the post's content. They load the provider's player with the page and sit in the text, not in a card of the design's. Nothing new to build.
+- WordPress oEmbed (`wp_oembed_get`). The server fetches markup from the provider and prints what the provider returns.
+- Post meta registered by the plugin with a custom sidebar panel, as for tone and icon (ADR-032), instead of ACF fields.
+- ACF fields with a dynamic block (chosen).
+
+**Decision:** The last option.
+- Fields: an ACF group "Video" on posts, registered in code like the event fields (ADR-010, ADR-035). `tekseries_video` is a switch. `tekseries_video_file` is a video file and stores the attachment ID. `tekseries_video_link` is a URL. `tekseries_video_thumbnail` is an image ID. The last three show once the switch is on. The group is exposed over REST.
+- Block: `tekseries/post-video`, dynamic, with no settings, placed after the post content in the single post pattern. It prints nothing unless the switch is on and the post has a video file or a YouTube or Vimeo link. A file wins over a link. The card is 16:9, with the Gallery's play disc and a "Watch the video" label on ink. Its picture is the thumbnail, else the file's poster (the attachment's featured image), else a plain plum card. The card is a link, to the file or to the video's own page, so it works without JavaScript.
+- Embedded player: `tekseries_blocks_video_embed()` accepts only YouTube (watch, youtu.be, shorts, live, embed) and Vimeo links, including the private hash of an unlisted video. It builds the player's address itself from the video's ID: `https://www.youtube-nocookie.com/embed/<id>?autoplay=1&rel=0` or `https://player.vimeo.com/video/<id>?autoplay=1&dnt=1`. Nothing else from the link is used, and any other link gives no card.
+- Viewer: an item can carry an `embed` address. The dialog has a `data-wp-each` template over `state.players`, which holds the one player only while the viewer is open on such an item. The `<iframe>` therefore exists only then. Closing the viewer removes the frame, which stops the video, and no history entry is added (changing a frame's `src` back to blank would add one). The frame has a title (the caption, or "Video player") and `allow` for autoplay, encrypted media, picture in picture and fullscreen.
+- `includes/lightbox.php` gained `tekseries_blocks_lightbox_request()` and `tekseries_blocks_lightbox_directives()`, which the opener filter and the Post Video block share.
+
+**Rationale:**
+- Building the address from the ID alone means no markup or address from another site reaches the page, and the two hosts framed are fixed in code. This is the approach of ADR-069 for Google Maps.
+- A frame that exists only while the viewer is open keeps third-party requests behind a visitor's own click, which page-level embeds would not.
+- ACF is already required for the event fields (ADR-010). It gives editors a file picker, a URL field and conditional fields with no editor code to write and test.
+- A block in the template, not in each post's content, shows the card in the same place on every post and needs nothing from the editor beyond the fields.
+- Consequences:
+  - When a visitor opens a linked video, their browser contacts YouTube (its no-cookie domain) or Vimeo. The Privacy Policy may need a line, as for the Contact map (ADR-069).
+  - `autoplay=1` is sent because the visitor has just asked for the video. A browser may still hold playback until they press play.
+  - A post with a video loads the Gallery block's stylesheet and view module (ADR-071's consequence applies).
+  - The fields need ACF. Without it the block prints nothing.
+  - Tests stub YouTube and Vimeo. Real playback from the two services is not exercised by the test suite.
+  - The development site has dummy content for it: news post 284259 with the Media Library video 284253. It does not travel to live, because the migration leaves posts alone.
+
 ## Future work
 
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).
