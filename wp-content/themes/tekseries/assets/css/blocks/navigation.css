@@ -113,6 +113,112 @@
 }
 
 /*
+ * Opening the panel, for visitors who accept motion: it unrolls from under
+ * the header bar, the links rise in one after another and the buttons last,
+ * and the cross turns into place over the menu button's bars. On closing the
+ * bars swing back. Core takes the panel away the moment it closes, and its
+ * layout with it, so the panel itself does not animate out.
+ */
+@media (prefers-reduced-motion: no-preference) {
+
+	/* The cut reaches above the panel: the close button sits up there, over
+	   the menu button, and must never be clipped. */
+	.wp-block-navigation.ts-nav-compact .wp-block-navigation__responsive-container.is-menu-open {
+		animation: ts-menu-unroll 0.45s var(--wp--custom--motion--ease--out-strong) backwards;
+	}
+
+	.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__container > li,
+	.wp-block-navigation.ts-nav-compact .is-menu-open .ts-nav-compact__ctas {
+		animation: ts-menu-rise 0.4s var(--wp--custom--motion--ease--out) calc(0.06s + var(--ts-menu-place, 0) * 0.04s) backwards;
+	}
+
+	.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__container > li:nth-child(2) {
+		--ts-menu-place: 1;
+	}
+
+	.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__container > li:nth-child(3) {
+		--ts-menu-place: 2;
+	}
+
+	.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__container > li:nth-child(4) {
+		--ts-menu-place: 3;
+	}
+
+	.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__container > li:nth-child(5) {
+		--ts-menu-place: 4;
+	}
+
+	.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__container > li:nth-child(6) {
+		--ts-menu-place: 5;
+	}
+
+	.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__container > li:nth-child(7) {
+		--ts-menu-place: 6;
+	}
+
+	.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__container > li:nth-child(n + 8),
+	.wp-block-navigation.ts-nav-compact .is-menu-open .ts-nav-compact__ctas {
+		--ts-menu-place: 7;
+	}
+
+	/* Core moves the focus to the first link; from the keyboard that link
+	   is there at once, not fading in under the focus ring. */
+	.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__container > li:has(:focus-visible) {
+		animation: none;
+	}
+
+	.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation-item__content {
+		transition: background-color var(--wp--custom--motion--duration);
+	}
+
+	.wp-block-navigation.ts-nav-compact .is-menu-open .wp-block-navigation__responsive-container-close svg {
+		animation: ts-menu-cross 0.4s var(--wp--custom--motion--ease--out-strong) backwards;
+	}
+
+	/* The bars wait turned away under the cross, so they swing back into
+	   place when the menu closes. */
+	.wp-block-navigation.ts-nav-compact .wp-block-navigation__responsive-container-open svg {
+		transition:
+			rotate 0.4s var(--wp--custom--motion--ease--out-strong),
+			opacity 0.2s;
+	}
+
+	.wp-block-navigation.ts-nav-compact:has(.is-menu-open) .wp-block-navigation__responsive-container-open svg {
+		rotate: 90deg;
+		opacity: 0;
+		transition: none;
+	}
+}
+
+@keyframes ts-menu-unroll {
+
+	from {
+		clip-path: inset(-80px 0 100% 0);
+	}
+
+	to {
+		clip-path: inset(-80px 0 0 0);
+	}
+}
+
+@keyframes ts-menu-rise {
+
+	from {
+		opacity: 0;
+		translate: 0 12px;
+	}
+}
+
+@keyframes ts-menu-cross {
+
+	from {
+		opacity: 0;
+		rotate: -90deg;
+		scale: 0.6;
+	}
+}
+
+/*
  * Filter chips (.ts-nav-chips): 44px pills with a line border; the current
  * filter is plum.
  */

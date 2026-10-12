@@ -91,4 +91,93 @@ test.describe( 'header', () => {
 		await expect( menu.getByRole( 'link', { name: 'News' } ) ).toBeHidden();
 		await expect( open ).toBeFocused();
 	} );
+
+	test( 'opens the menu panel with motion for visitors who accept it', async ( {
+		page,
+	} ) => {
+		// The test config asks for less motion everywhere; this page wants it.
+		await page.emulateMedia( { reducedMotion: 'no-preference' } );
+		await page.setViewportSize( { width: 390, height: 844 } );
+		await page.goto( '/' );
+		const name = ( element: Element ) =>
+			window.getComputedStyle( element ).animationName;
+		const delays = ( items: Element[] ) =>
+			items.map( ( item ) =>
+				parseFloat(
+					window.getComputedStyle( item ).animationDelay
+				).toFixed( 2 )
+			);
+
+		const open = page.getByRole( 'button', { name: 'Open menu' } );
+		const bars = open.locator( 'svg' );
+		const close = page.getByRole( 'button', { name: 'Close menu' } );
+		const panel = page.locator(
+			'.ts-nav-compact .wp-block-navigation__responsive-container'
+		);
+		const links = panel.locator( '.wp-block-navigation__container > li' );
+
+		// The panel unrolls, the links rise in one after another and the
+		// buttons last, and the cross turns into place.
+		await open.click();
+		expect( await panel.evaluate( name ) ).toBe( 'ts-menu-unroll' );
+		expect( await links.evaluateAll( delays ) ).toEqual( [
+			'0.06',
+			'0.10',
+			'0.14',
+			'0.18',
+			'0.22',
+			'0.26',
+			'0.30',
+		] );
+		expect(
+			await panel.locator( '.ts-nav-compact__ctas' ).evaluateAll( delays )
+		).toEqual( [ '0.34' ] );
+		expect( await close.locator( 'svg' ).evaluate( name ) ).toBe(
+			'ts-menu-cross'
+		);
+
+		// Once it has played, nothing is left clipped or faded.
+		await expect
+			.poll( () =>
+				panel.evaluate(
+					( element ) =>
+						element
+							.getAnimations( { subtree: true } )
+							.filter(
+								( { playState } ) => playState === 'running'
+							).length
+				)
+			)
+			.toBe( 0 );
+		expect(
+			await panel.evaluate( ( element ) => {
+				const style = window.getComputedStyle( element );
+				return [ style.clipPath, style.opacity ];
+			} )
+		).toEqual( [ 'none', '1' ] );
+		await expect(
+			panel.getByRole( 'link', { name: 'Post A Job' } )
+		).toBeVisible();
+
+		// Closing takes the panel away at once, and the bars swing back.
+		await close.click();
+		await expect( panel ).toBeHidden();
+		await expect
+			.poll( () =>
+				bars.evaluate( ( icon ) => {
+					const style = window.getComputedStyle( icon );
+					return [ style.rotate, style.opacity ];
+				} )
+			)
+			.toEqual( [ 'none', '1' ] );
+		await expect( open ).toBeFocused();
+
+		// From the keyboard, the link the focus lands on is there at once.
+		await page.keyboard.press( 'Enter' );
+		await expect(
+			links.first().getByRole( 'link', { name: 'Who We Are' } )
+		).toBeFocused();
+		expect( await links.first().evaluate( name ) ).toBe( 'none' );
+		expect( await links.nth( 1 ).evaluate( name ) ).toBe( 'ts-menu-rise' );
+	} );
 } );

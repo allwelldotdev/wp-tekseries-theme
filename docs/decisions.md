@@ -1105,6 +1105,28 @@ Measured on the development site: the largest paint is the hero photo with and w
 
 **Rationale:** The boards' trigger is an `IntersectionObserver` and the library only tweens, which CSS does natively, so 72.9 KB of library buys nothing here. It also avoids a proprietary, non-GPL licence. Server HTML stays complete without JavaScript (ADR-005): nothing is hidden unless the script is running and the block is off screen. No script, a failed script or JavaScript off leave the page as it was, and counters count on load. With reduced motion the script marks nothing and the CSS is guarded too. This changes ADR-046, where the Stat ships no script and counts on page load. Without the script it still counts on load. The marquee is unchanged. It also changes ADR-047: one module is now no block's own, but nothing is bundled and it still loads only with the blocks that need it.
 
+## ADR-061: Animate the compact menu's opening in CSS, and let it close instantly
+
+**Status:** Accepted
+
+**Context:** At 1100px and below, the header menu is core's Navigation overlay restyled into a panel under the header bar (ADR-018). Core keeps the toggle, focus trap, Escape and ARIA state. The close button sits over the menu button, 54 to 56px above the panel's top edge. The panel appeared with no motion, and the site owner asked for an animation at tablet and phone widths, built in CSS. The motion tokens from ADR-060 (`ease.out`, `ease.out-strong`) are reused. This is their first use outside Home, and the menu is on every page.
+
+**Options:**
+- Animate the opening in CSS and let the closing be instant.
+- Also animate the closing by copying core's open-state layout rules onto the closed state, so an exit transition could hold the layout. Fragile against core updates, and discrete `display` transitions are not in every browser.
+- Add a script for the closing. The request was for CSS, and the rest needs no script.
+- Add a dimming layer behind the panel. It would change the look of the page, which was not asked for.
+
+**Decision:** The first option. The last section of `assets/css/blocks/navigation.css` holds it, all under `prefers-reduced-motion: no-preference`. With reduced motion the menu behaves as before. There is no markup change, no script and no new token.
+- The panel unrolls from under the header bar with a `clip-path` animation from `inset(-80px 0 100% 0)` to `inset(-80px 0 0 0)` over 0.45s.
+- The links rise 12px one after another (0.4s each, 0.04s apart, from 0.06s), then the two buttons.
+- The close cross turns into place from -90 degrees and 0.6 scale over 0.4s.
+- While the menu is open, the menu button's bars are held turned 90 degrees and transparent under the cross (`:has(.is-menu-open)`). A transition on them makes them swing back when the menu closes. This is the only motion on closing.
+- A link with `:focus-visible` drops its animation.
+- `specs/header.spec.ts` covers it.
+
+**Rationale:** The clip reaches 80px above the panel so it never cuts the close button. This is also why `overflow: hidden` is not used. Core moves focus to the first link when the menu opens, and a keyboard user must not see a focus ring on a link still fading in. Pointer users get the whole cascade. The panel does not animate out because core closes the menu by removing the class that also lays the panel out, so the contents collapse into a row at once (seen in the browser). The bars' swing gives the closing some motion without depending on that class. Core's overlay class names are still relied on, as in ADR-018.
+
 ## Future work
 
 - **Hosting and deploy:** the release method is decided (ADR-058, ADR-059). Still open on the host: a page cache and longer cache lifetimes for static files on the development site's host, and the first real run of the migration plugin on the live site (owner; ADR-059).
