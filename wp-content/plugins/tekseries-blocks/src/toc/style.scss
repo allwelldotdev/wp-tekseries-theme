@@ -11,6 +11,7 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: 12px;
+	box-sizing: border-box;
 	min-height: var(--wp--custom--touch-target);
 	padding: 8px 20px;
 	cursor: pointer;

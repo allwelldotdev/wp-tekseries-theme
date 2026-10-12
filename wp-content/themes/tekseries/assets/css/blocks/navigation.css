@@ -221,18 +221,25 @@
 }
 
 /*
- * Filter chips (.ts-nav-chips): 44px pills with a line border; the current
- * filter is plum.
+ * Filter chips (.ts-nav-chips): 44px pills with a line border, 8px apart; the
+ * current filter is plum. Tablets and phones get the design's smaller pills,
+ * and on phones the row scrolls sideways instead of wrapping.
  */
+.wp-block-navigation.ts-nav-chips {
+	gap: 8px;
+}
+
 .wp-block-navigation.ts-nav-chips .wp-block-navigation-item__content {
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
+	box-sizing: border-box;
 	min-height: var(--wp--custom--touch-target);
 	padding: 10px 18px;
 	border: 1px solid var(--wp--preset--color--line);
 	border-radius: var(--wp--preset--border-radius--pill);
 	background-color: var(--wp--preset--color--white);
+	font-size: 1rem;
 	font-weight: 700;
 }
 
@@ -252,4 +259,50 @@
 	border-color: var(--wp--preset--color--plum);
 	background-color: var(--wp--preset--color--plum);
 	color: var(--wp--preset--color--white);
+}
+
+@media (width <= 1100px) {
+
+	.wp-block-navigation.ts-nav-chips .wp-block-navigation-item__content {
+		gap: 6px;
+		padding: 10px 16px;
+		font-size: 0.9375rem;
+	}
+
+	.wp-block-navigation.ts-nav-chips .wp-block-navigation-item__content svg {
+		width: 18px;
+		height: 18px;
+	}
+}
+
+/*
+ * Phones: one row from edge to edge of the screen. The side padding is the
+ * page gutter the row gives up; the 4px above and below keep a focus ring
+ * inside the scroll box, which would cut it off.
+ */
+@media (width <= 640px) {
+
+	nav.wp-block-navigation.ts-nav-chips {
+		flex: none;
+		width: calc(100% + 2 * var(--wp--preset--spacing--gutter));
+		margin-inline: calc(-1 * var(--wp--preset--spacing--gutter));
+	}
+
+	.wp-block-navigation.ts-nav-chips .wp-block-navigation__container {
+		flex: 1;
+		flex-wrap: nowrap;
+		margin-block: -4px;
+		padding: 4px var(--wp--preset--spacing--gutter);
+		overflow-x: auto;
+		scrollbar-width: none;
+	}
+
+	.wp-block-navigation.ts-nav-chips .wp-block-navigation-item {
+		flex: none;
+	}
+
+	.wp-block-navigation.ts-nav-chips .wp-block-navigation-item__content {
+		padding: 10px 14px;
+		font-size: 0.875rem;
+	}
 }

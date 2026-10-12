@@ -63,4 +63,51 @@ test.describe( 'front-end templates', () => {
 			);
 		} );
 	}
+
+	// The event filter tabs: 44px pills, 8px apart. On a phone they stay on
+	// one row that scrolls sideways while the page itself does not.
+	test( 'event filter tabs keep their size and scroll on a phone', async ( {
+		page,
+	} ) => {
+		await page.goto( '/events/' );
+		const nav = page.getByRole( 'navigation', { name: 'Filter events' } );
+		const measure = () =>
+			nav.getByRole( 'link' ).evaluateAll( ( links ) => {
+				const boxes = links.map( ( link ) =>
+					link.getBoundingClientRect()
+				);
+				return {
+					heights: boxes.map( ( box ) => box.height ),
+					rows: new Set( boxes.map( ( box ) => box.top ) ).size,
+					gaps: boxes
+						.map(
+							( box, i ) =>
+								box.left - ( boxes[ i - 1 ]?.right ?? NaN )
+						)
+						.slice( 1 ),
+				};
+			} );
+
+		let tabs = await measure();
+		expect( tabs.heights ).toEqual( [ 44, 44, 44, 44 ] );
+		expect( tabs.gaps ).toEqual( [ 8, 8, 8 ] );
+
+		await page.setViewportSize( { width: 390, height: 844 } );
+		tabs = await measure();
+		expect( tabs.heights ).toEqual( [ 44, 44, 44, 44 ] );
+		expect( tabs.gaps ).toEqual( [ 8, 8, 8 ] );
+		expect( tabs.rows ).toBe( 1 );
+		expect(
+			await nav
+				.getByRole( 'list' )
+				.evaluate( ( list ) => list.scrollWidth > list.clientWidth )
+		).toBe( true );
+		expect(
+			await page.evaluate(
+				() =>
+					document.documentElement.scrollWidth -
+					document.documentElement.clientWidth
+			)
+		).toBe( 0 );
+	} );
 } );
