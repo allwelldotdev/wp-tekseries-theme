@@ -44,6 +44,36 @@
 	}
 }
 
+// When the page opens, the first slide's text rises in: whatever sits beside
+// its main heading, one item after another (Home hero board). The photo stays
+// still. Up to eight items.
+@media screen and (prefers-reduced-motion: no-preference) {
+
+	.ts-carousel__track > :first-child :has(> h1) > * {
+		animation: ts-carousel-rise var(--wp--custom--motion--reveal--duration) var(--wp--custom--motion--ease--out-strong) 0.15s backwards;
+	}
+
+	@for $i from 2 through 8 {
+
+		.ts-carousel__track > :first-child :has(> h1) > :nth-child(#{$i}) {
+			animation-delay: calc(0.15s + #{$i - 1} * var(--wp--custom--motion--reveal--stagger));
+		}
+	}
+
+	// Focus is never on something still fading in.
+	.ts-carousel__track > :first-child :has(> h1) > :focus-within {
+		animation: none;
+	}
+}
+
+@keyframes ts-carousel-rise {
+
+	from {
+		opacity: 0;
+		translate: 0 28px;
+	}
+}
+
 .ts-carousel__controls {
 	position: absolute;
 	right: 24px;

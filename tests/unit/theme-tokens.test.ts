@@ -32,6 +32,7 @@ const theme = readJson< {
 		};
 		spacing: { spacingSizes: ( Preset & { size: string } )[] };
 		border: { radiusSizes: ( Preset & { size: string } )[] };
+		custom: { motion: Record< string, unknown > };
 	};
 	styles: unknown;
 } >( '../../wp-content/themes/tekseries/theme.json' );
@@ -221,5 +222,43 @@ describe( 'theme.json tokens', () => {
 				}
 			}
 		}
+	} );
+
+	// Motion has no tokens in the design system yet: the theme's own are the
+	// only ones, and the plugin's styles read them too.
+	it( 'defines every motion token the theme and plugin styles use', () => {
+		const names = ( value: unknown, name: string ): string[] =>
+			value && typeof value === 'object'
+				? Object.entries( value ).flatMap( ( [ key, inner ] ) =>
+						names( inner, `${ name }--${ key }` )
+					)
+				: [ name ];
+		const defined = names( settings.custom.motion, '--wp--custom--motion' );
+		const used = new Set< string >();
+		for ( const dir of [
+			'assets/css/',
+			'../../plugins/tekseries-blocks/src/',
+			'../../plugins/tekseries-blocks/assets/css/',
+		] ) {
+			const root = new URL( dir, THEME );
+			const files = readdirSync( root, {
+				recursive: true,
+				encoding: 'utf8',
+			} );
+			for ( const file of files.filter( ( f ) =>
+				/\.s?css$/.test( f )
+			) ) {
+				const styles = readFileSync( new URL( file, root ), 'utf8' );
+				for ( const [ name ] of styles.matchAll(
+					/--wp--custom--motion--[a-z-]+/g
+				) ) {
+					used.add( name );
+				}
+			}
+		}
+		expect( used.size ).toBeGreaterThan( 1 );
+		expect(
+			[ ...used ].filter( ( name ) => ! defined.includes( name ) )
+		).toEqual( [] );
 	} );
 } );

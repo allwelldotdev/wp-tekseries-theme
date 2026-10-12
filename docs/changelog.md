@@ -2,6 +2,17 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.1.0] — 2026-10-11
+### New
+- Visitors see the Home banner's text (the chip, the headline, the line under it, the buttons and the three labels) rise and fade in one item after another when the page opens, while the photo stays still.
+- Visitors see the four Home section headings ("Get Involved, Help Grow Our Impact", "Who We Are", "What We Do" and "Team") rise in the first time they scroll to them.
+- Visitors see each of the three "What We Do" cards rise in the first time they scroll to it, with its contents following one after another.
+- Editors can make any block rise in on scroll by adding the class `ts-reveal` under Advanced, then Additional CSS class(es), in the editor; a Group marked this way rises in and its contents follow, and removing the class removes the effect.
+
+### Improved
+- The Home impact figures now count up when a visitor scrolls to them, where before they counted as soon as the page loaded and had usually finished before anyone reached them.
+- Without JavaScript, everything on these pages is simply shown and the figures count on load; animation stays off for visitors who have asked their device for reduced motion, and a block the keyboard reaches is shown at once.
+
 ## [1.0.0] — 2026-10-10
 ### New
 - Visitors get the whole site in a new design with plum, saffron and lilac colours and larger text, replacing the old site: Home, Events, News, Gallery, Contact, Privacy, Terms and Job Series.
@@ -31,7 +42,7 @@ This file records what visitors and site editors of tekseries.com will notice in
 - Text appears in the site's own fonts sooner when a page loads.
 
 ## Planned
-- The Home banner and the count-up figures may get Previous and Next arrows and a start-when-visible count if they are wanted.
+- The Home banner may get Previous and Next arrows if they are wanted.
 - The Gallery "Load more" button will add 10 items on phones, and the totals at the top of the Gallery will follow the year filter.
 - Gallery photos will get descriptive captions and picture descriptions, and the Gallery video will get captions.
 - Editors will get a bulk "add to album" action in the Media Library.

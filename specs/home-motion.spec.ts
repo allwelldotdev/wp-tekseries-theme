@@ -13,7 +13,7 @@ const MOVING = { ...NO_JS, reducedMotion: 'no-preference' } as const;
 
 // The Home blocks that move: the stat count-up, the logo marquee and the hero
 // carousel. All three are complete on the server and need no JavaScript; the
-// carousel's script only adds to it.
+// carousel's script and the reveal script (specs/reveal.spec.ts) only add to it.
 test.describe( 'home motion blocks', () => {
 	let home: Linked;
 	// A slide: the first Cover of the theme's Home hero.
@@ -249,6 +249,56 @@ test.describe( 'home motion blocks', () => {
 		await expect( single ).not.toHaveAttribute( 'role' );
 
 		await context.close();
+	} );
+
+	test( 'the first slide’s text rises in when the page opens', async ( {
+		browser,
+	} ) => {
+		const rise = ( items: Element[] ) =>
+			items.map( ( item ) => {
+				const style = window.getComputedStyle( item );
+				return `${ style.animationName } ${ parseFloat(
+					style.animationDelay
+				).toFixed( 2 ) }`;
+			} );
+		// CSS alone, so it needs no script.
+		const open = async ( reducedMotion: 'reduce' | 'no-preference' ) => {
+			const context = await browser.newContext( {
+				...NO_JS,
+				reducedMotion,
+			} );
+			const page = await context.newPage();
+			await page.goto( home.link );
+			return page
+				.getByRole( 'region', { name: 'Highlights' } )
+				.locator( '.ts-carousel__track > .wp-block-cover' );
+		};
+
+		// Whatever sits beside the main heading, one item after another.
+		let slides = await open( 'no-preference' );
+		expect(
+			await slides.first().locator( ':has(> h1) > *' ).evaluateAll( rise )
+		).toEqual( [
+			'ts-carousel-rise 0.15',
+			'ts-carousel-rise 0.27',
+			'ts-carousel-rise 0.39',
+			'ts-carousel-rise 0.51',
+			'ts-carousel-rise 0.63',
+		] );
+		// The other slides are out of sight then, and stay as they are.
+		expect(
+			await slides
+				.nth( 1 )
+				.locator( ':has(> h1) > *' )
+				.evaluateAll( rise )
+		).toEqual( Array( 5 ).fill( 'none 0.00' ) );
+		await slides.page().context().close();
+
+		slides = await open( 'reduce' );
+		expect(
+			await slides.first().locator( ':has(> h1) > *' ).evaluateAll( rise )
+		).toEqual( Array( 5 ).fill( 'none 0.00' ) );
+		await slides.page().context().close();
 	} );
 
 	test( 'with its script the dots follow the slides, which can change by themselves', async ( {
@@ -498,10 +548,19 @@ test.describe( 'home motion blocks', () => {
 				} )
 				.getByRole( 'img' )
 		).toHaveCount( 4 );
+		// The section headings and the three pillar cards rise in when a
+		// visitor scrolls to them (specs/reveal.spec.ts).
+		await expect( page.locator( 'h2.ts-reveal' ) ).toHaveText( [
+			'Get Involved, Help Grow Our Impact',
+			'Who We Are',
+			'What We Do',
+			'Team',
+		] );
+		await expect( page.locator( 'article.ts-reveal' ) ).toHaveCount( 3 );
 		await context.close();
 	} );
 
-	test( 'loads only the carousel script for them and opens cleanly in the editor', async ( {
+	test( 'loads only the carousel and reveal scripts for them and opens cleanly in the editor', async ( {
 		admin,
 		browser,
 		editor,
@@ -520,7 +579,8 @@ test.describe( 'home motion blocks', () => {
 					/react|jquery|tekseries-blocks\/build\/.*\.js/i.test( url )
 				)
 				.map( ( url ) => url.replace( /^.*\/build\/|\?.*$/g, '' ) )
-		).toEqual( [ 'hero-carousel/view.js' ] );
+				.sort()
+		).toEqual( [ 'hero-carousel/view.js', 'reveal/view.js' ] );
 		await context.close();
 
 		await admin.editPost( home.id );

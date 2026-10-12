@@ -36,11 +36,22 @@
 	}
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media screen and (prefers-reduced-motion: no-preference) {
 
 	.ts-stat__number {
 		counter-reset: ts-stat var(--ts-stat-n);
 		animation: ts-stat-count 2.2s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s both;
+	}
+
+	// With the reveal script, a figure below the screen when the page opens
+	// waits at 0 and counts once it is scrolled to; figures that arrive
+	// together count one after another.
+	.wp-block-tekseries-stat.is-reveal-pending .ts-stat__number {
+		animation: none;
+	}
+
+	.wp-block-tekseries-stat.is-revealed .ts-stat__number {
+		animation: ts-stat-count 2s var(--wp--custom--motion--ease--out-strong) calc(var(--ts-reveal-place, 0) * var(--wp--custom--motion--reveal--stagger)) both;
 	}
 }
 

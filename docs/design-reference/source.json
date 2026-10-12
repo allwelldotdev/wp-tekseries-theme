@@ -1,6 +1,9 @@
 {
   "artifact": "https://claude.ai/artifact/3Gz161FvM7zFgPHgNHk5bQ",
-  "version": "1791542245-73a5",
-  "pulledAt": "2026-10-09T11:33:32Z",
-  "assets": "assets/<id>.<ext> mirror the canvas /_blob/<id> uploads"
+  "version": "1791638764-22e3",
+  "pulledAt": "2026-10-11T17:37:56Z",
+  "assets": "assets/<id>.<ext> mirror the canvas /_blob/<id> uploads",
+  "notMirrored": {
+    "92613576da60ed3a9aedfde3f3592bc0": "GSAP 3.15.0 core (gsap.min.js, the same bytes as the npm release), loaded by the three Home boards. A third-party library under its own licence, so it is not kept here."
+  }
 }

@@ -1,5 +1,5 @@
-// wp-scripts builds the scripts each block.json lists. The post sidebar is not a
-// block, so it is added to those entries here.
+// wp-scripts builds the scripts each block.json lists. The post sidebar and the
+// reveal script are not blocks, so they are added to those entries here.
 const [
 	scriptConfig,
 	moduleConfig,
@@ -13,5 +13,11 @@ module.exports = [
 			'post-settings/index': './src/post-settings/index.tsx',
 		} ),
 	},
-	moduleConfig,
+	{
+		...moduleConfig,
+		entry: () => ( {
+			...moduleConfig.entry(),
+			'reveal/view': './src/reveal/view.ts',
+		} ),
+	},
 ];

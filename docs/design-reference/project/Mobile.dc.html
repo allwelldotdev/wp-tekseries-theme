@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TekSeries Home - Mobile</title>
 <script src="./support.js"></script>
+<script src="/_blob/92613576da60ed3a9aedfde3f3592bc0"></script>
 </head>
 <body>
 <x-dc>
-<helmet><style>.ts-si{display:block;width:20px;height:20px;background:currentColor;-webkit-mask:var(--si) center/contain no-repeat;mask:var(--si) center/contain no-repeat}.ts-si-in{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/linkedin-in.svg)}.ts-si-fb{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/facebook-f.svg)}.ts-si-ig{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/instagram.svg)}.ts-si-wa{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/whatsapp.svg)}</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<helmet><style>:where([id]){scroll-margin-top:88px}</style><style>.ts-si{display:block;width:20px;height:20px;background:currentColor;-webkit-mask:var(--si) center/contain no-repeat;mask:var(--si) center/contain no-repeat}.ts-si-in{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/linkedin-in.svg)}.ts-si-fb{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/facebook-f.svg)}.ts-si-ig{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/instagram.svg)}.ts-si-wa{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/whatsapp.svg)}</style><link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
 <style>body{margin:0;background:#FBF7F9;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}a{color:inherit;text-decoration:none}a:hover{color:#E76F51}.ms{font-family:'Material Symbols Rounded';font-weight:400;font-style:normal;line-height:1;display:inline-block;letter-spacing:normal;text-transform:none;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
 @keyframes ts-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
@@ -19,6 +20,7 @@
 .ts-count::after{content:counter(n)}
 @keyframes ts-count{from{--n:0}to{--n:var(--to)}}
 @media (prefers-reduced-motion:reduce){.ts-count{animation:none;--n:var(--to)}}
+html.ts-gsap .ts-count{animation:none}
 .sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 </style></helmet>
 <div style="width:390px;height:10970px;font-family:'Onest',sans-serif;color:#2A1533;background:#FBF7F9;font-variant-ligatures:none">
@@ -175,6 +177,109 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"ctaLabel":{"editor":"text","default":"Job Series","tsType":"string","section":"Content"},"showBios":{"editor":"boolean","default":true,"tsType":"boolean","section":"Team"},"$preview":{"width":390,"height":10970}}'>
 class Component extends DCLogic {
+  // In-page jumps (#id links): land each target just below the sticky header with 24px of breathing room,
+  // whichever element is doing the scrolling (page, Play frame or canvas preview).
+  componentDidMount() {
+    this._onJump = e => this._jump(e);
+    document.addEventListener('click', this._onJump, true);
+    if (window.gsap) this._initMotion(); else { this._onLoadMotion = () => this._initMotion(); window.addEventListener('load', this._onLoadMotion, { once: true }); }
+    const h = (window.location && window.location.hash || '').slice(1);
+    if (h && document.getElementById(h)) setTimeout(() => this._scrollTo(h, false), 60);
+  }
+  componentWillUnmount() {
+    document.removeEventListener('click', this._onJump, true);
+    if (this._onLoadMotion) window.removeEventListener('load', this._onLoadMotion);
+    this._killMotion();
+  }
+  // Motion (GSAP 3.15): 1) hero reveal on load, 2) impact counters count up when in view,
+  // 3) the Three Pillars cards slide in one after another, 4) section headings fade up.
+  // Reveals are triggered by IntersectionObserver so they work in Play, full window and on the canvas.
+  // Visitors with "reduce motion" turned on get the finished page with no animation.
+  _initMotion() {
+    const gsap = window.gsap;
+    if (!gsap || this._motion) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const root = document.documentElement;
+    root.classList.add('ts-gsap');
+    const io = typeof IntersectionObserver === 'function'
+      ? new IntersectionObserver(entries => entries.forEach(en => {
+          if (!en.isIntersecting) return;
+          io.unobserve(en.target);
+          const run = en.target.__tsReveal; en.target.__tsReveal = null;
+          if (run) run();
+        }), { threshold: 0.18 })
+      : null;
+    const onView = (el, run) => { if (io) { el.__tsReveal = run; io.observe(el); } else run(); };
+    const ctx = gsap.context(() => {
+      // 1. Hero (the photo stays still): chip, headline, subline, buttons and pillar labels rise in sequence.
+      const h1 = document.querySelector('h1');
+      const copy = h1 && h1.parentElement;
+      if (copy) {
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        tl.from(copy.children, { y: 28, autoAlpha: 0, duration: 0.8, stagger: 0.12, clearProps: 'transform,opacity,visibility' }, 0.15);
+      }
+      // 2. Impact counters: 0 → target once the impact grid is on screen.
+      const counts = Array.prototype.slice.call(document.querySelectorAll('.ts-count'));
+      if (counts.length) {
+        counts.forEach(c => gsap.set(c, { '--n': 0 }));
+        const grid = counts[0].closest('ul') || counts[0];
+        onView(grid, () => counts.forEach((c, i) => {
+          const to = parseInt(getComputedStyle(c).getPropertyValue('--to'), 10) || 0;
+          gsap.to(c, { '--n': to, duration: 2, delay: i * 0.12, ease: 'power3.out' });
+        }));
+      }
+      // 3. Three Pillars: each card slides up and its contents follow.
+      document.querySelectorAll('article[id^="pillar-"]').forEach(card => {
+        gsap.set(card, { y: 64, autoAlpha: 0 });
+        const inner = Array.prototype.filter.call(card.children, el => !el.classList.contains('ms'));
+        gsap.set(inner, { y: 20, autoAlpha: 0 });
+        onView(card, () => {
+          gsap.to(card, { y: 0, autoAlpha: 1, duration: 0.9, ease: 'power3.out', clearProps: 'transform,opacity,visibility' });
+          gsap.to(inner, { y: 0, autoAlpha: 1, duration: 0.7, stagger: 0.1, delay: 0.2, ease: 'power2.out', clearProps: 'transform,opacity,visibility' });
+        });
+      });
+      // 4. Section headings: a gentle fade-up.
+      document.querySelectorAll('section h2').forEach(h => {
+        gsap.set(h, { y: 24, autoAlpha: 0 });
+        onView(h, () => gsap.to(h, { y: 0, autoAlpha: 1, duration: 0.8, ease: 'power2.out', clearProps: 'transform,opacity,visibility' }));
+      });
+    });
+    this._motion = { ctx, io };
+  }
+  _killMotion() {
+    if (!this._motion) return;
+    if (this._motion.io) this._motion.io.disconnect();
+    this._motion.ctx.revert();
+    document.documentElement.classList.remove('ts-gsap');
+    this._motion = null;
+  }
+  _jump(e) {
+    const a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const id = a.getAttribute('href').slice(1);
+    if (!id || !document.getElementById(id)) return;
+    e.preventDefault(); e.stopPropagation();
+    if (this.state && this.state.menuOpen) this.setState({ menuOpen: false });
+    requestAnimationFrame(() => requestAnimationFrame(() => this._scrollTo(id, true)));
+  }
+  _scrollTo(id, animate) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const header = document.querySelector('header');
+    const offset = (header ? header.getBoundingClientRect().height : 72) + 24;
+    const smooth = animate && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    let sc = el.parentElement;
+    while (sc && !(/(auto|scroll)/.test(getComputedStyle(sc).overflowY) && sc.scrollHeight > sc.clientHeight)) sc = sc.parentElement;
+    if (!sc) sc = document.scrollingElement || document.documentElement;
+    if (sc.scrollHeight > sc.clientHeight) {
+      const base = sc === document.scrollingElement || sc === document.documentElement ? 0 : sc.getBoundingClientRect().top;
+      const top = el.getBoundingClientRect().top - base + sc.scrollTop - offset;
+      sc.scrollTo({ top: Math.max(0, top), behavior: smooth ? 'smooth' : 'auto' });
+    } else {
+      el.style.scrollMarginTop = offset + 'px';
+      el.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'auto' });
+    }
+  }
   state = { menuOpen: false };
   renderVals() {
     const menuOpen = this.state.menuOpen;

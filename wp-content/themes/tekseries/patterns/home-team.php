@@ -11,8 +11,8 @@
 
 ?>
 <!-- wp:group {"tagName":"section","align":"wide","style":{"spacing":{"margin":{"top":"var:preset|spacing|section-y"},"blockGap":"var:preset|spacing|28"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"},"anchor":"team"} -->
-<section class="wp-block-group alignwide" id="team" style="margin-top:var(--wp--preset--spacing--section-y)"><!-- wp:heading -->
-<h2 class="wp-block-heading"><?php echo esc_html__( 'Team', 'tekseries' ); ?></h2>
+<section class="wp-block-group alignwide" id="team" style="margin-top:var(--wp--preset--spacing--section-y)"><!-- wp:heading {"className":"ts-reveal"} -->
+<h2 class="wp-block-heading ts-reveal"><?php echo esc_html__( 'Team', 'tekseries' ); ?></h2>
 <!-- /wp:heading -->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"},"@tablet":{"layout":{"columnCount":2}},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
