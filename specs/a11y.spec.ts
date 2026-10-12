@@ -377,6 +377,15 @@ test.describe( 'accessibility', () => {
 			.getByText( 'Apply for job' )
 			.click();
 		await expect( page.locator( '.application_details' ) ).toBeVisible();
+		// The button changes colour under the pointer over 150ms; half-way
+		// through, its text and background are not a pair anyone designed.
+		await expect
+			.poll( () =>
+				page
+					.locator( '.ts-job-apply > summary' )
+					.evaluate( ( button ) => button.getAnimations().length )
+			)
+			.toBe( 0 );
 		expect( await violations( page ) ).toEqual( [] );
 		await context.close();
 	} );
