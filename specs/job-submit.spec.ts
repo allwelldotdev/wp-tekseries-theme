@@ -118,6 +118,10 @@ test.describe( 'job submission', () => {
 		await expect( page.locator( '.ts-job-meta .location' ) ).toContainText(
 			'Lagos'
 		);
+		// A preview is the employer's own listing: no CV link in it.
+		await expect(
+			page.getByRole( 'link', { name: 'Upload your CV to Job Series' } )
+		).toHaveCount( 0 );
 		await page.getByRole( 'button', { name: 'Submit listing' } ).click();
 
 		// Done: submitted for approval, with the way to the dashboard.

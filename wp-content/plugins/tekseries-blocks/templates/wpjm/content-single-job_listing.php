@@ -47,6 +47,23 @@ $tekseries_jobs    = $tekseries_preview ? false : job_manager_get_permalink( 'jo
 				get_job_manager_template( 'job-application.php' );
 			}
 			?>
+			<?php if ( ! $tekseries_preview ) : ?>
+				<?php
+				/**
+				 * Filters where "Upload your CV to Job Series" leads.
+				 *
+				 * The site has no page for it yet, so the link is "#" until one
+				 * is filtered in.
+				 *
+				 * @param string $url Link address.
+				 */
+				$tekseries_cv_url = (string) apply_filters( 'tekseries_blocks_cv_upload_url', '#' );
+				?>
+				<a class="ts-job-button ts-job-button--outline" href="<?php echo esc_url( $tekseries_cv_url ); ?>">
+					<?php echo tekseries_blocks_icon_svg( 'upload_file' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
+					<?php esc_html_e( 'Upload your CV to Job Series', 'tekseries-blocks' ); ?>
+				</a>
+			<?php endif; ?>
 		</div>
 		<?php if ( ! $tekseries_preview ) : ?>
 			<p class="ts-job-note" role="note">

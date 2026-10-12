@@ -141,6 +141,28 @@
 	fill: currentcolor;
 }
 
+/* A quieter action under the apply box: a line border on the card's ground. */
+.ts-job-button--outline {
+	box-sizing: border-box;
+	min-height: var(--wp--custom--touch-target);
+	padding: 0 20px;
+	border: 1px solid var(--wp--preset--color--line);
+	background: none;
+	color: var(--wp--preset--color--plum);
+	font-size: 0.875rem;
+}
+
+.ts-job-button--outline:hover {
+	border-color: var(--wp--preset--color--saffron);
+	background: none;
+	color: var(--wp--preset--color--plum);
+}
+
+.ts-job-button--outline svg {
+	width: 18px;
+	height: 18px;
+}
+
 /* Company: logo or initials tile, eyebrow and name; tagline and links. */
 .ts-job-company {
 	display: flex;
