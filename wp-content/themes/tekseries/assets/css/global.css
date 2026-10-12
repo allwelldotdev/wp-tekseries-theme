@@ -232,3 +232,83 @@ h3 {
 		translate: 0 var(--ts-reveal-distance);
 	}
 }
+
+/*
+ * Entrance on load: a block with the class "ts-intro" rises in when the page
+ * opens, the way the Home hero's text does. On a Group the blocks directly
+ * inside rise in one after another and the Group itself stays still, so its
+ * background does not move; any other block rises in itself, and marked blocks
+ * side by side take turns. CSS only, so it needs no script. A mark inside a
+ * marked block is left to the outer one, a decorative icon stays where it is,
+ * and the editor stays still.
+ */
+@media screen and (prefers-reduced-motion: no-preference) {
+
+	.ts-intro:not(.wp-block-group, .ts-intro *, .block-editor-block-list__block),
+	.wp-block-group.ts-intro:not(.ts-intro *, .block-editor-block-list__block) > :not([class*="is-style-deco"]) {
+		animation: ts-intro-rise var(--wp--custom--motion--reveal--duration) var(--wp--custom--motion--ease--out-strong) calc(0.15s + var(--ts-intro-place, 0) * var(--wp--custom--motion--reveal--stagger)) backwards;
+	}
+
+	/* A marked block's place among the marked blocks beside it. */
+	.ts-intro:nth-child(2 of .ts-intro) {
+		--ts-intro-place: 1;
+	}
+
+	.ts-intro:nth-child(3 of .ts-intro) {
+		--ts-intro-place: 2;
+	}
+
+	.ts-intro:nth-child(4 of .ts-intro) {
+		--ts-intro-place: 3;
+	}
+
+	.ts-intro:nth-child(5 of .ts-intro) {
+		--ts-intro-place: 4;
+	}
+
+	.ts-intro:nth-child(n + 6 of .ts-intro) {
+		--ts-intro-place: 5;
+	}
+
+	/* A block's place inside a marked Group. These come last: a block in a
+	   marked Group goes by them even when it is marked itself. */
+	.wp-block-group.ts-intro > :first-child {
+		--ts-intro-place: 0;
+	}
+
+	.wp-block-group.ts-intro > :nth-child(2) {
+		--ts-intro-place: 1;
+	}
+
+	.wp-block-group.ts-intro > :nth-child(3) {
+		--ts-intro-place: 2;
+	}
+
+	.wp-block-group.ts-intro > :nth-child(4) {
+		--ts-intro-place: 3;
+	}
+
+	.wp-block-group.ts-intro > :nth-child(5) {
+		--ts-intro-place: 4;
+	}
+
+	.wp-block-group.ts-intro > :nth-child(n + 6) {
+		--ts-intro-place: 5;
+	}
+
+	/* A block the keyboard has reached is shown at once. Its animation is
+	   left alone: taken away, it would play again once the focus moved on. */
+	.ts-intro:not(.wp-block-group, .ts-intro *):focus-within,
+	.wp-block-group.ts-intro:not(.ts-intro *) > :not([class*="is-style-deco"]):focus-within {
+		opacity: 1 !important;
+		translate: none !important;
+	}
+}
+
+@keyframes ts-intro-rise {
+
+	from {
+		opacity: 0;
+		translate: 0 28px;
+	}
+}
