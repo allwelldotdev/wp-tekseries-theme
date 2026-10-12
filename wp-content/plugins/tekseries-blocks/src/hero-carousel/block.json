@@ -17,6 +17,19 @@
 		"autoplay": {
 			"type": "boolean",
 			"default": false
+		},
+		"interval": {
+			"type": "integer",
+			"default": 7
+		},
+		"pauseOnHover": {
+			"type": "boolean",
+			"default": true
+		},
+		"dotSpacing": {
+			"type": "string",
+			"enum": [ "touch", "close" ],
+			"default": "touch"
 		}
 	},
 	"supports": {
@@ -35,6 +48,7 @@
 		"interactivity": true
 	},
 	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
 	"viewScriptModule": "file:./view.js",
 	"style": "file:./style-index.css",
 	"render": "file:./render.php"

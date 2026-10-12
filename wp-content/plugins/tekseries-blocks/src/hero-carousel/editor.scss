@@ -1,0 +1,8 @@
+// The editor draws a nested block's appender over the corner of its last
+// child; "Add slide" sits under the slides instead, on a line of its own.
+.wp-block-tekseries-hero-carousel > .block-list-appender {
+	position: static;
+	display: flex;
+	justify-content: center;
+	margin: 16px 0 0;
+}

@@ -85,7 +85,33 @@
 <!-- wp:button {"textColor":"white","className":"is-style-outline"} -->
 <div class="wp-block-button is-style-outline"><a class="wp-block-button__link has-white-color has-text-color wp-element-button" href="/gallery/"><?php echo esc_html__( 'View Gallery', 'tekseries' ); ?></a></div>
 <!-- /wp:button --></div>
-<!-- /wp:buttons --></div>
+<!-- /wp:buttons -->
+
+<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|28","margin":{"top":"var:preset|spacing|12"}},"@mobile":{"spacing":{"blockGap":"var:preset|spacing|16"}}},"layout":{"type":"flex","flexWrap":"wrap"}} -->
+<div class="wp-block-group" style="margin-top:var(--wp--preset--spacing--12)"><!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|8"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+<div class="wp-block-group"><!-- wp:icon {"icon":"tekseries/hub","style":{"dimensions":{"width":"22px"}},"textColor":"saffron"} /-->
+
+<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"}},"textColor":"white","fontSize":"body"} -->
+<p class="has-white-color has-text-color has-body-font-size" style="font-weight:700"><?php echo esc_html__( 'Share', 'tekseries' ); ?></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|8"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+<div class="wp-block-group"><!-- wp:icon {"icon":"tekseries/lightbulb","style":{"dimensions":{"width":"22px"}},"textColor":"saffron"} /-->
+
+<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"}},"textColor":"white","fontSize":"body"} -->
+<p class="has-white-color has-text-color has-body-font-size" style="font-weight:700"><?php echo esc_html__( 'Create', 'tekseries' ); ?></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|8"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+<div class="wp-block-group"><!-- wp:icon {"icon":"tekseries/settings_suggest","style":{"dimensions":{"width":"22px"}},"textColor":"saffron"} /-->
+
+<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"}},"textColor":"white","fontSize":"body"} -->
+<p class="has-white-color has-text-color has-body-font-size" style="font-weight:700"><?php echo esc_html__( 'Solve', 'tekseries' ); ?></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
 <!-- /wp:group --></div></div>
 <!-- /wp:cover -->
 <!-- /wp:tekseries/hero-carousel -->

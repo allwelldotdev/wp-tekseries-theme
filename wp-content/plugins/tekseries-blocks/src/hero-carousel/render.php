@@ -6,7 +6,9 @@
  * it; the dots are links to the slides' ids, so they work without JavaScript.
  * With it (view.ts) the dots follow the slide in view, a dot moves the slides
  * without moving the page, and the slides can change by themselves, with a
- * pause button. One slide alone renders as it is, with no dots.
+ * pause button. One slide alone renders as it is, with no dots. Editors set
+ * how long a slide stays, whether the pointer holds it, and how far apart the
+ * dots sit.
  *
  * @package TekSeries
  *
@@ -47,8 +49,11 @@ foreach ( $block->inner_blocks as $tekseries_index => $tekseries_inner ) {
 	$tekseries_slides[ $tekseries_id ] = $tekseries_tags->get_updated_html();
 }
 
-$tekseries_many  = count( $tekseries_slides ) > 1;
-$tekseries_auto  = $tekseries_many && ! empty( $attributes['autoplay'] );
+$tekseries_many = count( $tekseries_slides ) > 1;
+$tekseries_auto = $tekseries_many && ! empty( $attributes['autoplay'] );
+// Seconds a slide stays (3 to 30), and whether the pointer over it holds it.
+$tekseries_stay  = max( 3, min( 30, (int) ( $attributes['interval'] ?? 7 ) ) );
+$tekseries_hover = (bool) ( $attributes['pauseOnHover'] ?? true );
 $tekseries_extra = array();
 $tekseries_track = '';
 if ( $tekseries_total > 1 ) {
@@ -61,8 +66,13 @@ if ( $tekseries_total > 1 ) {
 	}
 }
 if ( $tekseries_many ) {
+	// Dots 8px apart instead of a full tap target each: the editor's choice.
+	if ( 'close' === ( $attributes['dotSpacing'] ?? 'touch' ) ) {
+		$tekseries_extra['class'] = 'has-close-dots';
+	}
 	// For the script: the slide in view, whether the slides may change by
-	// themselves here and are doing so, and how many waits were passed over.
+	// themselves here and are doing so, how many waits were passed over, how
+	// many seconds a slide stays and whether the pointer holds it.
 	$tekseries_extra['data-wp-interactive'] = 'tekseries/hero-carousel';
 	$tekseries_extra['data-wp-context']     = wp_json_encode(
 		array(
@@ -70,6 +80,8 @@ if ( $tekseries_many ) {
 			'auto'    => false,
 			'playing' => false,
 			'waits'   => 0,
+			'stay'    => $tekseries_stay,
+			'hover'   => $tekseries_hover,
 		)
 	);
 	if ( $tekseries_auto ) {

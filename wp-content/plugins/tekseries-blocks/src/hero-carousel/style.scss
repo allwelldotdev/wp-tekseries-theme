@@ -165,6 +165,35 @@
 	}
 }
 
+// Dots close together (the board's 8px gaps): each link is only as wide as
+// its dot, so the group sits further in from the corner, keeps 8px from the
+// pause button, and the focus ring goes around the dot instead of inside a
+// tap target.
+.has-close-dots {
+
+	.ts-carousel__controls {
+		right: 40px;
+		gap: 8px;
+	}
+
+	.ts-carousel__dots {
+		gap: 8px;
+
+		a {
+			min-width: 0;
+
+			&:focus-visible {
+				outline-offset: var(--wp--custom--focus--offset);
+			}
+		}
+	}
+}
+
+// A new slide's label, heading or line that nobody filled in draws nothing.
+.wp-block-tekseries-hero-carousel .wp-block-cover :is(p, h2):empty {
+	display: none;
+}
+
 @mixin current-dot {
 	width: 28px;
 	background: var(--wp--preset--color--saffron);
@@ -196,5 +225,9 @@
 	.ts-carousel__controls {
 		right: 8px;
 		bottom: 6px;
+	}
+
+	.has-close-dots .ts-carousel__controls {
+		right: 24px;
 	}
 }

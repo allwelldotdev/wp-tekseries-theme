@@ -100,6 +100,30 @@ describe( 'tekseries icon collection', () => {
 		expect( names ).toEqual( expect.arrayContaining( used ) );
 	} );
 
+	it( "covers every icon the plugin's scripts name", () => {
+		const blocks = readdirSync( new URL( 'src/', PLUGIN ) );
+		const files = blocks.flatMap( ( block ) =>
+			readdirSync( new URL( `src/${ block }/`, PLUGIN ) )
+				.filter( ( file ) => /\.tsx?$/.test( file ) )
+				.map( ( file ) => `src/${ block }/${ file }` )
+		);
+		// (A block's or a script's own name looks like an icon id, and is
+		// not one.)
+		const used = files
+			.flatMap( ( file ) =>
+				[
+					...readFileSync( new URL( file, PLUGIN ), 'utf8' ).matchAll(
+						/'tekseries\/([a-z0-9_]+)'/g
+					),
+				].map( ( [ , name = '' ] ) => name )
+			)
+			.filter( ( name ) => ! blocks.includes( name ) );
+		expect( used ).toEqual(
+			expect.arrayContaining( [ 'hub', 'lightbulb', 'settings_suggest' ] )
+		);
+		expect( names ).toEqual( expect.arrayContaining( used ) );
+	} );
+
 	it( 'has an icon for every job dashboard action', () => {
 		const dashboard = readFileSync(
 			new URL( 'includes/job-dashboard.php', PLUGIN ),

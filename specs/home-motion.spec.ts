@@ -48,6 +48,7 @@ test.describe( 'home motion blocks', () => {
 					`<!-- wp:tekseries/hero-carousel -->${ slide }${ slide }<!-- /wp:tekseries/hero-carousel -->`,
 					`<!-- wp:tekseries/hero-carousel {"className":"e2e-single"} -->${ slide }<!-- /wp:tekseries/hero-carousel -->`,
 					`<!-- wp:tekseries/hero-carousel {"autoplay":true,"ariaLabel":"E2E moving"} -->${ slide }${ slide }<!-- /wp:tekseries/hero-carousel -->`,
+					`<!-- wp:tekseries/hero-carousel {"autoplay":true,"interval":4,"pauseOnHover":false,"dotSpacing":"close","ariaLabel":"E2E quick"} -->${ slide }${ slide }<!-- /wp:tekseries/hero-carousel -->`,
 					'<!-- wp:tekseries/stat {"value":312} /-->',
 					'<!-- wp:tekseries/stat {"value":40,"suffix":"%"} /-->',
 					`<!-- wp:tekseries/logo-marquee {"ariaLabel":"E2E partners"} -->${ logos }<!-- /wp:tekseries/logo-marquee -->`,
@@ -424,6 +425,80 @@ test.describe( 'home motion blocks', () => {
 		await page.context().close();
 	} );
 
+	// The editor's settings: how long a slide stays, whether the pointer over
+	// the slides holds them, and how far apart the dots sit.
+	test( 'follows the editor’s seconds, pointer and dot spacing settings', async ( {
+		browser,
+	} ) => {
+		const context = await browser.newContext( {
+			storageState: { cookies: [], origins: [] },
+			reducedMotion: 'no-preference',
+		} );
+		const page = await context.newPage();
+		await page.goto( home.link );
+		await page.addStyleTag( {
+			content: '.ts-carousel__track{scroll-behavior:auto!important}',
+		} );
+		const spacing = ( name: string ) =>
+			page.getByRole( 'region', { name } ).evaluate( ( carousel ) => {
+				const edge = ( selector: string ) =>
+					carousel.querySelector( selector )?.getBoundingClientRect();
+				const dots = [
+					...carousel.querySelectorAll( '.ts-carousel__dots a' ),
+				].map( ( dot ) => dot.getBoundingClientRect() );
+				return {
+					widths: dots.map( ( dot ) => dot.width ),
+					gap:
+						( dots[ 1 ]?.left ?? NaN ) -
+						( dots[ 0 ]?.right ?? NaN ),
+					fromCorner:
+						carousel.getBoundingClientRect().right -
+						( edge( '.ts-carousel__controls' )?.right ?? NaN ),
+					fromPause:
+						( dots[ 0 ]?.left ?? NaN ) -
+						( edge( '.ts-carousel__pause' )?.right ?? NaN ),
+				};
+			} );
+
+		// By default every dot is a full tap target, side by side.
+		expect( await spacing( 'E2E moving' ) ).toEqual( {
+			widths: [ 44, 44 ],
+			gap: 0,
+			fromCorner: 24,
+			fromPause: 0,
+		} );
+		// Close together: each link is its dot (28px for the slide in view,
+		// 8px otherwise), 8px apart, further in from the corner.
+		expect( await spacing( 'E2E quick' ) ).toEqual( {
+			widths: [ 28, 8 ],
+			gap: 8,
+			fromCorner: 40,
+			fromPause: 8,
+		} );
+
+		const quick = page.getByRole( 'region', { name: 'E2E quick' } );
+		const track = quick.locator( '.ts-carousel__track' );
+		const dots = quick
+			.getByRole( 'navigation', { name: 'Slides' } )
+			.getByRole( 'link' );
+		const scrolled = ( element: Element ) =>
+			Math.round( element.scrollLeft );
+		await quick.getByRole( 'button', { name: 'Pause the slides' } ).click();
+		await page.clock.install();
+		await quick.getByRole( 'button', { name: 'Play the slides' } ).click();
+		await quick.getByRole( 'button' ).blur();
+		// The pointer stays over the slides: here that holds nothing.
+		await track.hover();
+
+		// Four seconds on a slide, not the default seven.
+		await page.clock.fastForward( 3000 );
+		expect( await track.evaluate( scrolled ) ).toBe( 0 );
+		await page.clock.fastForward( 1000 );
+		await expect( dots.nth( 1 ) ).toHaveAttribute( 'aria-current', 'true' );
+		expect( await track.evaluate( scrolled ) ).toBeGreaterThan( 0 );
+		await context.close();
+	} );
+
 	test( 'an editor adds, removes and sets the slides in the Site Editor', async ( {
 		admin,
 		browser,
@@ -478,9 +553,17 @@ test.describe( 'home motion blocks', () => {
 			}, id )
 		).toEqual( [ true, false ] );
 
+		// "Add slide" brings a whole slide: a heading to type over, two
+		// buttons and the three labels.
+		await carousel.getByRole( 'button', { name: 'Add slide' } ).click();
+		await expect( slides ).toHaveCount( 2 );
+		const added = slides.nth( 1 );
+		await expect( added.locator( 'h2' ) ).toHaveCount( 1 );
+		await expect( added.locator( '.wp-block-button' ) ).toHaveCount( 2 );
+		await expect( added ).toContainText( 'Share' );
+		await expect( added ).toContainText( 'Solve' );
+
 		// Duplicating a slide adds one with the same layout.
-		await editor.selectBlocks( slides.first() );
-		await editor.clickBlockOptionsMenuItem( 'Duplicate' );
 		await editor.selectBlocks( slides.first() );
 		await editor.clickBlockOptionsMenuItem( 'Duplicate' );
 		await expect( slides ).toHaveCount( 3 );
