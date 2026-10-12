@@ -230,3 +230,71 @@ function tekseries_breadcrumb_items( array $items ): array {
 	return array( $items[0], $items[1], end( $items ) );
 }
 add_filter( 'block_core_breadcrumbs_items', 'tekseries_breadcrumb_items' );
+
+/**
+ * Keeps a chevron at both ends of a listing's pagination.
+ *
+ * Core prints no previous link on the first page and no next link on the
+ * last. The design draws a greyed chevron there instead, so the row keeps its
+ * shape. It leads nowhere, so assistive technology is not told about it.
+ *
+ * @param string $block_content Rendered pagination.
+ * @param array  $block         Parsed block.
+ */
+function tekseries_pagination_end_chevrons( string $block_content, array $block ): string {
+	if ( ! str_contains( $block['attrs']['className'] ?? '', 'ts-pagination' ) || ! preg_match( '/^\s*<nav\b[^>]*>/', $block_content, $open ) ) {
+		return $block_content;
+	}
+	$close = strrpos( $block_content, '</nav>' );
+	if ( false === $close ) {
+		return $block_content;
+	}
+
+	$ghost = '<span class="ts-pagination__ghost" aria-hidden="true"><span class="wp-block-query-pagination-%s-arrow is-arrow-chevron"></span></span>';
+	$first = ! str_contains( $block_content, 'wp-block-query-pagination-previous' );
+	$last  = ! str_contains( $block_content, 'wp-block-query-pagination-next' );
+	// The end first: adding at the start would move it.
+	if ( $last ) {
+		$block_content = substr_replace( $block_content, sprintf( $ghost, 'next' ), $close, 0 );
+	}
+	if ( $first ) {
+		$block_content = substr_replace( $block_content, sprintf( $ghost, 'previous' ), strlen( $open[0] ), 0 );
+	}
+	return $block_content;
+}
+add_filter( 'render_block_core/query-pagination', 'tekseries_pagination_end_chevrons', 10, 2 );
+
+/**
+ * Adds the neighbouring post's date to a previous/next post card.
+ *
+ * Core's block prints a label and the title; the design has the date under
+ * them, inside the link.
+ *
+ * @param string $block_content Rendered post navigation link.
+ * @param array  $block         Parsed block.
+ */
+function tekseries_post_nav_date( string $block_content, array $block ): string {
+	$attrs = $block['attrs'] ?? array();
+	$end   = strrpos( $block_content, '</a>' );
+	if ( false === $end || ! str_contains( $attrs['className'] ?? '', 'ts-post-nav' ) ) {
+		return $block_content;
+	}
+
+	// The same neighbour core's block links to.
+	$taxonomy = (string) ( $attrs['taxonomy'] ?? '' );
+	$in_term  = '' !== $taxonomy;
+	$previous = 'previous' === ( $attrs['type'] ?? 'next' );
+	$adjacent = get_adjacent_post( $in_term, '', $previous, $in_term ? $taxonomy : 'category' );
+	if ( ! $adjacent instanceof WP_Post ) {
+		return $block_content;
+	}
+
+	$date = sprintf(
+		'<time class="ts-post-nav__date" datetime="%1$s">%2$s</time>',
+		esc_attr( get_the_date( 'c', $adjacent ) ),
+		/* translators: date of the previous or next post, in PHP date format. */
+		esc_html( get_the_date( __( 'F j, Y', 'tekseries' ), $adjacent ) )
+	);
+	return substr_replace( $block_content, $date, $end, 0 );
+}
+add_filter( 'render_block_core/post-navigation-link', 'tekseries_post_nav_date', 10, 2 );

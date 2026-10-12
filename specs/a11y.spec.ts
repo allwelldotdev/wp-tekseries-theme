@@ -25,6 +25,7 @@ const PAGES = [
 	'Home page pattern',
 	'Contact page pattern',
 	'events archive',
+	'events archive, last page',
 	'event type archive',
 	'event',
 	'news post',
@@ -184,6 +185,21 @@ test.describe( 'accessibility', () => {
 				},
 			} );
 		}
+		// Three older events open a second page of the listing: the latest
+		// card and five in the grid fill the first.
+		for ( const n of [ 1, 2, 3 ] ) {
+			await create( `extra event ${ n }`, '/wp/v2/event', {
+				title: `E2E A11y Extra ${ n }`,
+				content: 'An event.',
+				acf: {
+					event_date: `2000010${ n }`,
+					time_label: '',
+					venue: '',
+					cta_link: { title: '', url: '', target: '' },
+					cta_name: '',
+				},
+			} );
+		}
 		await create( 'news post', '/wp/v2/posts', {
 			title: 'E2E A11y Post',
 			content: 'A post.',
@@ -264,6 +280,7 @@ test.describe( 'accessibility', () => {
 
 		urls.set( 'front page', '/' );
 		urls.set( 'events archive', '/events/' );
+		urls.set( 'events archive, last page', '/events/?query-2-page=2' );
 		urls.set( 'search results', '/?s=E2E+A11y' );
 		urls.set( 'search with no results', '/?s=zzzzqqqq' );
 		urls.set( 'not found', '/?p=999999999' );
