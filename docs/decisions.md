@@ -1190,6 +1190,28 @@ Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 
 
 **Rationale:** One class that adapts to the block it is on matches how the owner already marks `ts-reveal`, and covers both a whole hero and single pieces. Pure CSS keeps the top of the page independent of JavaScript (ADR-005) and avoids the flash ADR-060 avoided. Keeping the hero carousel's own rule leaves the plugin working without the theme (ADR-001). The outermost-mark rule and the place ordering prevent stacked animations and wrong delays. The measured cost is why the class is opt-in and the advice is to leave a large lead paragraph unmarked.
 
+## ADR-064: Depart from the boards on page top spacing and hero and banner alignment
+
+**Status:** Accepted
+
+**Context:** The boards (`docs/design-reference/project`, for example `Events.dc.html`, `Contact.dc.html`, `EventPost.dc.html`, `NewsPostText.dc.html`) show three things the owner changed after reviewing the built site on 2026-10-11 and 2026-10-12. There are 48px between the sticky header and the first block. A hero's text is centred vertically against the card beside it on desktop. Post banners have a 480px minimum height with the text at the bottom. The owner asked for less space under the header, the hero text column at the top, and no 480px minimum. This is release 1.2.4 on branch `feat/hero-bands` (commit bf3eeb5), not merged yet. The six heroes with a card beside the text are Events, event types, News, Contact, Gallery and Job Series. The banners are the event and news post banners.
+
+**Options:**
+- Redefine the 32px spacing preset. It has 44 other uses in the theme's own files, and more in saved page content, which would all move.
+- A negative margin, or a CSS override on `main`. Editors could not see or change it in the Site Editor, because the padding is a block attribute.
+- Keep the banner minimum for events only. The owner asked for both.
+- Change the block attributes in the templates and the pattern generator, and make the Post Tone block cope with short banners.
+
+**Decision:** The last option, in 1.2.4. It supersedes no ADR in full. It refines ADR-025 (responsive layout with per-block styles) and ADR-033 (Post Tone block) on the points below.
+- Top space: `main`'s top padding goes from the 32px spacing preset to the existing 4px preset in all 14 templates. WordPress's 16px block gap under the header part stays, so the visible gap goes from 48px to 20px. The 32px preset is not redefined.
+- Heroes: the text column of the plum hero (`heroPlum()` in the pattern generator) is `verticalAlignment: top` instead of `center`. Six patterns were regenerated: `template-events`, `template-event-type`, `template-news`, `contact-hero`, `gallery-hero`, `job-series-hero`.
+- Banners: in `template-single-event` and `template-single`, the `tekseries/post-tone` banner variant loses its `minHeight: 480px` (and the `0px` overrides for tablet and mobile) and the inner grid's `selfStretch: fill`. Its text column is `top` instead of `bottom`. A banner is as tall as its content.
+- Plugin: the banner's topic icon is 340px on desktop and bleeds off the bottom-right corner, with the block clipping overflow. A short banner would cut its top off. `post-tone/style.scss` now sizes the icon at `min(icon size, 100% / 0.85)` of the band's height and moves it with `translate: 9% 15%` from `right: 0; bottom: 0`, so the 85% of it above the bottom edge never exceeds the band. Where the icon fits, size and offsets are unchanged (measured on listing cards and banners).
+- Measured on the development site at 1440, 834 and 390px: the gap under the header is 20px on every page kind (was 48px). The first element of the hero text column sits at band top plus band padding on all six heroes. A news banner with a one-line title is 295px tall at 1440 (was 576px). An event banner with a four-line title is 568px (was 576px). In-page anchors still land 22px or more below the header, because scroll-margin is 96px and unchanged.
+- Templates customised in the Site Editor keep their saved padding until reset. None is customised on the development site.
+
+**Rationale:** The owner's review outranks the boards, and the boards' own values stay in `docs/design-reference/`. Changing block attributes keeps every change visible and editable in the Site Editor, and leaves the other uses of the 32px preset alone. Putting the change in the pattern generator means regenerated patterns keep it. The icon rule in the plugin is needed only because a banner can now be shorter than the icon, and it leaves the icon unchanged where it already fitted. These three points now differ from the boards on purpose. A later design pull that still shows 48px, centred text or a 480px minimum must not be read as a regression to fix.
+
 ## Future work
 
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).

@@ -10,9 +10,9 @@
  */
 
 ?>
-<!-- wp:tekseries/post-tone {"variant":"banner","align":"wide","className":"ts-banner","style":{"border":{"radius":"var:preset|border-radius|xl"},"spacing":{"padding":{"top":"clamp(1.75rem, 1.2857rem + 1.9048vw, 3rem)","right":"var:preset|spacing|hero-x","bottom":"clamp(1.75rem, 1.2857rem + 1.9048vw, 3rem)","left":"var:preset|spacing|hero-x"}},"dimensions":{"minHeight":"480px"},"@tablet":{"dimensions":{"minHeight":"0px"}},"@mobile":{"dimensions":{"minHeight":"0px"}}}} -->
-<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|40"},"layout":{"selfStretch":"fill"},"@tablet":{"layout":{"columnCount":1}},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
-<div class="wp-block-group"><!-- wp:group {"style":{"spacing":{"blockGap":"18px"},"layout":{"columnSpan":2},"@tablet":{"layout":{"columnSpan":1}},"@mobile":{"layout":{"columnSpan":1}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","verticalAlignment":"bottom"}} -->
+<!-- wp:tekseries/post-tone {"variant":"banner","align":"wide","className":"ts-banner","style":{"border":{"radius":"var:preset|border-radius|xl"},"spacing":{"padding":{"top":"clamp(1.75rem, 1.2857rem + 1.9048vw, 3rem)","right":"var:preset|spacing|hero-x","bottom":"clamp(1.75rem, 1.2857rem + 1.9048vw, 3rem)","left":"var:preset|spacing|hero-x"}}}} -->
+<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|40"},"@tablet":{"layout":{"columnCount":1}},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
+<div class="wp-block-group"><!-- wp:group {"style":{"spacing":{"blockGap":"18px"},"layout":{"columnSpan":2},"@tablet":{"layout":{"columnSpan":1}},"@mobile":{"layout":{"columnSpan":1}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","verticalAlignment":"top"}} -->
 <div class="wp-block-group"><!-- wp:breadcrumbs /-->
 
 <!-- wp:paragraph {"className":"is-style-chip ts-badge","fontSize":"caption"} -->

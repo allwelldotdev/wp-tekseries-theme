@@ -2,6 +2,19 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.2.4] — 2026-10-12
+### Improved
+- On a short banner, the large faint topic icon in the banner's corner now shrinks to fit instead of being cut off at the top; where it already fit, on banners and on listing cards, it looks as before.
+
+### Changed
+- On every page, the space between the header bar and the first block of the page is now 20px, where before it was 48px, on desktops, tablets and phones alike.
+- On the Events, event type, News, Contact, Gallery and Job Series pages, the text in the plum band at the top (breadcrumbs, title, lead line and buttons) now starts at the top of the band, level with the top of the white card beside it, where before it was centred against the card on desktops; on tablets and phones the card sits under the text and nothing moves.
+- On a single event and a single news post, the coloured banner at the top is now only as tall as its content and its text starts at the top, where before on desktops it was at least 576px tall with the text at the bottom; for example, a news post with a one-line title went from 576px to 295px tall at 1440px wide, and an event with a long title from 576px to 568px.
+- Tablets and phones had no minimum banner height and are unchanged.
+- These three changes are made on purpose at the site owner's request and differ from the design boards, which show 48px under the header, centred text in the band and a tall banner.
+- Links that jump to a section of a page, such as "Send a message" on Contact, still land clear of the header.
+- Editors who saved their own copy of a page template in the Site Editor keep the old 48px gap until they reset that template; no template has been customised on the development site.
+
 ## [1.2.3] — 2026-10-12
 ### Fixed
 - On the "Submit a job" page, the drop-down fields that take one choice (Job type, and the salary unit where salary fields are on) now show the design's down arrow, 14px in from the right edge, where before each browser drew its own arrow tight against the edge; room is kept for the arrow so a long choice never runs under it, and it stays in place while the field is in use.

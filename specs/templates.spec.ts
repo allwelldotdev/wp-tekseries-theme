@@ -111,6 +111,52 @@ test.describe( 'front-end templates', () => {
 			)
 		).toBe( 0 );
 	} );
+
+	// Hero bands: 20px under the header (4px of padding and the 16px block
+	// gap), with the text starting at the top of the band. A post's banner
+	// is as tall as its content, and its topic icon is never cut at the top.
+	test( 'hero bands start 20px under the header with their text at the top', async ( {
+		page,
+	} ) => {
+		const band = () =>
+			page.evaluate( () => {
+				const header = document
+					.querySelector( '.wp-site-blocks > header' )
+					?.getBoundingClientRect();
+				const hero = document.querySelector(
+					'main .is-style-hero-plum, main .ts-banner'
+				);
+				const box = hero?.getBoundingClientRect();
+				const crumbs = hero
+					?.querySelector( '.wp-block-breadcrumbs' )
+					?.getBoundingClientRect();
+				const icon = hero
+					?.querySelector( ':scope > .ts-tone__icon' )
+					?.getBoundingClientRect();
+				const style = hero ? getComputedStyle( hero ) : null;
+				return {
+					gap: ( box?.top ?? NaN ) - ( header?.bottom ?? NaN ),
+					textTop: ( crumbs?.top ?? NaN ) - ( box?.top ?? NaN ),
+					padding: parseFloat( style?.paddingTop ?? '' ),
+					minHeight: style?.minHeight,
+					height: box?.height ?? NaN,
+					iconAbove: icon ? ( box?.top ?? NaN ) - icon.top : null,
+				};
+			} );
+
+		await page.goto( '/events/' );
+		let hero = await band();
+		expect( hero.gap ).toBe( 20 );
+		expect( hero.textTop ).toBeCloseTo( hero.padding, 0 );
+
+		await page.goto( event.link );
+		hero = await band();
+		expect( hero.gap ).toBe( 20 );
+		expect( hero.textTop ).toBeCloseTo( hero.padding, 0 );
+		expect( hero.minHeight ).toBe( '0px' );
+		expect( hero.height ).toBeLessThan( 480 );
+		expect( hero.iconAbove ).toBeLessThanOrEqual( 0 );
+	} );
 } );
 
 // Controls drawn from the boards: pagination chevrons, the "Read more" arrow
