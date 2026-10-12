@@ -2,6 +2,13 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.2.1] — 2026-10-12
+### Fixed
+- On the Events page and the event type pages, the filter tabs above the list ("All events", "Webinars", "Workshops" and "Makers' Prize") are now 44px tall as designed, where before they were 66px, and the gap between tabs is now 8px, where before it was 4px.
+- The filter tabs now follow the design's sizes for each screen: 16px text on desktops, 15px text with a slightly smaller icon and padding on tablets (1100px wide and below), and 14px text on phones (640px wide and below), where before the text shrank to as little as 12px on a phone.
+- On phones, the filter tabs now sit in one row that scrolls sideways and runs to the edges of the screen, where before they wrapped onto two rows, and the page itself does not scroll sideways.
+- On the Privacy and Terms pages, the "On this page" heading row of the contents card is now 44px tall, where before it was 60px, and it is still a full-size tap target.
+
 ## [1.2.0] — 2026-10-12
 ### New
 - Editors can make any block rise in when the page opens, the way the Home banner's text does, by adding the class `ts-intro` under Advanced, then Additional CSS class(es), in the editor; this is meant for the top of a page, such as the hero, because lower down it would play before anyone sees it, and `ts-reveal` is the class for blocks that should rise when a visitor scrolls to them.
