@@ -1,6 +1,8 @@
 /*
  * Pagination: 44px circles. Pages are white with a line border, the current
- * page is plum, and the previous/next arrows are lilac.
+ * page is plum, and the previous/next chevrons are lilac. Where there is no
+ * earlier or later page the theme prints a greyed chevron in its place
+ * (functions.php), so the row keeps its shape.
  */
 
 .wp-block-query-pagination.ts-pagination {
@@ -16,7 +18,8 @@
 
 .ts-pagination .page-numbers,
 .ts-pagination .wp-block-query-pagination-previous,
-.ts-pagination .wp-block-query-pagination-next {
+.ts-pagination .wp-block-query-pagination-next,
+.ts-pagination .ts-pagination__ghost {
 	display: grid;
 	place-items: center;
 	box-sizing: border-box;
@@ -25,6 +28,7 @@
 	margin: 0;
 	border-radius: 50%;
 	color: var(--wp--preset--color--plum);
+	font-size: 1rem;
 	font-weight: 700;
 	text-decoration: none;
 }
@@ -47,7 +51,31 @@
 .ts-pagination .wp-block-query-pagination-previous,
 .ts-pagination .wp-block-query-pagination-next {
 	background-color: var(--wp--preset--color--lilac);
-	font-size: 1.25rem;
+}
+
+/* The chevrons are masks, 24px and centred; core's are text with a margin. */
+.ts-pagination .wp-block-query-pagination-previous-arrow,
+.ts-pagination .wp-block-query-pagination-next-arrow {
+	width: 24px;
+	height: 24px;
+	margin: 0;
+	background-color: currentcolor;
+	font-size: 0;
+	-webkit-mask: var(--ts-chevron) center / contain no-repeat;
+	mask: var(--ts-chevron) center / contain no-repeat;
+}
+
+.ts-pagination .wp-block-query-pagination-previous-arrow {
+	--ts-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='m432-480 156 156q11 11 11 28t-11 28q-11 11-28 11t-28-11L348-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 28-11t28 11q11 11 11 28t-11 28L432-480Z'/%3E%3C/svg%3E");
+}
+
+.ts-pagination .wp-block-query-pagination-next-arrow {
+	--ts-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M504-480 348-636q-11-11-11-28t11-28q11-11 28-11t28 11l184 184q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L404-268q-11 11-28 11t-28-11q-11-11-11-28t11-28l156-156Z'/%3E%3C/svg%3E");
+}
+
+/* The board's grey for a control that leads nowhere. */
+.ts-pagination .ts-pagination__ghost {
+	color: #b9a7bf;
 }
 
 .ts-pagination a.page-numbers:hover,

@@ -2,6 +2,19 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.2.2] — 2026-10-12
+### Fixed
+- Under the lists on the Events and News pages, and on the archive and search pages, the previous and next page controls now show a chevron icon, 24px and centred in its 44px circle, where before they showed the characters « and », which sat 6.5px off centre.
+- On the first page of those lists, and on the last, a greyed chevron now stands where the missing previous or next control would be, so the row of page circles no longer shifts from page to page; it is not a link and screen readers are not told about it.
+
+### Improved
+- On a news post, the "previous post" and "next post" cards at the end of the article are now links as a whole, where before only the text was.
+- Each of those cards now shows a small coral label ("PREVIOUS POST" or "NEXT POST") with an arrow icon, the other post's title on its own line, and that post's date under the title; the next card's text is right-aligned, the corners are rounder (24px), and the border still turns saffron on hover.
+- On the Events and News cards, the arrow after "Read more" is now an icon (20px) and the link text is 16px.
+- On the large "latest" card, the "Read more" button is now 49px tall with 17px text, where before it was about 57px tall.
+- The page numbers under the Events and News lists are now 16px, where before they were 17px.
+- The arrow icons are decoration and are not read out to screen reader users.
+
 ## [1.2.1] — 2026-10-12
 ### Fixed
 - On the Events page and the event type pages, the filter tabs above the list ("All events", "Webinars", "Workshops" and "Makers' Prize") are now 44px tall as designed, where before they were 66px, and the gap between tabs is now 8px, where before it was 4px.

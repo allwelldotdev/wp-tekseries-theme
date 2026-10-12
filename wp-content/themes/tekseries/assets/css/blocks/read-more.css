@@ -1,6 +1,6 @@
 /*
- * "Read more" links on cards: plum, bold, with a trailing arrow. The latest
- * card's link is a plum pill button.
+ * "Read more" links on cards: plum, bold, 16px, with a trailing arrow. The
+ * latest card's link is a plum pill button, 49px tall.
  */
 
 .wp-block-read-more.ts-read-more {
@@ -10,14 +10,20 @@
 	width: fit-content;
 	margin-top: auto;
 	color: var(--wp--preset--color--plum);
+	font-size: 1rem;
 	font-weight: 700;
 	text-decoration: none;
 }
 
-/* The arrow is decoration: the second value keeps it out of the link's name. */
+/* The arrow is a mask: decoration, with nothing in it to read out. */
 .wp-block-read-more.ts-read-more::after {
-	content: "\2192";
-	content: "\2192" / "";
+	content: "";
+	flex: none;
+	width: 20px;
+	height: 20px;
+	background-color: currentcolor;
+	-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z'/%3E%3C/svg%3E") center / contain no-repeat;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z'/%3E%3C/svg%3E") center / contain no-repeat;
 	transition: transform var(--wp--custom--motion--duration);
 }
 
@@ -26,11 +32,14 @@
 }
 
 .wp-block-read-more.ts-read-more--button {
+	gap: 8px;
 	margin-top: 8px;
 	padding: 14px 26px;
 	border-radius: var(--wp--preset--border-radius--pill);
 	background-color: var(--wp--preset--color--plum);
 	color: var(--wp--preset--color--white);
+	font-size: 1.0625rem;
+	line-height: calc(21 / 17);
 }
 
 .wp-block-read-more.ts-read-more--button:hover {
