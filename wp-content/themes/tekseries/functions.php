@@ -298,3 +298,22 @@ function tekseries_post_nav_date( string $block_content, array $block ): string 
 	return substr_replace( $block_content, $date, $end, 0 );
 }
 add_filter( 'render_block_core/post-navigation-link', 'tekseries_post_nav_date', 10, 2 );
+
+/**
+ * Leaves the lead line out of a legal page's hero when the page has no
+ * excerpt of its own.
+ *
+ * Core's Excerpt block would otherwise make one up from the page's first
+ * words.
+ *
+ * @param string   $block_content Rendered excerpt.
+ * @param array    $block         Parsed block.
+ * @param WP_Block $instance      Block instance.
+ */
+function tekseries_legal_lead( string $block_content, array $block, WP_Block $instance ): string {
+	if ( ! str_contains( $block['attrs']['className'] ?? '', 'ts-legal-lead' ) ) {
+		return $block_content;
+	}
+	return has_excerpt( $instance->context['postId'] ?? null ) ? $block_content : '';
+}
+add_filter( 'render_block_core/post-excerpt', 'tekseries_legal_lead', 10, 3 );

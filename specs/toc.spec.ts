@@ -39,7 +39,9 @@ test.describe( 'Table of Contents block', () => {
 				title: 'E2E Legal',
 				status: 'publish',
 				template: 'page-legal',
-				content: SECTIONS,
+				content:
+					SECTIONS +
+					'<!-- wp:pattern {"slug":"tekseries/legal-cross-link"} /-->',
 			},
 		} );
 		pages.push( legal.id );
@@ -57,6 +59,14 @@ test.describe( 'Table of Contents block', () => {
 		await expect( links ).toHaveText( [ '01Purpose', '02Data & Cookies' ] );
 		await expect( links.first() ).toHaveAttribute( 'href', '#purpose' );
 		await expect( links.last() ).toHaveAttribute( 'href', '#cookies' );
+		// The band that closes the page titles itself with a paragraph, so
+		// it is not listed.
+		await expect(
+			page.getByText( 'Read our Terms and Conditions' )
+		).toBeVisible();
+		await expect(
+			page.getByRole( 'link', { name: 'Terms and Conditions' } ).last()
+		).toHaveAttribute( 'href', '/terms/' );
 		// The heading row is a 44px target, padding included.
 		const summary = await toc.locator( 'summary' ).boundingBox();
 		expect( summary?.height ).toBe( 44 );

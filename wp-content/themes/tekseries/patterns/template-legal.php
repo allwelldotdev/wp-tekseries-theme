@@ -10,10 +10,12 @@
  */
 
 ?>
-<!-- wp:group {"align":"wide","className":"is-style-hero-plum","style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
+<!-- wp:group {"align":"wide","className":"is-style-hero-plum","style":{"spacing":{"blockGap":"var:preset|spacing|16"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
 <div class="wp-block-group alignwide is-style-hero-plum"><!-- wp:breadcrumbs /-->
 
-<!-- wp:post-title {"level":1,"textColor":"white"} /--></div>
+<!-- wp:post-title {"level":1,"textColor":"white"} /-->
+
+<!-- wp:post-excerpt {"className":"ts-legal-lead","style":{"typography":{"fontSize":"clamp(0.9375rem, 0.8214rem + 0.4762vw, 1.25rem)","lineHeight":"1.55"}},"textColor":"lilac-deep"} /--></div>
 <!-- /wp:group -->
 
 <!-- wp:group {"align":"wide","style":{"spacing":{"blockGap":"var:preset|spacing|56","margin":{"top":"var:preset|spacing|40"}},"@tablet":{"layout":{"columnCount":1}},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->

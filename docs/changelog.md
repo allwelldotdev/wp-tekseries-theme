@@ -2,6 +2,20 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.3.0] — 2026-10-12
+### New
+- On the Privacy Policy and Terms and Conditions pages, a lead line now sits under the page title in the plum band, as in the design: "How TekSeries collects, uses and protects the personal data of people who use our Site." on Privacy and "The rules for using TekSeries.com. By using the Site, you agree to abide by them." on Terms.
+- The lead line is 20px on desktops, 17px on tablets and 15px on phones, and is at most 620px wide.
+- Each of those two pages now ends with a saffron band that points to the other one: "Read our Terms and Conditions" with a button to Terms on Privacy, and "Read our Privacy Policy" with a button to Privacy on Terms.
+- The button in the band ends in an arrow, and on phones it sits under the text.
+- Editors can now write an excerpt on a page, in the Excerpt field of the page's settings sidebar, where before only posts had it; on a page that uses the "Legal page" template the excerpt is the lead line under the title, and with the field empty the page shows no lead line.
+- Editors have a new pattern in the inserter, under "TekSeries: Pages", called "Legal: Link to the other legal page"; insert it at the end of a legal page, then change its three texts and its link.
+- Editors can make a Button show an arrow after its text by adding the classes `ts-icon-arrow_forward ts-icon-after` under Advanced, then Additional CSS class(es), in the editor; this is a first step, and the arrow is the only icon so far.
+
+### Improved
+- In the plum band at the top of the Privacy and Terms pages, the space between the band's lines is now 16px, where before it was 40px.
+- The "On this page" list and the section numbers are unchanged, because the title of the new saffron band is not a section.
+
 ## [1.2.6] — 2026-10-12
 ### Improved
 - On each job's page, the three cards under "More jobs" now show when that job was posted, for example "Posted 1 week ago", after the job type and location, with a small clock icon; before, they showed only the title, company, type and location.
@@ -127,6 +141,7 @@ This file records what visitors and site editors of tekseries.com will notice in
 - Event pages on phones will show the poster before the details and the register button at the end, as in the design.
 - Past events and events with closed registration will get their own designed look, and the logged-out job dashboard will get a designed sign-in page.
 - Editors will get a picker for an event type's icon in the admin area.
+- Editors will be able to choose from more icons for a Button, with a control in the sidebar instead of typing class names.
 - The statistics window of the job dashboard will be restyled to match the design.
 - Job categories will be reduced to a curated list, and "Upload your CV" links will return once they have somewhere to go.
 - Photos will load faster once uploads are converted to a lighter picture format.

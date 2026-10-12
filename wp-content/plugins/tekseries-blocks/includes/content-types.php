@@ -143,5 +143,7 @@ function tekseries_blocks_register_event_type_taxonomy(): void {
 function tekseries_blocks_register_content_types(): void {
 	tekseries_blocks_register_event_post_type();
 	tekseries_blocks_register_event_type_taxonomy();
+	// Pages get the Excerpt field: a legal page's lead line is its excerpt.
+	add_post_type_support( 'page', 'excerpt' );
 }
 add_action( 'init', 'tekseries_blocks_register_content_types' );

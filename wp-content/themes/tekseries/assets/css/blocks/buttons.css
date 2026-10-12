@@ -20,6 +20,33 @@
 	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M640-624 284-268q-11 11-28 11t-28-11q-11-11-11-28t11-28l356-356H280q-17 0-28.5-11.5T240-720q0-17 11.5-28.5T280-760h400q17 0 28.5 11.5T720-720v400q0 17-11.5 28.5T680-280q-17 0-28.5-11.5T640-320v-304Z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
+/*
+ * Icons on buttons. A Button with the class ts-icon-<name> draws that icon
+ * before its text, or after it when it also has ts-icon-after. The icon is a
+ * mask in the text's colour; a name with no rule below draws nothing.
+ */
+.wp-block-button[class*="ts-icon-"] .wp-block-button__link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+.wp-block-button[class*="ts-icon-"]:not(.ts-icon-after) .wp-block-button__link::before,
+.wp-block-button.ts-icon-after .wp-block-button__link::after {
+	content: "";
+	flex: none;
+	width: 20px;
+	height: 20px;
+	background-color: currentcolor;
+	-webkit-mask: var(--ts-button-icon, linear-gradient(transparent, transparent)) center / contain no-repeat;
+	mask: var(--ts-button-icon, linear-gradient(transparent, transparent)) center / contain no-repeat;
+}
+
+.wp-block-button.ts-icon-arrow_forward {
+	--ts-button-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M647-440H200q-17 0-28.5-11.5T160-480q0-17 11.5-28.5T200-520h447L451-716q-12-12-11.5-28t12.5-28q12-11 28-11.5t28 11.5l264 264q6 6 8.5 13t2.5 15q0 8-2.5 15t-8.5 13L508-188q-11 11-27.5 11T452-188q-12-12-12-28.5t12-28.5l195-195Z'/%3E%3C/svg%3E");
+}
+
 .ts-event-ended {
 	display: inline-flex;
 	align-items: center;
