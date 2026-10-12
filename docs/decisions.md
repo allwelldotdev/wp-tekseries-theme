@@ -1232,11 +1232,34 @@ Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 
 
 **Rationale:** The class is the smallest change that works in 7.1 and stays visible and editable in the editor. It is an editor-facing convention alongside `ts-reveal` (ADR-060) and `ts-intro` (ADR-063). This is a deliberate difference from the board, like ADR-064: a later design pull that shows the stretched card is not a regression to fix. It refines the per-block layout approach of ADR-025.
 
+## ADR-066: Show the horizontal logo from the Site Logo setting in the header, and a bundled stacked logo in the footer
+
+**Status:** Accepted
+
+**Context:** On 2026-10-11 and 2026-10-12 the owner asked for the horizontal TekSeries logo in the header and the stacked one in the footer. Both files are in the Media Library on the development site and on the live site with the same IDs (horizontal 283171, 244 by 60; stacked 283170, 218 by 150), checked on live through its public REST API. The stacked logo is blue and dark grey on a transparent ground, and the footer panel is plum. This is release 1.4.0 on branch `feat/logos` (commit 762b2c0), not merged yet.
+
+**Options:**
+- An SVG of the logo in the theme for both places. No vector source was supplied, and the owner's own files are the source of truth.
+- A second Site Logo block in the footer. It would show the same horizontal file.
+- A Media Library image in the footer. Patterns must look complete on a fresh install (ADR-023).
+- Draw the footer plate with block background and padding attributes. The footer's other spacing is already in `global.css`, and the plate is part of the logo's look, not something to tune per page.
+
+**Decision:**
+- Header: it stays the core Site Logo block, so the picture is the site's own `site_logo` setting and an editor swaps it in the Site Editor. The block's `width` goes from 64 to 179 (the horizontal file at 44px tall). The theme CSS is unchanged and sizes the logo by height, 44 / 40 / 34px at desktop / tablet / phone, with `width: auto`, so any file keeps its proportions. On the development site `site_logo` changed from 283170 to 283171. The release bundle for live already carries that option (ADR-059).
+- Footer: an Image block in the footer pattern, first in the brand column. It points at `assets/images/logo-stacked.png`, a copy of attachment 283170 shipped with the theme (ADR-023). It is 44px tall on a white rounded plate with 6px by 10px padding (56px in all), alt text "TekSeries". Theme CSS draws the plate and gives the picture its aspect ratio, so it has a width before the file loads.
+- Measured on the development site: header logo 178.9 by 44 at 1440, 162.7 by 40 at 834, 138.3 by 34 at 390 and 360. Bar height is unchanged, with 146px left to the menu button at 360. The footer panel is 311px at 1440 (was 279), 553px at 834 (was 483) and 689px at 390 (was 619).
+
+**Rationale:** The Site Logo block keeps the header logo editable without code, and sizing by height keeps any replacement file in proportion. A theme file lets the footer look complete on a fresh install, and the plate keeps a dark-grey-and-blue logo legible on plum. Consequences:
+- The 244 by 60 horizontal file is slightly soft on high-density screens at 179 by 44. A larger or SVG copy can be swapped in the Site Editor with no code change. The owner has been told.
+- The development site's header and footer are saved copies in the database (edited in the Site Editor on 2026-10-12), so they were patched there by hand as well as in the patterns. A site with saved copies of these parts does not pick up pattern changes by itself (ADR-017). The release bundle does not yet carry saved template parts.
+- The footer is 32px taller on desktop.
+
 ## Future work
 
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).
 - **Intro motion tokens:** when the design system delivers its motion tokens, move the 28px distance and 0.15s start of `ts-intro` (and the hero carousel) onto them (ADR-063).
 
+- **Saved header and footer on live:** the release bundle does not carry saved template parts, so the 1.4.0 logos reach a live site with saved copies only if the owner applies them (owner; ADR-066, ADR-059).
 - **Hosting and deploy:** the release method is decided (ADR-058, ADR-059). Still open on the host: a page cache and longer cache lifetimes for static files on the development site's host, and the first real run of the migration plugin on the live site (owner; ADR-059).
 - **Accessibility leftovers:** captions for the gallery video (content), and a hand scan of the Contact form after each change to it, as the suite cannot reach it (ADR-055, ADR-056).
 - **Image formats:** convert uploads to WebP or AVIF (content and host work; ADR-057).
