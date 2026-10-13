@@ -286,6 +286,47 @@ test.describe( 'reveal on scroll', () => {
 		await context.close();
 	} );
 
+	// The keyboard's focus brings a block to its place at once. A press of the
+	// pointer must not: the block would jump from under it, the pointer would
+	// be let go beside the link, and there would be no click.
+	test( 'a link pressed while its block is still rising in is followed', async ( {
+		browser,
+	} ) => {
+		const context = await browser.newContext( MOVING );
+		const page = await context.newPage();
+		await page.goto( made.link );
+		// Slowed to a crawl, so the block is on its way all through the test.
+		await page.addStyleTag( {
+			content:
+				'html { scroll-behavior: auto !important; } .ts-reveal.is-revealed, .ts-reveal.is-revealed > * { animation-duration: 600s !important; animation-delay: 0s !important; animation-timing-function: linear !important; }',
+		} );
+		const card = page.locator( '.wp-block-group.e2e-far' );
+		await card.scrollIntoViewIfNeeded();
+		await expect( card ).toHaveClass( /is-revealed/ );
+		expect(
+			await card.evaluate(
+				( group ) => group.getAnimations( { subtree: true } ).length
+			)
+		).toBeGreaterThan( 0 );
+
+		const link = card.locator( 'a' );
+		const before = await link.boundingBox();
+		await page.mouse.move(
+			( before?.x ?? 0 ) + ( before?.width ?? 0 ) / 2,
+			( before?.y ?? 0 ) + ( before?.height ?? 0 ) / 2
+		);
+		await page.mouse.down();
+		const held = await link.boundingBox();
+		await page.mouse.up();
+		expect(
+			Math.abs( ( held?.y ?? 0 ) - ( before?.y ?? 0 ) )
+		).toBeLessThan( 2 );
+		// Pressed, it is in full view all the same.
+		expect( await card.evaluate( opacity ) ).toBe( '1' );
+		await expect( page ).toHaveURL( /#further$/ );
+		await context.close();
+	} );
+
 	test( 'nothing waits without JavaScript, with less motion or on paper', async ( {
 		browser,
 	} ) => {

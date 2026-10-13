@@ -195,6 +195,58 @@ test.describe( 'entrance on load', () => {
 		await context.close();
 	} );
 
+	// A press of the pointer must not bring a block to its place with a jump:
+	// the pointer would be let go beside the link, and there would be no click.
+	test( 'a link pressed while its block is still rising in stays under the pointer', async ( {
+		browser,
+	} ) => {
+		const context = await browser.newContext( MOVING );
+		const page = await context.newPage();
+
+		// The page is opened afresh for each: letting go follows the link.
+		for ( const selector of [
+			'.e2e-copy > :has(a)',
+			'.e2e-row > .wp-block-buttons',
+		] ) {
+			await page.goto( made.link );
+			// Slowed to a crawl, so the blocks are on their way all through.
+			// (Put in as an element: these pages run without JavaScript,
+			// where Playwright's own way of adding a style never returns.)
+			await page.evaluate( ( css ) => {
+				const style = document.createElement( 'style' );
+				style.textContent = css;
+				document.head.append( style );
+			}, 'html { scroll-behavior: auto !important; } .ts-intro, .ts-intro > * { animation-duration: 600s !important; animation-delay: 0s !important; animation-timing-function: linear !important; }' );
+			const block = page.locator( selector ).first();
+			const link = block.locator( 'a' ).first();
+			// (Not Playwright's own scrolling: it waits for the block to stop.)
+			await link.evaluate( ( element ) =>
+				element.scrollIntoView( { block: 'center' } )
+			);
+			expect(
+				await block.evaluate( ( item ) => item.getAnimations().length )
+			).toBeGreaterThan( 0 );
+			const before = await link.boundingBox();
+			await page.mouse.move(
+				( before?.x ?? 0 ) + ( before?.width ?? 0 ) / 2,
+				( before?.y ?? 0 ) + ( before?.height ?? 0 ) / 2
+			);
+			await page.mouse.down();
+			const held = await link.boundingBox();
+			expect(
+				Math.abs( ( held?.y ?? 0 ) - ( before?.y ?? 0 ) )
+			).toBeLessThan( 2 );
+			// Pressed, it is in full view all the same.
+			expect(
+				await block.evaluate(
+					( item ) => window.getComputedStyle( item ).opacity
+				)
+			).toBe( '1' );
+			await page.mouse.up();
+		}
+		await context.close();
+	} );
+
 	test( 'nothing moves with less motion, on paper or in the editor, and no script is loaded', async ( {
 		admin,
 		browser,
