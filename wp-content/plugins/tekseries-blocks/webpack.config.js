@@ -1,6 +1,7 @@
 // wp-scripts builds the scripts each block.json lists. The post sidebar, the
-// Button block's icon panel, the reveal script and the contact form's script
-// are not blocks, so they are added to those entries here.
+// Button block's icon panel, the reveal script and the scripts of the contact
+// form and the job submission form are not blocks, so they are added to those
+// entries here.
 const [
 	scriptConfig,
 	moduleConfig,
@@ -21,6 +22,7 @@ module.exports = [
 			...moduleConfig.entry(),
 			'reveal/view': './src/reveal/view.ts',
 			'contact-form/view': './src/contact-form/view.ts',
+			'job-submit/view': './src/job-submit/view.ts',
 		} ),
 	},
 ];

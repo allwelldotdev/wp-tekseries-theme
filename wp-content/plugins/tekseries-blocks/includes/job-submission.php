@@ -23,6 +23,21 @@ function tekseries_blocks_register_job_submit_style(): void {
 add_action( 'init', 'tekseries_blocks_register_job_submit_style' );
 
 /**
+ * Registers the script that asks for a missing description under the editor;
+ * the form's template enqueues it.
+ */
+function tekseries_blocks_register_job_submit_script(): void {
+	$asset_file = dirname( __DIR__ ) . '/build/job-submit/view.asset.php';
+	if ( ! file_exists( $asset_file ) ) {
+		return;
+	}
+
+	$asset = require $asset_file;
+	wp_register_script_module( 'tekseries-blocks-job-submit', plugins_url( 'build/job-submit/view.js', __DIR__ ), $asset['dependencies'], $asset['version'] );
+}
+add_action( 'init', 'tekseries_blocks_register_job_submit_script' );
+
+/**
  * Prints the submission steps (Job details, Preview, Submitted) and, beside
  * the form, tips for a good listing.
  *

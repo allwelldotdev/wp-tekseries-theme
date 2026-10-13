@@ -4,6 +4,8 @@ import { setUpJobPages, type JobPages } from './utils/wpjm';
 type Job = { id: number };
 
 const TITLE = 'E2E Submitted Job';
+// Found, and removed, by the search for TITLE.
+const DRAFT = `${ TITLE } Draft`;
 
 test.describe( 'job submission', () => {
 	let pages: JobPages;
@@ -135,5 +137,77 @@ test.describe( 'job submission', () => {
 			page.getByRole( 'link', { name: 'Go to job dashboard' } )
 		).toHaveAttribute( 'href', pages.dashboard.link );
 		await context.close();
+	} );
+
+	// With scripts on, WP Job Manager's editor (TinyMCE) takes the place of
+	// the Description box, and its script checks the form before it is sent.
+	test( 'Preview says what is missing, and Save draft saves an unfinished job', async ( {
+		page,
+		requestUtils,
+	} ) => {
+		await page.goto( pages.submit.link );
+		const job = page.getByRole( 'region', { name: 'Job details' } );
+		const company = page.getByRole( 'region', { name: 'Company details' } );
+		const title = job.getByLabel( 'Job title' );
+		const preview = page.getByRole( 'button', { name: 'Preview' } );
+		const missing = page.getByText( 'Add a description of the role.' );
+		const frame = page.locator( '#job_description_ifr' );
+		const plainBox = page.locator( 'textarea#job_description' );
+		const step = page
+			.getByRole( 'list', { name: 'Submission steps' } )
+			.locator( '[aria-current="step"]' );
+		await expect( frame ).toBeVisible();
+
+		// Nothing filled: the browser stops at the first required field.
+		await preview.click();
+		await expect( title ).toBeFocused();
+		expect(
+			await title.evaluate(
+				( field: HTMLInputElement ) => field.validity.valueMissing
+			)
+		).toBe( true );
+		await expect( missing ).toBeHidden();
+
+		// Only the description left: the message shows under the editor
+		// and the cursor is in the editor. The editor's own text box stays
+		// out of sight (WP Job Manager's check would show it, empty).
+		await title.fill( DRAFT );
+		await job
+			.getByLabel( 'Application email/URL' )
+			.fill( 'https://example.com/apply' );
+		await company.getByLabel( 'Company name' ).fill( 'Acme Robotics' );
+		await preview.click();
+		await expect( missing ).toBeVisible();
+		await expect( frame ).toBeFocused();
+		await expect( plainBox ).toBeHidden();
+		await expect( step ).toHaveText( /Job details/ );
+
+		// A draft needs no description: it is saved as it is.
+		await page.getByRole( 'button', { name: 'Save draft' } ).click();
+		const saved = page.locator( '.job-manager-info' );
+		await expect( saved ).toContainText( 'Draft was saved' );
+		// The sentence reads as one line of text, its link in place.
+		await expect( saved ).toHaveCSS( 'display', 'block' );
+		const drafts = await requestUtils.rest< Job[] >( {
+			path: '/wp/v2/job-listings',
+			params: { search: DRAFT, status: 'draft' },
+		} );
+		expect( drafts ).toHaveLength( 1 );
+
+		// Back on the form, the message goes when the description is
+		// typed, and Preview moves on.
+		await expect( frame ).toBeVisible();
+		await preview.click();
+		await expect( missing ).toBeVisible();
+		await page
+			.frameLocator( '#job_description_ifr' )
+			.locator( 'body' )
+			.pressSequentially( 'Build things that matter.' );
+		await expect( missing ).toBeHidden();
+		await preview.click();
+		await expect( step ).toHaveText( /Preview/ );
+		await expect( page.locator( '.ts-preview__title' ) ).toHaveText(
+			DRAFT
+		);
 	} );
 } );
