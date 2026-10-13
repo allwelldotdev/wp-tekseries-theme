@@ -86,11 +86,13 @@ describe( 'tekseries icon collection', () => {
 				.map( ( block ) => `src/${ block }/render.php` )
 				.filter( ( file ) => existsSync( new URL( file, PLUGIN ) ) ),
 		];
-		// (A script's namespace looks like an icon id, and is not one.)
+		// (A script's namespace looks like an icon id, and is not one: as
+		// the value of data-wp-interactive, or handed to
+		// wp_interactivity_config() or wp_interactivity_state().)
 		const used = files.flatMap( ( file ) =>
 			[
 				...readFileSync( new URL( file, PLUGIN ), 'utf8' ).matchAll(
-					/(?:tekseries_blocks_icon_svg\( '|(?<!data-wp-interactive'\s*(?:,|=>)\s*)'tekseries\/)([a-z0-9_]+)'/g
+					/(?:tekseries_blocks_icon_svg\( '|(?<!(?:data-wp-interactive'\s*(?:,|=>)|wp_interactivity_(?:config|state)\()\s*)'tekseries\/)([a-z0-9_]+)'/g
 				),
 			].map( ( [ , name = '' ] ) => name )
 		);

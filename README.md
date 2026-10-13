@@ -56,7 +56,7 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 ## Tests
 
 - `npm run test:unit` runs the Vitest tests in `tests/unit/`: design tokens, templates, icons and project metadata, including that the theme, plugin and both package files share one version (ADR-058).
-- `npm run test:e2e` runs the Playwright specs in `specs/` (35 files) against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). Run `npm run build` first. They cover the theme, events, tones, the blocks, the job screens and media albums, check the scripts each public page loads, and drive the viewer and its openers, in-place filtering and search, copy link, table of contents and the contact form's hint in a browser.
+- `npm run test:e2e` runs the Playwright specs in `specs/` (36 files) against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). Run `npm run build` first. They cover the theme, events, tones, the blocks, the job screens and media albums, check the scripts each public page loads, and drive the viewer and its openers, in-place filtering and search, copy link, table of contents and the contact form's hint in a browser.
 - `specs/a11y.spec.ts` scans every kind of public page at 1280px and 390px with `@axe-core/playwright` against WCAG 2.2 A and AA. It also covers states only a script or click reaches, keyboard focus under the sticky header, and the contrast of text over photos (ADR-056).
 - The first `npm run wp-env start` pulls Docker images and takes several minutes, longer than Playwright's 120-second start timeout. Run it once by hand first, and retry on a network error.
 - Run `npm run test:e2e:install` once, then `sudo npx playwright install-deps chromium` once per machine for system libraries.
@@ -68,8 +68,8 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 .                                          # WordPress root and git root
 ├── wp-content/themes/tekseries/           # block theme: theme.json, templates, parts, patterns, assets
 ├── wp-content/plugins/tekseries-blocks/   # blocks plugin
-│   ├── src/                               # one folder per block, plus post-settings and button-icon (editor panels), and reveal, contact-form and job-submit (scripts)
-│   ├── includes/                          # event and job fields, media albums, bindings, icons, share links, tone meta and cycle, reveal, list order, viewer, post video, contact form, editor, WP-CLI
+│   ├── src/                               # one folder per block, plus post-settings and button-icon (editor panels), and reveal, contact-form, job-submit and surveys (scripts)
+│   ├── includes/                          # event and job fields, media albums, bindings, icons, share links, tone meta and cycle, reveal, list order, viewer, post video, contact form, surveys, editor, WP-CLI
 │   ├── templates/wpjm/                    # WP Job Manager template overrides
 │   └── assets/css/                        # job screen styles
 ├── specs/                                 # Playwright e2e specs
@@ -81,7 +81,7 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 
 The repo root is the WordPress root. `.gitignore` is a whitelist, so WordPress core, uploads and other plugins and themes are never tracked, and neither are the zips (ADR-001).
 
-The plugin has eleven blocks: `event-countdown`, `post-tone` (ADR-033), `share-links`, `toc` (ADR-038), `job-listings` (ADR-042), `media-gallery` (ADR-045), `hero-carousel` (ADR-053), `map` (ADR-069), `post-video` (ADR-072) and the `stat` and `logo-marquee`, which are built in CSS (ADR-046). Nine small script modules on the Interactivity API reach visitors (ADR-047), and every page works without JavaScript. Six belong to blocks, as `src/<block>/view.ts`:
+The plugin has eleven blocks: `event-countdown`, `post-tone` (ADR-033), `share-links`, `toc` (ADR-038), `job-listings` (ADR-042), `media-gallery` (ADR-045), `hero-carousel` (ADR-053), `map` (ADR-069), `post-video` (ADR-072) and the `stat` and `logo-marquee`, which are built in CSS (ADR-046). Ten small script modules on the Interactivity API reach visitors (ADR-047), and every page works without JavaScript. Six belong to blocks, as `src/<block>/view.ts`:
 
 - `event-countdown` counts down to an event's start, in Nigerian time.
 - `share-links` copies "Link to this page", and loads only when a block offers that link.
@@ -92,6 +92,7 @@ The plugin has eleven blocks: `event-countdown`, `post-tone` (ADR-033), `share-l
 - `src/reveal/view.ts` is the seventh. It isn't a block: it says when a block has scrolled into view, and `includes/reveal.php` loads it only on pages that use it.
 - `src/contact-form/view.ts` is the eighth. It changes the Contact form's Subject hint to match the topic picked.
 - `src/job-submit/view.ts` is the ninth. It checks the "Post a job" form's description before Preview.
+- `src/surveys/view.ts` is the tenth. A Button with the class `ts-survey-<key>` opens the Formbricks form whose action has that key, and `includes/surveys.php` loads Formbricks' own script only when a visitor reaches for one. Set the Formbricks server's address and ID under Settings → Forms (Formbricks).
 
 On Home, the `stat` figures count when scrolled to, and the section headings and the three pillar cards rise in (ADR-060). Editors can make any block rise in when scrolled to with the class `ts-reveal`, or when the page opens with `ts-intro` (ADR-063), under Advanced → Additional CSS class(es). On a Group, `ts-intro` raises the blocks inside it one after another. The look is in the theme's `assets/css/global.css`, and the timings are tokens in `theme.json` under `settings.custom.motion`. Reduced motion shows everything at once.
 

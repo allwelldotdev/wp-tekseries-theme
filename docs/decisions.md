@@ -1551,6 +1551,75 @@ Not verified:
   - Two implementations of the same arithmetic must be kept in step. The e2e spec compares what both print.
   - If TekSeries runs events for another zone, the filter (or a per-event field) is the place to change.
 
+## ADR-075: Open Formbricks forms from marked buttons, and load Formbricks' script only when a visitor reaches for one
+
+**Status:** Superseded by ADR-076 (fallback, focus and settings; the rest stands)
+
+**Context:**
+- On 2026-10-13 the owner asked to connect Formbricks through its SDK, so that two forms built there as "Website & App" surveys ("Upload your CV", "Apply for the Maker's Prize") open over the page when their buttons are pressed. This is release 1.15.0 on branch `feat/survey-buttons`.
+- The owner's Formbricks is self-hosted and run by a partner company, Beekomm Technologies Limited. It is not Formbricks' own cloud.
+- A "Website & App" survey needs Formbricks' script on the page, set up with the server's address and an ID (`workspaceId` in current Formbricks, `environmentId` in older ones). It opens when an action fires: a no-code action (for example a click matched by CSS selector or text) or a code action fired with `formbricks.track( key )`.
+- Four buttons are links, in page content, in patterns and in the single job template. Their link was `#`.
+- Rule 1 of ADR-005: only our own Interactivity API code runs for visitors. Rule 3: the server's HTML is usable without JavaScript.
+
+**Options:**
+- Formbricks' snippet in the `<head>` of every page, as its docs say. Every visitor on every page would load a third-party script and call the Formbricks server, for two buttons most never press.
+- A no-code click action in Formbricks, matched by the button's text or a CSS selector. Nothing to maintain on our side, but the buttons are links, so a script of ours is still needed to stop the navigation and to cope with "Formbricks did not load". Matching by text breaks when a label changes ("Upload your CV" and "Upload your CV to Job Series" already differ).
+- "Link" surveys opened in a new tab or an iframe. No script, but not the form over the page that the owner asked for, and a second survey type to keep.
+- A custom block for the button. Editors already style core Buttons, and a class follows the `ts-lightbox-open` and `ts-icon-*` convention (ADR-071, ADR-067).
+- The two values in `wp-config.php`. The owner has wp-admin only on live (ADR-059).
+
+**Decision:** A class marks the button, our own module loads Formbricks late, and the link stays real.
+- Marking: a core Button with the class `ts-survey-<key>` opens the survey whose trigger is the code action `<key>`. A `render_block` filter adds the directives to its link, as ADR-071 does for `ts-lightbox-open`. The single job template calls the same helper. A later form needs no code: a new action key in Formbricks and the class on a Button.
+- Settings: Settings, Forms (Formbricks), stored in one plugin option, `tekseries_blocks_formbricks`. It holds the server address (https only), the ID, and the ID's name. Neither value is a secret, since both are in the page for anyone to read. Until both are set, marked buttons stay plain links and no script is loaded.
+- Script: `src/surveys/view.ts`, store `tekseries/surveys`. It does what Formbricks' own snippet does (loads `<address>/js/formbricks.umd.cjs`, calls `setup`), but not on page load. It starts on the first sign that a visitor is going for a marked button, which is the pointer over it or keyboard focus. A click then fires the action.
+- Fallback: the button keeps its link. The link is followed with JavaScript off, on a modified click, and when Formbricks cannot be reached or does not answer within 8 seconds.
+- Third-party content: Formbricks' script and the survey it draws are a widget outside our build. It is accepted as an exception of the same kind as reCAPTCHA on the job form (ADR-007), the Google map (ADR-069) and the YouTube and Vimeo players (ADR-072).
+
+**Rationale:**
+- Loading on first approach keeps the third-party script and the call to the Formbricks server away from visitors who never reach for a button. This is the same reasoning as ADR-072's frame that exists only after a click.
+- Only our own Interactivity API code runs for visitors (rule 1), and the button is a working link without JavaScript (rule 3). A blocked or slow Formbricks costs the visitor nothing but the form.
+- A class on core Buttons keeps them editable in the Site Editor (ADR-005), and a new form needs only a new key in Formbricks.
+- Settings in wp-admin suit a host with no file access.
+- Consequences:
+  - Answers and uploaded CVs leave the site for the Formbricks server run by Beekomm Technologies Limited. The Privacy Policy needs a line for it. It was suggested to the owner, who writes that page.
+  - The first press can wait on the script's download. Hovering or focusing the button starts it early.
+  - The forms depend on settings in Formbricks that the site cannot check: the survey type, the action's key, and "Keep showing while conditions match" with "Ignore Cooldown Period" (otherwise a form shows once per visitor). The settings screen lists them.
+  - A blocker that stops Formbricks' script sends the visitor along the button's link, so each button needs a useful link. Choosing those links is still open with the owner.
+  - Tested against a stand-in for Formbricks' script, not yet against the owner's Formbricks.
+
+## ADR-076: Follow the link when no Formbricks form appears, manage focus ourselves, and keep one ID setting
+
+**Status:** Accepted
+
+**Context:**
+- ADR-075 is not merged or tagged yet, but it is recorded, so this entry corrects it rather than rewriting it.
+- On 2026-10-13 the buttons were tested against the owner's Formbricks 4.5.0, self-hosted by Beekomm Technologies Limited at an https address. The owner stays on 4.5.0 on purpose.
+- `setup()` and `track()` finish normally on a wrong ID, a server error, or an action with no published form, and nothing opens. ADR-075's fallback only covered a script that could not be loaded.
+- Formbricks 4.5.0 draws its form at the end of the page, gives it no dialog role and leaves keyboard focus on the button behind it. Escape does not close it.
+- 4.5.0 knows only `environmentId`, and shows both a "Workspace ID" and an "Environment ID". Only the Environment ID works. ADR-075's third setting (the ID's name) defaulted to Workspace ID, which opened nothing and gave no message.
+
+**Options:**
+- Fallback: follow the link only when the script fails to load (ADR-075). Or wait for Formbricks' panel to appear and follow the link otherwise.
+- Focus: leave it to Formbricks. Or move it ourselves.
+- ID name: keep the setting and change its default. Or remove it and pass the ID under both names.
+
+**Decision:**
+- Fallback: after firing the action, the script waits up to 8 seconds for Formbricks' panel (the element `#formbricks-modal-container` getting a child). If none appears, it follows the button's link. A `#` link still does nothing. This replaces the fallback line of ADR-075.
+- Focus: when the form opens, focus moves to the first thing the keyboard can reach in it. When it closes, focus returns to the button. Neither happens if the visitor has moved focus elsewhere. Escape is Formbricks' code and is left alone.
+- Settings: the ID's name setting is removed. The option `tekseries_blocks_formbricks` holds `url` and `id`. The script passes the ID to `setup` as both `workspaceId` and `environmentId`. The settings screen's help says to copy the Environment ID.
+- Links: the owner decided on 2026-10-13 to keep the four buttons' links as `#` for now, and to add real fallback links if the popup fails to load repeatedly.
+
+**Rationale:**
+- Watching for the panel covers every way a form can fail to appear, not only a missing script. This keeps rule 3 of ADR-005 true for the real server.
+- Without a dialog role or focus handling, keyboard and screen-reader visitors are left behind the form. Moving focus is the smallest fix we own.
+- One ID passed under both names works on old and current Formbricks and removes a setting that gave no error when wrong.
+- Consequences:
+  - With `#` links, a visitor whose form does not appear sees nothing happen. This is accepted until the failure is seen in practice.
+  - The panel's element ID is Formbricks' internal detail. A Formbricks upgrade may change it and needs a retest.
+  - Tested on the development site: all four buttons open their real form by mouse, keyboard and at phone width. Nothing was submitted.
+  - Nothing is fetched from Formbricks before a visitor reaches for a button. Formbricks sets no cookie and keeps one local-storage entry.
+
 ## Future work
 
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).
@@ -1581,5 +1650,6 @@ Not verified:
 - **Job categories:** a curated list to replace the 76 imported terms (owner; ADR-043). The Job Series category filter lists only what the owner curates (ADR-049).
 - **Pending jobs:** decide whether employers may edit them, a WPJM setting (owner; ADR-043).
 - **"Upload your CV" links:** hidden until a target exists (ADR-043).
+- **Formbricks buttons:** add a Formbricks line to the Privacy Policy (owner). The four links stay `#` for now, and real fallback links follow if the popup fails to load repeatedly (ADR-076).
 - **Employer self-registration:** only if the owner wants it (ADR-043).
 - **Design-system updates:** add the components the boards use but the system lacks (Impact, Insight, Key figure, Pull quote, Pillar badge, anchor chip, marquee) and the missing tokens (`coral-text` from ADR-008, status colours, alpha and radius tokens). Settle the tablet and mobile h1/h2 sizes (the tokens win) and the footer radius (36 / 32 / 24px). Then refresh `docs/design-reference/`.

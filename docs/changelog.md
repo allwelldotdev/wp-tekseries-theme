@@ -2,6 +2,20 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.15.0] — 2026-10-13
+### New
+- Visitors can now press a marked button to open a Formbricks form in a panel over the page, and the page stays where it was.
+- Once the site is connected, "Upload your CV" on the Home and Job Series pages, "Apply for the Maker's Prize" on the Home page, and "Upload your CV to Job Series" on each job's page open a form this way.
+- Nothing is loaded from the Formbricks server until a visitor moves to press such a button.
+- The button's own link is still followed when JavaScript is off, when the form cannot be loaded within a few seconds, or when Formbricks answers but no form opens within a few seconds, for example because the form is not published; a button whose link is "#" does nothing in these cases.
+- When a form opens, keyboard focus moves into it, and when it is closed, focus returns to the button that opened it.
+- Until the settings are filled in, nothing changes and the buttons stay ordinary links, as before.
+- Editors get a new screen, Settings → Forms (Formbricks), where they enter the "SDK connection URL" of the Formbricks server (it must start with https://), and the "ID" from the code Formbricks gives for connecting a website; where Formbricks lists both an Environment ID and a Workspace ID, as version 4 does, it is the Environment ID.
+- The Forms (Formbricks) screen says whether the site is connected and lists the steps to make a button open a form.
+- Editors can make any Button open a form of the type "Website & App Survey": in Formbricks add an action of the kind "Code" with a key such as `upload-cv` and set it as the form's trigger, then on the site add the class `ts-survey-` followed by the key, such as `ts-survey-upload-cv`, to the Button under Advanced → Additional CSS class(es).
+- In Formbricks, the form should be set to "Keep showing while conditions match" and "Ignore Cooldown Period", otherwise it opens only once per visitor.
+- The buttons "Upload your CV" and "Apply for the Maker's Prize" in the Home and Job Series page patterns are already marked, with the keys `upload-cv` and `makers-prize`.
+
 ## [1.14.0] — 2026-10-13
 ### New
 - Visitors now see a countdown on an upcoming event, running to its start time, and it is the same moment for everyone, so a visitor in another time zone sees the same time left.
