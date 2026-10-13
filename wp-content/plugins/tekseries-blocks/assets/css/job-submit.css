@@ -136,14 +136,15 @@
 	fill: var(--wp--preset--color--coral);
 }
 
-/* Notices WP Job Manager prints above the form: errors, messages, statuses. */
+/*
+ * Notices WP Job Manager prints above the form: errors, messages, statuses.
+ * They are sentences, some with a link in them, so they stay plain blocks;
+ * our own status line has an icon beside its text.
+ */
 .job-manager-error,
 .job-manager-info,
 .job-manager-message,
 .ts-submit-status {
-	display: flex;
-	gap: 12px;
-	align-items: center;
 	margin: 0 0 18px;
 	padding: 14px 18px;
 	border-radius: 18px;
@@ -176,6 +177,9 @@
 }
 
 .ts-submit-status {
+	display: flex;
+	gap: 12px;
+	align-items: center;
 	margin: 0;
 }
 
@@ -184,6 +188,29 @@
 	width: 22px;
 	height: 22px;
 	fill: var(--wp--preset--color--coral);
+}
+
+/* What a field still needs, under the field (the description editor). */
+.ts-field-error {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	margin: 8px 0 0;
+	color: var(--wp--preset--color--danger);
+	font-size: 0.875rem;
+	font-weight: 600;
+	line-height: 1.5;
+}
+
+.ts-field-error[hidden] {
+	display: none;
+}
+
+.ts-field-error svg {
+	flex: none;
+	width: 20px;
+	height: 20px;
+	fill: currentcolor;
 }
 
 /* Signed in: a bar with the account and "Sign out". */

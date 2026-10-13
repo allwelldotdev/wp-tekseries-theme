@@ -6,7 +6,8 @@
  * template for editing a published job from the dashboard, without the steps.
  *
  * The form may use jQuery (WP Job Manager's editor, category select and logo
- * upload need it).
+ * upload need it). Our own script (src/job-submit/view.ts) only asks for a
+ * missing description, under the editor.
  *
  * @package TekSeries
  *
@@ -30,6 +31,9 @@ wp_enqueue_style( 'tekseries-blocks-job-submit' );
 $tekseries_captcha  = WP_Job_Manager\WP_Job_Manager_Recaptcha::instance()->get_recaptcha_version();
 $tekseries_editing  = 'edit-job' === $form;
 $tekseries_can_post = job_manager_user_can_post_job() || job_manager_user_can_edit_job( $job_id );
+if ( $tekseries_can_post ) {
+	wp_enqueue_script_module( 'tekseries-blocks-job-submit' );
+}
 
 // [ heading, subtitle, icon, fields ] for each card.
 $tekseries_sections = array(
@@ -43,7 +47,7 @@ $tekseries_sections = array(
 		tekseries_blocks_submit_steps( 1 );
 	}
 	?>
-	<form action="<?php echo esc_url( $action ); ?>" method="post" id="submit-job-form" class="job-manager-form ts-submit__main" enctype="multipart/form-data">
+	<form action="<?php echo esc_url( $action ); ?>" method="post" id="submit-job-form" class="job-manager-form ts-submit__main" enctype="multipart/form-data"<?php echo $tekseries_can_post ? ' data-wp-interactive="tekseries/job-submit" data-wp-on--submit="actions.check" data-wp-on--input="actions.typed"' : ''; ?>>
 		<?php if ( ! empty( $resume_edit ) ) : ?>
 			<p class="ts-submit-status" role="status">
 				<?php echo tekseries_blocks_icon_svg( 'edit_note' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
@@ -102,6 +106,12 @@ $tekseries_sections = array(
 									);
 									?>
 								</div>
+								<?php if ( 'wp-editor' === $tekseries_field['type'] && $tekseries_field['required'] ) : ?>
+									<p class="ts-field-error" id="<?php echo esc_attr( $tekseries_key ); ?>-error" role="alert" hidden>
+										<?php echo tekseries_blocks_icon_svg( 'error' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
+										<?php esc_html_e( 'Add a description of the role.', 'tekseries-blocks' ); ?>
+									</p>
+								<?php endif; ?>
 							</fieldset>
 						<?php endforeach; ?>
 						<?php do_action( "submit_job_form_{$tekseries_section}_fields_end" ); ?>
@@ -120,7 +130,8 @@ $tekseries_sections = array(
 					<?php echo esc_html( $submit_button_text ); ?>
 				</button>
 				<?php if ( ! empty( $can_continue_later ) ) : ?>
-					<button type="submit" name="save_draft" class="ts-job-button ts-job-button--outline save_draft" value="<?php esc_attr_e( 'Save draft', 'tekseries-blocks' ); ?>" formnovalidate>
+					<?php // WP Job Manager's script knows its Save draft button by "button save_draft": only then does it leave the required fields alone. ?>
+					<button type="submit" name="save_draft" class="button ts-job-button ts-job-button--outline save_draft" value="<?php esc_attr_e( 'Save draft', 'tekseries-blocks' ); ?>" formnovalidate>
 						<?php echo tekseries_blocks_icon_svg( 'bookmark' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG from the plugin's icon collection. ?>
 						<?php esc_html_e( 'Save draft', 'tekseries-blocks' ); ?>
 					</button>
