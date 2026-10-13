@@ -7,6 +7,7 @@ import {
 type EventFields = {
 	event_date: string;
 	time_label: string;
+	start_time: string;
 	venue: string;
 	cta_link: { title: string; url: string; target: string } | string;
 	cta_name: string;
@@ -16,6 +17,7 @@ type Event = { id: number; link: string; acf: EventFields };
 const FIELDS: EventFields = {
 	event_date: '20261126',
 	time_label: '11:00 AM WAT',
+	start_time: '11:00:00',
 	venue: 'Online (Zoom)',
 	cta_link: {
 		title: '',

@@ -9,6 +9,10 @@
  * the `ts-register` class; once the date has passed, the button becomes "This
  * event has ended" and the rest is left out.
  *
+ * An event's day, and its optional start time (`start_time`), are read in
+ * Nigerian time. The Event Countdown block (src/event-countdown) counts down
+ * to the start.
+ *
  * @package TekSeries
  */
 
@@ -17,39 +21,205 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Parses a stored `Ymd` date as midnight in the site's time zone.
+ * Parses a stored `Ymd` date as midnight in a time zone.
  *
- * @param string $ymd Stored date, e.g. "20260926".
+ * @param string            $ymd  Stored date, e.g. "20260926".
+ * @param DateTimeZone|null $zone Time zone. Default: the site's, which is what a date shown by a block needs.
  * @return DateTimeImmutable|null Null when the value isn't a valid date.
  */
-function tekseries_blocks_parse_ymd( string $ymd ): ?DateTimeImmutable {
+function tekseries_blocks_parse_ymd( string $ymd, ?DateTimeZone $zone = null ): ?DateTimeImmutable {
 	if ( ! preg_match( '/^\d{8}$/', $ymd ) ) {
 		return null;
 	}
-	$date = DateTimeImmutable::createFromFormat( '!Ymd', $ymd, wp_timezone() );
+	$date = DateTimeImmutable::createFromFormat( '!Ymd', $ymd, $zone ?? wp_timezone() );
 	return $date && $date->format( 'Ymd' ) === $ymd ? $date : null;
 }
 
 /**
- * Returns an event's date.
+ * Returns the time zone the event fields are filled in: Nigerian time.
+ *
+ * WordPress keeps its clock on UTC on this site, and events are announced in
+ * West Africa Time. An event's day and its start time are read in this zone.
+ *
+ * @return DateTimeZone
+ */
+function tekseries_blocks_event_timezone(): DateTimeZone {
+	/**
+	 * Filters the time zone event dates and start times are given in.
+	 *
+	 * @param string $timezone A time zone name PHP knows, e.g. "Africa/Lagos".
+	 */
+	$name = apply_filters( 'tekseries_blocks_event_timezone', 'Africa/Lagos' );
+	try {
+		return new DateTimeZone( (string) $name );
+	} catch ( Exception $error ) {
+		return new DateTimeZone( 'Africa/Lagos' );
+	}
+}
+
+/**
+ * Returns when an event starts: its date with its start time, or the start
+ * of its day when it has no start time.
+ *
+ * @param int $post_id Event ID.
+ * @return array{0: DateTimeImmutable, 1: bool}|null The moment, and whether a start time is set. Null without a valid date.
+ */
+function tekseries_blocks_event_start( int $post_id ): ?array {
+	$day = tekseries_blocks_event_date( $post_id );
+	if ( ! $day ) {
+		return null;
+	}
+	// ACF's time picker stores "H:i:s".
+	if ( preg_match( '/^([01]\d|2[0-3]):([0-5]\d)(?::[0-5]\d)?$/', (string) get_post_meta( $post_id, 'start_time', true ), $time ) ) {
+		return array( $day->setTime( (int) $time[1], (int) $time[2] ), true );
+	}
+	return array( $day, false );
+}
+
+/**
+ * Works out what an event's countdown shows at a moment.
+ *
+ * With a start time the days, hours, minutes and seconds left are what a
+ * clock shows. Without one only days count, and they are days on a calendar:
+ * an event the day after tomorrow is 2 days away all day long. The script
+ * does the same in the browser (src/event-countdown/time.ts): keep the two
+ * alike.
+ *
+ * @param int      $post_id Event ID.
+ * @param int|null $now     The moment as a Unix time. Default: now.
+ * @return array{start: int, end: int, timed: bool, phase: string, days: int, hours: int, minutes: int, seconds: int}|null
+ *         `start` and `end` (the end of the event's day) in milliseconds, for the script; `phase` is
+ *         "before" or "during". Null without a valid date, and once the event's day is over.
+ */
+function tekseries_blocks_event_countdown( int $post_id, ?int $now = null ): ?array {
+	$start = tekseries_blocks_event_start( $post_id );
+	if ( ! $start ) {
+		return null;
+	}
+
+	[ $at, $timed ] = $start;
+	$now          ??= time();
+	$begins         = $at->getTimestamp();
+	$ends           = $at->setTime( 0, 0 )->modify( '+1 day' )->getTimestamp();
+	if ( $now >= $ends ) {
+		return null;
+	}
+
+	$left = max( 0, $begins - $now );
+	return array(
+		'start'   => $begins * 1000,
+		'end'     => $ends * 1000,
+		'timed'   => $timed,
+		'phase'   => $now >= $begins ? 'during' : 'before',
+		'days'    => $timed ? intdiv( $left, DAY_IN_SECONDS ) : (int) ceil( $left / DAY_IN_SECONDS ),
+		'hours'   => $timed ? intdiv( $left % DAY_IN_SECONDS, HOUR_IN_SECONDS ) : 0,
+		'minutes' => $timed ? intdiv( $left % HOUR_IN_SECONDS, MINUTE_IN_SECONDS ) : 0,
+		'seconds' => $timed ? $left % MINUTE_IN_SECONDS : 0,
+	);
+}
+
+/**
+ * Returns the countdown's words. The script gets them too, so each count
+ * comes as [ one, many ] rather than through _n().
+ *
+ * @return array{inDays: string[], inHours: string[], inMinutes: string[], day: string[], today: string, now: string}
+ */
+function tekseries_blocks_event_countdown_words(): array {
+	return array(
+		/* translators: %d: number of days, 1. */
+		'inDays'    => array( __( 'In %d day', 'tekseries-blocks' ), /* translators: %d: number of days. */ __( 'In %d days', 'tekseries-blocks' ) ),
+		/* translators: %d: number of hours, 1. */
+		'inHours'   => array( __( 'In %d hour', 'tekseries-blocks' ), /* translators: %d: number of hours. */ __( 'In %d hours', 'tekseries-blocks' ) ),
+		/* translators: %d: number of minutes. */
+		'inMinutes' => array( __( 'In %d min', 'tekseries-blocks' ), /* translators: %d: number of minutes. */ __( 'In %d min', 'tekseries-blocks' ) ),
+		'day'       => array( __( 'day', 'tekseries-blocks' ), __( 'days', 'tekseries-blocks' ) ),
+		'today'     => __( 'Today', 'tekseries-blocks' ),
+		'now'       => __( 'Happening now', 'tekseries-blocks' ),
+	);
+}
+
+/**
+ * Says a countdown in a few words, by its largest unit: "In 12 days",
+ * "In 5 hours", "In 20 min", "Today" or "Happening now". A started minute
+ * counts, so the last minute reads "In 1 min".
+ *
+ * @param array $view  From tekseries_blocks_event_countdown().
+ * @param array $words From tekseries_blocks_event_countdown_words().
+ * @return string
+ */
+function tekseries_blocks_event_countdown_line( array $view, array $words ): string {
+	if ( 'before' !== $view['phase'] ) {
+		return $view['timed'] ? $words['now'] : $words['today'];
+	}
+
+	if ( $view['days'] > 0 ) {
+		[ $unit, $count ] = array( 'inDays', $view['days'] );
+	} elseif ( $view['hours'] > 0 ) {
+		[ $unit, $count ] = array( 'inHours', $view['hours'] );
+	} else {
+		[ $unit, $count ] = array( 'inMinutes', $view['minutes'] + ( $view['seconds'] > 0 ? 1 : 0 ) );
+	}
+	return sprintf( $words[ $unit ][ 1 === $count ? 0 : 1 ], $count );
+}
+
+/**
+ * Says when an event starts, for screen readers: "November 7, 2026,
+ * 11:00 AM WAT". The time is the event's "Time" text when it has one.
+ *
+ * @param int $post_id Event ID.
+ * @return string Empty without a valid date.
+ */
+function tekseries_blocks_event_start_text( int $post_id ): string {
+	$start = tekseries_blocks_event_start( $post_id );
+	if ( ! $start ) {
+		return '';
+	}
+
+	[ $at, $timed ] = $start;
+	$zone           = tekseries_blocks_event_timezone();
+	$date           = (string) wp_date( (string) get_option( 'date_format' ), $at->getTimestamp(), $zone );
+	$time           = trim( (string) get_post_meta( $post_id, 'time_label', true ) );
+	if ( '' === $time && $timed ) {
+		$time = (string) wp_date( 'g:i A T', $at->getTimestamp(), $zone );
+	}
+	return '' === $time ? $date : "$date, $time";
+}
+
+/**
+ * Returns the start of an event's day, in Nigerian time.
  *
  * @param int $post_id Event ID.
  * @return DateTimeImmutable|null Null when the event has no valid date.
  */
 function tekseries_blocks_event_date( int $post_id ): ?DateTimeImmutable {
-	return tekseries_blocks_parse_ymd( (string) get_post_meta( $post_id, 'event_date', true ) );
+	return tekseries_blocks_parse_ymd( (string) get_post_meta( $post_id, 'event_date', true ), tekseries_blocks_event_timezone() );
 }
 
 /**
- * Tells whether an event's day is over, in the site's time zone.
+ * Tells whether an event's day is over, in Nigerian time.
  *
  * @param int $post_id Event ID.
  * @return bool False for an event without a date.
  */
 function tekseries_blocks_event_has_ended( int $post_id ): bool {
 	$date = tekseries_blocks_event_date( $post_id );
-	return null !== $date && $date < new DateTimeImmutable( 'today', wp_timezone() );
+	return null !== $date && $date < new DateTimeImmutable( 'today', tekseries_blocks_event_timezone() );
 }
+
+/**
+ * Registers the Event Countdown's script; the block asks for it when it
+ * prints a countdown.
+ */
+function tekseries_blocks_register_event_countdown(): void {
+	$asset_file = dirname( __DIR__ ) . '/build/event-countdown/view.asset.php';
+	if ( ! file_exists( $asset_file ) ) {
+		return;
+	}
+
+	$asset = require $asset_file;
+	wp_register_script_module( 'tekseries-blocks-event-countdown', plugins_url( 'build/event-countdown/view.js', __DIR__ ), $asset['dependencies'], $asset['version'] );
+}
+add_action( 'init', 'tekseries_blocks_register_event_countdown' );
 
 /**
  * Returns the query argument that lists events by event date.

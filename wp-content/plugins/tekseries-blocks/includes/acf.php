@@ -16,7 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers the Events field group: date, time, venue and the call to action.
+ * Registers the Events field group: date, time, start time, venue and the call
+ * to action.
  */
 function tekseries_blocks_register_event_fields(): void {
 	$fields = array(
@@ -37,6 +38,15 @@ function tekseries_blocks_register_event_fields(): void {
 			'name'         => 'time_label',
 			'type'         => 'text',
 			'instructions' => __( 'Start time with its time zone, as visitors should read it, e.g. "11:00 AM WAT".', 'tekseries-blocks' ),
+		),
+		array(
+			'key'            => 'field_tekseries_start_time',
+			'label'          => __( 'Start time', 'tekseries-blocks' ),
+			'name'           => 'start_time',
+			'type'           => 'time_picker',
+			'instructions'   => __( 'When the event starts, in Nigerian time (WAT). The countdown on the event counts down to it. Leave it empty and the countdown shows days only.', 'tekseries-blocks' ),
+			'display_format' => 'g:i a',
+			'return_format'  => 'H:i:s',
 		),
 		array(
 			'key'          => 'field_tekseries_venue',

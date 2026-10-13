@@ -82,7 +82,9 @@
 <!-- wp:post-date {"format":"F j, Y","metadata":{"bindings":{"datetime":{"source":"acf/field","args":{"key":"event_date"}}}}} /--></div>
 <!-- /wp:group -->
 
-<!-- wp:post-terms {"term":"event_type"} /--></div>
+<!-- wp:post-terms {"term":"event_type"} /-->
+
+<!-- wp:tekseries/event-countdown {"size":"compact"} /--></div>
 <!-- /wp:group -->
 
 <!-- wp:post-excerpt {"excerptLength":24,"className":"ts-clamp-3","fontSize":"body-s"} /-->

@@ -1,0 +1,114 @@
+// Event Countdown. Colours come from the text colour around the block, so it
+// reads on a white card and on a post's tone banner alike.
+
+.wp-block-tekseries-event-countdown {
+	margin: 0;
+
+	&[hidden] {
+		display: none;
+	}
+}
+
+// Compact: one line in a pill, for a card.
+.wp-block-tekseries-event-countdown.is-compact {
+	display: inline-flex;
+	align-items: center;
+	padding: 3px 10px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background: var(--wp--preset--color--saffron);
+	color: var(--wp--preset--color--ink);
+	font-size: var(--wp--preset--font-size--caption);
+	font-weight: 700;
+	line-height: 1.35;
+	white-space: nowrap;
+}
+
+// Full: "Starts in", then a tile per unit.
+.ts-countdown__show {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px 16px;
+	align-items: center;
+}
+
+.ts-countdown__label {
+	color: var(--ts-tone-accent, var(--wp--preset--color--coral-text));
+	font-size: var(--wp--preset--font-size--eyebrow);
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.ts-countdown__units {
+	display: flex;
+	gap: 8px;
+}
+
+.ts-countdown__unit {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	align-items: center;
+	min-width: 60px;
+	padding: 10px 8px;
+	border-radius: var(--wp--preset--border-radius--md);
+	background: color-mix(in srgb, currentcolor 9%, transparent);
+}
+
+.ts-countdown__number {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.75rem;
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+	letter-spacing: -0.02em;
+}
+
+.ts-countdown__name {
+	font-size: 0.6875rem;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+// Hours, minutes and seconds wait for the script: a clock that cannot tick
+// shows nothing. They keep their room, so nothing moves when they appear.
+.ts-countdown__unit--clock {
+	visibility: hidden;
+}
+
+.is-live .ts-countdown__unit--clock {
+	visibility: visible;
+}
+
+// From the start to the end of the event's day: one line instead of tiles.
+.ts-countdown__status {
+	display: none;
+	align-items: center;
+	padding: 8px 16px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background: var(--wp--preset--color--saffron);
+	color: var(--wp--preset--color--ink);
+	font-weight: 700;
+	line-height: 1.35;
+}
+
+.is-started .ts-countdown__show {
+	display: none;
+}
+
+.is-started .ts-countdown__status {
+	display: inline-flex;
+}
+
+@media (max-width: 480px) {
+
+	.ts-countdown__unit {
+		min-width: 52px;
+	}
+
+	.ts-countdown__number {
+		font-size: 1.375rem;
+	}
+}

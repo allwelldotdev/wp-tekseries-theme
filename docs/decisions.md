@@ -1509,6 +1509,48 @@ Not verified:
   - After the migration, live's header, footer and three templates come from the database. When a later release changes one of them in the theme, the saved copy needs the same change (on the development site, then a new migration zip) or a reset in the Site Editor.
   - The follow-up offered to the owner, not decided, is to move the `ts-intro` marks and the footer line into the theme's patterns in a small release, so the saved copies can be reset and both sites follow the theme's files again.
 
+## ADR-074: Count down to events in Nigerian time, and never print a clock the server cannot keep right
+
+**Status:** Accepted
+
+**Context:**
+- On 2026-10-13 the owner asked for a countdown on upcoming events, on the Events page and on each event's own page. This is release 1.14.0 on branch `feat/event-countdown`.
+- An event had a date (`event_date`, a day) and a free-text "Time" ("11:00 AM WAT"). Nothing a script can count down to.
+- WordPress's clock is on UTC on the development site and on live (checked through live's public REST API: offset 0). Events are announced in West Africa Time (UTC+1).
+- Live is behind a page cache, and the server's HTML must be complete and usable without JavaScript (ADR-005).
+- No design board exists for a countdown.
+- ADR-035 decided that an event has ended once its date has passed in the site time zone. This ADR changes that one detail. ADR-035 is not superseded.
+
+**Options:**
+- Set WordPress's time zone to Lagos on both sites. It would also shift every post's shown time and scheduled posts, and the countdown would break silently if someone changed the setting later.
+- A time zone field on every event. More for the editor to fill in, for a case (an event announced in another zone) that has not come up.
+- Print the full clock from the server and let the script correct it. A page from the cache, or a visitor without JavaScript, would see a clock that is wrong and does not move.
+- List the script in `block.json` (`viewScriptModule`). WordPress would then load it wherever the block is placed, including pages where every event is past (ADR-047 gives each block one module; this is the exception).
+- Parse the free-text "Time" field. It is written for people ("11:00 AM WAT", "5pm prompt") and cannot be relied on.
+- Block Bindings alone (ADR-035). A ticking figure needs behaviour, so a block is needed.
+
+**Decision:**
+- Block: `tekseries/event-countdown`, dynamic (`render.php`, Interactivity API `view.ts`). It reads the event from block context (`postId`), so one block serves the event page and cards in a Query Loop. Two sizes: full (tiles for days, hours, minutes and seconds) and compact (one line, such as "In 13 days").
+- Field: a new optional ACF field, "Start time" (`start_time`, time picker). With it the countdown runs to that moment. Without it only days count, as calendar days ("the day after tomorrow" is 2 days all day).
+- Time zone: event days and start times are read in one fixed zone, `Africa/Lagos`, through `tekseries_blocks_event_timezone()` and the filter `tekseries_blocks_event_timezone`, not through WordPress's time zone setting. The start is sent to the browser as an absolute instant, so every visitor sees the same time left in any zone.
+- Change to ADR-035: "has ended" (the Register button and the "This event has ended" note) uses the same Nigerian day. An event now ends at midnight in Nigeria, not at midnight UTC (1 a.m. in Nigeria).
+- States: from the start to the end of the event's day the block says "Happening now" ("Today" for an event without a start time). After that it prints nothing.
+- Server output: only what stays true for a while. That is the whole days, the compact line and one sentence for screen readers. The hours, minutes and seconds tiles are in the HTML but shown only once the script runs (CSS `visibility`, so they keep their room and nothing shifts). The ticking figures are `aria-hidden`; screen readers get the sentence.
+- Script loading: the script is not listed in `block.json`. It is its own webpack entry, and `render.php` enqueues it only when it prints a countdown. Pages that list only past events load nothing extra.
+- The arithmetic is written twice on purpose: in `src/event-countdown/time.ts` (unit tested) and in `tekseries_blocks_event_countdown()` in `includes/events.php`. A comment in each says to keep them alike.
+- Look: built from the theme's tokens (tile and pill shapes, the display font, the tone's accent colour on a banner), since there is no board.
+
+**Rationale:**
+- A fixed zone read in code does not depend on a setting that also governs posts and schedules. An absolute instant gives every visitor the same figure.
+- Printing only stable values means a cached page or a visitor without JavaScript never sees a clock that is wrong and frozen. The script adds the ticking figures.
+- Enqueuing on demand keeps the script off pages that never show a countdown.
+- A start time field is reliable where the free-text "Time" is not, and leaving it optional keeps older events working in days.
+- Consequences:
+  - Editors fill one more, optional, field. Without it the countdown still works in days.
+  - On a cached page, the compact line can be as old as the cache's lifetime for a visitor without JavaScript (a day count one too high just after midnight). With JavaScript it is put right at once.
+  - Two implementations of the same arithmetic must be kept in step. The e2e spec compares what both print.
+  - If TekSeries runs events for another zone, the filter (or a per-event field) is the place to change.
+
 ## Future work
 
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).
