@@ -785,7 +785,7 @@ test.describe( 'home motion blocks', () => {
 			'Expanding Opportunity, Empowering Our Future'
 		);
 		await expect( hero.getByRole( 'heading', { level: 2 } ) ).toHaveText(
-			'One Youth Career At A Time'
+			'Equipping underserved youth with Digital, AI, and Creative Economy Skills'
 		);
 		await expect(
 			page.locator( '.wp-block-tekseries-stat .screen-reader-text' )
@@ -806,6 +806,20 @@ test.describe( 'home motion blocks', () => {
 			'Team',
 		] );
 		await expect( page.locator( 'article.ts-reveal' ) ).toHaveCount( 3 );
+		// So do the tiles, the team cards, the Mission card and its photo,
+		// the case study and the quote: the owner marked them in the editor.
+		for ( const [ marked, count ] of [
+			[ '.is-style-tile.ts-reveal', 10 ],
+			[ '.is-style-tile-glass.ts-reveal', 6 ],
+			[ '.is-style-tile-frost.ts-reveal', 4 ],
+			[ '#team .is-style-card.ts-reveal', 6 ],
+			[
+				'#about .is-style-card-plum.ts-reveal, #about figure.ts-reveal, div.is-style-card-saffron.ts-reveal, p.is-style-pull.ts-reveal',
+				4,
+			],
+		] as const ) {
+			await expect( page.locator( marked ) ).toHaveCount( count );
+		}
 		// The Mission card ends with its text: under the last paragraph
 		// there is its padding and nothing more.
 		const [ under, padding ] = await page

@@ -10,8 +10,8 @@
  */
 
 ?>
-<!-- wp:group {"align":"wide","className":"is-style-hero-plum ts-hero\u002d\u002djob","style":{"spacing":{"blockGap":"var:preset|spacing|16"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
-<div class="wp-block-group alignwide is-style-hero-plum ts-hero--job"><!-- wp:breadcrumbs /-->
+<!-- wp:group {"align":"wide","className":"is-style-hero-plum ts-hero\u002d\u002djob ts-intro","style":{"spacing":{"blockGap":"var:preset|spacing|16"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
+<div class="wp-block-group alignwide is-style-hero-plum ts-hero--job ts-intro"><!-- wp:breadcrumbs /-->
 
 <!-- wp:heading {"level":1,"textColor":"white"} -->
 <h1 class="wp-block-heading has-white-color has-text-color"><?php echo esc_html__( 'Post a job', 'tekseries' ); ?></h1>

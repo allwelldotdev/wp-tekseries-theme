@@ -22,7 +22,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph {"className":"ts-footer__about","style":{"typography":{"lineHeight":"1.6"}},"fontSize":"body-s"} -->
-<p class="ts-footer__about has-body-s-font-size" style="line-height:1.6"><?php echo esc_html__( 'Preparing underserved Nigerian youth for the future of work and innovation.', 'tekseries' ); ?></p>
+<p class="ts-footer__about has-body-s-font-size" style="line-height:1.6"><?php echo esc_html__( 'Equipping underserved youth with Digital, AI, and Creative Economy Skills.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
