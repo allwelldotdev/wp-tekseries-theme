@@ -43,6 +43,8 @@
 <!-- /wp:group --></div>
 <!-- /wp:group -->
 
+<!-- wp:tekseries/event-countdown /-->
+
 <!-- wp:buttons {"className":"ts-banner__actions","style":{"spacing":{"margin":{"top":"var:preset|spacing|8"}}}} -->
 <div class="wp-block-buttons ts-banner__actions" style="margin-top:var(--wp--preset--spacing--8)"><!-- wp:button {"metadata":{"bindings":{"url":{"source":"acf/field","args":{"key":"cta_link"}},"text":{"source":"acf/field","args":{"key":"cta_name"}}}},"className":"ts-register"} -->
 <div class="wp-block-button ts-register"><a class="wp-block-button__link wp-element-button" href="" target="_blank" rel="noopener"><?php echo esc_html__( 'Register', 'tekseries' ); ?></a></div>
@@ -219,7 +221,9 @@
 <!-- wp:post-date {"format":"F j, Y","metadata":{"bindings":{"datetime":{"source":"acf/field","args":{"key":"event_date"}}}}} /--></div>
 <!-- /wp:group -->
 
-<!-- wp:post-terms {"term":"event_type"} /--></div>
+<!-- wp:post-terms {"term":"event_type"} /-->
+
+<!-- wp:tekseries/event-countdown {"size":"compact"} /--></div>
 <!-- /wp:group -->
 
 <!-- wp:post-excerpt {"excerptLength":24,"className":"ts-clamp-3","fontSize":"body-s"} /-->

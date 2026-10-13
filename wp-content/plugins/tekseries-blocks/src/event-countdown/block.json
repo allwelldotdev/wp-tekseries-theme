@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tekseries/event-countdown",
+	"version": "0.1.0",
+	"title": "Event Countdown",
+	"category": "theme",
+	"icon": "clock",
+	"description": "Counts down to the start of the event it is placed in: on an event's page, or on an event's card in a list. It shows nothing for an event without a date and once the event's day is over.",
+	"keywords": [ "countdown", "timer", "event", "upcoming" ],
+	"textdomain": "tekseries-blocks",
+	"attributes": {
+		"size": {
+			"type": "string",
+			"enum": [ "full", "compact" ],
+			"default": "full"
+		}
+	},
+	"usesContext": [ "postId", "postType" ],
+	"supports": {
+		"html": false,
+		"spacing": {
+			"margin": true
+		},
+		"interactivity": true
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}
