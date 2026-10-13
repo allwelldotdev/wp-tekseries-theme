@@ -2,6 +2,14 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.13.2] — 2026-10-13
+### Fixed
+- On the "Post a job" form, "Save draft" now saves a job whose Description is still empty: the page says "Draft was saved. Job listing drafts can be resumed from the job dashboard." and the draft appears on the Job dashboard, where before nothing was saved and an empty box appeared under the description editor.
+- On the "Post a job" form, "Preview" without a description now shows "Add a description of the role." under the editor, puts the cursor in the editor and clears the message when the employer starts typing, instead of showing a stray empty box; other empty required fields still show the browser's own message, and without JavaScript the form still reports the missing description after it is sent.
+
+### Improved
+- Notices above the "Post a job" form that contain a link, such as "Draft was saved…", now read as one normal line of text instead of having gaps around the link.
+
 ## [1.13.1] — 2026-10-13
 ### Improved
 - The plum band at the top of the News page, the Events page, each event type page (Webinars, Workshops and Makers' Prize) and the legal pages (Privacy Policy, Terms and Conditions) now rises in when the page opens, and stays still for visitors who have asked their device for less motion.
