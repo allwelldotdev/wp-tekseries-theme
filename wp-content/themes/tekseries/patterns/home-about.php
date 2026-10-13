@@ -16,8 +16,8 @@
 <!-- /wp:heading -->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"},"@tablet":{"layout":{"columnCount":1}},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":12,"minimumColumnWidth":null}} -->
-<div class="wp-block-group"><!-- wp:group {"className":"is-style-card-plum ts-fit","style":{"spacing":{"blockGap":"var:preset|spacing|16"},"layout":{"columnSpan":7},"@tablet":{"layout":{"columnSpan":1}},"@mobile":{"layout":{"columnSpan":1}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-card-plum ts-fit"><!-- wp:paragraph {"className":"is-style-eyebrow","textColor":"saffron"} -->
+<div class="wp-block-group"><!-- wp:group {"className":"is-style-card-plum ts-reveal ts-fit","style":{"spacing":{"blockGap":"var:preset|spacing|16"},"layout":{"columnSpan":7},"@tablet":{"layout":{"columnSpan":1}},"@mobile":{"layout":{"columnSpan":1}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-card-plum ts-reveal ts-fit"><!-- wp:paragraph {"className":"is-style-eyebrow","textColor":"saffron"} -->
 <p class="is-style-eyebrow has-saffron-color has-text-color"><?php echo esc_html__( 'Mission', 'tekseries' ); ?></p>
 <!-- /wp:paragraph -->
 
@@ -39,8 +39,8 @@
 <!-- /wp:group -->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"},"layout":{"columnSpan":5},"@tablet":{"layout":{"columnSpan":1}},"@mobile":{"layout":{"columnSpan":1}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap","verticalAlignment":"stretch"}} -->
-<div class="wp-block-group"><!-- wp:image {"aspectRatio":"4/3","scale":"cover","style":{"border":{"radius":"var:preset|border-radius|xl"}}} -->
-<figure class="wp-block-image has-custom-border"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/home/about.jpg' ) ); ?>" alt="<?php echo esc_attr__( '2019 Kiddies Bootcamp', 'tekseries' ); ?>" style="border-radius:var(--wp--preset--border-radius--xl);aspect-ratio:4/3;object-fit:cover"/></figure>
+<div class="wp-block-group"><!-- wp:image {"aspectRatio":"4/3","scale":"cover","className":"ts-reveal","style":{"border":{"radius":"var:preset|border-radius|xl"}}} -->
+<figure class="wp-block-image has-custom-border ts-reveal"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/home/about.jpg' ) ); ?>" alt="<?php echo esc_attr__( '2019 Kiddies Bootcamp', 'tekseries' ); ?>" style="border-radius:var(--wp--preset--border-radius--xl);aspect-ratio:4/3;object-fit:cover"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:group {"className":"is-style-card-saffron","style":{"spacing":{"blockGap":"var:preset|spacing|12","padding":{"top":"var:preset|spacing|32","right":"var:preset|spacing|32","bottom":"var:preset|spacing|32","left":"var:preset|spacing|32"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
@@ -76,8 +76,8 @@
 <!-- /wp:group -->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|16"},"@tablet":{"layout":{"columnCount":1}},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
-<div class="wp-block-group"><!-- wp:group {"className":"is-style-tile","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile"><!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|8"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+<div class="wp-block-group"><!-- wp:group {"className":"is-style-tile ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile ts-reveal"><!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|8"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
 <div class="wp-block-group"><!-- wp:icon {"icon":"tekseries/trending_down","style":{"dimensions":{"width":"18px"}},"textColor":"coral-text"} /-->
 
 <!-- wp:paragraph {"className":"is-style-eyebrow","fontSize":"caption"} -->
@@ -114,8 +114,8 @@
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"is-style-tile","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile"><!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|8"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+<!-- wp:group {"className":"is-style-tile ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile ts-reveal"><!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|8"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
 <div class="wp-block-group"><!-- wp:icon {"icon":"tekseries/trending_up","style":{"dimensions":{"width":"18px"}},"textColor":"coral-text"} /-->
 
 <!-- wp:paragraph {"className":"is-style-eyebrow","fontSize":"caption"} -->
@@ -144,8 +144,8 @@
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"is-style-tile","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile"><!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|8"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+<!-- wp:group {"className":"is-style-tile ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile ts-reveal"><!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|8"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
 <div class="wp-block-group"><!-- wp:icon {"icon":"tekseries/smart_toy","style":{"dimensions":{"width":"18px"}},"textColor":"coral-text"} /-->
 
 <!-- wp:paragraph {"className":"is-style-eyebrow","fontSize":"caption"} -->

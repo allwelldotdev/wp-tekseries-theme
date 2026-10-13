@@ -60,4 +60,27 @@ describe( 'theme templates', () => {
 			}
 		}
 	} );
+
+	// The owner chose, in the editor, which plum hero bands rise in when
+	// the page opens (the class "ts-intro"). The others stay still.
+	it( 'gives the entrance to the hero bands the owner marked, and only those', () => {
+		const rising = files( 'patterns' )
+			.filter( ( file ) =>
+				/"className":"is-style-hero-plum[^"]* ts-intro"/.test(
+					read( file )
+				)
+			)
+			.map( ( file ) => file.replace( /^patterns\/|\.php$/g, '' ) );
+		expect( rising.sort() ).toEqual( [
+			'contact-hero',
+			'gallery-hero',
+			'job-dashboard-hero',
+			'job-series-hero',
+			'job-submit-hero',
+			'template-event-type',
+			'template-events',
+			'template-legal',
+			'template-news',
+		] );
+	} );
 } );

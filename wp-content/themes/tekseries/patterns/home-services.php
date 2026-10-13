@@ -43,8 +43,8 @@
 <!-- /wp:group -->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"},"@tablet":{"layout":{"columnCount":1}},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
-<div class="wp-block-group"><!-- wp:group {"className":"is-style-tile","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile"><!-- wp:icon {"icon":"tekseries/extension","className":"is-style-tile"} /-->
+<div class="wp-block-group"><!-- wp:group {"className":"is-style-tile ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile ts-reveal"><!-- wp:icon {"icon":"tekseries/extension","className":"is-style-tile"} /-->
 
 <!-- wp:heading {"level":4,"fontSize":"lead"} -->
 <h4 class="wp-block-heading has-lead-font-size"><?php echo esc_html__( 'Elementary & Secondary Track', 'tekseries' ); ?></h4>
@@ -55,8 +55,8 @@
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"is-style-tile","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile"><!-- wp:icon {"icon":"tekseries/school","className":"is-style-tile"} /-->
+<!-- wp:group {"className":"is-style-tile ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile ts-reveal"><!-- wp:icon {"icon":"tekseries/school","className":"is-style-tile"} /-->
 
 <!-- wp:heading {"level":4,"fontSize":"lead"} -->
 <h4 class="wp-block-heading has-lead-font-size"><?php echo esc_html__( 'Undergraduate & Graduate Track', 'tekseries' ); ?></h4>
@@ -67,8 +67,8 @@
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"is-style-tile","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile"><!-- wp:icon {"icon":"tekseries/trending_up","className":"is-style-tile"} /-->
+<!-- wp:group {"className":"is-style-tile ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile ts-reveal"><!-- wp:icon {"icon":"tekseries/trending_up","className":"is-style-tile"} /-->
 
 <!-- wp:heading {"level":4,"fontSize":"lead"} -->
 <h4 class="wp-block-heading has-lead-font-size"><?php echo esc_html__( 'Workforce Upskilling', 'tekseries' ); ?></h4>
@@ -80,8 +80,8 @@
 <!-- /wp:group --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"is-style-card-saffron","style":{"spacing":{"blockGap":"var:preset|spacing|24","padding":{"top":"var:preset|spacing|16","right":"var:preset|spacing|16","bottom":"var:preset|spacing|16","left":"var:preset|spacing|16"}},"border":{"radius":"var:preset|border-radius|xl"},"@tablet":{"layout":{"columnCount":1}},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
-<div class="wp-block-group is-style-card-saffron" style="border-radius:var(--wp--preset--border-radius--xl);padding-top:var(--wp--preset--spacing--16);padding-right:var(--wp--preset--spacing--16);padding-bottom:var(--wp--preset--spacing--16);padding-left:var(--wp--preset--spacing--16)"><!-- wp:group {"className":"ts-photo-pill","layout":{"type":"default"}} -->
+<!-- wp:group {"className":"is-style-card-saffron ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|24","padding":{"top":"var:preset|spacing|16","right":"var:preset|spacing|16","bottom":"var:preset|spacing|16","left":"var:preset|spacing|16"}},"border":{"radius":"var:preset|border-radius|xl"},"@tablet":{"layout":{"columnCount":1}},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
+<div class="wp-block-group is-style-card-saffron ts-reveal" style="border-radius:var(--wp--preset--border-radius--xl);padding-top:var(--wp--preset--spacing--16);padding-right:var(--wp--preset--spacing--16);padding-bottom:var(--wp--preset--spacing--16);padding-left:var(--wp--preset--spacing--16)"><!-- wp:group {"className":"ts-photo-pill","layout":{"type":"default"}} -->
 <div class="wp-block-group ts-photo-pill"><!-- wp:image {"aspectRatio":"4/3","scale":"cover","style":{"border":{"radius":"var:preset|border-radius|md"}}} -->
 <figure class="wp-block-image has-custom-border"><img src="<?php echo esc_url( get_theme_file_uri( 'assets/images/home/case-study.jpg' ) ); ?>" alt="<?php echo esc_attr__( 'Eziama Rural Jr. Boot Camp students with their instructor', 'tekseries' ); ?>" style="border-radius:var(--wp--preset--border-radius--md);aspect-ratio:4/3;object-fit:cover"/></figure>
 <!-- /wp:image -->
@@ -103,7 +103,7 @@
 <!-- /wp:group -->
 
 <!-- wp:paragraph -->
-<p><?php echo esc_html__( 'The Eziama Rural Jr. Boot Camp is a case study in perseverance to progressive impact. Comprised of 8-16 year olds, some of whom had turned on a computer when they first started the after school program. 12-18 months from finding the power button on a laptop, most of the kids now code and design games using Scratch programming, build an entire Robot Car and even design Event Cards and Flyers. This reaffirms what we all know, that talent knows no boundaries and is the reason, we remain even more committed to improving and expanding our program.', 'tekseries' ); ?></p>
+<p><?php echo esc_html__( 'The Rural Jr. Boot Camp, at Eziama, is a case study in perseverance to progressive impact. Comprised of 8-16 year olds, some of whom had never turned on a computer when they first started the after school program. 12-18 months from finding the power button on a laptop, most of the kids now code and design games using Scratch programming, build an entire Robot Car and even design Event Cards and Flyers. This reaffirms what we all know, that talent knows no boundaries and is the reason, we remain even more committed to improving and expanding our program.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group --></article>
@@ -147,8 +147,8 @@
 <!-- /wp:group -->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"},"@mobile":{"layout":{"columnCount":1},"spacing":{"blockGap":"var:preset|spacing|8"}}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
-<div class="wp-block-group"><!-- wp:group {"className":"is-style-tile-glass","style":{"spacing":{"blockGap":"var:preset|spacing|4","padding":{"top":"var:preset|spacing|16","right":"var:preset|spacing|16","bottom":"var:preset|spacing|16","left":"var:preset|spacing|16"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile-glass" style="padding-top:var(--wp--preset--spacing--16);padding-right:var(--wp--preset--spacing--16);padding-bottom:var(--wp--preset--spacing--16);padding-left:var(--wp--preset--spacing--16)"><!-- wp:paragraph {"className":"is-style-stat","textColor":"saffron","fontSize":"heading-3"} -->
+<div class="wp-block-group"><!-- wp:group {"className":"is-style-tile-glass ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|4","padding":{"top":"var:preset|spacing|16","right":"var:preset|spacing|16","bottom":"var:preset|spacing|16","left":"var:preset|spacing|16"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile-glass ts-reveal" style="padding-top:var(--wp--preset--spacing--16);padding-right:var(--wp--preset--spacing--16);padding-bottom:var(--wp--preset--spacing--16);padding-left:var(--wp--preset--spacing--16)"><!-- wp:paragraph {"className":"is-style-stat","textColor":"saffron","fontSize":"heading-3"} -->
 <p class="is-style-stat has-saffron-color has-text-color has-heading-3-font-size"><?php echo esc_html__( '42.5%', 'tekseries' ); ?></p>
 <!-- /wp:paragraph -->
 
@@ -157,8 +157,8 @@
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"is-style-tile-glass","style":{"spacing":{"blockGap":"var:preset|spacing|4","padding":{"top":"var:preset|spacing|16","right":"var:preset|spacing|16","bottom":"var:preset|spacing|16","left":"var:preset|spacing|16"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile-glass" style="padding-top:var(--wp--preset--spacing--16);padding-right:var(--wp--preset--spacing--16);padding-bottom:var(--wp--preset--spacing--16);padding-left:var(--wp--preset--spacing--16)"><!-- wp:paragraph {"className":"is-style-stat","textColor":"saffron","fontSize":"heading-3"} -->
+<!-- wp:group {"className":"is-style-tile-glass ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|4","padding":{"top":"var:preset|spacing|16","right":"var:preset|spacing|16","bottom":"var:preset|spacing|16","left":"var:preset|spacing|16"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile-glass ts-reveal" style="padding-top:var(--wp--preset--spacing--16);padding-right:var(--wp--preset--spacing--16);padding-bottom:var(--wp--preset--spacing--16);padding-left:var(--wp--preset--spacing--16)"><!-- wp:paragraph {"className":"is-style-stat","textColor":"saffron","fontSize":"heading-3"} -->
 <p class="is-style-stat has-saffron-color has-text-color has-heading-3-font-size"><?php echo esc_html__( '21.5%', 'tekseries' ); ?></p>
 <!-- /wp:paragraph -->
 
@@ -167,8 +167,8 @@
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"is-style-tile-glass","style":{"spacing":{"blockGap":"var:preset|spacing|4","padding":{"top":"var:preset|spacing|16","right":"var:preset|spacing|16","bottom":"var:preset|spacing|16","left":"var:preset|spacing|16"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile-glass" style="padding-top:var(--wp--preset--spacing--16);padding-right:var(--wp--preset--spacing--16);padding-bottom:var(--wp--preset--spacing--16);padding-left:var(--wp--preset--spacing--16)"><!-- wp:paragraph {"className":"is-style-stat","textColor":"saffron","fontSize":"heading-3"} -->
+<!-- wp:group {"className":"is-style-tile-glass ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|4","padding":{"top":"var:preset|spacing|16","right":"var:preset|spacing|16","bottom":"var:preset|spacing|16","left":"var:preset|spacing|16"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile-glass ts-reveal" style="padding-top:var(--wp--preset--spacing--16);padding-right:var(--wp--preset--spacing--16);padding-bottom:var(--wp--preset--spacing--16);padding-left:var(--wp--preset--spacing--16)"><!-- wp:paragraph {"className":"is-style-stat","textColor":"saffron","fontSize":"heading-3"} -->
 <p class="is-style-stat has-saffron-color has-text-color has-heading-3-font-size"><?php echo esc_html__( '28M+', 'tekseries' ); ?></p>
 <!-- /wp:paragraph -->
 
@@ -179,8 +179,8 @@
 <!-- /wp:group -->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"},"@tablet":{"layout":{"columnCount":1}},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
-<div class="wp-block-group"><!-- wp:group {"className":"is-style-tile-glass","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile-glass"><!-- wp:icon {"icon":"tekseries/report","className":"is-style-tile","style":{"color":{"background":"var:preset|color|saffron","text":"var:preset|color|ink"}}} /-->
+<div class="wp-block-group"><!-- wp:group {"className":"is-style-tile-glass ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile-glass ts-reveal"><!-- wp:icon {"icon":"tekseries/report","className":"is-style-tile","style":{"color":{"background":"var:preset|color|saffron","text":"var:preset|color|ink"}}} /-->
 
 <!-- wp:heading {"level":4,"textColor":"white","fontSize":"lead"} -->
 <h4 class="wp-block-heading has-white-color has-text-color has-lead-font-size"><?php echo esc_html__( 'The Challenge', 'tekseries' ); ?></h4>
@@ -191,8 +191,8 @@
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"is-style-tile-glass","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile-glass"><!-- wp:icon {"icon":"tekseries/conversion_path","className":"is-style-tile","style":{"color":{"background":"var:preset|color|saffron","text":"var:preset|color|ink"}}} /-->
+<!-- wp:group {"className":"is-style-tile-glass ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile-glass ts-reveal"><!-- wp:icon {"icon":"tekseries/conversion_path","className":"is-style-tile","style":{"color":{"background":"var:preset|color|saffron","text":"var:preset|color|ink"}}} /-->
 
 <!-- wp:heading {"level":4,"textColor":"white","fontSize":"lead"} -->
 <h4 class="wp-block-heading has-white-color has-text-color has-lead-font-size"><?php echo esc_html__( 'Bridge to Employment', 'tekseries' ); ?></h4>
@@ -203,8 +203,8 @@
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"is-style-tile-glass","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile-glass"><!-- wp:icon {"icon":"tekseries/handshake","className":"is-style-tile","style":{"color":{"background":"var:preset|color|saffron","text":"var:preset|color|ink"}}} /-->
+<!-- wp:group {"className":"is-style-tile-glass ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile-glass ts-reveal"><!-- wp:icon {"icon":"tekseries/handshake","className":"is-style-tile","style":{"color":{"background":"var:preset|color|saffron","text":"var:preset|color|ink"}}} /-->
 
 <!-- wp:heading {"level":4,"textColor":"white","fontSize":"lead"} -->
 <h4 class="wp-block-heading has-white-color has-text-color has-lead-font-size"><?php echo esc_html__( 'Employer Partner Network', 'tekseries' ); ?></h4>
@@ -239,8 +239,8 @@
 <!-- /wp:group -->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"},"@mobile":{"layout":{"columnCount":1}}},"layout":{"type":"grid","columnCount":2,"minimumColumnWidth":null}} -->
-<div class="wp-block-group"><!-- wp:group {"className":"is-style-tile-frost","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile-frost"><!-- wp:icon {"icon":"tekseries/how_to_reg","className":"is-style-tile","style":{"color":{"background":"var:preset|color|ink","text":"var:preset|color|saffron"}}} /-->
+<div class="wp-block-group"><!-- wp:group {"className":"is-style-tile-frost ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile-frost ts-reveal"><!-- wp:icon {"icon":"tekseries/how_to_reg","className":"is-style-tile","style":{"color":{"background":"var:preset|color|ink","text":"var:preset|color|saffron"}}} /-->
 
 <!-- wp:heading {"level":4,"textColor":"ink","fontSize":"lead"} -->
 <h4 class="wp-block-heading has-ink-color has-text-color has-lead-font-size"><?php echo esc_html__( 'Who can apply', 'tekseries' ); ?></h4>
@@ -251,8 +251,8 @@
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"is-style-tile-frost","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile-frost"><!-- wp:icon {"icon":"tekseries/event","className":"is-style-tile","style":{"color":{"background":"var:preset|color|ink","text":"var:preset|color|saffron"}}} /-->
+<!-- wp:group {"className":"is-style-tile-frost ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile-frost ts-reveal"><!-- wp:icon {"icon":"tekseries/event","className":"is-style-tile","style":{"color":{"background":"var:preset|color|ink","text":"var:preset|color|saffron"}}} /-->
 
 <!-- wp:heading {"level":4,"textColor":"ink","fontSize":"lead"} -->
 <h4 class="wp-block-heading has-ink-color has-text-color has-lead-font-size"><?php echo esc_html__( 'When winners are announced', 'tekseries' ); ?></h4>
@@ -263,8 +263,8 @@
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"is-style-tile-frost","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile-frost"><!-- wp:icon {"icon":"tekseries/construction","className":"is-style-tile","style":{"color":{"background":"var:preset|color|ink","text":"var:preset|color|saffron"}}} /-->
+<!-- wp:group {"className":"is-style-tile-frost ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile-frost ts-reveal"><!-- wp:icon {"icon":"tekseries/construction","className":"is-style-tile","style":{"color":{"background":"var:preset|color|ink","text":"var:preset|color|saffron"}}} /-->
 
 <!-- wp:heading {"level":4,"textColor":"ink","fontSize":"lead"} -->
 <h4 class="wp-block-heading has-ink-color has-text-color has-lead-font-size"><?php echo esc_html__( 'What makers build', 'tekseries' ); ?></h4>
@@ -275,8 +275,8 @@
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"is-style-tile-frost","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
-<div class="wp-block-group is-style-tile-frost"><!-- wp:icon {"icon":"tekseries/rocket_launch","className":"is-style-tile","style":{"color":{"background":"var:preset|color|ink","text":"var:preset|color|saffron"}}} /-->
+<!-- wp:group {"className":"is-style-tile-frost ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|12"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
+<div class="wp-block-group is-style-tile-frost ts-reveal"><!-- wp:icon {"icon":"tekseries/rocket_launch","className":"is-style-tile","style":{"color":{"background":"var:preset|color|ink","text":"var:preset|color|saffron"}}} /-->
 
 <!-- wp:heading {"level":4,"textColor":"ink","fontSize":"lead"} -->
 <h4 class="wp-block-heading has-ink-color has-text-color has-lead-font-size"><?php echo esc_html__( 'What winners receive', 'tekseries' ); ?></h4>
@@ -288,8 +288,8 @@
 <!-- /wp:group --></div>
 <!-- /wp:group -->
 
-<!-- wp:paragraph {"className":"is-style-pull"} -->
-<p class="is-style-pull"><?php echo esc_html__( 'We are resolved to support strictly viable solutions and help kick start concepts we believe can evolve into mass appeal enterprises.', 'tekseries' ); ?></p>
+<!-- wp:paragraph {"className":"is-style-pull ts-reveal"} -->
+<p class="is-style-pull ts-reveal"><?php echo esc_html__( 'We are resolved to support strictly viable solutions and help kick start concepts we believe can evolve into mass appeal enterprises.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></article>
 <!-- /wp:group --></section>
 <!-- /wp:group -->

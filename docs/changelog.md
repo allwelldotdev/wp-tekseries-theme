@@ -2,6 +2,18 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.13.1] — 2026-10-13
+### Improved
+- The plum band at the top of the News page, the Events page, each event type page (Webinars, Workshops and Makers' Prize) and the legal pages (Privacy Policy, Terms and Conditions) now rises in when the page opens, and stays still for visitors who have asked their device for less motion.
+- Editors who insert the Contact, Gallery, Job Series, Post a job or Job dashboard page pattern get the same entrance on its top band.
+- Editors who insert the Home or Contact page patterns get cards, tiles, the quote and the team that rise in as they are scrolled to; on Home this covers the impact tiles, the Mission card and its photo, the method tiles, the tiles inside the three pillar cards, the case study card, the quote and the team cards, and on Contact the three detail cards and the Support heading row and tiles.
+
+### Changed
+- The footer line under the logo now reads "Equipping underserved youth with Digital, AI, and Creative Economy Skills."
+- In the Home page pattern, slide 1 now leads with "One youth’s career at a time.", slide 2 reads "TekSeries is a 501(c)(3) Tax-Exempt Non-Profit Corporation" with the heading "Equipping underserved youth with Digital, AI, and Creative Economy Skills", and the case study begins "The Rural Jr. Boot Camp, at Eziama, …" and says the children "had never turned on a computer".
+- Page patterns only give starting content to new pages; pages that already exist are not changed by this release.
+- Editors: a template or the footer saved in the Site Editor still takes the place of the theme's own version, so one saved before this release keeps showing what was saved until it is reset there.
+
 ## [1.13.0] — 2026-10-12
 ### New
 - Visitors can now watch a video on a news post: under the post's text, a 16:9 card with a play button and the words "Watch the video" opens the video full screen in the Gallery's viewer, and Escape or the close button returns to the post.
