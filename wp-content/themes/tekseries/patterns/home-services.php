@@ -140,8 +140,8 @@
 <div class="wp-block-button is-style-glass"><a class="wp-block-button__link wp-element-button" href="/submit-job/"><?php echo esc_html__( 'Post a job', 'tekseries' ); ?></a></div>
 <!-- /wp:button -->
 
-<!-- wp:button {"textColor":"white","className":"is-style-outline ts-icon-upload_file ts-icon-small"} -->
-<div class="wp-block-button is-style-outline ts-icon-upload_file ts-icon-small"><a class="wp-block-button__link has-white-color has-text-color wp-element-button" href="#"><?php echo esc_html__( 'Upload your CV', 'tekseries' ); ?></a></div>
+<!-- wp:button {"textColor":"white","className":"is-style-outline ts-icon-upload_file ts-icon-small ts-survey-upload-cv"} -->
+<div class="wp-block-button is-style-outline ts-icon-upload_file ts-icon-small ts-survey-upload-cv"><a class="wp-block-button__link has-white-color has-text-color wp-element-button" href="#"><?php echo esc_html__( 'Upload your CV', 'tekseries' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group -->
@@ -232,8 +232,8 @@
 <!-- /wp:group -->
 
 <!-- wp:buttons -->
-<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-dark"} -->
-<div class="wp-block-button is-style-dark"><a class="wp-block-button__link wp-element-button" href="#"><?php echo esc_html__( 'Apply for the Maker’s Prize', 'tekseries' ); ?></a></div>
+<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-dark ts-survey-makers-prize"} -->
+<div class="wp-block-button is-style-dark ts-survey-makers-prize"><a class="wp-block-button__link wp-element-button" href="#"><?php echo esc_html__( 'Apply for the Maker’s Prize', 'tekseries' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group -->

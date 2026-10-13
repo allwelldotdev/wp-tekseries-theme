@@ -36,6 +36,7 @@ require_once __DIR__ . '/includes/post-video.php';
 require_once __DIR__ . '/includes/share-links.php';
 require_once __DIR__ . '/includes/reveal.php';
 require_once __DIR__ . '/includes/contact-form.php';
+require_once __DIR__ . '/includes/surveys.php';
 require_once __DIR__ . '/includes/tone-cycle.php';
 require_once __DIR__ . '/includes/editor.php';
 

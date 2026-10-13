@@ -27,8 +27,8 @@
 <div class="wp-block-button is-style-accent ts-icon-add_business"><a class="wp-block-button__link wp-element-button" href="/submit-job/"><?php echo esc_html__( 'Post a job', 'tekseries' ); ?></a></div>
 <!-- /wp:button -->
 
-<!-- wp:button {"className":"is-style-glass ts-icon-upload_file"} -->
-<div class="wp-block-button is-style-glass ts-icon-upload_file"><a class="wp-block-button__link wp-element-button" href="#"><?php echo esc_html__( 'Upload your CV', 'tekseries' ); ?></a></div>
+<!-- wp:button {"className":"is-style-glass ts-icon-upload_file ts-survey-upload-cv"} -->
+<div class="wp-block-button is-style-glass ts-icon-upload_file ts-survey-upload-cv"><a class="wp-block-button__link wp-element-button" href="#"><?php echo esc_html__( 'Upload your CV', 'tekseries' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group -->
