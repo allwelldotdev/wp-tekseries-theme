@@ -1454,7 +1454,7 @@ Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 
 
 ## ADR-073: Carry what the owner saved in the Site Editor, and the media made on the development site, in the release bundle
 
-**Status:** Accepted
+**Status:** Superseded by ADR-078 (carrying saved templates, parts and menus only; the rest stands)
 
 **Context:**
 - The owner edits the development site in the page editor and the Site Editor to set up how the live site should look. On 2026-10-12 the owner said the idea of that editing "was to prepare the theme for how I want it to look and behave on live", and asked that the saved header and footer "and any other such changes I make in the Editor to text, additional CSS styles and the like" go into the bundle.
@@ -1649,12 +1649,45 @@ Not verified:
   - Needs `:has()` and `:focus-visible`. The theme already relies on `:has()` (`:has(> h1)` in the carousel) and on `:nth-child(n of S)` (ADR-063). A browser without `:has()` shows a keyboard-focused block at once but does not move it into place early, which is harmless.
   - A text field focused with the pointer still matches `:focus-visible`, so a block holding one snaps into place on a press. Nothing is lost, because the field already has focus.
 
+## ADR-078: Keep the owner's Site Editor choices in the theme's patterns, and keep no saved copies of the theme's templates and parts on the development site
+
+**Status:** Accepted
+
+**Context:**
+- The owner sets up the look of the live site on the development site, in the Site Editor and in pages. By 2026-10-12 the owner had saved copies there of the footer part, the header part and four templates. A saved copy wins over the theme's file, so ADR-073 made the migration bundle carry those copies to live, and every release that changed one of those templates had to patch the saved copy as well.
+- On 2026-10-13 the owner asked: "Move my edits into the theme."
+- A block-for-block comparison of every saved copy and page with the theme's files showed what the owner's edits were:
+  - The class `ts-intro` on the plum hero band of three templates (the News list, Events, the legal pages) and of five pages.
+  - The class `ts-reveal` on Home's and Contact's cards and tiles.
+  - New wording on the two Home slides and the case study.
+  - A new footer line: "Equipping underserved youth with Digital, AI, and Creative Economy Skills."
+  - The saved header and the saved single-event template held no change of the owner's, only the editor's own rewriting.
+
+**Options:**
+- Keep carrying saved copies in the bundle (ADR-073 as it was). It works, but both sites then run on database copies that every later release must patch, and a reset in live's Site Editor would be needed by hand.
+- Move only the three template marks and the footer line, and leave page-level classes and wording as page content only. A fresh install, or a pattern inserted by hand, would then not look like the site.
+- Move everything into the theme and reset the saved copies (chosen).
+
+**Decision:** The last option, released in 1.13.1.
+- All of the edits above went into the pattern generator, and the sixteen generated patterns were regenerated. The footer pattern is written by hand and was edited directly.
+- The event type pages' band shares the Events band, so it is marked too.
+- The theme's files were first shown to draw the same pages as each saved copy: the same HTML apart from generated IDs.
+- Then the six saved copies on the development site were moved to the trash, not deleted, and their content was backed up outside the repository. The reversible way was used because the owner had not answered that question in words. The owner was told.
+
+**Rationale:**
+- Both sites follow the theme's files again, so a release that changes a template needs no matching patch to a database copy.
+- Moving the page-level marks and wording too means a fresh install or a hand-inserted pattern looks like the site.
+- Consequences:
+  - The migration bundle carries no template parts, templates or menu any more, unless the owner saves one in the Site Editor again. Then it is carried again, as ADR-073 describes. ADR-073 is partly overtaken by this.
+  - Photos, portraits, partner logos, the video link and the contact form block stay page content, because a pattern can only use pictures that ship inside the theme.
+  - Page patterns are starting content. Changing them changes no existing page on either site. Existing pages keep the owner's own edits, including manual line breaks in one Home heading that the pattern does not have.
+  - ADR-063 said no page or pattern carried `ts-intro` yet. Nine hero bands now do.
+
 ## Future work
 
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).
 - **Intro motion tokens:** when the design system delivers its motion tokens, move the 28px distance and 0.15s start of `ts-intro` (and the hero carousel) onto them (ADR-063).
 
-- **Theme patterns instead of saved copies:** move the `ts-intro` marks on the three hero bands and the footer's reworded line into the theme's patterns in a small release, so the saved copies can be reset and both sites follow the theme's files again. Offered to the owner, not decided (ADR-073).
 - **Large uploads and Site Editor styles on live:** the live host's upload size limit is unknown, and carrying real Site Editor styles has not been exercised (owner; ADR-073).
 - **Hosting and deploy:** the release method is decided (ADR-058, ADR-059). Still open on the host: a page cache and longer cache lifetimes for static files on the development site's host, and the first real run of the migration plugin on the live site (owner; ADR-059).
 - **Accessibility leftovers:** captions for the gallery video (content), and a hand scan of the Contact form after each change to it, as the suite cannot reach it (ADR-055, ADR-056).
@@ -1678,7 +1711,6 @@ Not verified:
 - **Logged-out job dashboard:** replace the plain sign-in card when the designer delivers the state (ADR-043).
 - **Job categories:** a curated list to replace the 76 imported terms (owner; ADR-043). The Job Series category filter lists only what the owner curates (ADR-049).
 - **Pending jobs:** decide whether employers may edit them, a WPJM setting (owner; ADR-043).
-- **"Upload your CV" links:** hidden until a target exists (ADR-043).
 - **Formbricks buttons:** add a Formbricks line to the Privacy Policy (owner). The four links stay `#` for now, and real fallback links follow if the popup fails to load repeatedly (ADR-076).
 - **Employer self-registration:** only if the owner wants it (ADR-043).
 - **Design-system updates:** add the components the boards use but the system lacks (Impact, Insight, Key figure, Pull quote, Pillar badge, anchor chip, marquee) and the missing tokens (`coral-text` from ADR-008, status colours, alpha and radius tokens). Settle the tablet and mobile h1/h2 sizes (the tokens win) and the footer radius (36 / 32 / 24px). Then refresh `docs/design-reference/`.
