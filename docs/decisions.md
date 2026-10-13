@@ -1553,7 +1553,7 @@ Not verified:
 
 ## ADR-075: Open Formbricks forms from marked buttons, and load Formbricks' script only when a visitor reaches for one
 
-**Status:** Accepted
+**Status:** Superseded by ADR-076 (fallback, focus and settings; the rest stands)
 
 **Context:**
 - On 2026-10-13 the owner asked to connect Formbricks through its SDK, so that two forms built there as "Website & App" surveys ("Upload your CV", "Apply for the Maker's Prize") open over the page when their buttons are pressed. This is release 1.15.0 on branch `feat/survey-buttons`.
@@ -1588,6 +1588,38 @@ Not verified:
   - A blocker that stops Formbricks' script sends the visitor along the button's link, so each button needs a useful link. Choosing those links is still open with the owner.
   - Tested against a stand-in for Formbricks' script, not yet against the owner's Formbricks.
 
+## ADR-076: Follow the link when no Formbricks form appears, manage focus ourselves, and keep one ID setting
+
+**Status:** Accepted
+
+**Context:**
+- ADR-075 is not merged or tagged yet, but it is recorded, so this entry corrects it rather than rewriting it.
+- On 2026-10-13 the buttons were tested against the owner's Formbricks 4.5.0, self-hosted by Beekomm Technologies Limited at an https address. The owner stays on 4.5.0 on purpose.
+- `setup()` and `track()` finish normally on a wrong ID, a server error, or an action with no published form, and nothing opens. ADR-075's fallback only covered a script that could not be loaded.
+- Formbricks 4.5.0 draws its form at the end of the page, gives it no dialog role and leaves keyboard focus on the button behind it. Escape does not close it.
+- 4.5.0 knows only `environmentId`, and shows both a "Workspace ID" and an "Environment ID". Only the Environment ID works. ADR-075's third setting (the ID's name) defaulted to Workspace ID, which opened nothing and gave no message.
+
+**Options:**
+- Fallback: follow the link only when the script fails to load (ADR-075). Or wait for Formbricks' panel to appear and follow the link otherwise.
+- Focus: leave it to Formbricks. Or move it ourselves.
+- ID name: keep the setting and change its default. Or remove it and pass the ID under both names.
+
+**Decision:**
+- Fallback: after firing the action, the script waits up to 8 seconds for Formbricks' panel (the element `#formbricks-modal-container` getting a child). If none appears, it follows the button's link. A `#` link still does nothing. This replaces the fallback line of ADR-075.
+- Focus: when the form opens, focus moves to the first thing the keyboard can reach in it. When it closes, focus returns to the button. Neither happens if the visitor has moved focus elsewhere. Escape is Formbricks' code and is left alone.
+- Settings: the ID's name setting is removed. The option `tekseries_blocks_formbricks` holds `url` and `id`. The script passes the ID to `setup` as both `workspaceId` and `environmentId`. The settings screen's help says to copy the Environment ID.
+- Links: the owner decided on 2026-10-13 to keep the four buttons' links as `#` for now, and to add real fallback links if the popup fails to load repeatedly.
+
+**Rationale:**
+- Watching for the panel covers every way a form can fail to appear, not only a missing script. This keeps rule 3 of ADR-005 true for the real server.
+- Without a dialog role or focus handling, keyboard and screen-reader visitors are left behind the form. Moving focus is the smallest fix we own.
+- One ID passed under both names works on old and current Formbricks and removes a setting that gave no error when wrong.
+- Consequences:
+  - With `#` links, a visitor whose form does not appear sees nothing happen. This is accepted until the failure is seen in practice.
+  - The panel's element ID is Formbricks' internal detail. A Formbricks upgrade may change it and needs a retest.
+  - Tested on the development site: all four buttons open their real form by mouse, keyboard and at phone width. Nothing was submitted.
+  - Nothing is fetched from Formbricks before a visitor reaches for a button. Formbricks sets no cookie and keeps one local-storage entry.
+
 ## Future work
 
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).
@@ -1618,6 +1650,6 @@ Not verified:
 - **Job categories:** a curated list to replace the 76 imported terms (owner; ADR-043). The Job Series category filter lists only what the owner curates (ADR-049).
 - **Pending jobs:** decide whether employers may edit them, a WPJM setting (owner; ADR-043).
 - **"Upload your CV" links:** hidden until a target exists (ADR-043).
-- **Formbricks buttons:** choose a useful link for each of the four marked buttons, for visitors whose browser blocks Formbricks (owner). Add a Formbricks line to the Privacy Policy (owner). Test against the owner's Formbricks, which has only been tried with a stand-in (ADR-075).
+- **Formbricks buttons:** add a Formbricks line to the Privacy Policy (owner). The four links stay `#` for now, and real fallback links follow if the popup fails to load repeatedly (ADR-076).
 - **Employer self-registration:** only if the owner wants it (ADR-043).
 - **Design-system updates:** add the components the boards use but the system lacks (Impact, Insight, Key figure, Pull quote, Pillar badge, anchor chip, marquee) and the missing tokens (`coral-text` from ADR-008, status colours, alpha and radius tokens). Settle the tablet and mobile h1/h2 sizes (the tokens win) and the footer radius (36 / 32 / 24px). Then refresh `docs/design-reference/`.
