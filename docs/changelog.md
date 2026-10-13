@@ -2,6 +2,23 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.14.0] — 2026-10-13
+### New
+- Visitors now see a countdown on an upcoming event, running to its start time, and it is the same moment for everyone, so a visitor in another time zone sees the same time left.
+- On each event's page the countdown sits in the banner above the Register button: "Starts in" and four tiles for days, hours, minutes and seconds, ticking every second.
+- On the Events page, the large "Latest event" card shows the same four tiles when that event is still to come.
+- The other event cards, in the grid on the Events page, on the event type pages (Webinars, Workshops and Makers' Prize) and under "More events" on an event's page, show one line in a small pill: "In 13 days", then "In 5 hours", then "In 20 min" on the day.
+- From the start time until the end of that day in Nigeria, the countdown reads "Happening now".
+- An event without a start time counts whole days only and reads "Today" on its day.
+- Once the event's day is over there is no countdown, and the "This event has ended" note is as before; events that are already past show nothing new.
+- Without JavaScript, visitors see the days left and the short line, but not the ticking hours, minutes and seconds.
+- Screen readers hear one sentence, for example "In 13 days: October 27, 2026, 11:00 AM WAT", instead of a clock that changes every second.
+- Editors get a new optional "Start time" field on each event, a time picker read as Nigerian time (WAT), and the countdown runs to it; the existing "Time" text field is still what visitors read as the time.
+- Editors get a new block, "Event Countdown", in the block list, with a Size setting of "Full" or "Compact"; it is already placed in the Events, event type and single event page templates.
+
+### Changed
+- An event's day now ends at midnight in Nigeria for "This event has ended" and for the Register button; before, it ended at 1 a.m. in Nigeria.
+
 ## [1.13.2] — 2026-10-13
 ### Fixed
 - On the "Post a job" form, "Save draft" now saves a job whose Description is still empty: the page says "Draft was saved. Job listing drafts can be resumed from the job dashboard." and the draft appears on the Job dashboard, where before nothing was saved and an empty box appeared under the description editor.
