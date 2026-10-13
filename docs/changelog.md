@@ -2,6 +2,12 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.15.1] — 2026-10-13
+### Fixed
+- Pressing a link or button with the mouse or a finger while its block was still rising into place now works the first time; before, the block jumped to its final place under the pointer, the press was let go beside the link and only a second press worked, a fault since 1.1.3.
+- This is fixed for the text and buttons of the Home page's first slide just after the page opens (for example "Explore Job Series"), for the top bands of the Events, News, Contact, Gallery, Job Series and legal pages just after they open, and for the cards on the Home and Contact pages just after they scroll into view.
+- The block is now shown in full at once and keeps gliding into place under the pointer, and with the keyboard a block that gets focus is still shown at once in its final place.
+
 ## [1.15.0] — 2026-10-13
 ### New
 - Visitors can now press a marked button to open a Formbricks form in a panel over the page, and the page stays where it was.

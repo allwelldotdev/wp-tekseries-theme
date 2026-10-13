@@ -228,7 +228,7 @@ h3 {
 		--ts-reveal-step: 4;
 	}
 
-	/* A block the keyboard has reached is shown at once: focus is never on
+	/* A block that holds the focus is in full view at once: focus is never on
 	   something still fading in. Its animation is left alone: taken away, it
 	   would play again once the focus moved on. */
 	.ts-reveal.is-reveal-pending:focus-within {
@@ -238,6 +238,13 @@ h3 {
 	.ts-reveal.is-revealed:focus-within,
 	.wp-block-group.ts-reveal.is-revealed:focus-within > :not([class*="is-style-deco"], .ts-reveal) {
 		opacity: 1 !important;
+	}
+
+	/* Only the keyboard's focus also brings it to its place at once. Under a
+	   press of the pointer the block would jump away, the pointer would be
+	   let go beside the link, and there would be no click. */
+	.ts-reveal.is-revealed:is(:focus-visible, :has(:focus-visible)),
+	.wp-block-group.ts-reveal.is-revealed:is(:focus-visible, :has(:focus-visible)) > :not([class*="is-style-deco"], .ts-reveal) {
 		translate: none !important;
 	}
 }
@@ -313,11 +320,18 @@ h3 {
 		--ts-intro-place: 5;
 	}
 
-	/* A block the keyboard has reached is shown at once. Its animation is
+	/* A block that holds the focus is in full view at once. Its animation is
 	   left alone: taken away, it would play again once the focus moved on. */
 	.ts-intro:not(.wp-block-group, .ts-intro *):focus-within,
 	.wp-block-group.ts-intro:not(.ts-intro *) > :not([class*="is-style-deco"]):focus-within {
 		opacity: 1 !important;
+	}
+
+	/* Only the keyboard's focus also brings it to its place at once: under a
+	   press of the pointer it would jump away, and the press would be no
+	   click. */
+	.ts-intro:not(.wp-block-group, .ts-intro *):is(:focus-visible, :has(:focus-visible)),
+	.wp-block-group.ts-intro:not(.ts-intro *) > :not([class*="is-style-deco"]):is(:focus-visible, :has(:focus-visible)) {
 		translate: none !important;
 	}
 }

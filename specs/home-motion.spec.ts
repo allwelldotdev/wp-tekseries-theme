@@ -328,6 +328,46 @@ test.describe( 'home motion blocks', () => {
 		expect( await item.evaluate( shown ) ).toEqual( [ '1', 'none' ] );
 		await slides.page().context().close();
 
+		// A press of the pointer does not bring an item to its place with a
+		// jump: the pointer would be let go beside the link, with no click.
+		slides = await open( 'no-preference' );
+		const page = slides.page();
+		// Slowed to a crawl, so the items are on their way all through.
+		// (Put in as an element: this page runs without JavaScript, where
+		// Playwright's own way of adding a style never returns.)
+		await page.evaluate( ( css ) => {
+			const style = document.createElement( 'style' );
+			style.textContent = css;
+			document.head.append( style );
+		}, 'html { scroll-behavior: auto !important; } .ts-carousel__track > :first-child :has(> h1) > * { animation-duration: 600s !important; animation-delay: 0s !important; animation-timing-function: linear !important; }' );
+		const pressed = slides
+			.first()
+			.locator( ':has(> h1) > :has(a)' )
+			.first();
+		const link = pressed.locator( 'a' ).first();
+		// (Not Playwright's own scrolling: it waits for the item to stop.)
+		await link.evaluate( ( element ) =>
+			element.scrollIntoView( { block: 'center' } )
+		);
+		expect(
+			await pressed.evaluate(
+				( element ) => element.getAnimations().length
+			)
+		).toBeGreaterThan( 0 );
+		const before = await link.boundingBox();
+		await page.mouse.move(
+			( before?.x ?? 0 ) + ( before?.width ?? 0 ) / 2,
+			( before?.y ?? 0 ) + ( before?.height ?? 0 ) / 2
+		);
+		await page.mouse.down();
+		const held = await link.boundingBox();
+		expect(
+			Math.abs( ( held?.y ?? 0 ) - ( before?.y ?? 0 ) )
+		).toBeLessThan( 2 );
+		expect( ( await pressed.evaluate( shown ) )[ 0 ] ).toBe( '1' );
+		await page.mouse.up();
+		await page.context().close();
+
 		slides = await open( 'reduce' );
 		expect(
 			await slides.first().locator( ':has(> h1) > *' ).evaluateAll( rise )

@@ -64,6 +64,12 @@
 	// left alone: taken away, it would play again once the focus moved on.
 	.ts-carousel__track > :first-child :has(> h1) > :focus-within {
 		opacity: 1 !important;
+	}
+
+	// Only the keyboard's focus also brings the item to its place at once:
+	// under a press of the pointer it would jump away, the pointer would be
+	// let go beside the link, and there would be no click.
+	.ts-carousel__track > :first-child :has(> h1) > :is(:focus-visible, :has(:focus-visible)) {
 		translate: none !important;
 	}
 }
