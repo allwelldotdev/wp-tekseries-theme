@@ -10,6 +10,8 @@
  *
  * Settings, Forms (Formbricks) holds the address of the Formbricks server and
  * the ID it knows this site by. Until both are set the buttons are plain links.
+ * The script hands the ID to Formbricks under both names it has had for it
+ * (environmentId, workspaceId), so the site need not know the server's version.
  *
  * @package TekSeries
  */
@@ -21,16 +23,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Returns the Formbricks settings.
  *
- * @return array{url: string, id: string, id_name: string} `id_name` is "workspaceId" or "environmentId".
+ * @return array{url: string, id: string}
  */
 function tekseries_blocks_formbricks_settings(): array {
 	$saved = get_option( 'tekseries_blocks_formbricks', array() );
 	$saved = is_array( $saved ) ? $saved : array();
 
 	return array(
-		'url'     => (string) ( $saved['url'] ?? '' ),
-		'id'      => (string) ( $saved['id'] ?? '' ),
-		'id_name' => 'environmentId' === ( $saved['id_name'] ?? '' ) ? 'environmentId' : 'workspaceId',
+		'url' => (string) ( $saved['url'] ?? '' ),
+		'id'  => (string) ( $saved['id'] ?? '' ),
 	);
 }
 
@@ -49,7 +50,7 @@ function tekseries_blocks_formbricks_ready(): bool {
  * a browser would not load a script from anything else on this site.
  *
  * @param mixed $value Submitted value.
- * @return array{url: string, id: string, id_name: string}
+ * @return array{url: string, id: string}
  */
 function tekseries_blocks_sanitize_formbricks( $value ): array {
 	$value = is_array( $value ) ? $value : array();
@@ -60,9 +61,8 @@ function tekseries_blocks_sanitize_formbricks( $value ): array {
 	}
 
 	return array(
-		'url'     => $url,
-		'id'      => (string) preg_replace( '/[^A-Za-z0-9_-]/', '', (string) ( $value['id'] ?? '' ) ),
-		'id_name' => 'environmentId' === ( $value['id_name'] ?? '' ) ? 'environmentId' : 'workspaceId',
+		'url' => $url,
+		'id'  => (string) preg_replace( '/[^A-Za-z0-9_-]/', '', (string) ( $value['id'] ?? '' ) ),
 	);
 }
 
@@ -125,24 +125,14 @@ function tekseries_blocks_surveys_page(): void {
 					<th scope="row"><label for="tekseries-formbricks-url"><?php esc_html_e( 'SDK connection URL', 'tekseries-blocks' ); ?></label></th>
 					<td>
 						<input type="url" class="regular-text code" id="tekseries-formbricks-url" name="tekseries_blocks_formbricks[url]" value="<?php echo esc_attr( $settings['url'] ); ?>" placeholder="https://" aria-describedby="tekseries-formbricks-url-help" />
-						<p class="description" id="tekseries-formbricks-url-help"><?php esc_html_e( 'The address of your Formbricks, as it stands in Formbricks under Settings, Workspace, Connect Your App. It starts with https://.', 'tekseries-blocks' ); ?></p>
+						<p class="description" id="tekseries-formbricks-url-help"><?php esc_html_e( 'The address of your Formbricks, as it stands in the code Formbricks gives you for connecting a website (appUrl). It starts with https://.', 'tekseries-blocks' ); ?></p>
 					</td>
 				</tr>
 				<tr>
 					<th scope="row"><label for="tekseries-formbricks-id"><?php esc_html_e( 'ID', 'tekseries-blocks' ); ?></label></th>
 					<td>
 						<input type="text" class="regular-text code" id="tekseries-formbricks-id" name="tekseries_blocks_formbricks[id]" value="<?php echo esc_attr( $settings['id'] ); ?>" autocomplete="off" spellcheck="false" aria-describedby="tekseries-formbricks-id-help" />
-						<p class="description" id="tekseries-formbricks-id-help"><?php esc_html_e( 'The Workspace ID from the same screen in Formbricks. An older Formbricks calls it Environment ID.', 'tekseries-blocks' ); ?></p>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="tekseries-formbricks-id-name"><?php esc_html_e( 'Formbricks calls this ID', 'tekseries-blocks' ); ?></label></th>
-					<td>
-						<select id="tekseries-formbricks-id-name" name="tekseries_blocks_formbricks[id_name]" aria-describedby="tekseries-formbricks-id-name-help">
-							<option value="workspaceId" <?php selected( $settings['id_name'], 'workspaceId' ); ?>><?php esc_html_e( 'Workspace ID', 'tekseries-blocks' ); ?></option>
-							<option value="environmentId" <?php selected( $settings['id_name'], 'environmentId' ); ?>><?php esc_html_e( 'Environment ID', 'tekseries-blocks' ); ?></option>
-						</select>
-						<p class="description" id="tekseries-formbricks-id-name-help"><?php esc_html_e( 'The code Formbricks shows for your website says either workspaceId or environmentId: choose the one it says.', 'tekseries-blocks' ); ?></p>
+						<p class="description" id="tekseries-formbricks-id-help"><?php esc_html_e( 'The ID in that same code: the value of environmentId (a newer Formbricks calls it workspaceId). Where Formbricks lists both an Environment ID and a Workspace ID, as version 4 does, use the Environment ID.', 'tekseries-blocks' ); ?></p>
 					</td>
 				</tr>
 			</table>
@@ -154,7 +144,7 @@ function tekseries_blocks_surveys_page(): void {
 			<li><?php esc_html_e( 'In Formbricks, add an action of the kind “Code” and give it a key in small letters, numbers and hyphens, for example upload-cv.', 'tekseries-blocks' ); ?></li>
 			<li><?php esc_html_e( 'In the form’s settings in Formbricks, set Survey Type to “Website & App Survey” and add that action as its Survey Trigger. Under Visibility & Recontact choose “Keep showing while conditions match” and “Ignore Cooldown Period”, so the form opens every time the button is pressed. Then publish the form.', 'tekseries-blocks' ); ?></li>
 			<li><?php esc_html_e( 'On the site, select the Button in the editor and, under Advanced, Additional CSS class(es), add ts-survey- followed by the key, for example ts-survey-upload-cv.', 'tekseries-blocks' ); ?></li>
-			<li><?php esc_html_e( 'Give the Button a link as well. Visitors follow it when their browser has JavaScript off or cannot reach Formbricks.', 'tekseries-blocks' ); ?></li>
+			<li><?php esc_html_e( 'Give the Button a link as well. Visitors follow it when their browser has JavaScript off, cannot reach Formbricks, or gets no form within a few seconds.', 'tekseries-blocks' ); ?></li>
 		</ol>
 		<p><?php esc_html_e( 'The site’s “Upload your CV” buttons use the key upload-cv, and “Apply for the Maker’s Prize” uses makers-prize.', 'tekseries-blocks' ); ?></p>
 	</div>
@@ -177,9 +167,8 @@ function tekseries_blocks_survey_attributes( string $action ): array {
 	wp_interactivity_config(
 		'tekseries/surveys',
 		array(
-			'url'    => $settings['url'],
-			'id'     => $settings['id'],
-			'idName' => $settings['id_name'],
+			'url' => $settings['url'],
+			'id'  => $settings['id'],
 		)
 	);
 	wp_enqueue_script_module( 'tekseries-blocks-surveys' );

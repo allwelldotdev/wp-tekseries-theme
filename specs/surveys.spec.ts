@@ -9,8 +9,10 @@ type Recorded = Window & {
 
 const SERVER = 'https://forms.example.test';
 // In place of Formbricks' own script: it notes how it was set up and which
-// actions were fired.
-const STAND_IN = `
+// actions were fired. Like the real one, it draws its form in an element of
+// its own at the end of the page, empties that element when the form is
+// closed, and says nothing when it has no form to show.
+const standIn = ( opens: boolean ) => `
 	window.e2eFormbricks = { setup: [], tracked: [] };
 	window.formbricks = {
 		setup: ( config ) => {
@@ -19,9 +21,31 @@ const STAND_IN = `
 		},
 		track: ( action ) => {
 			window.e2eFormbricks.tracked.push( action );
+			if ( ! ${ opens } ) {
+				return Promise.resolve();
+			}
+			let box = document.getElementById( 'formbricks-modal-container' );
+			if ( ! box ) {
+				box = document.createElement( 'div' );
+				box.id = 'formbricks-modal-container';
+				document.body.append( box );
+			}
+			box.innerHTML = '<div style="position:fixed;inset:auto 0 0 auto"></div>';
+			// The fields arrive a moment after the frame.
+			setTimeout( () => {
+				box.firstElementChild.innerHTML =
+					'<button type="button" aria-label="Close survey">x</button><input aria-label="Name" />';
+				box.querySelector( 'button' ).addEventListener( 'click', () => {
+					box.innerHTML = '';
+				} );
+			}, 150 );
+			return Promise.resolve();
 		},
 	};
 `;
+// What Formbricks does for a visitor: opens its form, loads and opens
+// nothing, or cannot be reached at all.
+type Answer = 'opens' | 'quiet' | 'unreachable';
 const VISITOR = { storageState: { cookies: [], origins: [] } };
 
 const button = ( text: string, href: string, className = '' ) =>
@@ -32,17 +56,10 @@ const button = ( text: string, href: string, className = '' ) =>
 	}"><a class="wp-block-button__link wp-element-button" href="${ href }">${ text }</a></div><!-- /wp:button -->`;
 
 // Settings, Forms (Formbricks).
-const connect = async (
-	admin: Admin,
-	page: Page,
-	url: string,
-	id: string,
-	idName = 'workspaceId'
-) => {
+const connect = async ( admin: Admin, page: Page, url: string, id: string ) => {
 	await admin.visitAdminPage( 'options-general.php', 'page=tekseries-forms' );
 	await page.getByLabel( 'SDK connection URL' ).fill( url );
 	await page.getByLabel( 'ID', { exact: true } ).fill( id );
-	await page.getByLabel( 'Formbricks calls this ID' ).selectOption( idName );
 	await page.getByRole( 'button', { name: 'Save Changes' } ).click();
 	await expect(
 		page.locator( '#setting-error-settings_updated' )
@@ -117,21 +134,21 @@ test.describe( 'forms from Formbricks', () => {
 		await page.close();
 	} );
 
-	// A visitor's browser in which Formbricks' server answers with the
+	// A visitor's browser in which Formbricks' server answers with a
 	// stand-in, or cannot be reached.
 	const visit = async (
 		context: BrowserContext,
-		reachable: boolean
+		answer: Answer
 	): Promise< { page: Page; asked: string[] } > => {
 		const asked: string[] = [];
 		await context.route( `${ SERVER }/**`, ( route ) => {
 			asked.push( route.request().url() );
-			return reachable
-				? route.fulfill( {
+			return answer === 'unreachable'
+				? route.abort()
+				: route.fulfill( {
 						contentType: 'application/javascript',
-						body: STAND_IN,
-					} )
-				: route.abort();
+						body: standIn( answer === 'opens' ),
+					} );
 		} );
 		const page = await context.newPage();
 		await page.goto( made.link );
@@ -166,19 +183,12 @@ test.describe( 'forms from Formbricks', () => {
 		).toBeVisible();
 
 		// The address is kept without its last slash or anything after "?",
-		// and the ID without stray characters.
-		await connect(
-			admin,
-			page,
-			`${ SERVER }/?utm=x`,
-			' ws_123 "',
-			'environmentId'
-		);
+		// and the ID without stray characters. Nothing asks which name
+		// Formbricks gives the ID.
+		await connect( admin, page, `${ SERVER }/?utm=x`, ' ws_123 "' );
 		await expect( url ).toHaveValue( SERVER );
 		await expect( id ).toHaveValue( 'ws_123' );
-		await expect(
-			page.getByLabel( 'Formbricks calls this ID' )
-		).toHaveValue( 'environmentId' );
+		await expect( page.locator( 'form select' ) ).toHaveCount( 0 );
 		await expect(
 			page.getByText( 'Connected: marked buttons open their form.' )
 		).toBeVisible();
@@ -191,7 +201,7 @@ test.describe( 'forms from Formbricks', () => {
 	} ) => {
 		await connect( admin, adminPage, SERVER, 'ws_123' );
 		const context = await browser.newContext( VISITOR );
-		const { page, asked } = await visit( context, true );
+		const { page, asked } = await visit( context, 'opens' );
 		const cv = page.getByRole( 'link', { name: 'Upload your CV' } );
 
 		// Nothing is fetched from Formbricks until a visitor reaches for
@@ -207,12 +217,22 @@ test.describe( 'forms from Formbricks', () => {
 		await expect
 			.poll( async () => ( await recorded( page ) )?.tracked )
 			.toEqual( [ 'upload-cv' ] );
+		// The ID goes under both of the names Formbricks has had for it.
 		expect( ( await recorded( page ) )?.setup ).toEqual( [
-			{ workspaceId: 'ws_123', appUrl: SERVER },
+			{ environmentId: 'ws_123', workspaceId: 'ws_123', appUrl: SERVER },
 		] );
-		// The link was not followed, and the button is ready again.
+		// The form is there, the link was not followed, and the button is
+		// ready again.
+		const close = page.getByRole( 'button', { name: 'Close survey' } );
+		await expect( close ).toBeVisible();
 		expect( page.url() ).toBe( made.link );
 		await expect( cv ).not.toHaveAttribute( 'aria-busy', 'true' );
+		// The keyboard is in the form, and back on the button once the form
+		// is closed.
+		await expect( close ).toBeFocused();
+		await page.keyboard.press( 'Enter' );
+		await expect( close ).toHaveCount( 0 );
+		await expect( cv ).toBeFocused();
 
 		// Each button fires its own action; Formbricks is set up once.
 		await page.getByRole( 'link', { name: 'No link yet' } ).click();
@@ -245,7 +265,7 @@ test.describe( 'forms from Formbricks', () => {
 	} ) => {
 		await connect( admin, adminPage, SERVER, 'ws_123' );
 		const context = await browser.newContext( VISITOR );
-		const { page } = await visit( context, false );
+		const { page } = await visit( context, 'unreachable' );
 
 		// No link to follow: the button does nothing, and does not break.
 		const errors: string[] = [];
@@ -269,6 +289,36 @@ test.describe( 'forms from Formbricks', () => {
 		await noScript.getByRole( 'link', { name: 'Upload your CV' } ).click();
 		await noScript.waitForURL( /\?s=cv-without-the-form/ );
 		await plain.close();
+	} );
+
+	// A wrong ID, a form that is not published, a server that fails: the
+	// script loads, takes the action and shows nothing.
+	test( 'the link is followed when Formbricks answers and no form opens', async ( {
+		admin,
+		page: adminPage,
+		browser,
+	} ) => {
+		await connect( admin, adminPage, SERVER, 'ws_123' );
+		const context = await browser.newContext( VISITOR );
+		const { page } = await visit( context, 'quiet' );
+		const errors: string[] = [];
+		page.on( 'pageerror', ( error ) => errors.push( String( error ) ) );
+
+		// The two are pressed together, so the wait for a form is one wait.
+		const empty = page.getByRole( 'link', { name: 'No link yet' } );
+		await empty.click();
+		await page.getByRole( 'link', { name: 'Upload your CV' } ).click();
+		await expect
+			.poll( async () => ( await recorded( page ) )?.tracked )
+			.toEqual( [ 'makers-prize', 'upload-cv' ] );
+		// The button waits for the form before it gives up.
+		await expect( empty ).toHaveAttribute( 'aria-busy', 'true' );
+		expect( page.url() ).toBe( made.link );
+
+		// One with a link is followed. One without stays, and does not break.
+		await page.waitForURL( /\?s=cv-without-the-form/, { timeout: 20000 } );
+		expect( errors ).toEqual( [] );
+		await context.close();
 	} );
 
 	test( 'until Formbricks is connected the buttons are plain links', async ( {
