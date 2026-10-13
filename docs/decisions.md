@@ -1129,7 +1129,7 @@ Measured on the development site: the largest paint is the hero photo with and w
 
 ## ADR-062: Show a focused block by overriding its animated properties, never by removing the animation
 
-**Status:** Accepted
+**Status:** Superseded by ADR-077 (the `translate: none` part, for pointer focus)
 
 **Context:** ADR-060 and ADR-061 say a block that holds keyboard focus is shown at once. It was built as `animation: none` on `:focus-within` (the hero's first-slide text in the hero carousel block's stylesheet; a revealed `ts-reveal` block and a revealed Group's children in the theme's `assets/css/global.css`) and on `li:has(:focus-visible)` (the compact menu's links in `assets/css/blocks/navigation.css`). Found on 2026-10-12, in 1.1.0 and 1.1.1: when focus moved on, `animation-name` came back and the browser started a new animation. The block vanished and rose in again. In Chromium, after focus left, the hero item, the first menu link and a revealed card were each at opacity 0 with a running animation.
 
@@ -1619,6 +1619,35 @@ Not verified:
   - The panel's element ID is Formbricks' internal detail. A Formbricks upgrade may change it and needs a retest.
   - Tested on the development site: all four buttons open their real form by mouse, keyboard and at phone width. Nothing was submitted.
   - Nothing is fetched from Formbricks before a visitor reaches for a button. Formbricks sets no cookie and keeps one local-storage entry.
+
+## ADR-077: Move a focused block into place early only for keyboard focus, so a press still sends its click
+
+**Status:** Accepted
+
+**Context:**
+- ADR-062 overrides a focused block with `opacity: 1 !important; translate: none !important` on `:focus-within`. `:focus-within` also matches when a link is pressed with a mouse or finger, because the press gives the link focus.
+- Found on 2026-10-13, testing form buttons (ADR-075, ADR-076) on the development site: `translate: none` made a block still rising in jump to its final place between press and release. The jump was 28px for the Home hero's first slide and for `ts-intro` blocks (ADR-063), and up to 84px for a `ts-reveal` card with its contents (ADR-060). The release landed beside the link and the browser sent no click.
+- Measured: a press on "Explore Job Series" in the Home hero during its entrance moved the button 28px and the link was not followed. A second press worked.
+
+**Options:**
+- Leave it. The window is about a second after a block appears, but the Home hero's main buttons are the most pressed links on the site and are in that window when the page opens.
+- Drop the override for all focus. Keyboard focus would again sit on something still fading and moving in, which is the reason for ADR-062.
+- Ignore presses until the entrance ends (`pointer-events`). The buttons would be dead for a second.
+- Split the override by kind of focus.
+
+**Decision:** The last option, in 1.15.1. CSS only, no script.
+- Any focus (`:focus-within`) still sets `opacity: 1 !important`, so the block is in full view at once.
+- Only keyboard focus also sets `translate: none !important`. The selector is `:is(:focus-visible, :has(:focus-visible))`, meaning the block or anything inside it.
+- Under a pointer press the block keeps gliding in, the pointer stays on the link and the click is sent.
+- The animation is still left alone in both cases, so nothing replays. The rest of ADR-062 stands, including which children the reveal rule names.
+- Three rules change: `ts-reveal` and `ts-intro` in the theme's `assets/css/global.css`, and the first slide's text in the hero carousel block's `style.scss`.
+- `specs/reveal.spec.ts`, `specs/intro.spec.ts` and `specs/home-motion.spec.ts` each gain a case that presses a link during a slowed entrance.
+
+**Rationale:**
+- A click needs the pointer to be on the same element at press and release, so the block must not move under a press. A keyboard user has no such need and still gets a settled block under the focus ring.
+- Consequences:
+  - Needs `:has()` and `:focus-visible`. The theme already relies on `:has()` (`:has(> h1)` in the carousel) and on `:nth-child(n of S)` (ADR-063). A browser without `:has()` shows a keyboard-focused block at once but does not move it into place early, which is harmless.
+  - A text field focused with the pointer still matches `:focus-visible`, so a block holding one snaps into place on a press. Nothing is lost, because the field already has focus.
 
 ## Future work
 
