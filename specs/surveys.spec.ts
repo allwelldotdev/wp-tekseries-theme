@@ -4,23 +4,31 @@ import { test, expect, type Admin } from '@wordpress/e2e-test-utils-playwright';
 type Linked = { id: number; link: string };
 // What the stand-in for Formbricks' script writes down.
 type Recorded = Window & {
-	e2eFormbricks?: { setup: Record< string, string >[]; tracked: string[] };
+	e2eFormbricks?: {
+		setup: Record< string, string >[];
+		tracked: string[];
+		hidden: ( Record< string, string > | null )[];
+	};
 };
 
 const SERVER = 'https://forms.example.test';
-// In place of Formbricks' own script: it notes how it was set up and which
-// actions were fired. Like the real one, it draws its form in an element of
-// its own at the end of the page, empties that element when the form is
-// closed, and says nothing when it has no form to show.
+// In place of Formbricks' own script: it notes how it was set up, which
+// actions were fired and with which hidden fields. Like the real one, it
+// draws its form in an element of its own at the end of the page, empties
+// that element when the form is closed, and says nothing when it has no form
+// to show.
 const standIn = ( opens: boolean ) => `
-	window.e2eFormbricks = { setup: [], tracked: [] };
+	window.e2eFormbricks = { setup: [], tracked: [], hidden: [] };
 	window.formbricks = {
 		setup: ( config ) => {
 			window.e2eFormbricks.setup.push( config );
 			return Promise.resolve();
 		},
-		track: ( action ) => {
+		track: ( action, options ) => {
 			window.e2eFormbricks.tracked.push( action );
+			window.e2eFormbricks.hidden.push(
+				options ? options.hiddenFields : null
+			);
 			if ( ! ${ opens } ) {
 				return Promise.resolve();
 			}
@@ -70,7 +78,9 @@ const recorded = ( page: Page ) =>
 	page.evaluate( () => ( window as Recorded ).e2eFormbricks );
 
 // A Button with the class "ts-survey-<key>" opens the Formbricks form whose
-// action has that key, and stays a link for everyone it cannot open for.
+// action has that key, and stays a link for everyone it cannot open for. Its
+// class "ts-entry-<value>" puts <value> in the form's hidden field
+// entry_point.
 test.describe( 'forms from Formbricks', () => {
 	let made: Linked;
 	let job: Linked;
@@ -87,10 +97,10 @@ test.describe( 'forms from Formbricks', () => {
 					button(
 						'Upload your CV',
 						'/?s=cv-without-the-form',
-						'is-style-outline ts-survey-upload-cv'
+						'is-style-outline ts-survey-upload-cv ts-entry-e2e_page-cv'
 					) +
 					button( 'No link yet', '#', 'ts-survey-makers-prize' ) +
-					button( 'Plain', '/?s=plain' ) +
+					button( 'Plain', '/?s=plain', 'ts-entry-e2e_plain' ) +
 					'</div><!-- /wp:buttons -->',
 			},
 		} );
@@ -217,6 +227,10 @@ test.describe( 'forms from Formbricks', () => {
 		await expect
 			.poll( async () => ( await recorded( page ) )?.tracked )
 			.toEqual( [ 'upload-cv' ] );
+		// Its class "ts-entry-…" names the button to the form.
+		expect( ( await recorded( page ) )?.hidden ).toEqual( [
+			{ entry_point: 'e2e_page-cv' },
+		] );
 		// The ID goes under both of the names Formbricks has had for it.
 		expect( ( await recorded( page ) )?.setup ).toEqual( [
 			{ environmentId: 'ws_123', workspaceId: 'ws_123', appUrl: SERVER },
@@ -234,20 +248,27 @@ test.describe( 'forms from Formbricks', () => {
 		await expect( close ).toHaveCount( 0 );
 		await expect( cv ).toBeFocused();
 
-		// Each button fires its own action; Formbricks is set up once.
+		// Each button fires its own action; Formbricks is set up once. One
+		// without "ts-entry-…" sends no hidden field.
 		await page.getByRole( 'link', { name: 'No link yet' } ).click();
 		await expect
 			.poll( async () => ( await recorded( page ) )?.tracked )
 			.toEqual( [ 'upload-cv', 'makers-prize' ] );
+		expect( ( await recorded( page ) )?.hidden ).toEqual( [
+			{ entry_point: 'e2e_page-cv' },
+			null,
+		] );
 		expect( ( await recorded( page ) )?.setup ).toHaveLength( 1 );
 		expect( asked ).toHaveLength( 1 );
 
-		// A button without the class is an ordinary link.
+		// A button without "ts-survey-…" is an ordinary link, even with
+		// "ts-entry-…".
 		await expect(
 			page.getByRole( 'link', { name: 'Plain' } )
 		).not.toHaveAttribute( 'data-wp-on--click' );
 
-		// "Upload your CV to Job Series" on a job opens the same form.
+		// "Upload your CV to Job Series" on a job opens the same form, named
+		// job_listing.
 		await page.goto( job.link );
 		await page
 			.getByRole( 'link', { name: 'Upload your CV to Job Series' } )
@@ -255,6 +276,9 @@ test.describe( 'forms from Formbricks', () => {
 		await expect
 			.poll( async () => ( await recorded( page ) )?.tracked )
 			.toEqual( [ 'upload-cv' ] );
+		expect( ( await recorded( page ) )?.hidden ).toEqual( [
+			{ entry_point: 'job_listing' },
+		] );
 		await context.close();
 	} );
 

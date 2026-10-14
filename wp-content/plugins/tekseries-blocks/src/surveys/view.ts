@@ -9,13 +9,17 @@ import {
 // From Settings, Forms (Formbricks): the server the forms are on and the ID it
 // knows this site by.
 type Config = { url: string; id: string };
-// The key of the Formbricks action the link fires.
-type Context = { action: string };
+// The key of the Formbricks action the link fires, and the form's hidden
+// fields the link fills in (its entry_point), if any.
+type Context = { action: string; fields?: Record< string, string > };
 
 // The part of Formbricks' script used here.
 type Formbricks = {
 	setup: ( config: Record< string, string > ) => unknown;
-	track: ( action: string ) => unknown;
+	track: (
+		action: string,
+		options?: { hiddenFields: Record< string, string > }
+	) => unknown;
 };
 type WithFormbricks = Window & { formbricks?: Formbricks };
 
@@ -153,7 +157,7 @@ store( 'tekseries/surveys', {
 			if ( ref.getAttribute( 'aria-busy' ) === 'true' ) {
 				return;
 			}
-			const { action } = getContext< Context >();
+			const { action, fields } = getContext< Context >();
 
 			ref.setAttribute( 'aria-busy', 'true' );
 			try {
@@ -161,7 +165,15 @@ store( 'tekseries/surveys', {
 					formbricks(),
 					late(),
 				] );
-				yield Promise.resolve( loaded.track( action ) );
+				// A plain copy: the context is a proxy, which Formbricks may
+				// not be able to copy in turn.
+				yield Promise.resolve(
+					fields
+						? loaded.track( action, {
+								hiddenFields: { ...fields },
+							} )
+						: loaded.track( action )
+				);
 				const box: HTMLElement = yield opened();
 				enter( box, ref );
 			} catch {

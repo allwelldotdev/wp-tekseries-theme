@@ -53,7 +53,8 @@ $tekseries_jobs    = $tekseries_preview ? false : job_manager_get_permalink( 'jo
 				 * Filters where "Upload your CV to Job Series" leads.
 				 *
 				 * With Formbricks connected (Settings, Forms) the link opens
-				 * the form of the action "upload-cv" over the page, and this
+				 * the form of the action "upload-cv" over the page, with
+				 * "job_listing" in its hidden field entry_point, and this
 				 * address is the way without it. The site has no page for it
 				 * yet, so it is "#" until one is filtered in.
 				 *
@@ -62,7 +63,7 @@ $tekseries_jobs    = $tekseries_preview ? false : job_manager_get_permalink( 'jo
 				$tekseries_cv_url = (string) apply_filters( 'tekseries_blocks_cv_upload_url', '#' );
 				?>
 				<a class="ts-job-button ts-job-button--outline" href="<?php echo esc_url( $tekseries_cv_url ); ?>"
-					<?php foreach ( tekseries_blocks_survey_attributes( 'upload-cv' ) as $tekseries_name => $tekseries_value ) : ?>
+					<?php foreach ( tekseries_blocks_survey_attributes( 'upload-cv', 'job_listing' ) as $tekseries_name => $tekseries_value ) : ?>
 						<?php echo esc_attr( $tekseries_name ); ?>="<?php echo esc_attr( $tekseries_value ); ?>"
 					<?php endforeach; ?>
 				>
