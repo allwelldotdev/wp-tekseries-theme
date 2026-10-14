@@ -92,7 +92,7 @@ The plugin has eleven blocks: `event-countdown` (ADR-074), `post-tone` (ADR-033)
 - `src/reveal/view.ts` is the seventh. It isn't a block: it says when a block has scrolled into view, and `includes/reveal.php` loads it only on pages that use it.
 - `src/contact-form/view.ts` is the eighth. It changes the Contact form's Subject hint to match the topic picked.
 - `src/job-submit/view.ts` is the ninth. It checks the "Post a job" form's description before Preview.
-- `src/surveys/view.ts` is the tenth. A Button with the class `ts-survey-<key>` opens the Formbricks form whose action has that key, and `includes/surveys.php` loads Formbricks' script only when a visitor reaches for one (ADR-075). Focus moves into the form and back to the button, and the button's link is followed when no form opens (ADR-076). Fill in the "SDK connection URL" and the "ID" under Settings → Forms (Formbricks).
+- `src/surveys/view.ts` is the tenth. A Button with the class `ts-survey-<key>` opens the Formbricks form whose action has that key, and `includes/surveys.php` loads Formbricks' script only when a visitor reaches for one (ADR-075). Focus moves into the form and back to the button, and the button's link is followed when no form opens (ADR-076). A second class, `ts-entry-<value>`, sends the value as the form's hidden field `entry_point`, so each answer records which button opened it (ADR-079). Fill in the "SDK connection URL" and the "ID" under Settings → Forms (Formbricks).
 
 On Home, the `stat` figures count when scrolled to, and the section headings and cards rise in (ADR-060). The owner's choices from the Site Editor, such as the hero bands' `ts-intro`, the cards' `ts-reveal`, Home's wording and the footer line, live in the theme's patterns, and the development site keeps no saved copies of templates or parts (ADR-078). Editors can make any block rise in when scrolled to with the class `ts-reveal`, or when the page opens with `ts-intro` (ADR-063), under Advanced → Additional CSS class(es). On a Group, `ts-intro` raises the blocks inside it one after another. A press with a mouse or finger on a link in a block still rising in works the first time, and only keyboard focus moves it into place at once (ADR-077). The look is in the theme's `assets/css/global.css`, and the timings are tokens in `theme.json` under `settings.custom.motion`. Reduced motion shows everything at once.
 
@@ -100,7 +100,7 @@ A Button's "Icon" panel sets the icon classes the theme's CSS draws (ADR-067), `
 
 ## Release
 
-The current version is 1.15.1, merged to `main` and tagged `v1.15.1`. Each release is tagged `vX.Y.Z` when it is merged, and `git tag` lists the released versions. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059, ADR-073). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip` for the first two.
+The latest tagged release is 1.15.1 (`v1.15.1`). The code is at 1.16.0, not yet merged or tagged. Each release is tagged `vX.Y.Z` when it is merged, and `git tag` lists the released versions. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059, ADR-073). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip` for the first two.
 
 Upload in this order:
 
@@ -141,6 +141,6 @@ Delete the plugin afterwards. It leaves a small hidden mark on the media files (
 | 6 | Frontend behaviour | done |
 | 7 | QA and release | done |
 
-The build plan was completed at version 1.0.0. Versions 1.1.0 to 1.13.0 add the Home motion, the Map and Post Video blocks, the Button icon panel, list order and the shared viewer (ADR-060 to ADR-072). Versions 1.13.1 to 1.15.1 move the owner's editor choices into the theme, add the event countdown and the Formbricks buttons, and fix pressing a link in a block that is rising in (ADR-074 to ADR-078). At 1.0.0, Lighthouse on the development site scored 95 to 99 on mobile and 100 on desktop for Home, Gallery, Job Series and an event page (ADR-057). The migration has not been run on the live site yet (ADR-059).
+The build plan was completed at version 1.0.0. Versions 1.1.0 to 1.13.0 add the Home motion, the Map and Post Video blocks, the Button icon panel, list order and the shared viewer (ADR-060 to ADR-072). Versions 1.13.1 to 1.16.0 move the owner's editor choices into the theme, add the event countdown and the Formbricks buttons, fix pressing a link in a block that is rising in, and record which button opened a Formbricks form (ADR-074 to ADR-079). At 1.0.0, Lighthouse on the development site scored 95 to 99 on mobile and 100 on desktop for Home, Gallery, Job Series and an event page (ADR-057). The migration has not been run on the live site yet (ADR-059).
 
 Architecture decisions and future work are in [docs/decisions.md](docs/decisions.md). Changes are in [docs/changelog.md](docs/changelog.md).

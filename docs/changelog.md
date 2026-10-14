@@ -2,6 +2,15 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.16.0] — 2026-10-14
+### New
+- A form opened from a button on the site now tells Formbricks which button opened it: each answer carries the button's name in the form's hidden field `entry_point`.
+- In Formbricks, the form needs a hidden field with the ID `entry_point` for this; a form without it still opens and simply records no name.
+- Editors name a Button by adding a second class next to `ts-survey-` and its key: `ts-entry-` followed by a name in letters, numbers, underscores and hyphens, for example `ts-entry-home_job_series`, under Advanced → Additional CSS class(es); a Button without it sends no name, as before.
+- The site's own buttons are named: "Upload your CV" on Home is `home_job_series`, "Apply for the Maker's Prize" on Home is `home_makers_prize`, "Upload your CV" in the Job Series page hero is `job_series_hero`, and "Upload your CV to Job Series" on each job's page is `job_listing`, which is set in the plugin and cannot be changed in the editor.
+- Settings → Forms (Formbricks) has a new section, "See which button opened a form", with these steps and the site's names.
+- Nothing changes visually for visitors.
+
 ## [1.15.1] — 2026-10-13
 ### Fixed
 - Pressing a link or button with the mouse or a finger while its block was still rising into place now works the first time; before, the block jumped to its final place under the pointer, the press was let go beside the link and only a second press worked, a fault since 1.1.3.
