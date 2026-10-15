@@ -369,10 +369,12 @@ h3 {
  * hero with the text beside the ink countdown card on desktop and above it
  * on smaller screens, the eligibility cards (icon above the text on desktop,
  * beside it on smaller screens) and the plum closing band. On phones the
- * Apply buttons take the whole width.
+ * Apply buttons take the whole width. The hero's text and card start at its
+ * top (the owner's choice, 2026-10-15; the boards centre them), so the text
+ * stays put when the closed card grows taller.
  */
 .wp-block-group.ts-prize-hero {
-	align-items: center;
+	align-items: start;
 }
 
 @media (width > 1100px) {
