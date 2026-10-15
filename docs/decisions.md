@@ -1683,6 +1683,44 @@ Not verified:
   - Page patterns are starting content. Changing them changes no existing page on either site. Existing pages keep the owner's own edits, including manual line breaks in one Home heading that the pattern does not have.
   - ADR-063 said no page or pattern carried `ts-intro` yet. Nine hero bands now do.
 
+## ADR-079: Tell each Formbricks form which button opened it, with a second class `ts-entry-<value>`
+
+**Status:** Accepted
+
+**Context:**
+- This builds on ADR-075 and ADR-076 and supersedes neither. It is release 1.16.0, branch `feat/survey-entry-point`.
+- On 2026-10-14 the owner added a hidden field `entry_point` to the Formbricks forms and asked: "Add a `?entry_point=home_job_series` in the CV embed and `?entry_point=home_makers_prize` in the Maker's Prize embed for example, so each record shows which button was clicked."
+- The forms are "Website & App" surveys opened by a code action (ADR-075). A `?name=value` address is how Formbricks "Link" surveys take hidden fields. For Website & App surveys the page's script passes them: `formbricks.track( key, { hiddenFields: { … } } )`.
+- Read on 2026-10-14 in the owner's Formbricks 4.5.0 script, served by their server: `track( key, options )` passes `options.hiddenFields` to the survey. The script keeps only the fields the survey declares, logs "Unknown hidden fields: …" for others, and logs "Hidden fields are not enabled for this survey" when the survey has them off. The survey gets them as `hiddenFieldsRecord`, which is saved with the answer.
+- The buttons' links are `#`, the owner's choice (ADR-076), so a link address cannot carry the value today.
+
+**Options:**
+- The value in the button's link as `?entry_point=…`. It matches the owner's wording and how Link surveys work, but the links are `#`, the popup does not read the link, and a real link would be followed without JavaScript.
+- A second class `ts-entry-<value>` on the Button, next to `ts-survey-<key>`. This is the convention already used for the action key (ADR-075, ADR-071, ADR-067) and is editable in the editor. A class cannot hold `?` or `=`, so it holds only the value, and the field's name is fixed in code.
+- A prefix `ts-survey-entry-…`. Rejected, because the existing `ts-survey-<key>` rule would read it as an action key if it came first.
+- An editor panel on core Button. More code for one value, and classes already serve the owner.
+- Working the name out from the page and section. The markup has no reliable section name, and the owner wants to choose the names.
+
+**Decision:**
+- A Button with `ts-survey-<key>` and `ts-entry-<value>` (letters, digits, `_`, `-`) puts `{ "action": key, "fields": { "entry_point": value } }` in its link's Interactivity context. The hidden field's name, `entry_point`, is fixed in `includes/surveys.php`. Without the class nothing is sent, as before.
+- `src/surveys/view.ts` calls `track( action, { hiddenFields: { ...fields } } )`. The copy is plain because the context is a proxy. Without fields it calls `track( action )` as before.
+- The single job template (`templates/wpjm/content-single-job_listing.php`) passes `job_listing` to the same helper.
+- The site's buttons follow a `<page>_<section>` pattern:
+  - Home "Upload your CV": `home_job_series`.
+  - Home "Apply for the Maker's Prize": `home_makers_prize`. Both are the owner's names.
+  - Job Series hero: `job_series_hero`.
+  - Each job's "Upload your CV to Job Series": `job_listing`. The job itself is in the page address that Formbricks records.
+- The classes are in the theme's patterns (regenerated) and on the development site's Home and Job Series pages (surgical patches), so they reach live with the migration bundle (ADR-073, ADR-078).
+
+**Rationale:**
+- A class works while the links are `#` and in the editor, and follows the convention of the action key.
+- Passing the value through `track` is how Website & App surveys take hidden fields, and it keeps the link and the no-JavaScript fallback unchanged (ADR-005 rule 3, ADR-076).
+- Consequences:
+  - Each form must declare `entry_point` as a hidden field. A form without it still opens and records no name, and Formbricks logs an error in the browser console.
+  - When real fallback links come (ADR-076), a link to a Formbricks Link survey should carry `?entry_point=…` itself. The site does not add it.
+  - The `job_listing` name is in code, not in the editor.
+  - Tested: the e2e spec with a stand-in for Formbricks' script, and on the development site with the owner's real 4.5.0 script and stand-in forms (nothing sent to the server but GETs). Each of the four buttons' forms received its value. The owner's real forms could not be opened that day: the server listed no active "Website & App" form at 10:59 and 11:05 UTC on 2026-10-14.
+
 ## Future work
 
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).
@@ -1712,5 +1750,6 @@ Not verified:
 - **Job categories:** a curated list to replace the 76 imported terms (owner; ADR-043). The Job Series category filter lists only what the owner curates (ADR-049).
 - **Pending jobs:** decide whether employers may edit them, a WPJM setting (owner; ADR-043).
 - **Formbricks buttons:** add a Formbricks line to the Privacy Policy (owner). The four links stay `#` for now, and real fallback links follow if the popup fails to load repeatedly (ADR-076).
+- **Entry point on the owner's real forms:** retest that each form records `entry_point` once an active "Website & App" form is published and declares the hidden field (owner; ADR-079).
 - **Employer self-registration:** only if the owner wants it (ADR-043).
 - **Design-system updates:** add the components the boards use but the system lacks (Impact, Insight, Key figure, Pull quote, Pillar badge, anchor chip, marquee) and the missing tokens (`coral-text` from ADR-008, status colours, alpha and radius tokens). Settle the tablet and mobile h1/h2 sizes (the tokens win) and the footer radius (36 / 32 / 24px). Then refresh `docs/design-reference/`.

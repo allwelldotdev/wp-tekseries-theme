@@ -8,6 +8,10 @@
  * cannot be reached. Formbricks' own script is fetched only when a visitor
  * reaches for such a button (src/surveys/view.ts).
  *
+ * A second class, "ts-entry-<value>", names the button to the form: <value>
+ * goes into the form's hidden field "entry_point", and is saved with each
+ * answer.
+ *
  * Settings, Forms (Formbricks) holds the address of the Formbricks server and
  * the ID it knows this site by. Until both are set the buttons are plain links.
  * The script hands the ID to Formbricks under both names it has had for it
@@ -147,6 +151,13 @@ function tekseries_blocks_surveys_page(): void {
 			<li><?php esc_html_e( 'Give the Button a link as well. Visitors follow it when their browser has JavaScript off, cannot reach Formbricks, or gets no form within a few seconds.', 'tekseries-blocks' ); ?></li>
 		</ol>
 		<p><?php esc_html_e( 'The site’s “Upload your CV” buttons use the key upload-cv, and “Apply for the Maker’s Prize” uses makers-prize.', 'tekseries-blocks' ); ?></p>
+
+		<h2><?php esc_html_e( 'See which button opened a form', 'tekseries-blocks' ); ?></h2>
+		<ol>
+			<li><?php esc_html_e( 'In Formbricks, add a hidden field with the ID entry_point to the form.', 'tekseries-blocks' ); ?></li>
+			<li><?php esc_html_e( 'On the site, add a second class to the Button: ts-entry- followed by a name in letters, numbers, underscores and hyphens, for example ts-entry-home_job_series. Each answer sent from that button then has that name in entry_point.', 'tekseries-blocks' ); ?></li>
+		</ol>
+		<p><?php esc_html_e( 'The site’s buttons use home_job_series and home_makers_prize on Home, job_series_hero on Job Series, and job_listing for “Upload your CV to Job Series” on each job.', 'tekseries-blocks' ); ?></p>
 	</div>
 	<?php
 }
@@ -156,9 +167,11 @@ function tekseries_blocks_surveys_page(): void {
  * loads the script on this page. Empty until Formbricks is connected.
  *
  * @param string $action Key of the Formbricks code action.
+ * @param string $entry  Name of the button, for the form's hidden field
+ *                       "entry_point". Empty sends no hidden field.
  * @return array<string, string>
  */
-function tekseries_blocks_survey_attributes( string $action ): array {
+function tekseries_blocks_survey_attributes( string $action, string $entry = '' ): array {
 	if ( '' === $action || ! tekseries_blocks_formbricks_ready() ) {
 		return array();
 	}
@@ -173,9 +186,14 @@ function tekseries_blocks_survey_attributes( string $action ): array {
 	);
 	wp_enqueue_script_module( 'tekseries-blocks-surveys' );
 
+	$context = array( 'action' => $action );
+	if ( '' !== $entry ) {
+		$context['fields'] = array( 'entry_point' => $entry );
+	}
+
 	return array(
 		'data-wp-interactive'            => 'tekseries/surveys',
-		'data-wp-context'                => (string) wp_json_encode( array( 'action' => $action ), JSON_HEX_TAG | JSON_HEX_AMP ),
+		'data-wp-context'                => (string) wp_json_encode( $context, JSON_HEX_TAG | JSON_HEX_AMP ),
 		'data-wp-on--click'              => 'actions.open',
 		'data-wp-on-async--pointerenter' => 'actions.warm',
 		'data-wp-on-async--focus'        => 'actions.warm',
@@ -183,7 +201,8 @@ function tekseries_blocks_survey_attributes( string $action ): array {
 }
 
 /**
- * Makes the link of a block with the class "ts-survey-<key>" open that form.
+ * Makes the link of a block with the class "ts-survey-<key>" open that form,
+ * named by its class "ts-entry-<value>" if it has one.
  *
  * @param string $content Rendered block.
  * @param array  $block   Parsed block.
@@ -200,7 +219,8 @@ function tekseries_blocks_survey_link( $content, $block ) {
 		return $content;
 	}
 
-	$attributes = tekseries_blocks_survey_attributes( $found[1] );
+	$entry      = preg_match( '/(?:^|\s)ts-entry-([A-Za-z0-9][A-Za-z0-9_-]*)(?:\s|$)/', $class, $named ) ? $named[1] : '';
+	$attributes = tekseries_blocks_survey_attributes( $found[1], $entry );
 	foreach ( $attributes as $name => $value ) {
 		$tags->set_attribute( $name, $value );
 	}
