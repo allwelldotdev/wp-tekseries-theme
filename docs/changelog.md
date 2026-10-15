@@ -2,6 +2,19 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.18.0] — 2026-10-15
+### New
+- Visitors get a new Maker Prize page, at /maker-prize/ and under What We Do in the breadcrumbs, with the Annual Maker Prize Application, a live countdown to the deadline of December 1, 2026, 11:59 PM Nigerian time, and the eligibility criteria.
+- The page has two "Apply now" buttons, one at the top and one in a closing band, and each opens the Maker's Prize form in a panel over the page once the site is connected to Formbricks.
+- Each answer tells Formbricks which button opened the form, with `maker_prize_hero` for the top button and `maker_prize_cta` for the closing one.
+- After the deadline the page switches to its closed state by itself: it says "Applications are now closed", the buttons become greyed "Applications closed" buttons, and a line says winners are announced beginning the first quarter of the new year.
+- Editors get a new page pattern, "Maker Prize page", to start the page from; the deadline is set in the page's own Deadline Countdown settings.
+- The development site already has the page, and the live site gets it when it is moved over.
+
+### Changed
+- On Home, the "Apply for the Maker’s Prize" button in the third pillar now opens the Maker Prize page instead of the form, so answers no longer arrive with the name `home_makers_prize`.
+- The Settings → Forms (Formbricks) help text now names the Maker Prize page and its two button names.
+
 ## [1.17.0] — 2026-10-15
 ### New
 - Editors get a new block, Deadline Countdown, that counts down to the deadline of the page it sits on, either as four tiles (days, hours, minutes and seconds, with "Mins" and "Secs" on phones) or as one line.
@@ -366,7 +379,6 @@ This file records what visitors and site editors of tekseries.com will notice in
 - Text appears in the site's own fonts sooner when a page loads.
 
 ## Planned
-- A Maker Prize page will open from the Maker's Prize button in Home's third pillar.
 - The Home banner may get Previous and Next arrows if they are wanted.
 - The Gallery "Load more" button will add 10 items on phones, and the totals at the top of the Gallery will follow the year filter.
 - Gallery photos will get descriptive captions and picture descriptions, and the Gallery video will get captions.
@@ -375,7 +387,7 @@ This file records what visitors and site editors of tekseries.com will notice in
 - Past events and events with closed registration will get their own designed look, and the logged-out job dashboard will get a designed sign-in page.
 - Editors will get a picker for an event type's icon in the admin area.
 - The statistics window of the job dashboard will be restyled to match the design.
-- Job categories will be reduced to a curated list, and the "Upload your CV" and "Apply for the Maker's Prize" buttons, which now show but lead nowhere, will get real pages to go to.
+- Job categories will be reduced to a curated list, and the "Upload your CV" buttons and the "Apply now" buttons on the Maker Prize page, which open a form once the site is connected but otherwise lead nowhere, will get real pages to go to.
 - Photos will load faster once uploads are converted to a lighter picture format.
 - Igbo letters (ị, ọ, ụ) in headings will show in the site's heading font once a font that covers them is found.
 - Time and venue still need to be filled in for older events, and the emoji lost from some posts and events need to be restored.

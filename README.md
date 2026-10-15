@@ -56,7 +56,7 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 ## Tests
 
 - `npm run test:unit` runs the Vitest tests in `tests/unit/`: design tokens, templates, icons, the two countdowns and project metadata, including that the theme, plugin and both package files share one version (ADR-058).
-- `npm run test:e2e` runs the Playwright specs in `specs/` (37 files) against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). Run `npm run build` first. They cover the theme, events, tones, the blocks, the job screens and media albums, and check the scripts each public page loads.
+- `npm run test:e2e` runs the Playwright specs in `specs/` (38 files) against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). Run `npm run build` first. They cover the theme, events, tones, the blocks, the job screens and media albums, and check the scripts each public page loads.
 - `specs/a11y.spec.ts` scans every kind of public page at 1280px and 390px with `@axe-core/playwright` against WCAG 2.2 A and AA. It also covers states only a script or click reaches, keyboard focus under the sticky header, and the contrast of text over photos (ADR-056).
 - The first `npm run wp-env start` pulls Docker images and takes several minutes, longer than Playwright's 120-second start timeout. Run it once by hand first, and retry on a network error.
 - Run `npm run test:e2e:install` once, then `sudo npx playwright install-deps chromium` once per machine for system libraries.
@@ -99,9 +99,11 @@ On Home, the `stat` figures count when scrolled to, and the section headings and
 
 On a page with a deadline, blocks with the class `ts-when-open` show only until it and `ts-when-closed` only after it (ADR-081), and a Button set to be a button instead of a link shows greyed out with the class `ts-disabled`. A Button's "Icon" panel sets the icon classes the theme's CSS draws (ADR-067), `ts-lightbox-open` opens a photo or video in the Gallery's viewer (ADR-071), and `?order=asc` lists events and jobs oldest first (ADR-070). Event templates show the ACF fields through Block Bindings, and job pages read WP Job Manager data through the `tekseries/job-field` and `tekseries/job-stats` sources (ADR-040). Only media in an album (Media → Albums) appears in the gallery (ADR-044).
 
+The Maker Prize page at `/maker-prize/` comes from the pattern `page-maker-prize`. It shows a countdown to its deadline, switches to a closed state after it, and its two Apply buttons open the Formbricks form with their own entry values. Home's Pillar III button links to it, and the breadcrumbs put it under What We Do (ADR-082).
+
 ## Release
 
-The latest tagged release is 1.16.0 (`v1.16.0`). The code is at 1.17.0, which is not merged or tagged yet. Each release is tagged `vX.Y.Z` when it is merged, and `git tag` lists the released versions. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059, ADR-073). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip` for the first two.
+The latest tagged release is 1.16.0 (`v1.16.0`). The code is at 1.18.0, which is not merged or tagged yet, and 1.16.1 and 1.17.0 sit below it unmerged. Each release is tagged `vX.Y.Z` when it is merged, and `git tag` lists the released versions. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059, ADR-073). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip` for the first two.
 
 Upload in this order:
 
@@ -142,6 +144,6 @@ Delete the plugin afterwards. It leaves a small hidden mark on the media files (
 | 6 | Frontend behaviour | done |
 | 7 | QA and release | done |
 
-The build plan was completed at version 1.0.0. Versions 1.1.0 to 1.13.0 add the Home motion, the Map and Post Video blocks, the Button icon panel, list order and the shared viewer (ADR-060 to ADR-072). Versions 1.13.1 to 1.16.0 move the owner's editor choices into the theme, add the event countdown and the Formbricks buttons, fix pressing a link in a block that is rising in, and record which button opened a Formbricks form (ADR-074 to ADR-079). Version 1.16.1 applies the October design update's Home wording and the footer's company registration line (ADR-080), and 1.17.0 adds the Deadline Countdown block and the classes that switch at a deadline (ADR-081). At 1.0.0, Lighthouse on the development site scored 95 to 99 on mobile and 100 on desktop for Home, Gallery, Job Series and an event page (ADR-057). The migration has not been run on the live site yet (ADR-059).
+The build plan was completed at version 1.0.0. Versions 1.1.0 to 1.13.0 add the Home motion, the Map and Post Video blocks, the Button icon panel, list order and the shared viewer (ADR-060 to ADR-072). Versions 1.13.1 to 1.16.0 move the owner's editor choices into the theme, add the event countdown and the Formbricks buttons, fix pressing a link in a block that is rising in, and record which button opened a Formbricks form (ADR-074 to ADR-079). Version 1.16.1 applies the October design update's Home wording and the footer's company registration line (ADR-080), 1.17.0 adds the Deadline Countdown block and the classes that switch at a deadline (ADR-081), and 1.18.0 adds the Maker Prize page (ADR-082). At 1.0.0, Lighthouse on the development site scored 95 to 99 on mobile and 100 on desktop for Home, Gallery, Job Series and an event page (ADR-057). The migration has not been run on the live site yet (ADR-059).
 
 Architecture decisions and future work are in [docs/decisions.md](docs/decisions.md). Changes are in [docs/changelog.md](docs/changelog.md).

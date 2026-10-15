@@ -1685,7 +1685,7 @@ Not verified:
 
 ## ADR-079: Tell each Formbricks form which button opened it, with a second class `ts-entry-<value>`
 
-**Status:** Accepted
+**Status:** Superseded by ADR-082 (entry values only; the rest stands)
 
 **Context:**
 - This builds on ADR-075 and ADR-076 and supersedes neither. It is release 1.16.0, branch `feat/survey-entry-point`.
@@ -1796,8 +1796,42 @@ Not verified:
   - The deadline dates written in the page's copy are plain text and must be changed by hand with the deadline. The help text reminds the editor.
   - Two implementations of the same arithmetic must be kept in step, as in ADR-074.
 
+## ADR-082: Give the Maker's Prize its own page, and open its form with the existing code action, not the board's id hook
+
+**Status:** Accepted
+
+**Context:**
+- This is release 1.18.0, branch `feat/maker-prize-page`. The site owner decided on 2026-10-15.
+- The 2026-10-15 design update adds Maker Prize boards, open and closed, in three widths. They hook "Apply now" for a no-code Formbricks click action with `id="maker-prize-apply"` and the class `maker-prize-apply`, on both Apply links. The id is therefore duplicated on the page.
+- Home's Pillar III button "Apply for the Maker’s Prize" opened the form itself, with entry value `home_makers_prize` (ADR-075, ADR-079).
+- The live site has no shell. The migration plugin's runner (ADR-059) updates existing pages and creates menus, but does not create pages.
+
+**Options:**
+- Keep the form on Home only and add no page. The boards would have no place to live.
+- Use the board's id hook, as designed. A no-code action is set up in Formbricks, not in our code, and a repeated id is invalid HTML. It would also bypass the entry value (ADR-079).
+- Use the existing code action (ADR-075) on the new page (chosen).
+- Ship the page as a pattern only, and have the owner create it on live by hand. The migration plugin can do it, and the owner has wp-admin only (ADR-059).
+
+**Decision:**
+- Page: `/maker-prize/`, from the pattern `tekseries/page-maker-prize`, with the template `page-no-title`. Its deadline is page meta (ADR-081).
+- Home: the Pillar III button becomes a plain link to `/maker-prize/`. Entry value `home_makers_prize` is retired. This amends ADR-079's list of values, which is now `home_job_series`, `job_series_hero`, `job_listing`, `maker_prize_hero` and `maker_prize_cta`.
+- Apply links: the class `ts-survey-makers-prize` with `ts-entry-maker_prize_hero` or `ts-entry-maker_prize_cta`. ADR-075 stands. The board's id hook is rejected.
+- Breadcrumbs: the page sits under Home's What We Do (Home / What We Do / Maker Prize). A map of page slug to section crumb, `tekseries_breadcrumb_sections()`, is filterable through `tekseries_breadcrumb_sections`. Only `maker-prize` is in it.
+- Live: the migration plugin creates the page, marked with `_tekseries_migration_source` like the menus it creates, and skips an unmarked page already at that slug. The migration plugin 1.3.0 creates it: a step before the pages and posts creates each page in the bundle's `pages_new` list, with its template and `tekseries_deadline`, and updates it on later runs.
+
+**Rationale:**
+- The code action keeps one way to open forms, with the entry value recorded and the link fallback of ADR-076, and no duplicate id.
+- A page of its own gives the boards a home and Home a real link, which also works without JavaScript (ADR-005).
+- A filterable map keeps the breadcrumb rule out of the page and open to the next page that needs a section.
+- The mark lets a later bundle find the page it made and leaves a page the owner made untouched, as with menus.
+- Consequences:
+  - Answers already in Formbricks keep `home_makers_prize`. New ones carry the page's two values.
+  - On live, the runner must create the page before it updates Home. Otherwise Home would link to a missing page for a moment.
+  - The owner should set the Formbricks form to close at the deadline too. A cached page can stay open past it (ADR-081).
+
 ## Future work
 
+- **Maker Prize page on live:** the migration plugin 1.3.0 creates `/maker-prize/` before it updates Home. What remains is running it on live after the rehearsal (owner; ADR-082, ADR-059).
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).
 - **Intro motion tokens:** when the design system's `animation` tokens match the build's values (ADR-080), map them, and move the 28px distance and 0.15s start of `ts-intro` (and the hero carousel) onto tokens (ADR-063).
 
