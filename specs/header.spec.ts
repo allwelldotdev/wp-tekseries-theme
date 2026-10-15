@@ -264,3 +264,45 @@ test.describe( 'logos', () => {
 		);
 	} );
 } );
+
+// The legal row under the footer panel (1.16.1): the copyright, the company's
+// registration number and the designer's credit, then the legal links. On
+// phones each item has its own centred line, as on the mobile board.
+test.describe( 'footer legal row', () => {
+	test( 'shows the CR No. on every page', async ( { page } ) => {
+		for ( const url of [ '/', '/?s=tekseries', '/no-such-page/' ] ) {
+			await page.goto( url );
+			await expect(
+				page.getByRole( 'contentinfo' ).getByText( 'CR No. 9920315.', {
+					exact: true,
+				} )
+			).toBeVisible();
+		}
+	} );
+
+	test( 'stacks its items one per line on phones', async ( { page } ) => {
+		await page.setViewportSize( { width: 390, height: 844 } );
+		await page.goto( '/' );
+		const legal = page.locator( '.ts-footer__legal' );
+		const items = [
+			legal.getByText( /^Copyright © TekSeries \d{4}$/ ),
+			legal.getByText( 'CR No. 9920315.', { exact: true } ),
+			legal.getByText( /^Designed and developed by/ ),
+			legal.getByRole( 'navigation', { name: 'Legal' } ),
+		];
+		const first = await items[ 0 ]!.boundingBox();
+		expect( first ).not.toBeNull();
+		const centre = first!.x + first!.width / 2;
+		let above = first!;
+		for ( const item of items.slice( 1 ) ) {
+			const box = await item.boundingBox();
+			expect( box ).not.toBeNull();
+			// Below the item before it, and centred on the same line.
+			expect( box!.y ).toBeGreaterThanOrEqual( above.y + above.height );
+			expect( Math.abs( box!.x + box!.width / 2 - centre ) ).toBeLessThan(
+				2
+			);
+			above = box!;
+		}
+	} );
+} );

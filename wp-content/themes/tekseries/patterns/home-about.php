@@ -67,11 +67,11 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph {"fontSize":"body-l"} -->
-<p class="has-body-l-font-size"><?php echo esc_html__( 'We have set out to achieve these goals by forming core industry partnerships and adopting a multi-pronged targeted approach to services. This includes free digital skills workshops for various ages and skill levels; Incubator program sponsorships; Annual Solution Prizes and StartUp funding for viable products or services.', 'tekseries' ); ?></p>
+<p class="has-body-l-font-size"><?php echo esc_html__( 'We have set out to achieve these goals by forming core industry partnerships and adopting a multi-pronged and targeted approach to services. This includes free digital skills workshops for various ages and skill levels; Incubator program sponsorships; Annual Solution Prizes and Micro Seed funding for viable products or services.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph {"fontSize":"body-l"} -->
-<p class="has-body-l-font-size"><?php echo esc_html__( 'Most recently, we have added Job Series, a platform dedicated to helping challenge Nigeria’s youth unemployment menace.', 'tekseries' ); ?></p>
+<p class="has-body-l-font-size"><?php echo esc_html__( 'Our most recent addition, the Job Series platform, is dedicated to curating, highlighting and aggregating city and regional job opportunities, to help challenge Nigeria’s youth unemployment menace.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
@@ -110,7 +110,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"}},"textColor":"coral-text","fontSize":"caption"} -->
-<p class="has-coral-text-color has-text-color has-caption-font-size" style="font-weight:700"><?php echo esc_html__( 'Source: National Bureau of Statistics (NBS) & international labor assessments', 'tekseries' ); ?></p>
+<p class="has-coral-text-color has-text-color has-caption-font-size" style="font-weight:700"><?php echo esc_html__( 'Source: National Bureau of Statistics, Nigeria.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
@@ -141,6 +141,10 @@
 
 <!-- wp:paragraph {"fontSize":"body-s"} -->
 <p class="has-body-s-font-size"><?php echo esc_html__( 'Driven by rising demand for global tech talent and Africa’s emerging creator economy, digital upskilling has become the single fastest lever for financial mobility in West Africa. Demand for specialized technical roles—such as Data Analytics and Cybersecurity—has surged by over 142%, with qualified, entry-level digital freelancers and qualified remote workers in Nigeria able to earn monthly incomes ranging from $1,000 to $4,000 USD.', 'tekseries' ); ?></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700"}},"textColor":"coral-text","fontSize":"caption"} -->
+<p class="has-coral-text-color has-text-color has-caption-font-size" style="font-weight:700"><?php echo esc_html__( 'Sources: Int’l Finance Corp. & National Labor Reports.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
