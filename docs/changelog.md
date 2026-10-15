@@ -2,6 +2,17 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.17.0] — 2026-10-15
+### New
+- Editors get a new block, Deadline Countdown, that counts down to the deadline of the page it sits on, either as four tiles (days, hours, minutes and seconds, with "Mins" and "Secs" on phones) or as one line.
+- The one-line version reads, for example, "12 days left to apply", and "Last day to apply" in the last 24 hours; after the deadline the line is left out and the tiles all read 00.
+- Without JavaScript the countdown shows the days only; the hours, minutes and seconds appear once the page's script runs.
+- Editors set a page's deadline in the Deadline Countdown block's settings, in the Deadline field, as a date and time in Nigerian time that is saved with the page; the picker has no seconds, so 11:59 PM is saved as 23:59:00.
+- Editors can make blocks show only until the deadline by adding the class `ts-when-open`, or only after it by adding `ts-when-closed`; on a page that is open in the browser they swap by themselves when the countdown reaches zero.
+- A page without a deadline counts as open, and in the editor a dashed outline marks the `ts-when-closed` blocks so they can be found.
+- Editors can show a Button as disabled and greyed, for example for "Applications closed", by setting the Button to be a button instead of a link and adding the class `ts-disabled`.
+- The Button block's Icon control now offers a lock icon, and the icon collection gains a timer icon and a certificate icon.
+
 ## [1.16.1] — 2026-10-15
 ### New
 - Visitors now see the company registration line "CR No. 9920315." in the footer of every page, between the copyright and the designer's credit.
@@ -355,7 +366,6 @@ This file records what visitors and site editors of tekseries.com will notice in
 - Text appears in the site's own fonts sooner when a page loads.
 
 ## Planned
-- Editors will get a Deadline Countdown block and a deadline field on pages, to show time left to a date.
 - A Maker Prize page will open from the Maker's Prize button in Home's third pillar.
 - The Home banner may get Previous and Next arrows if they are wanted.
 - The Gallery "Load more" button will add 10 items on phones, and the totals at the top of the Gallery will follow the year filter.

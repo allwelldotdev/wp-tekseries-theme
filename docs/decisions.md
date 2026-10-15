@@ -1760,6 +1760,42 @@ Not verified:
   - `docs/design-reference/` keeps the design system's values verbatim, because that folder is never hand-edited.
   - The board mapping document lists the values to send back.
 
+## ADR-081: Keep one deadline per page as page meta, and switch open and closed states on the server and again in the browser
+
+**Status:** Accepted
+
+**Context:**
+- This is release 1.17.0, branch `feat/deadline-countdown`. The 2026-10-15 design update adds a Maker Prize page (built in 1.18.0). It has a live countdown to 1 December 2026, 11:59 PM WAT. After the deadline, "Apply now" becomes a disabled "Applications closed" button and a winners line appears. The board switches state in its own script.
+- Live is behind a page cache, and the server's HTML must be complete and usable without JavaScript (ADR-005).
+- WordPress's clock is UTC. Event times are already read in Nigerian time (ADR-074).
+- Several blocks on the page (the countdown, the days line, the buttons, the winners line) must agree on one moment.
+
+**Options:**
+- Where the deadline lives: an ACF field (ACF holds the event fields, ADR-010), or registered page meta.
+- How blocks get it: a block attribute on each block, or one value on the page.
+- Where the state switches: in the browser only, or on the server at render time plus a browser swap. In the browser only, a closed page would still print the Apply link and load the Formbricks script (ADR-075), and without JavaScript it would show "open".
+- The countdown: reuse the event countdown block (ADR-074), which reads event fields from block context, or a new block.
+
+**Decision:**
+- Field: page meta `tekseries_deadline`, registered on `page` in `includes/deadline.php`. The value is "Y-m-d\TH:i:s", read in Nigerian time through `tekseries_blocks_event_timezone()` (ADR-074). It is REST-visible and sanitised: an invalid value is stored as empty, and empty means no deadline. It is not an ACF field.
+- Block: `tekseries/deadline-countdown`, dynamic, with two views. Tiles show days, hours, minutes and seconds. The days line shows "12 days left to apply", or "Last day to apply" in the last 24 hours. It reads the page's deadline and prints nothing on a page without one. The days view prints nothing once closed. The tiles show 00, dimmed.
+- States: a block with the class `ts-when-open` shows before the deadline and one with `ts-when-closed` after it. A `render_block` filter at priority 5 decides this, before the survey link filter at priority 10. A closed page therefore prints no Apply link and loads no Formbricks script. A page without a deadline is always open. On a page made before the deadline, closed blocks are printed `hidden`, and the script swaps both kinds at zero.
+- Disabled button: a Button set to be a `<button>` with the class `ts-disabled` gets `disabled`.
+- Script: the module is not listed in `block.json`. It is enqueued only while something counts down on an open page, from the block or from a `ts-when-*` block. This is the exception ADR-074 made to ADR-047. A closed page loads no script.
+- Server output: only what stays true for a while. That is the days, the days line and a screen-reader sentence by whole days ("Applications close in 12 days.", or "in less than a day"). The hours, minutes and seconds wait for the script, as in ADR-074.
+- The arithmetic and the words are written twice, in `src/deadline-countdown/time.ts` (unit tested) and in `includes/deadline.php`, and are kept alike. Words are [ one, many ] pairs sent to the script. This fixes the board's "1 days" and "0 days left".
+
+**Rationale:**
+- Page meta is plain registered meta that works without ACF (ADR-032), and the editor sidebar and the migration can set it. One value on the page keeps every block agreeing, where attributes could drift apart.
+- Deciding on the server keeps a closed page free of the Apply link and the Formbricks script, and keeps rule 3 of ADR-005 true. The browser swap covers a page made before the deadline.
+- The event countdown reads event fields and an event day, so a new block is simpler than bending it.
+- Consequences:
+  - A page cached while open stays open for visitors until their script runs, which swaps it at zero. Without JavaScript it stays open until the cache expires. The owner should also close the form in Formbricks at the deadline, which covers cached pages.
+  - The editor's date-time picker has no seconds, so a deadline picked as 11:59 PM is 23:59:00, a minute before the design's 23:59:59. The migration and the page's own value use 23:59:59.
+  - The picker works in the site's time zone setting (UTC) and may show a "UTC" note while the value is read as Nigerian time. The help text says so.
+  - The deadline dates written in the page's copy are plain text and must be changed by hand with the deadline. The help text reminds the editor.
+  - Two implementations of the same arithmetic must be kept in step, as in ADR-074.
+
 ## Future work
 
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).
