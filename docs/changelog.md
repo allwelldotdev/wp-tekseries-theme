@@ -2,7 +2,7 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
-## [1.16.0] — 2026-10-14
+## [1.16.0] — 2026-10-15
 ### New
 - A form opened from a button on the site now tells Formbricks which button opened it: each answer carries the button's name in the form's hidden field `entry_point`.
 - In Formbricks, the form needs a hidden field with the ID `entry_point` for this; a form without it still opens and simply records no name.
