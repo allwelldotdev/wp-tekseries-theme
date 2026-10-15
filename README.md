@@ -100,7 +100,7 @@ A Button's "Icon" panel sets the icon classes the theme's CSS draws (ADR-067), `
 
 ## Release
 
-The latest tagged release is 1.15.1 (`v1.15.1`). The code is at 1.16.0, not yet merged or tagged. Each release is tagged `vX.Y.Z` when it is merged, and `git tag` lists the released versions. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059, ADR-073). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip` for the first two.
+The latest tagged release is 1.16.0 (`v1.16.0`), and the code is at the same version. Each release is tagged `vX.Y.Z` when it is merged, and `git tag` lists the released versions. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059, ADR-073). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip` for the first two.
 
 Upload in this order:
 
@@ -116,9 +116,9 @@ The third zip is a one-off plugin, "TekSeries Migration", built from the develop
 - Media Library files made on the development site that the pages and albums use;
 - anything saved in the Site Editor: templates, template parts, menus and styles with Additional CSS. Nothing is saved there now, so the bundle carries none of it (ADR-073, ADR-078).
 
-The bundle built on 2026-10-13 holds ten pages and posts, sixteen topic icons, eight albums, five media files, one poster and three options. A media file over 5 MB goes to `upload-first` beside the zip instead (today, one 47 MB video), and you upload it by hand first. The migration screen names any such file that is still missing and shows no button until it is there.
+The bundle built on 2026-10-15 holds ten pages and posts, sixteen topic icons, eight albums, five media files, one poster and three options. A media file over 5 MB goes to `upload-first` beside the zip instead (today, one 47 MB video), and you upload it by hand first. The migration screen names any such file that is still missing and shows no button until it is there.
 
-Migration plugin 1.2.0 refuses to run when TekSeries Blocks or the theme on the site is older than 1.15.1. Open Tools → TekSeries migration for a dry run that changes nothing. A button then applies the changes, gives existing events and posts their tones, and switches the theme.
+Migration plugin 1.2.0 refuses to run when TekSeries Blocks or the theme on the site is older than 1.16.0. Open Tools → TekSeries migration for a dry run that changes nothing. A button then applies the changes, gives existing events and posts their tones, and switches the theme.
 
 Delete the plugin afterwards. It leaves a small hidden mark on the media files (and any menu) it created, so a later migration zip finds them instead of creating them again.
 
