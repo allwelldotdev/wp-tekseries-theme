@@ -12,7 +12,7 @@
       "y": 0
     },
     "ContactMobile.dc.html": {
-      "h": 4700,
+      "h": 4720,
       "is_interactive": true,
       "page": "contact",
       "title": "TekSeries Contact - Mobile (390)",
@@ -47,7 +47,7 @@
       "y": 4820
     },
     "EventPostMobile.dc.html": {
-      "h": 4890,
+      "h": 4910,
       "is_interactive": true,
       "page": "events",
       "title": "TekSeries Event Post - Mobile (390)",
@@ -74,7 +74,7 @@
       "y": 0
     },
     "EventsMobile.dc.html": {
-      "h": 4410,
+      "h": 4430,
       "is_interactive": true,
       "page": "events",
       "title": "TekSeries Events - Mobile (390)",
@@ -128,7 +128,7 @@
       "y": 2520
     },
     "GalleryMobile.dc.html": {
-      "h": 2310,
+      "h": 2340,
       "is_interactive": true,
       "page": "gallery",
       "title": "TekSeries Gallery - Mobile (390)",
@@ -146,7 +146,7 @@
       "y": 0
     },
     "Main.dc.html": {
-      "h": 7010,
+      "h": 7050,
       "is_interactive": true,
       "page": "homepage",
       "title": "TekSeries Home - Larger Text",
@@ -155,7 +155,7 @@
       "y": 0
     },
     "Mobile.dc.html": {
-      "h": 8000,
+      "h": 11110,
       "is_interactive": true,
       "page": "homepage",
       "title": "TekSeries Home - Mobile (390)",
@@ -173,7 +173,7 @@
       "y": 0
     },
     "NewsMobile.dc.html": {
-      "h": 4170,
+      "h": 4200,
       "is_interactive": true,
       "page": "news",
       "title": "TekSeries News - Mobile (390)",
@@ -218,7 +218,7 @@
       "y": 8790
     },
     "NewsPostTextMobile.dc.html": {
-      "h": 3740,
+      "h": 3760,
       "is_interactive": true,
       "page": "news",
       "title": "TekSeries News Post, no image - Mobile (390)",
@@ -245,7 +245,7 @@
       "y": 0
     },
     "Tablet.dc.html": {
-      "h": 8000,
+      "h": 9230,
       "is_interactive": true,
       "page": "homepage",
       "title": "TekSeries Home - Tablet (834)",
@@ -272,7 +272,7 @@
       "y": 0
     },
     "PrivacyMobile.dc.html": {
-      "h": 5870,
+      "h": 5900,
       "is_interactive": true,
       "page": "legal",
       "title": "TekSeries Privacy Policy - Mobile (390)",
@@ -299,7 +299,7 @@
       "y": 5990
     },
     "TermsMobile.dc.html": {
-      "h": 4160,
+      "h": 4190,
       "is_interactive": true,
       "page": "legal",
       "title": "TekSeries Terms and Conditions - Mobile (390)",
@@ -326,7 +326,7 @@
       "y": 0
     },
     "JobSeriesMobile.dc.html": {
-      "h": 5940,
+      "h": 5970,
       "is_interactive": true,
       "page": "jobs",
       "title": "TekSeries Job Series - Mobile (390)",
@@ -353,7 +353,7 @@
       "y": 6060
     },
     "JobPostMobile.dc.html": {
-      "h": 4640,
+      "h": 4660,
       "is_interactive": true,
       "page": "jobs",
       "title": "TekSeries Job Series Post - Mobile (390)",
@@ -380,7 +380,7 @@
       "y": 10820
     },
     "JobSubmitSignInMobile.dc.html": {
-      "h": 1700,
+      "h": 1730,
       "is_interactive": true,
       "page": "jobs",
       "title": "TekSeries Submit a Job: 1 Sign in - Mobile (390)",
@@ -407,7 +407,7 @@
       "y": 12640
     },
     "JobSubmitFormMobile.dc.html": {
-      "h": 3790,
+      "h": 3810,
       "is_interactive": true,
       "page": "jobs",
       "title": "TekSeries Submit a Job: 2 Form - Mobile (390)",
@@ -434,7 +434,7 @@
       "y": 16550
     },
     "JobSubmitPreviewMobile.dc.html": {
-      "h": 1750,
+      "h": 1770,
       "is_interactive": true,
       "page": "jobs",
       "title": "TekSeries Submit a Job: 3 Preview - Mobile (390)",
@@ -461,7 +461,7 @@
       "y": 18420
     },
     "JobSubmitDraftMobile.dc.html": {
-      "h": 3880,
+      "h": 3910,
       "is_interactive": true,
       "page": "jobs",
       "title": "TekSeries Submit a Job: 4 Draft saved - Mobile (390)",
@@ -488,7 +488,7 @@
       "y": 22420
     },
     "JobDashboardMobile.dc.html": {
-      "h": 1550,
+      "h": 1570,
       "is_interactive": true,
       "page": "jobs",
       "title": "TekSeries Job Dashboard: 5 List - Mobile (390)",
@@ -515,7 +515,7 @@
       "y": 24090
     },
     "JobDashboardMenuMobile.dc.html": {
-      "h": 1550,
+      "h": 1570,
       "is_interactive": true,
       "page": "jobs",
       "title": "TekSeries Job Dashboard: 6 Actions menu - Mobile (390)",
@@ -549,6 +549,60 @@
       "w": 390,
       "x": 2434,
       "y": 25760
+    },
+    "MakerPrize.dc.html": {
+      "h": 1746,
+      "is_interactive": true,
+      "page": "makers",
+      "title": "TekSeries Maker Prize - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "MakerPrizeTablet.dc.html": {
+      "h": 2233,
+      "is_interactive": true,
+      "page": "makers",
+      "title": "TekSeries Maker Prize - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 0
+    },
+    "MakerPrizeMobile.dc.html": {
+      "h": 2431,
+      "is_interactive": true,
+      "page": "makers",
+      "title": "TekSeries Maker Prize - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 0
+    },
+    "MakerPrizeClosed.dc.html": {
+      "h": 1778,
+      "is_interactive": true,
+      "page": "makers",
+      "title": "TekSeries Maker Prize, applications closed - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 2551
+    },
+    "MakerPrizeClosedTablet.dc.html": {
+      "h": 2278,
+      "is_interactive": true,
+      "page": "makers",
+      "title": "TekSeries Maker Prize, applications closed - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 2551
+    },
+    "MakerPrizeClosedMobile.dc.html": {
+      "h": 2494,
+      "is_interactive": true,
+      "page": "makers",
+      "title": "TekSeries Maker Prize, applications closed - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 2551
     }
   },
   "createdOnFiles": {
@@ -558,10 +612,10 @@
   "designSystems": [
     {
       "artifact": "https://claude.ai/artifact/92of7TNC5fWLzLNt9JAKQb",
-      "copiedAt": "2026-09-28T14:36:00Z",
+      "copiedAt": "2026-10-12T09:44:07Z",
       "namespace": "tekseries",
       "title": "TekSeries New",
-      "version": "1790605302-6eda"
+      "version": "1791798236-b476"
     }
   ],
   "launch": {
@@ -630,7 +684,13 @@
     "JobDashboardMenuMobile.dc.html",
     "JobDashboardStats.dc.html",
     "JobDashboardStatsTablet.dc.html",
-    "JobDashboardStatsMobile.dc.html"
+    "JobDashboardStatsMobile.dc.html",
+    "MakerPrize.dc.html",
+    "MakerPrizeTablet.dc.html",
+    "MakerPrizeMobile.dc.html",
+    "MakerPrizeClosed.dc.html",
+    "MakerPrizeClosedTablet.dc.html",
+    "MakerPrizeClosedMobile.dc.html"
   ],
   "pages": [
     {
@@ -664,6 +724,10 @@
     {
       "id": "jobs",
       "name": "Job Series"
+    },
+    {
+      "id": "makers",
+      "name": "Maker Prize"
     }
   ],
   "title": "TekSeries Home"

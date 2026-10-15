@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TekSeries Maker Prize - Mobile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>:where([id]){scroll-margin-top:88px}</style><style>.ts-si{display:block;width:20px;height:20px;background:currentColor;-webkit-mask:var(--si) center/contain no-repeat;mask:var(--si) center/contain no-repeat}.ts-si-in{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/linkedin-in.svg)}.ts-si-fb{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/facebook-f.svg)}.ts-si-ig{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/instagram.svg)}.ts-si-wa{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/whatsapp.svg)}</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBF7F9;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}a:hover{color:#E76F51}.ms{font-family:'Material Symbols Rounded';font-weight:400;font-style:normal;line-height:1;display:inline-block;letter-spacing:normal;text-transform:none;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
+.clamp3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+button{font-family:inherit}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+</style></helmet>
+<div style="width:390px;height:2494px;font-family:'Onest',sans-serif;color:#2A1533;background:#FBF7F9;font-variant-ligatures:none">
+  <header style="position:sticky;top:0;z-index:5;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid #EADFE6;flex-wrap:wrap">
+    <img src="https://tekseries.com/wp-content/uploads/2025/08/tekseries_logo_no0goj.png" alt="TekSeries" style="height:34px;width:auto">
+    <button type="button" onClick="{{ toggleMenu }}" aria-label="Menu" aria-expanded="{{ menuExpanded }}" style="width:44px;height:44px;border-radius:50%;border:1px solid #EADFE6;background:#F1E6EE;color:#4A1D5E;display:grid;place-items:center;cursor:pointer"><span class="ms" style="font-size:22px">{{ menuIcon }}</span></button>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <nav aria-label="Main" style="display:flex;flex-basis:100%;flex-direction:column;gap:2px;padding:10px 0 6px;font-size:16px;font-weight:600;color:#4A1D5E">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="7"><a href="{{ n.href }}" aria-current="{{ n.current }}" onClick="{{ closeMenu }}" style="padding:12px 12px;border-radius:12px;background:{{ n.bg }}" style-hover="background:#F1E6EE">{{ n.label }}</a></sc-for>
+        <div style="display:flex;gap:8px;padding:8px 0 0">
+          <a href="JobSeriesMobile.dc.html" style="flex:1;text-align:center;padding:12px 16px;border-radius:999px;font-size:15px;font-weight:700;color:#4A1D5E;background:#F1E6EE">Job Series</a>
+          <a href="JobSubmitSignInMobile.dc.html" style="flex:1;text-align:center;padding:12px 16px;background:#4A1D5E;border-radius:999px;font-size:15px;font-weight:700;color:#fff">Post A Job</a>
+        </div>
+      </nav>
+    </sc-if>
+  </header>
+
+  <section style="padding:20px 16px 0">
+    <div style="position:relative;overflow:hidden;background:#F4A261;color:#2A1533;border-radius:24px">
+      <span class="ms" aria-hidden="true" style="position:absolute;right:-30px;bottom:-60px;font-size:180px;color:rgba(74,29,94,.1)">emoji_events</span>
+      <div style="position:relative;padding:28px 20px;display:grid;grid-template-columns:1fr;gap:20px;align-items:center">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <nav aria-label="Breadcrumb" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#2A1533"><a href="Mobile.dc.html" style="display:flex;align-items:center;gap:6px"><span class="ms" style="font-size:18px">home</span>Home</a><span aria-hidden="true">/</span><a href="Mobile.dc.html#services">What We Do</a><span aria-hidden="true">/</span><span aria-current="page">Maker Prize</span></nav>
+          <span style="width:max-content;max-width:100%;box-sizing:border-box;display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;background:#2A1533;color:#fff;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase"><span class="ms" style="font-size:18px">emoji_events</span>Pillar III · Maker’s Prize</span>
+          <h1 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-weight:800;font-size:30px;line-height:1.04;letter-spacing:-.03em;text-wrap:pretty">Annual Maker Prize Application</h1>
+          <p style="margin:0;font-size:16px;line-height:1.6;max-width:640px"><sc-if value="{{ isOpen }}" hint-placeholder-val="{{ true }}">TekSeries is accepting applications for our Annual Maker Prize, designed to support</sc-if><sc-if value="{{ isClosed }}" hint-placeholder-val="{{ false }}">Applications are now closed for our Annual Maker Prize, designed to support</sc-if> students, recent graduates, and early-stage startups. We are awarding equity-free cash prizes, alongside an exclusive Accelerator Sponsorship that includes comprehensive legal and startup guidance to our first-place winner.</p>
+        </div>
+        <div style="position:relative;background:#2A1533;color:#fff;border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:16px">
+          <sc-if value="{{ isOpen }}" hint-placeholder-val="{{ true }}"><span style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#F4A261"><span class="ms" style="font-size:20px">timer</span>Applications close in</span></sc-if>
+          <sc-if value="{{ isClosed }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#F4A261"><span class="ms" style="font-size:20px">event_busy</span>Applications are closed</span></sc-if>
+          <div aria-hidden="true" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px">
+            <sc-for list="{{ tiles }}" as="t" hint-placeholder-count="4"><div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 6px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)"><span style="font-family:'Schibsted Grotesk',sans-serif;font-size:30px;font-weight:800;line-height:1;letter-spacing:-.03em;color:{{ tileColor }};font-variant-numeric:tabular-nums">{{ t.value }}</span><span style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#E5D3E0">{{ t.label }}</span></div></sc-for>
+          </div>
+          <p style="margin:0;display:flex;align-items:flex-start;gap:8px;font-size:15px;line-height:1.5;color:#E5D3E0"><span class="ms" style="font-size:20px;color:#F4A261">event</span><span><strong style="color:#fff">Submission Deadline:</strong> December 1, 2026, 11:59 PM WAT</span></p>
+          <span class="sr-only">{{ srCountdown }}</span>
+          <sc-if value="{{ isOpen }}" hint-placeholder-val="{{ true }}"><a id="maker-prize-apply" href="#" class="maker-prize-apply" style="width:100%;box-sizing:border-box;display:flex;justify-content:center;align-items:center;gap:8px;padding:14px 26px;background:#F4A261;color:#2A1533;border-radius:999px;font-weight:700;font-size:16px" style-hover="background:#fff;color:#2A1533">Apply now<span class="ms" style="font-size:20px">arrow_forward</span></a></sc-if>
+          <sc-if value="{{ isClosed }}" hint-placeholder-val="{{ false }}"><button type="button" disabled style="width:100%;box-sizing:border-box;display:flex;justify-content:center;align-items:center;gap:8px;padding:14px 26px;background:rgba(255,255,255,.12);color:#E5D3E0;border:1.5px solid rgba(255,255,255,.3);border-radius:999px;font-family:inherit;font-weight:700;font-size:16px;cursor:not-allowed"><span class="ms" style="font-size:20px">lock</span>Applications closed</button></sc-if>
+          <sc-if value="{{ isClosed }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:14px;line-height:1.55;color:#E5D3E0">Winners are announced beginning the first quarter of the new year.</p></sc-if>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="eligibility" style="padding:40px 16px 0;display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <h2 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:28px;font-weight:800;letter-spacing:-.03em;color:#4A1D5E">Eligibility Criteria</h2>
+      <p style="margin:0;font-size:15px;line-height:1.6;color:#3D2A47">Applicants must meet at least one of the following requirements:</p>
+    </div>
+    <ul style="margin:0;padding:0;list-style:none;display:grid;grid-template-columns:1fr;gap:16px">
+      <li style="background:#fff;border:1px solid #EADFE6;border-radius:24px;padding:20px;display:flex;align-items:flex-start;gap:16px"><span aria-hidden="true" style="flex:none;width:48px;height:48px;border-radius:18px;background:#F1E6EE;color:#4A1D5E;display:grid;place-items:center"><span class="ms" style="font-size:24px">school</span></span><span style="padding-top:4px;font-size:16px;font-weight:600;line-height:1.5;color:#2A1533">Students currently enrolled in a secondary school, vocational institution, polytechnic or university program.</span></li>
+      <li style="background:#fff;border:1px solid #EADFE6;border-radius:24px;padding:20px;display:flex;align-items:flex-start;gap:16px"><span aria-hidden="true" style="flex:none;width:48px;height:48px;border-radius:18px;background:#F1E6EE;color:#4A1D5E;display:grid;place-items:center"><span class="ms" style="font-size:24px">workspace_premium</span></span><span style="padding-top:4px;font-size:16px;font-weight:600;line-height:1.5;color:#2A1533">Recent graduates who completed their degree within the last 24 months.</span></li>
+      <li style="background:#fff;border:1px solid #EADFE6;border-radius:24px;padding:20px;display:flex;align-items:flex-start;gap:16px"><span aria-hidden="true" style="flex:none;width:48px;height:48px;border-radius:18px;background:#F1E6EE;color:#4A1D5E;display:grid;place-items:center"><span class="ms" style="font-size:24px">rocket_launch</span></span><span style="padding-top:4px;font-size:16px;font-weight:600;line-height:1.5;color:#2A1533">Startups with less than $10,000 in lifetime funding or revenue.</span></li>
+    </ul>
+    <div role="note" style="background:#F1E6EE;color:#2A1533;border-radius:24px;padding:18px 20px;display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.55"><span class="ms" aria-hidden="true" style="font-size:22px;color:#4A1D5E">info</span><span><strong>Note:</strong> All projects must feature an original, functional prototype, product, service or application.</span></div>
+  </section>
+
+  <section style="padding:40px 16px 40px">
+    <div style="background:#4A1D5E;color:#fff;border-radius:24px;padding:20px;display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#F4A261">{{ ctaEyebrow }}</span>
+        <p style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:22px;font-weight:700;line-height:1.25">Submission Deadline: December 1, 2026.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;flex:none">
+          <sc-if value="{{ isOpen }}" hint-placeholder-val="{{ true }}"><a id="maker-prize-apply" href="#" class="maker-prize-apply" style="width:100%;box-sizing:border-box;display:flex;justify-content:center;align-items:center;gap:8px;padding:14px 26px;background:#F4A261;color:#2A1533;border-radius:999px;font-weight:700;font-size:16px" style-hover="background:#fff;color:#2A1533">Apply now<span class="ms" style="font-size:20px">arrow_forward</span></a></sc-if>
+          <sc-if value="{{ isClosed }}" hint-placeholder-val="{{ false }}"><button type="button" disabled style="width:100%;box-sizing:border-box;display:flex;justify-content:center;align-items:center;gap:8px;padding:14px 26px;background:rgba(255,255,255,.12);color:#E5D3E0;border:1.5px solid rgba(255,255,255,.3);border-radius:999px;font-family:inherit;font-weight:700;font-size:16px;cursor:not-allowed"><span class="ms" style="font-size:20px">lock</span>Applications closed</button></sc-if>
+      </div>
+    </div>
+  </section>
+
+  <footer style="padding:0 16px 24px;display:flex;flex-direction:column;gap:16px">
+    <div style="background:#4A1D5E;color:#E5D3E0;border-radius:24px;padding:28px 22px;display:grid;grid-template-columns:1fr;gap:28px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:10px"><div style="font-family:'Schibsted Grotesk',sans-serif;font-size:28px;font-weight:800;color:#fff;line-height:1.05;letter-spacing:-.02em">Share. Create. <span style="color:#F4A261">Solve.</span></div><p style="margin:0;font-size:14px;line-height:1.6;max-width:320px">Preparing underserved Nigerian youth for the future of work and innovation.</p></div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:14px"><div style="font-weight:700;color:#fff;margin-bottom:4px">Explore</div><a href="Mobile.dc.html#about">Who We Are</a><a href="Mobile.dc.html#services">What We Do</a><a href="NewsMobile.dc.html">News</a><a href="EventsMobile.dc.html">Events</a><a href="GalleryMobile.dc.html">Gallery</a></div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:14px"><div style="font-weight:700;color:#fff;margin-bottom:4px">Job Series</div><a href="JobSeriesMobile.dc.html">Find a job</a><a href="JobSubmitSignInMobile.dc.html">Post a job</a><a href="ContactMobile.dc.html#support">Support our work</a><a href="ContactMobile.dc.html">Contact</a></div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:14px"><div style="font-weight:700;color:#fff;margin-bottom:4px">Find us on social media</div><div style="display:flex;gap:10px"><sc-for list="{{ socials }}" as="s" hint-placeholder-count="3"><a href="{{ s.href }}" aria-label="{{ s.name }}" style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;font-weight:800;font-size:14px;color:#fff" style-hover="background:#F4A261;color:#2A1533"><span class="ts-si ts-si-{{ s.mark }}" aria-hidden="true"></span></a></sc-for></div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;font-size:12px;color:#5B4466;padding:0 12px"><span>Copyright © TekSeries 2026</span><span>CR No. 9920315.</span><span>Designed and developed by <a href="https://allwell.dev" target="_blank" rel="noopener" style="font-weight:700;color:#4A1D5E;text-decoration:underline;text-underline-offset:3px">Allwell</a></span><span style="display:flex;gap:16px"><a href="TermsMobile.dc.html">Terms and Conditions</a><a href="PrivacyMobile.dc.html">Privacy Policy</a></span></div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"countdown":{"editor":"enum","options":["Live","Closed"],"default":"Closed","tsType":"\"Live\" | \"Closed\"","section":"Countdown"},"$preview":{"width":390,"height":2494}}'>
+class Component extends DCLogic {
+  // WordPress: the Maker Prize page. The countdown runs to the submission deadline, Dec 1, 2026 23:59:59 WAT (UTC+1).
+  // When it reaches zero, "Apply now" becomes a disabled "Applications closed" button on its own.
+  // "Apply now" keeps id="maker-prize-apply" (and class maker-prize-apply) with href="#" for the Formbricks click action.
+  state = { menuOpen: false, now: Date.now() };
+  // In-page jumps (#id links): land each target just below the sticky header with 24px of breathing room,
+  // whichever element is doing the scrolling (page, Play frame or canvas preview).
+  componentDidMount() {
+    this._onJump = e => this._jump(e);
+    document.addEventListener('click', this._onJump, true);
+    this._startClock();
+    const h = (window.location && window.location.hash || '').slice(1);
+    if (h && document.getElementById(h)) setTimeout(() => this._scrollTo(h, false), 60);
+  }
+  componentWillUnmount() { document.removeEventListener('click', this._onJump, true); clearInterval(this._tick); this._tick = null; }
+  _jump(e) {
+    const a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const id = a.getAttribute('href').slice(1);
+    if (!id || !document.getElementById(id)) return;
+    e.preventDefault(); e.stopPropagation();
+    if (this.state && this.state.menuOpen) this.setState({ menuOpen: false });
+    requestAnimationFrame(() => requestAnimationFrame(() => this._scrollTo(id, true)));
+  }
+  _scrollTo(id, animate) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const header = document.querySelector('header');
+    const offset = (header ? header.getBoundingClientRect().height : 72) + 24;
+    const smooth = animate && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    let sc = el.parentElement;
+    while (sc && !(/(auto|scroll)/.test(getComputedStyle(sc).overflowY) && sc.scrollHeight > sc.clientHeight)) sc = sc.parentElement;
+    if (!sc) sc = document.scrollingElement || document.documentElement;
+    if (sc.scrollHeight > sc.clientHeight) {
+      const base = sc === document.scrollingElement || sc === document.documentElement ? 0 : sc.getBoundingClientRect().top;
+      const top = el.getBoundingClientRect().top - base + sc.scrollTop - offset;
+      sc.scrollTo({ top: Math.max(0, top), behavior: smooth ? 'smooth' : 'auto' });
+    } else {
+      el.style.scrollMarginTop = offset + 'px';
+      el.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'auto' });
+    }
+  }
+  _startClock() { if (!this._tick) this._tick = setInterval(() => this.setState({ now: Date.now() }), 1000); }
+  renderVals() {
+    const DEADLINE = Date.parse('2026-12-01T23:59:59+01:00');
+    const forced = (this.props.countdown ?? 'Closed') === 'Closed';
+    const left = forced ? 0 : Math.max(0, DEADLINE - this.state.now);
+    const isOpen = left > 0;
+    const s = Math.floor(left / 1000);
+    const pad = n => String(n).padStart(2, '0');
+    const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+    const tiles = [{ value: pad(d), label: 'Days' }, { value: pad(h), label: 'Hours' }, { value: pad(m), label: 'Mins' }, { value: pad(sec), label: 'Secs' }];
+    const nav = [['Who We Are', 'Mobile.dc.html#about'],['What We Do', 'Mobile.dc.html#services'],['News', 'NewsMobile.dc.html'],['Events', 'EventsMobile.dc.html'],['Gallery', 'GalleryMobile.dc.html'],['Team', 'Mobile.dc.html#team'],['Contact', 'ContactMobile.dc.html']]
+      .map(([label, href]) => ({ label, href, current: 'false', bg: 'transparent' }));
+    const menuOpen = this.state.menuOpen;
+    return {
+      nav, tiles, isOpen, isClosed: !isOpen,
+      tileColor: isOpen ? '#F4A261' : 'rgba(255,255,255,.45)',
+      ctaEyebrow: isOpen ? (d + (d === 1 ? ' day' : ' days') + ' left to apply') : 'Applications are closed',
+      srCountdown: isOpen ? ('Applications close in ' + d + ' days, ' + h + ' hours and ' + m + ' minutes.') : 'Applications are closed.',
+      menuOpen,
+      menuIcon: menuOpen ? 'close' : 'menu',
+      menuExpanded: menuOpen ? 'true' : 'false',
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      socials: [
+        { name: 'LinkedIn', mark: 'in', href: 'https://www.linkedin.com/company/tekseries/' },
+        { name: 'Facebook', mark: 'fb', href: 'https://www.facebook.com/share/18AH7UBXue/' },
+        { name: 'Instagram', mark: 'ig', href: 'https://instagram.com/tekseries' }]
+    };
+  }
+}
+</script>
+</body>
+</html>
