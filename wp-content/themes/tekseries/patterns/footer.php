@@ -82,6 +82,10 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
+<p><?php echo esc_html__( 'CR No. 9920315.', 'tekseries' ); ?></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
 <p><?php /* translators: %s: link to the site's designer. */ echo wp_kses_post( sprintf( __( 'Designed and developed by %s', 'tekseries' ), '<a href="https://allwell.dev" target="_blank" rel="noreferrer noopener">Allwell</a>' ) ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->

@@ -16,7 +16,7 @@ button{font-family:inherit}
 .tile img{transition:transform .35s ease}.tile:hover img{transform:scale(1.04)}
 .tile:focus-visible,.lb-btn:focus-visible{outline:3px solid #F4A261;outline-offset:3px}
 </style></helmet>
-<div style="position:relative;width:390px;height:2310px;overflow:clip;font-family:'Onest',sans-serif;color:#2A1533;background:#FBF7F9;font-variant-ligatures:none">
+<div style="position:relative;width:390px;height:2340px;overflow:clip;font-family:'Onest',sans-serif;color:#2A1533;background:#FBF7F9;font-variant-ligatures:none">
   <header style="position:sticky;top:0;z-index:5;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid #EADFE6;flex-wrap:wrap">
     <img src="https://tekseries.com/wp-content/uploads/2025/08/tekseries_logo_no0goj.png" alt="TekSeries" style="height:34px;width:auto">
     <button type="button" onClick="{{ toggleMenu }}" aria-label="Menu" aria-expanded="{{ menuExpanded }}" style="width:44px;height:44px;border-radius:50%;border:1px solid #EADFE6;background:#F1E6EE;color:#4A1D5E;display:grid;place-items:center;cursor:pointer"><span class="ms" style="font-size:22px">{{ menuIcon }}</span></button>
@@ -109,7 +109,7 @@ button{font-family:inherit}
       <div style="display:flex;flex-direction:column;gap:8px;font-size:14px"><div style="font-weight:700;color:#fff;margin-bottom:4px">Job Series</div><a href="JobSeriesMobile.dc.html">Find a job</a><a href="JobSubmitSignInMobile.dc.html">Post a job</a><a href="ContactMobile.dc.html#support">Support our work</a><a href="ContactMobile.dc.html">Contact</a></div>
       <div style="display:flex;flex-direction:column;gap:10px;font-size:14px"><div style="font-weight:700;color:#fff;margin-bottom:4px">Find us on social media</div><div style="display:flex;gap:10px"><sc-for list="{{ socials }}" as="s" hint-placeholder-count="3"><a href="{{ s.href }}" aria-label="{{ s.name }}" style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;font-weight:800;font-size:14px;color:#fff" style-hover="background:#F4A261;color:#2A1533"><span class="ts-si ts-si-{{ s.mark }}" aria-hidden="true"></span></a></sc-for></div></div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;font-size:12px;color:#5B4466;padding:0 12px"><span>Copyright © TekSeries 2026</span><span>Designed and developed by <a href="https://allwell.dev" target="_blank" rel="noopener" style="font-weight:700;color:#4A1D5E;text-decoration:underline;text-underline-offset:3px">Allwell</a></span><span style="display:flex;gap:16px"><a href="TermsMobile.dc.html">Terms and Conditions</a><a href="PrivacyMobile.dc.html">Privacy Policy</a></span></div>
+    <div style="display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;font-size:12px;color:#5B4466;padding:0 12px"><span>Copyright © TekSeries 2026</span><span>CR No. 9920315.</span><span>Designed and developed by <a href="https://allwell.dev" target="_blank" rel="noopener" style="font-weight:700;color:#4A1D5E;text-decoration:underline;text-underline-offset:3px">Allwell</a></span><span style="display:flex;gap:16px"><a href="TermsMobile.dc.html">Terms and Conditions</a><a href="PrivacyMobile.dc.html">Privacy Policy</a></span></div>
   </footer>
 
   <sc-if value="{{ lbOpen }}" hint-placeholder-val="{{ false }}">
@@ -142,7 +142,7 @@ button{font-family:inherit}
   </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2310}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2340}}'>
 class Component extends DCLogic {
   // In-page jumps (#id links): land each target just below the sticky header with 24px of breathing room,
   // whichever element is doing the scrolling (page, Play frame or canvas preview).

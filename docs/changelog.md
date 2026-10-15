@@ -2,6 +2,20 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.16.1] — 2026-10-15
+### New
+- Visitors now see the company registration line "CR No. 9920315." in the footer of every page, between the copyright and the designer's credit.
+
+### Improved
+- On phones, each item in the footer's bottom row now sits on its own centred line.
+
+### Changed
+- On Home, the wording follows the design update of 15 October 2026 in the Method paragraphs (Micro Seed funding, and the Job Series line, which now says it curates, highlights and aggregates city and regional job opportunities), the case study (Scratch and PictoBlox AI programming), and the cards of the second and third pillars.
+- On Home, the first "The challenge" card's source line now reads "Source: National Bureau of Statistics, Nigeria." and "The opportunity" card gains "Sources: Int’l Finance Corp. & National Labor Reports."
+- On Home, the three figures of the Job Series pillar now read 33.3% headline youth unemployment, 53.4% combined labor distress and 142%+ surge in demand for specialized tech roles.
+- On Home, the four cards of the Maker's Prize pillar now say to apply by December 1, that winners are announced beginning the first quarter of the new year, community-driven solutions, and start up guidance.
+- Page patterns only give starting content to new pages; the development site's Home page received the same edits, and the live Home page gets them when the site is moved over.
+
 ## [1.16.0] — 2026-10-15
 ### New
 - A form opened from a button on the site now tells Formbricks which button opened it: each answer carries the button's name in the form's hidden field `entry_point`.
@@ -341,6 +355,8 @@ This file records what visitors and site editors of tekseries.com will notice in
 - Text appears in the site's own fonts sooner when a page loads.
 
 ## Planned
+- Editors will get a Deadline Countdown block and a deadline field on pages, to show time left to a date.
+- A Maker Prize page will open from the Maker's Prize button in Home's third pillar.
 - The Home banner may get Previous and Next arrows if they are wanted.
 - The Gallery "Load more" button will add 10 items on phones, and the totals at the top of the Gallery will follow the year filter.
 - Gallery photos will get descriptive captions and picture descriptions, and the Gallery video will get captions.

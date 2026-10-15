@@ -10,5 +10,5 @@
   "assetGroups": {},
   "blobs": {},
   "docs": {"readme": "project/README.md", "sections": []},
-  "lastChange": {"by": "Allwell", "at": "2026-10-01T09:00:00Z", "via": "Cowork", "note": "Listing-card rule revised: each post owns its tone (set at publish), shared by its card and its solid post-page banner; paging keeps Latest event and Get Involved fixed."}
+  "lastChange": {"by": "Allwell", "at": "2026-10-12T09:43:51Z", "via": "Cowork", "note": "Motion now built with CSS animations (no GSAP): Animation token notes and README Motion section updated."}
 }

@@ -103,7 +103,7 @@
 <!-- /wp:group -->
 
 <!-- wp:paragraph -->
-<p><?php echo esc_html__( 'The Rural Jr. Boot Camp, at Eziama, is a case study in perseverance to progressive impact. Comprised of 8-16 year olds, some of whom had never turned on a computer when they first started the after school program. 12-18 months from finding the power button on a laptop, most of the kids now code and design games using Scratch programming, build an entire Robot Car and even design Event Cards and Flyers. This reaffirms what we all know, that talent knows no boundaries and is the reason, we remain even more committed to improving and expanding our program.', 'tekseries' ); ?></p>
+<p><?php echo esc_html__( 'The Rural Jr. Boot Camp, in Eziama, is a case study in perseverance to progressive impact. Comprised of 8-16 year olds, some of whom had never turned on a computer when they first started the after school program. 12-18 months from finding the power button on a laptop, most of the kids now code and design games using Scratch & PictoBlox AI programming, build an entire Robot Car and design Event Cards and Flyers. This reaffirms what we all know, that talent knows no boundaries and is the reason, we remain even more committed to improving and expanding our program.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group --></article>
@@ -149,31 +149,31 @@
 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"},"@mobile":{"layout":{"columnCount":1},"spacing":{"blockGap":"var:preset|spacing|8"}}},"layout":{"type":"grid","columnCount":3,"minimumColumnWidth":null}} -->
 <div class="wp-block-group"><!-- wp:group {"className":"is-style-tile-glass ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|4","padding":{"top":"var:preset|spacing|16","right":"var:preset|spacing|16","bottom":"var:preset|spacing|16","left":"var:preset|spacing|16"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
 <div class="wp-block-group is-style-tile-glass ts-reveal" style="padding-top:var(--wp--preset--spacing--16);padding-right:var(--wp--preset--spacing--16);padding-bottom:var(--wp--preset--spacing--16);padding-left:var(--wp--preset--spacing--16)"><!-- wp:paragraph {"className":"is-style-stat","textColor":"saffron","fontSize":"heading-3"} -->
-<p class="is-style-stat has-saffron-color has-text-color has-heading-3-font-size"><?php echo esc_html__( '42.5%', 'tekseries' ); ?></p>
+<p class="is-style-stat has-saffron-color has-text-color has-heading-3-font-size"><?php echo esc_html__( '33.3%', 'tekseries' ); ?></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph {"style":{"typography":{"fontWeight":"600","lineHeight":"1.35"}},"textColor":"lilac-deep","fontSize":"body-s"} -->
-<p class="has-lilac-deep-color has-text-color has-body-s-font-size" style="font-weight:600;line-height:1.35"><?php echo esc_html__( 'youth unemployment', 'tekseries' ); ?></p>
+<p class="has-lilac-deep-color has-text-color has-body-s-font-size" style="font-weight:600;line-height:1.35"><?php echo esc_html__( 'headline youth unemployment', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
 <!-- wp:group {"className":"is-style-tile-glass ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|4","padding":{"top":"var:preset|spacing|16","right":"var:preset|spacing|16","bottom":"var:preset|spacing|16","left":"var:preset|spacing|16"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
 <div class="wp-block-group is-style-tile-glass ts-reveal" style="padding-top:var(--wp--preset--spacing--16);padding-right:var(--wp--preset--spacing--16);padding-bottom:var(--wp--preset--spacing--16);padding-left:var(--wp--preset--spacing--16)"><!-- wp:paragraph {"className":"is-style-stat","textColor":"saffron","fontSize":"heading-3"} -->
-<p class="is-style-stat has-saffron-color has-text-color has-heading-3-font-size"><?php echo esc_html__( '21.5%', 'tekseries' ); ?></p>
+<p class="is-style-stat has-saffron-color has-text-color has-heading-3-font-size"><?php echo esc_html__( '53.4%', 'tekseries' ); ?></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph {"style":{"typography":{"fontWeight":"600","lineHeight":"1.35"}},"textColor":"lilac-deep","fontSize":"body-s"} -->
-<p class="has-lilac-deep-color has-text-color has-body-s-font-size" style="font-weight:600;line-height:1.35"><?php echo esc_html__( 'underemployment', 'tekseries' ); ?></p>
+<p class="has-lilac-deep-color has-text-color has-body-s-font-size" style="font-weight:600;line-height:1.35"><?php echo esc_html__( 'combined labor distress', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
 <!-- wp:group {"className":"is-style-tile-glass ts-reveal","style":{"spacing":{"blockGap":"var:preset|spacing|4","padding":{"top":"var:preset|spacing|16","right":"var:preset|spacing|16","bottom":"var:preset|spacing|16","left":"var:preset|spacing|16"}}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch","flexWrap":"nowrap"}} -->
 <div class="wp-block-group is-style-tile-glass ts-reveal" style="padding-top:var(--wp--preset--spacing--16);padding-right:var(--wp--preset--spacing--16);padding-bottom:var(--wp--preset--spacing--16);padding-left:var(--wp--preset--spacing--16)"><!-- wp:paragraph {"className":"is-style-stat","textColor":"saffron","fontSize":"heading-3"} -->
-<p class="is-style-stat has-saffron-color has-text-color has-heading-3-font-size"><?php echo esc_html__( '28M+', 'tekseries' ); ?></p>
+<p class="is-style-stat has-saffron-color has-text-color has-heading-3-font-size"><?php echo esc_html__( '142%+', 'tekseries' ); ?></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph {"style":{"typography":{"fontWeight":"600","lineHeight":"1.35"}},"textColor":"lilac-deep","fontSize":"body-s"} -->
-<p class="has-lilac-deep-color has-text-color has-body-s-font-size" style="font-weight:600;line-height:1.35"><?php echo esc_html__( 'jobs needing digital skills by 2030', 'tekseries' ); ?></p>
+<p class="has-lilac-deep-color has-text-color has-body-s-font-size" style="font-weight:600;line-height:1.35"><?php echo esc_html__( 'surge in demand for specialized tech roles', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group -->
@@ -187,7 +187,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"textColor":"lilac-deep","fontSize":"body-s"} -->
-<p class="has-lilac-deep-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'Nigeria faces severe youth employment challenges, with youth unemployment reaching 42.5% and underemployment at 21.5%. Over 28 million jobs in Nigeria are projected to require digital skills by 2030, yet a structural gap exists between acquiring basic certificates and securing gainful employment or seed support.', 'tekseries' ); ?></p>
+<p class="has-lilac-deep-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'Nigeria faces severe youth employment challenges, with headline youth unemployment at 33.3% and underemployment driving the combined labor distress rate to 53.4%. Demand for specialized technical roles has surged by over 142%, yet a structural gap exists between acquiring basic certificates and securing gainful employment or seed support.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
@@ -199,7 +199,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"textColor":"lilac-deep","fontSize":"body-s"} -->
-<p class="has-lilac-deep-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'A free, curated portal, JobSeries highlights City and regional job opportunities, to match job-ready youth with employers seeking interns, entry-level, and mid-level tech talent. Applicants can upload their CVs and Resumes, perform free job searches and attend periodic interviews, assessments and CV workshops.', 'tekseries' ); ?></p>
+<p class="has-lilac-deep-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'A free, curated portal, JobSeries highlights City and regional job opportunities, to match job-ready youth with employers seeking interns, entry-level, and mid-level tech talent. Applicants can upload their CVs and Resumes, perform free job searches and attend periodic interview assessments, Career Clinics and Workshops.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
@@ -211,7 +211,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"textColor":"lilac-deep","fontSize":"body-s"} -->
-<p class="has-lilac-deep-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'Partnering with corporate entities and startups to create internship pathways that serve as gateways to long-term tech careers.', 'tekseries' ); ?></p>
+<p class="has-lilac-deep-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'Partnering with corporate entities and startups to create internship pathways that serve as gateways to long-term tech and new economy careers.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group --></article>
@@ -247,7 +247,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"textColor":"ink","fontSize":"body-s"} -->
-<p class="has-ink-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'Individual students, student teams and start ups are eligible to apply year round, by going to TekSeries.com.', 'tekseries' ); ?></p>
+<p class="has-ink-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'TekSeries can make independent awards to deserving students, student teams and start ups, who are also eligible to apply by December 1, by going to TekSeries.com.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
@@ -259,7 +259,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"textColor":"ink","fontSize":"body-s"} -->
-<p class="has-ink-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'Winners are announced beginning the first or last quarter of each year.', 'tekseries' ); ?></p>
+<p class="has-ink-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'Winners are announced beginning the first quarter of the new year.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
@@ -271,7 +271,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"textColor":"ink","fontSize":"body-s"} -->
-<p class="has-ink-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'Makers must build community solution-driven products or services.', 'tekseries' ); ?></p>
+<p class="has-ink-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'Makers must build community-driven solutions, products or services.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
@@ -283,7 +283,7 @@
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"textColor":"ink","fontSize":"body-s"} -->
-<p class="has-ink-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'Pre and post MVP support, in the form of micro seed funds, Accelerator program sponsorship, for legal & start up education mentorship.', 'tekseries' ); ?></p>
+<p class="has-ink-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'Pre and post MVP support, in the form of micro seed funds, Accelerator program sponsorship, for legal & start up guidance.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group -->

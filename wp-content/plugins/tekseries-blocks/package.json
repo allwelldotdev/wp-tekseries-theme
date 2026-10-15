@@ -1,6 +1,6 @@
 {
 	"name": "tekseries-blocks",
-	"version": "1.16.0",
+	"version": "1.16.1",
 	"private": true,
 	"description": "Custom blocks for tekseries.com.",
 	"license": "GPL-2.0-or-later",
