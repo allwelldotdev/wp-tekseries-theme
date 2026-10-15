@@ -98,6 +98,7 @@ function tekseries_blocks_icon_labels(): array {
 		'link'                 => __( 'Link', 'tekseries-blocks' ),
 		'link_off'             => __( 'Unlink', 'tekseries-blocks' ),
 		'location_on'          => __( 'Location', 'tekseries-blocks' ),
+		'lock'                 => __( 'Lock', 'tekseries-blocks' ),
 		'login'                => __( 'Login', 'tekseries-blocks' ),
 		'logout'               => __( 'Logout', 'tekseries-blocks' ),
 		'mail'                 => __( 'Mail', 'tekseries-blocks' ),
@@ -135,6 +136,7 @@ function tekseries_blocks_icon_labels(): array {
 		'sync_alt'             => __( 'Swap', 'tekseries-blocks' ),
 		'task_alt'             => __( 'Task done', 'tekseries-blocks' ),
 		'timelapse'            => __( 'Part of the day', 'tekseries-blocks' ),
+		'timer'                => __( 'Timer', 'tekseries-blocks' ),
 		'toc'                  => __( 'Table of contents', 'tekseries-blocks' ),
 		'touch_app'            => __( 'Tap', 'tekseries-blocks' ),
 		'travel_explore'       => __( 'Explore', 'tekseries-blocks' ),
@@ -151,6 +153,7 @@ function tekseries_blocks_icon_labels(): array {
 		'work'                 => __( 'Briefcase', 'tekseries-blocks' ),
 		'work_history'         => __( 'Work history', 'tekseries-blocks' ),
 		'work_off'             => __( 'No work', 'tekseries-blocks' ),
+		'workspace_premium'    => __( 'Certificate', 'tekseries-blocks' ),
 		'zoom_in'              => __( 'Zoom in', 'tekseries-blocks' ),
 	);
 }

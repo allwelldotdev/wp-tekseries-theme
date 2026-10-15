@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tekseries/deadline-countdown",
+	"version": "0.1.0",
+	"title": "Deadline Countdown",
+	"category": "theme",
+	"icon": "clock",
+	"description": "Counts down to the deadline set on the page it is placed in: four tiles for days, hours, minutes and seconds, or one line of days left to apply. It shows nothing on a page without a deadline.",
+	"keywords": [ "countdown", "deadline", "timer", "apply", "closing" ],
+	"textdomain": "tekseries-blocks",
+	"attributes": {
+		"view": {
+			"type": "string",
+			"enum": [ "tiles", "days" ],
+			"default": "tiles"
+		}
+	},
+	"usesContext": [ "postId", "postType" ],
+	"supports": {
+		"html": false,
+		"spacing": {
+			"margin": true
+		},
+		"interactivity": true
+	},
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

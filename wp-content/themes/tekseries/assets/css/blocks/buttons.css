@@ -119,6 +119,10 @@
 	--ts-button-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M160-120q-17 0-28.5-11.5T120-160v-240q0-17 11.5-28.5T160-440q17 0 28.5 11.5T200-400v144l504-504H560q-17 0-28.5-11.5T520-800q0-17 11.5-28.5T560-840h240q17 0 28.5 11.5T840-800v240q0 17-11.5 28.5T800-520q-17 0-28.5-11.5T760-560v-144L256-200h144q17 0 28.5 11.5T440-160q0 17-11.5 28.5T400-120H160Z'/%3E%3C/svg%3E");
 }
 
+.wp-block-button.ts-icon-lock {
+	--ts-button-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm0-80h480v-400H240v400Zm296.5-143.5Q560-327 560-360t-23.5-56.5Q513-440 480-440t-56.5 23.5Q400-393 400-360t23.5 56.5Q447-280 480-280t56.5-23.5ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z'/%3E%3C/svg%3E");
+}
+
 /* End of the button icons. */
 
 /*
@@ -223,4 +227,17 @@
 	.wp-block-buttons.ts-banner__actions .wp-block-button__link {
 		width: 100%;
 	}
+}
+
+/*
+ * A Button made a <button> with the class "ts-disabled" is disabled
+ * (plugin, includes/deadline.php): "Applications closed" on a dark card or
+ * band, greyed, with no hover.
+ */
+.wp-block-button .wp-block-button__link:disabled,
+.wp-block-button .wp-block-button__link:disabled:hover {
+	border: 1.5px solid var(--wp--custom--alpha--white-30);
+	background-color: var(--wp--custom--alpha--white-12);
+	color: var(--wp--preset--color--lilac-deep);
+	cursor: not-allowed;
 }

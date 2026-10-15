@@ -345,3 +345,21 @@ h3 {
 		translate: 0 28px;
 	}
 }
+
+/*
+ * Blocks that switch at a page's deadline (plugin, includes/deadline.php):
+ * "ts-when-open" shows until it, "ts-when-closed" from then on. The server
+ * leaves out the other kind, or prints it hidden when the script will swap
+ * them at zero; `hidden` has to win over a block's own display (a Button's
+ * flex). In the editor both kinds show, and a dashed outline marks the ones
+ * visitors see only after the deadline.
+ */
+.ts-when-open[hidden],
+.ts-when-closed[hidden] {
+	display: none !important;
+}
+
+.editor-styles-wrapper .ts-when-closed {
+	outline: 2px dashed var(--wp--preset--color--coral);
+	outline-offset: 4px;
+}
