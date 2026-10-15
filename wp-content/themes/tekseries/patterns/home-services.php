@@ -232,8 +232,8 @@
 <!-- /wp:group -->
 
 <!-- wp:buttons -->
-<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-dark ts-survey-makers-prize ts-entry-home_makers_prize"} -->
-<div class="wp-block-button is-style-dark ts-survey-makers-prize ts-entry-home_makers_prize"><a class="wp-block-button__link wp-element-button" href="#"><?php echo esc_html__( 'Apply for the Maker’s Prize', 'tekseries' ); ?></a></div>
+<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-dark"} -->
+<div class="wp-block-button is-style-dark"><a class="wp-block-button__link wp-element-button" href="/maker-prize/"><?php echo esc_html__( 'Apply for the Maker’s Prize', 'tekseries' ); ?></a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group -->

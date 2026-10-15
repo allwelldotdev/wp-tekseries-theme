@@ -13,6 +13,9 @@ const PHOTO = join(
 const PAGES: [ name: string, scripts: string[] ][] = [
 	[ 'front page', [] ],
 	[ 'Home page pattern', [ 'hero-carousel/view.js', 'reveal/view.js' ] ],
+	// Its countdown ticks until the deadline; after it, nothing moves.
+	[ 'Maker Prize page, open', [ 'deadline-countdown/view.js' ] ],
+	[ 'Maker Prize page, closed', [] ],
 	[ 'events archive', [] ],
 	[ 'event', [] ],
 	// Its poster opens in the Gallery's viewer.
@@ -57,6 +60,23 @@ test.describe( 'scripts sent to visitors', () => {
 		await publish( 'Home page pattern', '/wp/v2/pages', {
 			title: 'E2E Scripts Home',
 			content: pattern( 'page-home' ),
+		} );
+		// Before and after its deadline (Nigerian time, UTC+1 all year).
+		const deadline = ( time: number ) =>
+			new Date( time + 60 * 60 * 1000 ).toISOString().slice( 0, 19 );
+		await publish( 'Maker Prize page, open', '/wp/v2/pages', {
+			title: 'E2E Scripts Maker Prize',
+			template: 'page-no-title',
+			content: pattern( 'page-maker-prize' ),
+			meta: {
+				tekseries_deadline: deadline( Date.now() + 30 * 86_400_000 ),
+			},
+		} );
+		await publish( 'Maker Prize page, closed', '/wp/v2/pages', {
+			title: 'E2E Scripts Maker Prize Closed',
+			template: 'page-no-title',
+			content: pattern( 'page-maker-prize' ),
+			meta: { tekseries_deadline: deadline( Date.now() - 86_400_000 ) },
 		} );
 		await publish( 'gallery', '/wp/v2/pages', {
 			title: 'E2E Scripts Gallery',

@@ -220,7 +220,31 @@ function tekseries_mark_current_nav_link( string $block_content, array $block ):
 add_filter( 'render_block_core/navigation-link', 'tekseries_mark_current_nav_link', 10, 2 );
 
 /**
- * Keeps single news and event breadcrumbs to Home / archive / title.
+ * Lists the pages that sit under a section of Home in their breadcrumbs.
+ *
+ * @return array<string, array{label: string, url: string}> Page slug => the section's crumb.
+ */
+function tekseries_breadcrumb_sections(): array {
+	/**
+	 * Filters the pages whose breadcrumbs go through a section of Home.
+	 *
+	 * @param array $sections Page slug => array( 'label' => …, 'url' => … ).
+	 */
+	return apply_filters(
+		'tekseries_breadcrumb_sections',
+		array(
+			'maker-prize' => array(
+				'label' => __( 'What We Do', 'tekseries' ),
+				'url'   => home_url( '/#services' ),
+			),
+		)
+	);
+}
+
+/**
+ * Puts a page listed in tekseries_breadcrumb_sections() under its section
+ * (Home / What We Do / Maker Prize), and keeps single news and event
+ * breadcrumbs to Home / archive / title.
  *
  * Core adds the post's first term (e.g. "Uncategorized") between the archive
  * and the title for non-hierarchical post types; the design doesn't.
@@ -228,6 +252,12 @@ add_filter( 'render_block_core/navigation-link', 'tekseries_mark_current_nav_lin
  * @param array $items Breadcrumb items, home first and the current page last.
  */
 function tekseries_breadcrumb_items( array $items ): array {
+	$section = is_page() ? ( tekseries_breadcrumb_sections()[ (string) get_post_field( 'post_name', get_queried_object_id() ) ] ?? null ) : null;
+	if ( $section && count( $items ) >= 2 ) {
+		array_splice( $items, 1, 0, array( $section ) );
+		return $items;
+	}
+
 	if ( ! is_singular( array( 'post', 'event' ) ) || count( $items ) <= 3 ) {
 		return $items;
 	}

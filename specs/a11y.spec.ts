@@ -24,6 +24,8 @@ const PAGES = [
 	'front page',
 	'Home page pattern',
 	'Contact page pattern',
+	'Maker Prize page, open',
+	'Maker Prize page, closed',
 	'events archive',
 	'events archive, last page',
 	'event type archive',
@@ -242,6 +244,23 @@ test.describe( 'accessibility', () => {
 		await create( 'Contact page pattern', '/wp/v2/pages', {
 			title: 'E2E A11y Contact',
 			content: pattern( 'page-contact' ),
+		} );
+		// Before and after its deadline (Nigerian time, UTC+1 all year).
+		const deadline = ( time: number ) =>
+			new Date( time + 60 * 60 * 1000 ).toISOString().slice( 0, 19 );
+		await create( 'Maker Prize page, open', '/wp/v2/pages', {
+			title: 'E2E A11y Maker Prize',
+			template: 'page-no-title',
+			content: pattern( 'page-maker-prize' ),
+			meta: {
+				tekseries_deadline: deadline( Date.now() + 30 * 86_400_000 ),
+			},
+		} );
+		await create( 'Maker Prize page, closed', '/wp/v2/pages', {
+			title: 'E2E A11y Maker Prize Closed',
+			template: 'page-no-title',
+			content: pattern( 'page-maker-prize' ),
+			meta: { tekseries_deadline: deadline( Date.now() - 86_400_000 ) },
 		} );
 		const patterns = await requestUtils.rest< Pattern[] >( {
 			path: '/wp/v2/block-patterns/patterns',
