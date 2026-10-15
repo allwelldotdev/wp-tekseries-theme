@@ -1,0 +1,108 @@
+// Deadline Countdown. The tiles are drawn for a dark card (the Maker Prize
+// page's ink card): their fill and border come from the text colour around
+// them, the figures are saffron.
+
+.wp-block-tekseries-deadline-countdown {
+	margin: 0;
+
+	&[hidden] {
+		display: none;
+	}
+}
+
+// Tiles: days, hours, minutes and seconds.
+.ts-deadline__tiles {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 12px;
+}
+
+.ts-deadline__tile {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	align-items: center;
+	padding: 18px 6px;
+	border: 1px solid color-mix(in srgb, currentcolor 14%, transparent);
+	border-radius: var(--wp--preset--border-radius--md);
+	background: color-mix(in srgb, currentcolor 8%, transparent);
+}
+
+.ts-deadline__number {
+	color: var(--wp--preset--color--saffron);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 3.25rem;
+	font-weight: 800;
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+	letter-spacing: -0.03em;
+}
+
+.ts-deadline__name {
+	color: var(--wp--preset--color--lilac-deep);
+	font-size: 0.8125rem;
+	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.ts-deadline__short {
+	display: none;
+}
+
+// Hours, minutes and seconds wait for the script: a clock that cannot tick
+// shows nothing. They keep their room, so nothing moves when they appear.
+// Once closed every tile reads 00, which stays true.
+.is-tiles:not(.is-live, .is-closed) .ts-deadline__tile--clock {
+	visibility: hidden;
+}
+
+.is-closed .ts-deadline__number {
+	color: color-mix(in srgb, currentcolor 45%, transparent);
+}
+
+// Days line: "12 days left to apply", in the eyebrow's look.
+.wp-block-tekseries-deadline-countdown.is-days {
+	color: var(--wp--preset--color--saffron);
+	font-size: var(--wp--preset--font-size--eyebrow);
+	font-weight: 700;
+	line-height: 1.25;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+@media (width <= 1100px) {
+
+	.ts-deadline__number {
+		font-size: 3rem;
+	}
+}
+
+@media (width <= 640px) {
+
+	.ts-deadline__tiles {
+		gap: 10px;
+	}
+
+	.ts-deadline__tile {
+		padding: 14px 6px;
+		border-radius: 16px;
+	}
+
+	.ts-deadline__number {
+		font-size: 1.875rem;
+	}
+
+	.ts-deadline__name {
+		font-size: 0.625rem;
+	}
+
+	.ts-deadline__long {
+		display: none;
+	}
+
+	.ts-deadline__short {
+		display: inline;
+	}
+}
