@@ -363,3 +363,71 @@ h3 {
 	outline: 2px dashed var(--wp--preset--color--coral);
 	outline-offset: 4px;
 }
+
+/*
+ * Maker Prize page (pattern page-maker-prize; boards MakerPrize*): a saffron
+ * hero with the text beside the ink countdown card on desktop and above it
+ * on smaller screens, the eligibility cards (icon above the text on desktop,
+ * beside it on smaller screens) and the plum closing band. On phones the
+ * Apply buttons take the whole width. The hero's text and card start at its
+ * top (the owner's choice, 2026-10-15; the boards centre them), so the text
+ * stays put when the closed card grows taller.
+ */
+.wp-block-group.ts-prize-hero {
+	align-items: start;
+}
+
+@media (width > 1100px) {
+
+	.wp-block-group.ts-prize-hero {
+		grid-template-columns: minmax(0, 1fr) 460px;
+	}
+}
+
+.ts-prize-chip {
+	width: fit-content;
+	padding: 7px 13px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	font-size: var(--wp--preset--font-size--eyebrow);
+	font-weight: 700;
+	line-height: 1.35;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.ts-prize-criteria .wp-block-icon.is-style-tile {
+	width: 56px;
+}
+
+@media (width <= 1100px) {
+
+	.ts-prize-criteria > .wp-block-group {
+		flex-direction: row;
+		flex-wrap: nowrap;
+	}
+
+	.ts-prize-criteria > .wp-block-group > p {
+		flex: 1;
+		padding-top: 4px;
+	}
+}
+
+@media (width <= 640px) {
+
+	.ts-prize-criteria .wp-block-icon.is-style-tile {
+		width: 48px;
+	}
+
+	.ts-prize-band {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	:is(.ts-prize-clock, .ts-prize-band) .wp-block-button {
+		flex-basis: 100%;
+	}
+
+	:is(.ts-prize-clock, .ts-prize-band) .wp-block-button__link {
+		width: 100%;
+	}
+}

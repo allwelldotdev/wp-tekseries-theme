@@ -150,14 +150,14 @@ function tekseries_blocks_surveys_page(): void {
 			<li><?php esc_html_e( 'On the site, select the Button in the editor and, under Advanced, Additional CSS class(es), add ts-survey- followed by the key, for example ts-survey-upload-cv.', 'tekseries-blocks' ); ?></li>
 			<li><?php esc_html_e( 'Give the Button a link as well. Visitors follow it when their browser has JavaScript off, cannot reach Formbricks, or gets no form within a few seconds.', 'tekseries-blocks' ); ?></li>
 		</ol>
-		<p><?php esc_html_e( 'The site’s “Upload your CV” buttons use the key upload-cv, and “Apply for the Maker’s Prize” uses makers-prize.', 'tekseries-blocks' ); ?></p>
+		<p><?php esc_html_e( 'The site’s “Upload your CV” buttons use the key upload-cv, and the two “Apply now” buttons on the Maker Prize page use makers-prize.', 'tekseries-blocks' ); ?></p>
 
 		<h2><?php esc_html_e( 'See which button opened a form', 'tekseries-blocks' ); ?></h2>
 		<ol>
 			<li><?php esc_html_e( 'In Formbricks, add a hidden field with the ID entry_point to the form.', 'tekseries-blocks' ); ?></li>
 			<li><?php esc_html_e( 'On the site, add a second class to the Button: ts-entry- followed by a name in letters, numbers, underscores and hyphens, for example ts-entry-home_job_series. Each answer sent from that button then has that name in entry_point.', 'tekseries-blocks' ); ?></li>
 		</ol>
-		<p><?php esc_html_e( 'The site’s buttons use home_job_series and home_makers_prize on Home, job_series_hero on Job Series, and job_listing for “Upload your CV to Job Series” on each job.', 'tekseries-blocks' ); ?></p>
+		<p><?php esc_html_e( 'The site’s buttons use home_job_series on Home, job_series_hero on Job Series, maker_prize_hero and maker_prize_cta on the Maker Prize page (its top and its closing band), and job_listing for “Upload your CV to Job Series” on each job.', 'tekseries-blocks' ); ?></p>
 	</div>
 	<?php
 }
