@@ -1721,10 +1721,49 @@ Not verified:
   - The `job_listing` name is in code, not in the editor.
   - Tested: the e2e spec with a stand-in for Formbricks' script, and on the development site with the owner's real 4.5.0 script and stand-in forms (nothing sent to the server but GETs). Each of the four buttons' forms received its value. The owner's real forms could not be opened that day: the server listed no active "Website & App" form at 10:59 and 11:05 UTC on 2026-10-14.
 
+## ADR-080: Keep the theme's own motion values instead of mapping the design system's `animation` tokens
+
+**Status:** Accepted
+
+**Context:**
+- This is release 1.16.1, branch `feat/design-copy`. The site owner decided on 2026-10-15.
+- The pulls of 2026-10-15 brought the Claude Design canvas (version `1792071928-3dca`) and the live design system "TekSeries New" (version `1792073420-4f3b`). The design system now has `animation` tokens (`docs/design-reference/design-system/tekseries/tokens.json`), the first it has had (ADR-060, ADR-063), and the Home boards moved from GSAP to CSS motion.
+- Until now the theme mapped its tokens from the design system, and the live design system wins over the canvas's embedded copy (ADR-009).
+- The design system's motion values differ from the build's `settings.custom.motion` in `theme.json` (ADR-060) and from the values beside the rules in `assets/css/global.css` and the Stat block:
+
+| What | Design system | Build (kept) |
+| --- | --- | --- |
+| Entrance easing `ease-out` | `cubic-bezier(0.33, 1, 0.68, 1)` | `cubic-bezier(0.165, 0.84, 0.44, 1)` (`ease.out-strong`) |
+| Gentle easing `ease-soft` | `cubic-bezier(0.5, 1, 0.89, 1)` | `cubic-bezier(0.215, 0.61, 0.355, 1)` (`ease.out`) |
+| Scroll-reveal rise `distance-reveal` | 28px | 24px (`reveal.distance`; the hero's on-load rise is 28px) |
+| Pillar card rise | 56px (2 x distance) | 64px (0.9s) |
+| Card contents rise / duration / spacing | 28px / 0.8s / 0.12s | 20px / 0.7s / 0.1s (both after 0.2s) |
+| Count-up on load | 2.2s, ease-out, after 0.3s | 2.2s, `cubic-bezier(0.2, 0.7, 0.2, 1)`, after 0.3s |
+| `duration-reveal`, `stagger-reveal`, hero start delay | 0.8s, 0.12s, 0.15s | same |
+| Hover transitions | no token | 150ms (`motion.duration`) |
+
+**Options:**
+- Map the design system's `animation` tokens into `settings.custom.motion` and the rules. This follows the rule for colours, type, spacing and radii, but it changes the easing, distances and timing the owner has already seen and accepted.
+- Keep the build's values and ask Claude Design to change its tokens to match (chosen).
+- Keep the build's values and leave the two sets to drift. Later pulls would show a difference nobody has judged.
+
+**Decision:** The second option. The theme keeps its own motion values and does not map from the design system's `animation` tokens.
+- For motion only, this reverses the rule that the theme maps its tokens from the design system. Colours, type, spacing and radii still map from it.
+- The owner will ask Claude Design to change its tokens to the build's values.
+- When a later pull shows the design system's tokens matching the build, mapping them is a no-op and can be done with the theme-tokens unit test.
+
+**Rationale:**
+- The build's motion is the one the owner has watched and approved (ADR-060, ADR-063). Taking the design system's values would change the site's feel for no gain.
+- Changing the design system to match keeps one source of truth, which is simpler than carrying two sets of numbers in the theme.
+- Consequences:
+  - No change to the site in 1.16.1 comes from this decision.
+  - `docs/design-reference/` keeps the design system's values verbatim, because that folder is never hand-edited.
+  - The board mapping document lists the values to send back.
+
 ## Future work
 
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).
-- **Intro motion tokens:** when the design system delivers its motion tokens, move the 28px distance and 0.15s start of `ts-intro` (and the hero carousel) onto them (ADR-063).
+- **Intro motion tokens:** when the design system's `animation` tokens match the build's values (ADR-080), map them, and move the 28px distance and 0.15s start of `ts-intro` (and the hero carousel) onto tokens (ADR-063).
 
 - **Large uploads and Site Editor styles on live:** the live host's upload size limit is unknown, and carrying real Site Editor styles has not been exercised (owner; ADR-073).
 - **Hosting and deploy:** the release method is decided (ADR-058, ADR-059). Still open on the host: a page cache and longer cache lifetimes for static files on the development site's host, and the first real run of the migration plugin on the live site (owner; ADR-059).
