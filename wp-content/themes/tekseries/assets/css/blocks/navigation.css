@@ -7,8 +7,13 @@
  * toggle, focus trap and Escape key.
  */
 
+/*
+ * The links' side padding grows with the window, from 6px just above 1100px
+ * to the board's 14px at 1280px and above, so the logo, the menu and the
+ * two buttons share one row on every desktop width.
+ */
 .ts-nav-primary .wp-block-navigation-item__content {
-	padding: 12px 14px;
+	padding: 12px clamp(6px, calc(6px + (100vw - 1101px) * 8 / 179), 14px);
 	border-radius: var(--wp--preset--border-radius--pill);
 	transition: background-color var(--wp--custom--motion--duration);
 }

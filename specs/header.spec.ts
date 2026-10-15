@@ -40,6 +40,61 @@ test.describe( 'header', () => {
 		).toBeHidden();
 	} );
 
+	// Desktop starts above 1100px: there the logo, the seven links and both
+	// actions share one row, and the logo keeps its width (1.18.1).
+	test( 'keeps the logo, menu and actions on one row on every desktop width', async ( {
+		page,
+		requestUtils,
+	} ) => {
+		const logo = await requestUtils.uploadMedia( LOGO );
+		const setLogo = ( id: number ) =>
+			requestUtils.rest( {
+				method: 'POST',
+				path: '/wp/v2/settings',
+				data: { site_logo: id },
+			} );
+		await setLogo( logo.id );
+
+		try {
+			for ( const width of [ 1101, 1180, 1279, 1440 ] ) {
+				await page.setViewportSize( { width, height: 900 } );
+				await page.goto( '/' );
+				// As wide as the live logo: 244 by 60, shown 44px high.
+				await page.addStyleTag( {
+					content:
+						'.ts-header .wp-block-site-logo img { width: 179px; }',
+				} );
+
+				const banner = page.getByRole( 'banner' );
+				const main = page.getByRole( 'navigation', { name: 'Main' } );
+				const parts = [
+					banner.locator( '.wp-block-site-logo' ),
+					...MAIN_LINKS.map( ( label ) =>
+						main.getByRole( 'link', { name: label, exact: true } )
+					),
+					banner.getByRole( 'link', { name: 'Job Series' } ),
+					banner.getByRole( 'link', { name: 'Post A Job' } ),
+				];
+				const centres: number[] = [];
+				for ( const part of parts ) {
+					const box = await part.boundingBox();
+					expect( box ).not.toBeNull();
+					centres.push( box!.y + box!.height / 2 );
+				}
+				for ( const centre of centres ) {
+					expect( Math.abs( centre - centres[ 0 ]! ) ).toBeLessThan(
+						3
+					);
+				}
+				const logoBox = await parts[ 0 ]!.boundingBox();
+				expect( logoBox!.width ).toBeGreaterThanOrEqual( 178.5 );
+			}
+		} finally {
+			await setLogo( 0 );
+			await requestUtils.deleteMedia( logo.id );
+		}
+	} );
+
 	test( 'collapses into a menu panel at tablet width', async ( { page } ) => {
 		await page.setViewportSize( { width: 834, height: 1000 } );
 		await page.goto( '/' );
