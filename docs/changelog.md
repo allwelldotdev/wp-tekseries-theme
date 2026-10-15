@@ -2,6 +2,13 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.18.1] — 2026-10-15
+### Fixed
+- On desktop screens from just over 1100px to about 1220px wide, such as small laptops or a browser window that is not full width, the header no longer breaks onto two rows, so the menu no longer wraps, the "Job Series" and "Post A Job" buttons no longer stack, the header keeps its height and the TekSeries logo keeps its proportions.
+
+### Improved
+- On those widths the logo, the seven menu links and both buttons stay on one row, with the space around the menu links narrowing a little; the header is unchanged at 1280px and wider, and on tablets and phones.
+
 ## [1.18.0] — 2026-10-15
 ### New
 - Visitors get a new Maker Prize page, at /maker-prize/ and under What We Do in the breadcrumbs, with the Annual Maker Prize Application, a live countdown to the deadline of December 1, 2026, 11:59 PM Nigerian time, and the eligibility criteria.
