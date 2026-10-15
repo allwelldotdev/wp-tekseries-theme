@@ -103,7 +103,7 @@ The Maker Prize page at `/maker-prize/` comes from the pattern `page-maker-prize
 
 ## Release
 
-The latest tagged release is 1.16.0 (`v1.16.0`). The code is at 1.18.0, which is not merged or tagged yet, and 1.16.1 and 1.17.0 sit below it unmerged. Each release is tagged `vX.Y.Z` when it is merged, and `git tag` lists the released versions. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059, ADR-073). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip` for the first two.
+The latest tagged release is 1.18.1 (`v1.18.1`), and the code is at that version. Each release is tagged `vX.Y.Z` when it is merged, and `git tag` lists the released versions. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059, ADR-073). From a clean install, run `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip` for the first two.
 
 Upload in this order:
 
@@ -119,9 +119,9 @@ The third zip is a one-off plugin, "TekSeries Migration", built from the develop
 - Media Library files made on the development site that the pages and albums use;
 - anything saved in the Site Editor: templates, template parts, menus and styles with Additional CSS. Nothing is saved there now, so the bundle carries none of it (ADR-073, ADR-078).
 
-The bundle built on 2026-10-15 holds ten pages and posts, sixteen topic icons, eight albums, five media files, one poster and three options. A media file over 5 MB goes to `upload-first` beside the zip instead (today, one 47 MB video), and you upload it by hand first. The migration screen names any such file that is still missing and shows no button until it is there.
+The bundle built on 2026-10-15 holds ten pages and posts, sixteen topic icons, eight albums, five media files, one poster and three options, plus the Maker Prize page (`/maker-prize/`), which migration plugin 1.3.0 creates on the live site because it has none. If an unmarked page already sits at that address, the plugin skips it and says so. A media file over 5 MB goes to `upload-first` beside the zip instead (today, one 47 MB video), and you upload it by hand first. The migration screen names any such file that is still missing and shows no button until it is there.
 
-Migration plugin 1.2.0 refuses to run when TekSeries Blocks or the theme on the site is older than 1.16.0. Open Tools → TekSeries migration for a dry run that changes nothing. A button then applies the changes, gives existing events and posts their tones, and switches the theme.
+Migration plugin 1.3.0 refuses to run when TekSeries Blocks or the theme on the site is older than 1.18.1, the versions this bundle requires. Open Tools → TekSeries migration for a dry run that changes nothing. A button then applies the changes, gives existing events and posts their tones, and switches the theme.
 
 Delete the plugin afterwards. It leaves a small hidden mark on the media files (and any menu) it created, so a later migration zip finds them instead of creating them again.
 
@@ -144,6 +144,6 @@ Delete the plugin afterwards. It leaves a small hidden mark on the media files (
 | 6 | Frontend behaviour | done |
 | 7 | QA and release | done |
 
-The build plan was completed at version 1.0.0. Versions 1.1.0 to 1.13.0 add the Home motion, the Map and Post Video blocks, the Button icon panel, list order and the shared viewer (ADR-060 to ADR-072). Versions 1.13.1 to 1.16.0 move the owner's editor choices into the theme, add the event countdown and the Formbricks buttons, fix pressing a link in a block that is rising in, and record which button opened a Formbricks form (ADR-074 to ADR-079). Version 1.16.1 applies the October design update's Home wording and the footer's company registration line (ADR-080), 1.17.0 adds the Deadline Countdown block and the classes that switch at a deadline (ADR-081), and 1.18.0 adds the Maker Prize page (ADR-082). At 1.0.0, Lighthouse on the development site scored 95 to 99 on mobile and 100 on desktop for Home, Gallery, Job Series and an event page (ADR-057). The migration has not been run on the live site yet (ADR-059).
+The build plan was completed at version 1.0.0. Versions 1.1.0 to 1.13.0 add the Home motion, the Map and Post Video blocks, the Button icon panel, list order and the shared viewer (ADR-060 to ADR-072). Versions 1.13.1 to 1.16.0 move the owner's editor choices into the theme, add the event countdown and the Formbricks buttons, fix pressing a link in a block that is rising in, and record which button opened a Formbricks form (ADR-074 to ADR-079). Version 1.16.1 applies the October design update's Home wording and the footer's company registration line (ADR-080), 1.17.0 adds the Deadline Countdown block and the classes that switch at a deadline (ADR-081), 1.18.0 adds the Maker Prize page (ADR-082), and 1.18.1 keeps the desktop header on one row from 1101px. At 1.0.0, Lighthouse on the development site scored 95 to 99 on mobile and 100 on desktop for Home, Gallery, Job Series and an event page (ADR-057). The migration has not been run on the live site yet (ADR-059).
 
 Architecture decisions and future work are in [docs/decisions.md](docs/decisions.md). Changes are in [docs/changelog.md](docs/changelog.md).
