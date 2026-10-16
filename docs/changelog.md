@@ -2,6 +2,16 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.19.0] — 2026-10-16
+### New
+- Editors see a "Poster frame" panel in a video's details in the Media Library, in the pop-up and on the "Edit Media" page, showing three frames taken from across the video.
+- Clicking a frame makes it the video's poster in the Gallery, in the viewer and in a news post's video card.
+- "Show other frames" shows three different moments from the video, and a slider with "Use this moment" sets the poster to an exact moment.
+- A video in an album that has no poster gets its middle frame as the poster when it is opened in the Media Library, and the poster can be changed at any time.
+- Picking a new frame removes the earlier frame image that the panel made in the Media Library, while a picture added by hand as the poster is never removed.
+- If the browser cannot play a video, for example some .mov files from phones, the panel shows a message, and a picture can still be set as the video's featured image.
+- Visitors see no change except the posters themselves.
+
 ## [1.18.1] — 2026-10-15
 ### Fixed
 - On desktop screens from just over 1100px to about 1220px wide, such as small laptops or a browser window that is not full width, the header no longer breaks onto two rows, so the menu no longer wraps, the "Job Series" and "Post A Job" buttons no longer stack, the header keeps its height and the TekSeries logo keeps its proportions.

@@ -1829,6 +1829,41 @@ Not verified:
   - On live, the runner must create the page before it updates Home. Otherwise Home would link to a missing page for a moment.
   - The owner should set the Formbricks form to close at the deadline too. A cached page can stay open past it (ADR-081).
 
+## ADR-083: Pick a video's poster from frames grabbed in the editor's browser
+
+**Status:** Accepted
+
+**Context:**
+- This is release 1.19.0, branch `feat/video-poster`. The site owner decided on 2026-10-16.
+- The owner wanted to choose a Gallery video's poster from three frames across the video, when they upload a video and add it to an album. The Empower Her webinar poster was made by hand, drawn from a canvas in Chromium.
+- The Gallery, the viewer and the Post Video card already read a video's featured image as its poster (ADR-045, ADR-072). Core supports featured images on videos and `featured_media` on attachments over REST.
+- The live host has no SSH or WP-CLI (ADR-059), so the picker must work through wp-admin alone. The owner asked for no third-party plugin.
+- The owner chose the middle frame, set automatically for a video with no poster that is in an album and is opened in wp-admin.
+
+**Options:**
+- Server-side ffmpeg. It is not on the development machine, the live host has no shell, and shared hosts rarely have it.
+- A third-party plugin such as Videopack. The owner said no, and it is heavy for one job.
+- Grab a frame on upload, in the background. An upload over REST or from a phone has no page open to grab it in.
+- Grab the frames in the editor's browser with `<video>` and `<canvas>` (chosen).
+
+**Decision:**
+- Row: `includes/video-poster.php` adds a "Poster frame" row to a video's details through `attachment_fields_to_edit`. It shows in every media modal and on Edit Media. The row is a placeholder with no inputs, so core saves nothing from it.
+- Frames: `src/video-poster/` grabs three frames at 25, 50 and 75% of the video. "Show other frames" picks three new moments between 10 and 90%. A slider with "Use this moment" picks an exact moment.
+- Saving: the chosen frame is uploaded as a JPEG over core REST and set as the video's featured image. The front end is unchanged.
+- Marker: attachment meta `tekseries_poster_of` holds the video's ID on a JPEG the picker made. Picking again deletes the old poster only when it carries this video's ID. A poster added by hand is kept.
+- Automatic frame: a video in an album (ADR-044) with no poster gets its middle frame when it is opened in wp-admin.
+- Access: admin only, with `upload_files` and `edit_post` checked. The script is plain TypeScript with `@wordpress/api-fetch` and `@wordpress/i18n`, with no React. Visitors load nothing (ADR-005).
+- Tests: unit tests for the frame helpers, and `specs/video-poster.spec.ts` (7 checks) with a real GPL clip, `specs/fixtures/birds.mp4` (1 second long).
+
+**Rationale:**
+- The browser can decode and draw a video on any host, so the picker works on Local and on live with wp-admin alone.
+- Reusing the featured image needs no front-end change and leaves the Featured Image box as a fallback.
+- The marker makes cleanup safe: only a poster the picker made is ever deleted.
+- Consequences:
+  - The automatic frame needs a browser. It does not run on an upload over REST, and on live it waits until someone opens the video.
+  - A video the browser cannot decode, such as some .mov or HEVC files, gets a message. The Featured Image box still works.
+  - On Edit Media the form's hidden `_thumbnail_id` is kept in step with the pick, so Update does not undo it.
+
 ## Future work
 
 - **Maker Prize page on live:** the migration plugin 1.3.0 creates `/maker-prize/` before it updates Home. What remains is running it on live after the rehearsal (owner; ADR-082, ADR-059).

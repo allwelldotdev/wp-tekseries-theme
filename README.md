@@ -44,7 +44,7 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 ## Tests
 
 - Unit: `npm run test:unit` runs Vitest in `tests/unit/`.
-- E2E: `npm run test:e2e` runs the 38 Playwright specs in `specs/` against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). Run `npm run build` first.
+- E2E: `npm run test:e2e` runs the 39 Playwright specs in `specs/` against wp-env on `http://localhost:8890`, the port in `.wp-env.json` (ADR-002). Run `npm run build` first.
 - The first `npm run wp-env start` pulls Docker images and outlasts Playwright's 120-second start timeout. Run it once by hand, and retry on a network error.
 - Run `npm run test:e2e:install` once, then `sudo npx playwright install-deps chromium` once per machine.
 - PHP: `localwp composer run lint`.
@@ -56,7 +56,7 @@ Every script names our folders explicitly. Run wp-scripts without paths and it c
 .                                          # WordPress root and git root
 ├── wp-content/themes/tekseries/           # block theme: theme.json, templates, parts, patterns, assets
 ├── wp-content/plugins/tekseries-blocks/   # blocks plugin: src/ (blocks and scripts), includes/, templates/, assets/
-├── specs/                                 # Playwright e2e specs
+├── specs/                                 # Playwright e2e specs, with fixtures/
 ├── tests/unit/                            # Vitest unit tests
 ├── scripts/, types/                       # icon fetcher, TypeScript declarations
 ├── docs/                                  # decisions.md, changelog.md, design-reference/
@@ -69,7 +69,7 @@ Custom blocks live in the plugin and the theme holds design (ADR-005). Frontend 
 
 ## Release
 
-Each release is tagged `vX.Y.Z` when it is merged, and the code is at 1.18.1. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059, ADR-073). Build the first two with `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip`. Upload in this order:
+Each release is tagged `vX.Y.Z` when it is merged, and the code is at 1.19.0. The live host has no SSH or WP-CLI, so a release reaches it as three zips uploaded in wp-admin (ADR-058, ADR-059, ADR-073). Build the first two with `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip`. Upload in this order:
 
 1. Any file in the `upload-first` folder, into the Media Library.
 2. `tekseries-blocks.zip` under Plugins. Activate it.
