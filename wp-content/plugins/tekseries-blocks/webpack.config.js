@@ -1,9 +1,10 @@
 // wp-scripts builds the scripts each block.json lists. The post sidebar, the
-// Button block's icon panel, the reveal script and the scripts of the contact
-// form and the job submission form are not blocks, so they are added to those
-// entries here. So are the scripts of the Event Countdown and the Deadline
-// Countdown (asked for only when a countdown runs) and the script that opens
-// a Formbricks form from a button.
+// Button block's icon panel, the Media Library's poster frame picker, the
+// reveal script and the scripts of the contact form and the job submission
+// form are not blocks, so they are added to those entries here. So are the
+// scripts of the Event Countdown and the Deadline Countdown (asked for only
+// when a countdown runs) and the script that opens a Formbricks form from a
+// button.
 const [
 	scriptConfig,
 	moduleConfig,
@@ -16,6 +17,7 @@ module.exports = [
 			...scriptConfig.entry(),
 			'post-settings/index': './src/post-settings/index.tsx',
 			'button-icon/index': './src/button-icon/index.tsx',
+			'video-poster/index': './src/video-poster/index.ts',
 		} ),
 	},
 	{
