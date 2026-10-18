@@ -480,11 +480,10 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - Icon default: a stored value set on publish, or a default computed at render.
 
 **Decision:**
-- `tekseries_tone` (saffron, plum, ink, lilac) and `tekseries_icon` (one of 30 curated icons from the `tekseries` collection, ADR-024) are post meta registered on `event` and `post` (`includes/meta.php`). Each has `show_in_rest` with an enum schema where an empty value means "not chosen", a sanitize callback and `edit_post` auth. They are not ACF fields. The ACF "Events" group (`event_date`, `cta_link`, `cta_name`, plus new time and venue fields) still moves into code, unchanged, with the Block Bindings work in Phase 5.
-- With no icon picked, a post shows a default computed at render: the event type's icon (webinar `videocam`, workshop `co_present`, makers-prize `emoji_events`), `newspaper` for news, otherwise `event`. It is not stored, so changing a type changes the default. A read-only REST field, `tekseries_default_icon`, exposes it to the editor.
-- On the transition into `publish`, a post with no tone gets the tone after the newest published post of the same type that has one, in the cycle saffron, plum, ink, lilac (`includes/tone-cycle.php`). Posts published in the same second are ordered by ID. With no toned post, the tone is plum. Events and news cycle separately. The hook is `wp_after_insert_post`, which fires after REST has saved meta, so a tone picked before publishing is kept. Editors can override the tone in the sidebar (ADR-034).
-- `wp tekseries backfill-tones [--post_type=event|post] [--force] [--dry-run]` (`includes/cli.php`) tones published posts oldest first. The oldest starts where the cycle must start for the newest post to land on plum. This reproduces the design boards' sample listings: on Local, 19 events and 20 news posts, newest first plum, saffron, lilac, ink and so on. Posts with a tone keep it unless `--force` is given.
-- There is no PHPUnit suite. The cycle is tested end to end over REST in `specs/tones.spec.ts`.
+- `tekseries_tone` (saffron, plum, ink, lilac) and `tekseries_icon` (one of 30 curated icons from the `tekseries` collection, ADR-024) are post meta registered on `event` and `post`. Each has `show_in_rest` with an enum schema where an empty value means "not chosen", a sanitize callback and `edit_post` auth. They are not ACF fields. The ACF "Events" group (`event_date`, `cta_link`, `cta_name`, plus new time and venue fields) still moves into code, unchanged, with the Block Bindings work in Phase 5.
+- With no icon picked, a post shows a default computed at render and never stored: the event type's icon (webinar `videocam`, workshop `co_present`, makers-prize `emoji_events`), `newspaper` for news, otherwise `event`. A read-only REST field, `tekseries_default_icon`, exposes it to the editor.
+- When a post moves to `publish` with no tone, it gets the tone after the newest published post of the same type that has one, in the cycle saffron, plum, ink, lilac. Posts published in the same second are ordered by ID. With no toned post, the tone is plum. Events and news cycle separately. The hook runs after REST has saved meta, so a tone picked before publishing is kept. Editors can override the tone in the sidebar (ADR-034).
+- `wp tekseries backfill-tones` tones published posts oldest first, so that the newest lands on plum, as in the design boards' sample listings. Posts with a tone keep it unless `--force` is given.
 
 **Rationale:** The tone is stored, so filters and paging never recolour a post (ADR-011). Plain registered meta needs no binding source and works without ACF. The cost is that two event-related fields sit outside the ACF group that holds the rest. A computed default keeps untouched posts in step with their event type.
 
@@ -500,12 +499,12 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - Keep the Cover block with a fixed plum overlay.
 
 **Decision:**
-- `tekseries/post-tone` is a dynamic wrapper block (InnerBlocks; uses context `postId` and `postType`; attribute `variant` is `card` or `banner`). `render.php` outputs `ts-tone--{tone} ts-tone--{variant}` and the topic icon SVG from `wp_get_icon()`, `aria-hidden`, bleeding off the bottom-right corner. It has no front-end script. It declares `supports.interactivity.clientNavigation`, so it does not disable enhanced pagination. Supports are align, a flex layout with no switching, padding, margin, block gap, minimum height, aspect ratio and border radius.
-- The block's stylesheet maps the theme's `custom.tone.{tone}.*` tokens to `--ts-tone-*` custom properties and draws the surface: background, text colour, headings that inherit the tone text, a featured image inside that fills the box under the tone's overlay gradient (card), and the icon.
-- The theme's `assets/css/blocks/post-tone.css`, loaded only where the block is, uses those properties for the blocks inside: large date, type badge, breadcrumbs, accent icons, banner buttons and the focus ring.
+- `tekseries/post-tone` is a dynamic wrapper block (InnerBlocks; context `postId` and `postType`; attribute `variant` is `card` or `banner`). It outputs `ts-tone--{tone} ts-tone--{variant}` and the topic icon SVG, `aria-hidden`, bleeding off the bottom-right corner. It has no front-end script and declares `supports.interactivity.clientNavigation`, so it does not disable enhanced pagination.
+- The block's stylesheet maps the theme's `custom.tone.{tone}.*` tokens to `--ts-tone-*` custom properties and draws the surface: background, text colour, the card's featured image under the tone's overlay gradient, and the icon.
+- The theme's `post-tone.css`, loaded only where the block is, styles the core blocks inside it: date, type badge, breadcrumbs, accent icons, banner buttons and focus ring.
 - The rule: the block's own look lives in the plugin; how core blocks inside it look lives in the theme (ADR-005).
-- `theme.json` `custom.tone` gained `banner-accent`, `sub` (breadcrumbs), `button-bg`, `button-text` and `line` (outline) for each tone, from the EventPost board. Card and banner accents differ for lilac: ink on cards, plum on banners.
-- Listing card media and single banners in the theme's template patterns now use this block instead of a Cover with a fixed plum overlay. The inner-page hero (`hero-plum`) is unchanged.
+- `theme.json` `custom.tone` gained `banner-accent`, `sub`, `button-bg`, `button-text` and `line` for each tone. Lilac uses an ink accent on cards and a plum accent on banners.
+- Listing card media and single banners now use this block instead of a Cover with a fixed plum overlay. The inner-page hero (`hero-plum`) is unchanged.
 
 **Rationale:** A wrapper block works inside Query Loop and leaves the contents as editable core blocks. Tokens stay in `theme.json` (ADR-009). Splitting by ownership keeps the block reusable under another theme while the theme controls how its own blocks look. This delivers the per-post tone that ADR-026 left as an interim plum.
 
@@ -522,10 +521,10 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - Icon list: duplicated in TypeScript, or passed from PHP.
 
 **Decision:**
-- The `@wordpress/*` editor packages are devDependencies of the plugin workspace, on the `@wordpress/scripts` 36.1 release line, used only for types. At runtime they remain WordPress externals. Root `package.json` pins `@types/react` to 18.3.31 to match React 18.3.1.
-- `types/wordpress-block-editor.d.ts` declares only the `@wordpress/block-editor` exports the plugin uses, because `@types/wordpress__block-editor` pins older `@wordpress` packages. `types/assets.d.ts` covers asset imports.
-- The plugin's `webpack.config.js` adds `post-settings/index` as an extra entry to the default script config. `includes/editor.php` enqueues it in the block editor.
-- The curated icon list reaches the panel from PHP as inline data, so `tekseries_blocks_topic_icons()` stays the one source of truth (ADR-032). Icon SVGs and labels come from the core icon REST entity.
+- The `@wordpress/*` editor packages are plugin devDependencies on the `@wordpress/scripts` 36.1 release line, used only for types. At runtime they remain WordPress externals. The root `package.json` pins `@types/react` to 18.3.31 to match React 18.3.1.
+- A local declaration file covers only the `@wordpress/block-editor` exports the plugin uses, because `@types/wordpress__block-editor` pins older `@wordpress` packages.
+- The plugin's `webpack.config.js` adds `post-settings/index` as an extra entry to the default script config, and the plugin enqueues it in the block editor.
+- The curated icon list reaches the panel from PHP as inline data, so `tekseries_blocks_topic_icons()` stays the one source of truth (ADR-032).
 - The panel uses only stable components, `ColorPalette` for the tone and a button group for icons, because `ToggleGroupControl` is still experimental.
 
 **Rationale:** Type-only packages give editor code real checks without shipping a second copy of WordPress's libraries (ADR-005). A small local declaration avoids a version clash. One extra entry avoids a second build. One icon list removes drift between PHP validation and the picker. Stable components avoid breakage when experimental APIs change.
@@ -534,7 +533,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Status:** Accepted
 
-**Context:** ADR-010 chose to keep event fields in ACF, register them in code and spike whether a Button `url` binding accepts `cta_link`. ADR-032 moved tone and icon out of that group and left the rest for this phase. The group was first made in the ACF admin and is stored in the database. Events run in West Africa Time (WAT) and the site time zone is UTC. Every event on the site is already past, and the design has no past-event state. wp-env had no ACF (ADR-032), so the e2e tests could not exercise the bindings.
+**Context:** ADR-010 chose to keep event fields in ACF, register them in code and spike whether a Button `url` binding accepts `cta_link`. ADR-032 moved tone and icon out of that group. The group was made in the ACF admin and is stored in the database, and wp-env had no ACF (ADR-032), so the e2e tests could not exercise the bindings. Events run in West Africa Time (WAT) and the site time zone is UTC. Every event is already past, and the design has no past-event state.
 
 **Options:**
 - Keep the database-stored group and bind to it.
@@ -543,28 +542,28 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - A custom `tekseries/event` binding source, if core bindings fall short.
 
 **Decision:**
-- `includes/acf.php` registers the "Events" group with `acf_add_local_field_group()` on `acf/include_fields`, using the same group key (`group_643e98e5780ba`) and field keys as the stored group. The code version replaces it and existing values keep loading, which was verified on the dev site. The stored group can be deleted once the code group is live. Every field has `show_in_rest` and `allow_in_bindings`, because ACF's `acf/field` source returns an empty string without the latter.
+- The plugin registers the "Events" group in code with the same group key (`group_643e98e5780ba`) and field keys as the stored group, so existing values keep loading. The stored group can be deleted once the code group is live. Every field has `show_in_rest` and `allow_in_bindings`. ACF's binding source returns an empty string without the latter.
 - Two optional text fields are new: `time_label`, free text with a time zone such as "11:00 AM WAT", and `venue`.
-- The plugin header declares `Requires Plugins: advanced-custom-fields`. wp-env installs the exact release 6.8.10 from `https://downloads.wordpress.org/plugin/advanced-custom-fields.6.8.10.zip`. The wordpress.org slug serves WP Engine's ACF again, and the zip is byte-identical to the dev site's copy. A unit test checks the header and that `.wp-env.json` pins an exact version.
-- Templates bind core blocks. Date blocks take `datetime` from `event_date`. Paragraphs take `time_label`, `venue` and `cta_link`, which shows as "Join here" text. The Register Button takes `url` from `cta_link` and `text` from `cta_name`, and opens in a new tab. `cta_link` returns a URL string, so the Button binding works unchanged and the `tekseries/event` source was not needed.
-- An `acf/blocks/binding_value` filter fixes two values. A Date block bound to a date field gets an ISO 8601 date at midnight in the site time zone, not ACF's formatted "September 26, 2026". Core's Date block accepted the formatted string, but `<time datetime>` was then invalid and the day could shift on a site west of UTC. A link field bound to text drops its scheme ("bit.ly/WomEngineers").
-- Blocks with class `ts-register` (the Register button and the Join here row) pass through a `render_block` filter in `includes/events.php`. Once the event date (`Ymd`, site time zone) has passed, the button becomes a "This event has ended" note and the other blocks are removed. A Register button with no link is hidden. This plain note is interim: the designer was asked for a past-event state.
-- A row whose bound value is empty is hidden with CSS `:has()`: a `.ts-event-row` without a non-empty `.ts-event-value`. Older events have no time or venue.
+- The plugin header declares `Requires Plugins: advanced-custom-fields`, and wp-env installs the exact release 6.8.10.
+- Templates bind core blocks. Date blocks take `datetime` from `event_date`. Paragraphs take `time_label`, `venue` and `cta_link`, which shows as "Join here" text. The Register Button takes `url` from `cta_link` and `text` from `cta_name`, and opens in a new tab. `cta_link` returns a URL string, so the `tekseries/event` source was not needed.
+- An `acf/blocks/binding_value` filter fixes two values. A Date block bound to a date field gets an ISO 8601 date at midnight in the site time zone, so `<time datetime>` stays valid and the day cannot shift on a site west of UTC. A link field bound to text drops its scheme.
+- Blocks with class `ts-register` (the Register button and the Join here row) are filtered at render. Once the event date has passed in the site time zone, the button becomes a "This event has ended" note and the other blocks are removed. A Register button with no link is hidden. The plain note is interim: the designer was asked for a past-event state.
+- Rows whose bound value is empty are hidden, since older events have no time or venue.
 
-**Rationale:** The same keys keep every stored value with no migration, and the fields come under version control, as ADR-010 intended. Core bindings keep the templates as editable core blocks (ADR-005). The hard ACF dependency that ADR-010 accepted now also holds in wp-env, so the bindings are testable on a fresh install. The ISO date filter keeps the markup valid and the day correct. A free-text time label avoids storing a time zone for events that all run in WAT.
+**Rationale:** The same keys keep every stored value with no migration, and the fields come under version control, as ADR-010 intended. The hard ACF dependency that ADR-010 accepted now also holds in wp-env, so the bindings are testable on a fresh install. Core bindings keep the templates as editable core blocks (ADR-005). A free-text time label avoids storing a time zone for events that all run in WAT.
 
 ## ADR-036: Sort events by event date
 
 **Status:** Superseded by ADR-070 (the ordering mechanism only)
 
-**Context:** Events listed by publish date, which is not when they happen. Core runs `query_loop_block_query_vars` only for non-inherited Query Loops. The event archive and event type archives use an inherited loop (ADR-026), so that filter never fires for them. Some events have no date.
+**Context:** Events listed by publish date, which is not when they happen. Core runs `query_loop_block_query_vars` only for non-inherited Query Loops, and the event and event type archives use an inherited loop (ADR-026). Some events have no date.
 
 **Options:**
 - Order by `meta_value` with a single meta key, which drops undated events.
 - Custom orderby in each template.
 - Two filters: one for non-inherited loops, one for the main query.
 
-**Decision:** Two filters set the order. `query_loop_block_query_vars` covers the non-inherited loops: the Latest card, the paginated grid and More events. `pre_get_posts` covers the main query of the event archive and the type archives. Both use the same arguments: a meta query that is an OR of `event_date` EXISTS, a named clause used for ordering, and NOT EXISTS, so undated events stay in the list, last. Publish date breaks ties. Only loops left on the default "date" orderby change, and their ASC or DESC direction is kept. The Latest card with the offset-1 grid (ADR-026) still pairs correctly because both queries share the order. The tone cycle stays on publish order (ADR-032).
+**Decision:** Two filters set the order. `query_loop_block_query_vars` covers the non-inherited loops (the Latest card, the paginated grid and More events), and `pre_get_posts` covers the main query of the event and type archives. Both use a meta query that is an OR of `event_date` EXISTS and NOT EXISTS, so undated events stay in the list, last. Publish date breaks ties. Only loops left on the default "date" orderby change, and their direction is kept. The Latest card with the offset-1 grid (ADR-026) still pairs correctly because both queries share the order. The tone cycle stays on publish order (ADR-032).
 
 **Rationale:** Sorting by event date puts upcoming and recent events first, which is what a visitor expects. The OR clause keeps undated events visible. Touching only the default orderby leaves an editor's explicit choice alone. Tones are assigned at publish, so the cycle must not follow event date.
 
@@ -579,10 +578,10 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - Filters on core blocks, keyed on classes.
 
 **Decision:**
-- `includes/event-types.php` registers `tekseries_icon` term meta on `event_type`. It is REST-editable and uses the same curated set and sanitiser as the topic icon. An unset term falls back to the slug map in `includes/meta.php` (Webinar `videocam`, Workshop `co_present`, Makers' Prize `emoji_events`), which stays the single source of defaults. An event's default topic icon follows its first type's icon.
+- The plugin registers `tekseries_icon` term meta on `event_type`. It is REST-editable and uses the same curated set and sanitiser as the topic icon. An unset term falls back to the slug map (Webinar `videocam`, Workshop `co_present`, Makers' Prize `emoji_events`), which stays the single source of defaults. An event's default topic icon follows its first type's icon.
 - `render_block_core/post-terms` adds the icon to each term link of a "badge" Post Terms block.
-- `render_block_core/navigation-link` adds the icon to links with class `ts-type-chip`, matching the `/event_type/<slug>/` path. "All events" gets `apps`, which was added to the icon collection (ADR-024).
-- `render_block_core/icon` swaps the drawing of an Icon block with class `ts-event-type-icon` (the details card), keeping its size and classes.
+- `render_block_core/navigation-link` adds it to links with class `ts-type-chip`. "All events" gets `apps`, which was added to the icon collection (ADR-024).
+- `render_block_core/icon` swaps the drawing of an Icon block with class `ts-event-type-icon` (the details card).
 - There is no wp-admin picker yet. Editors set the icon over REST or with `wp term meta update`.
 
 **Rationale:** Class-keyed filters keep every template a core block that editors can still change. Reusing the topic icon set and sanitiser avoids a second list (ADR-034). The slug map means a type with no stored icon still shows one.
@@ -598,9 +597,9 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - Dynamic plugin blocks, rendered on the server.
 - Interactive blocks that need JavaScript.
 
-**Decision:** Both are dynamic plugin blocks with no front-end JavaScript. Editor previews use ServerSideRender (`@wordpress/server-side-render`, a type-only plugin devDependency, installed through `@wordpress/editor`, as in ADR-034).
-- `tekseries/share-links` renders one link per chosen service to that service's share page for the current post: LinkedIn share-offsite, Facebook sharer, X intent and WhatsApp `wa.me` with the title and link. An optional plain "Link to this page" is also available. Links open in a new tab. Icons are core's Social Icons artwork, from `block_core_social_link_get_icon()`. The default services are LinkedIn, Facebook and WhatsApp, as on the boards. Styles are default (lilac) and "Dark" (ink). It sits under the article on single events ("Share this event") and single news ("Share this story").
-- `tekseries/toc` lists the H2 headings of the saved content that have an anchor, found with `WP_HTML_Tag_Processor`. They are numbered 01, 02 and so on inside a `<details open>`, so it works without JavaScript. It renders nothing when there are no anchored H2s. In the Legal page template (ADR-031) it sits in the aside above the questions card: sticky beside the article on desktop only, above the article on tablet and mobile. Privacy (12 sections) and Terms (8) already had anchored H2s.
+**Decision:** Both are dynamic plugin blocks with no front-end JavaScript. Editor previews use ServerSideRender (a type-only plugin devDependency, as in ADR-034).
+- `tekseries/share-links` renders one link per chosen service (LinkedIn, Facebook, X or WhatsApp) to that service's share page for the current post, plus an optional plain "Link to this page". Links open in a new tab. Icons are core's Social Icons artwork. The default services are LinkedIn, Facebook and WhatsApp, as on the boards. Styles are default (lilac) and "Dark" (ink). It sits under single events ("Share this event") and single news ("Share this story").
+- `tekseries/toc` lists the anchored H2 headings of the saved content, numbered 01, 02 and so on inside a `<details open>`, so it works without JavaScript. It renders nothing when there are none. In the Legal page template (ADR-031) it sits in the aside above the questions card: sticky on desktop only, above the article on tablet and mobile.
 - Deferred to the Interactivity API phase: copy-to-clipboard, the table of contents folded by default on phones (as on the board), and highlighting the section being read.
 
 **Rationale:** Server rendering keeps both usable without JavaScript (ADR-005). Reading the saved HTML means the list always matches the page. Core's icon artwork avoids a second icon set and a CDN (ADR-008). Deferring the enhancements keeps this phase free of front-end scripts.
@@ -617,11 +616,11 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - Keep WPJM's CSS and restyle on top of it.
 
 **Decision:**
-- wp-env installs WPJM 2.4.8 from the pinned wordpress.org zip. That is the version live runs, and the zip is byte-identical to the local site's copy.
+- wp-env installs WPJM 2.4.8, the version live runs.
 - The plugin does not declare WPJM in `Requires Plugins`. Every WPJM call is guarded, so events and the rest work without it.
-- Overrides live in `wp-content/plugins/tekseries-blocks/templates/wpjm/`. They load through `job_manager_locate_template` only for WPJM's own `job_manager` template path, so add-ons keep theirs. File names are checked with `validate_file()`.
+- Overrides live in `templates/wpjm/` in the plugin. They load through `job_manager_locate_template` only for WPJM's own `job_manager` template path, so add-ons keep theirs. File names are checked with `validate_file()`.
 - WPJM's `frontend.css` is left out on every screen the plugin styles: the single job, pages with the Job Listings block, the submission form and the dashboard. Its `job-listings.css` is dequeued. select2 loads only on the submission form. Its dashboard CSS stays for the statistics dialog (ADR-043).
-- PHPCS exempts `templates/wpjm/` from the file-name and hook-prefix rules, because overrides must keep WPJM's names and fire its hooks.
+- The coding-standards check exempts `templates/wpjm/` from the file-name and hook-prefix rules, because the overrides must keep WPJM's names and fire its hooks.
 
 **Rationale:** A soft dependency keeps the rest of the site independent of jobs. Dropping WPJM's CSS avoids fighting it and stops it loading on unrelated pages. Checking the template path and file name keeps the filter from touching other plugins' templates.
 
@@ -636,9 +635,9 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - Binding sources that return display strings, with core blocks in the templates.
 
 **Decision:**
-- `tekseries/job-field` has the keys `company`, `location`, `posted` and `type`. Location reads "Lagos", "Lagos (Remote)", "Remote" or "Anywhere". Posted reads "Posted 3 days ago", or "Posted on <date>" in WPJM's date format. It applies the same read checks as core's post-meta source (publicly viewable or `read_post`, and the password check) plus WPJM's view capability. It returns null without WPJM.
+- `tekseries/job-field` has the keys `company`, `location`, `posted` and `type`. The `location` and `posted` keys return display text, for example "Lagos (Remote)" and "Posted 3 days ago". The source applies the same read checks as core's post-meta source plus WPJM's view capability, and returns null without WPJM.
 - `tekseries/job-stats` has the key `open`. It returns the number of open jobs from WPJM's cached `get_job_listings()` query. The Job Series hero shows "{N} open jobs" in place of the design's "100's" figure (owner decision).
-- Icon blocks with class `ts-job-type-icon` draw the job type's icon (an 8-type map, `work` as fallback). `ts-job-location-icon` draws a globe for remote jobs. Both work through a render filter, the class-hook pattern of ADR-037. The SVG swap is now a shared helper, `tekseries_blocks_swap_icon()`.
+- Icon blocks with class `ts-job-type-icon` draw the job type's icon (an 8-type map, `work` as fallback). `ts-job-location-icon` draws a globe for remote jobs. Both use the class-hook render filter of ADR-037, through a shared helper, `tekseries_blocks_swap_icon()`.
 
 **Rationale:** Binding sources keep templates as core blocks that editors can change (ADR-005). Sharing the read checks with core's source avoids leaking private jobs. The shared swap helper keeps event and job icons on one code path.
 
@@ -654,12 +653,11 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - Keep WPJM's jQuery apply toggle.
 
 **Decision:**
-- The theme has `single-job_listing.html` and a pattern. The hero has breadcrumbs (Home / Job Series / title), the title, chips bound to type, location and posted (ADR-040), and a "work" watermark. Post content follows. "More jobs" is a Query Loop of three other jobs, leaving out filled jobs when WPJM hides them.
-- A plugin breadcrumb filter supplies "Job Series" from WPJM's job listings page. It also does so on the submit and dashboard pages.
-- The body is a plugin override of `content-single-job_listing.php` (with `-company`, `-meta` and `job-application*.php`). A description card holds "Apply for job" and "All jobs". Beside it sits a side card: a company tile, details rows with icons, the apply box and a third-party note. The tile shows the uploaded logo, or initials on one of four tones hashed from the company name with the boards' own hash.
+- The theme has `single-job_listing.html` and a pattern. The hero has breadcrumbs (Home / Job Series / title), the title, chips bound to type, location and posted (ADR-040), and a "work" watermark. "More jobs" is a Query Loop of three other jobs, leaving out filled jobs when WPJM hides them. A plugin breadcrumb filter supplies "Job Series" from WPJM's job listings page. It does the same on the submit and dashboard pages.
+- The body is a plugin override of `content-single-job_listing.php` and its related templates. A description card holds "Apply for job" and "All jobs". Beside it sits a side card with a company tile, details rows, the apply box and a third-party note. The tile shows the uploaded logo, or initials on one of four tones hashed from the company name.
 - The side card comes first in the markup, so tablet and mobile get the boards' order with no CSS reordering. On desktop it is a sticky column.
-- The apply box is a native `<details>`, and `job-application.js` is no longer loaded. WPJM's apply-click statistic is pointed at `.application_button`, the summary, because its script binds the first match.
-- The second "Apply for job" under the description links straight to the application (URL in a new tab, or a mailto). A second toggle cannot open a `<details>` without JavaScript.
+- The apply box is a native `<details>`, and `job-application.js` is no longer loaded. WPJM's apply-click statistic is pointed at the summary, because its script binds the first match.
+- The second "Apply for job" under the description links straight to the application (URL in a new tab, or a mailto), since a second toggle cannot open a `<details>` without JavaScript.
 - H1 headings in job descriptions become H2s, since the page already has the job title as H1.
 - The submission preview reuses the same body (owner default: one layout for single and preview).
 
@@ -669,7 +667,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Status:** Accepted
 
-**Context:** ADR-012 chose a `tekseries/job-listings` block over `[jobs]`. This records how it was built. WPJM enables search statistics only on pages whose content contains `[jobs]`.
+**Context:** ADR-012 chose a `tekseries/job-listings` block over `[jobs]`. WPJM enables search statistics only on pages whose content contains `[jobs]`.
 
 **Options:**
 - Filters and pages as an AJAX app.
@@ -677,14 +675,14 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - Re-implement WPJM's search statistics.
 
 **Decision:**
-- The block has `render.php`, a ServerSideRender editor preview and a `perPage` attribute (default 25).
-- It reads `search_keywords`, `search_location`, `search_category`, `filter_job_type[]` (none ticked means all types), `remote_position` and `pg` from a GET form. Type chips are real checkboxes under styled labels. "Remote positions only" is a checkbox with `role="switch"`.
-- It queries WPJM's `get_job_listings()`, newest first, and prints "N open jobs" or "N jobs match your search". Rows come from the `content-job_listing.php` override (`li.job_listing`, with its post class kept). Empty states offer "Clear filters".
-- Pagination is `paginate_links()` with end size 1 and mid size 2 ("1 2 3 … 54 →") on every screen size. That is the mobile board's set. The desktop board shows more numbers.
-- To get search statistics, the block calls WPJM's private `Stats_Script::enqueue_stats_script()` through a bound closure. That keeps WPJM's nonce, stat definitions and filters. The call is guarded with `method_exists`. The risk is that a WPJM update renaming the method silently drops search statistics. An e2e test checks that the impression stat is set up, so such an update would fail the test.
+- The block is server-rendered, with a ServerSideRender editor preview and a `perPage` attribute (default 25).
+- It reads `search_keywords`, `search_location`, `search_category`, `filter_job_type[]` (none ticked means all types), `remote_position` and `pg` from a GET form. Type chips are real checkboxes, and "Remote positions only" is a checkbox with `role="switch"`.
+- It queries WPJM's `get_job_listings()`, newest first, and prints "N open jobs" or "N jobs match your search". Empty states offer "Clear filters".
+- Pagination is `paginate_links()` with end size 1 and mid size 2 on every screen size. That is the mobile board's set. The desktop board shows more numbers.
+- To get search statistics, the block calls WPJM's private `Stats_Script::enqueue_stats_script()` through a bound closure, guarded with `method_exists`. That keeps WPJM's nonce, stat definitions and filters. The risk is that a WPJM update renaming the method silently drops search statistics. An e2e test checks that the impression stat is set up, so such an update would fail the test.
 - Live filtering as you type is not part of this ADR (see Future work). ADR-012's Interactivity API enhancement is deferred to Phase 6.
 
-**Rationale:** A GET form works without JavaScript, gives shareable URLs and needs no jQuery (ADR-007). Calling WPJM's own statistics code is less work and less drift than copying it. The e2e test turns the private-method risk into a visible failure.
+**Rationale:** A GET form works without JavaScript, gives shareable URLs and needs no jQuery (ADR-007). Calling WPJM's own statistics code is less work and less drift than copying it.
 
 ## ADR-043: Restyle the submission flow and dashboard with static heroes and WPJM overrides
 
@@ -699,11 +697,11 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Decision:**
 - The "Post a job" and "Job dashboard" heroes are static theme patterns above WPJM's shortcode in a wide group (owner default). Steps live inside the overrides.
-- Overrides: `job-submit.php` (steps aside Job details, Preview and Submitted, with tips; the form in "Job details" and "Company details" cards; `<button>` Preview and Save draft with WPJM's names), `account-signin.php` (signed-in bar with initial and Sign out; signed-out sign-in card beside "How posting works"), `job-preview.php` (plum bar with Edit listing and Submit listing), `job-submitted.php` (done card), `job-dashboard.php` and `job-dashboard-login.php`.
+- Overrides cover the submit form, with a steps aside and the form in "Job details" and "Company details" cards. They also cover the signed-in bar with Sign out, the signed-out sign-in card beside "How posting works", the preview (a plum bar with Edit listing and Submit listing), the submitted card, the dashboard and the dashboard login.
 - Field labels, placeholders and help come from a `submit_job_form_fields` filter. The job category is optional (owner default; imported jobs all sit in one category). Required fields get a star.
 - Registration stays off, so the sign-in cards say "No account yet? Contact us to get an employer account" (owner default).
-- The dashboard has search, Add job, rows with status pills, a main action, a native `<details>` menu with icons, an empty state and "Signed in as". A draft's main action is Continue Submission. Other jobs get Edit where offered. Delete is never the main button: Duplicate takes it, because with the site's settings a pending job cannot be edited and WPJM would otherwise put Delete there. Published jobs read "Published" instead of "Active", on this site only. WPJM's behaviour stays for Duplicate (opens the copy in the form) and Delete (confirm).
-- `job-dashboard-login.php` is a plain sign-in card. No board exists for that state yet.
+- A draft's main dashboard action is Continue Submission. Other jobs get Edit where offered. Delete is never the main button: Duplicate takes it, because with the site's settings a pending job cannot be edited and WPJM would otherwise put Delete there. Published jobs read "Published" instead of "Active", on this site only. WPJM's behaviour stays for Duplicate and Delete.
+- The dashboard login is a plain sign-in card, since no board exists for that state yet.
 - The statistics dialog keeps WPJM's layout and copy, since the board's redesign would need its overlay templates rewritten. WPJM's dashboard CSS stays for it (ADR-039).
 - The submit form works without JavaScript except reCAPTCHA. jQuery remains allowed there only (ADR-007).
 
@@ -713,7 +711,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Status:** Accepted
 
-**Context:** ADR-015 decided the gallery reads a "private `media_album` taxonomy". The Media Library holds about 2,060 files, about 1,710 of them WPJM company-logo uploads, so the gallery must show only files an editor chose. The design filters by year, but the migrated photos' upload dates are wrong for that: photos from 2016 to 2019 were uploaded in 2023.
+**Context:** ADR-015 decided the gallery reads a "private `media_album` taxonomy". Most of the Media Library's files are WPJM company-logo uploads, so the gallery must show only files an editor chose. The design filters by year, but the migrated photos' upload dates are wrong for that: photos from 2016 to 2019 were uploaded in 2023.
 
 **Options:**
 - Visibility: a fully private taxonomy (`public` false), or a public taxonomy that is not publicly queryable.
@@ -726,13 +724,13 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - A file in several albums takes the latest year. A file whose albums have no year lists only under "All years".
 - Existing photos were put into six albums with a one-off script. The plugin has no importer.
 
-**Rationale:** WordPress shows a taxonomy field in a file's attachment details (Media Library grid) only for public taxonomies. With a private one, editors would have to open each file's full edit screen. Not being publicly queryable still gives no archive, and the taxonomy does not enter the SEO plugin's sitemap (checked on the development site). Core's default counter counts an attachment only through a published parent post, and gallery files are unattached, so counts would read 0. The year on the album is one field per album instead of one per file, and it matches how the old site grouped photos. An e2e test guards the Media Library field and the wp-admin Year field. This refines the "private" wording of ADR-015.
+**Rationale:** WordPress shows a taxonomy field in a file's attachment details (Media Library grid) only for public taxonomies. With a private one, editors would have to open each file's full edit screen. Not being publicly queryable still gives no archive, and the taxonomy stays out of the SEO plugin's sitemap. Core's default counter counts an attachment only through a published parent post, and gallery files are unattached, so counts would read 0. The year on the album is one field per album instead of one per file, and it matches how the old site grouped photos. This refines the "private" wording of ADR-015.
 
 ## ADR-045: Build the Media Gallery as a dynamic block that filters in PHP, with links for every state
 
 **Status:** Superseded by ADR-050 (masonry layout only)
 
-**Context:** ADR-015 chose a custom block, and ADR-030 shipped core Gallery blocks per album as an interim. The design has type (All / Photos / Videos) and year filters with counts, a masonry of tiles, "Showing N of M" with Load more, and a lightbox. Server HTML must be complete and usable without JavaScript.
+**Context:** ADR-015 chose a custom block, and ADR-030 shipped core Gallery blocks per album as an interim. The design has type and year filters with counts, a masonry of tiles, "Showing N of M" with Load more, and a lightbox. Server HTML must be complete and usable without JavaScript.
 
 **Options:**
 - Keep core Galleries, which have no filters, counts or Load more.
@@ -742,22 +740,21 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - URLs: `type` and `year`, or prefixed parameters.
 
 **Decision:**
-- Dynamic block `tekseries/media-gallery`. One query reads every image and video attachment that has a `media_album` term (ADR-044), cached for the request. Results sort by newest album year first, then newest upload first within a year.
-- Filters are plain links with counts. URL parameters are `media_type` (`photo` or `video`), `media_year` and `media_shown`. Unknown values are ignored.
-- "Load more" is a link that raises `media_shown` by the block's per-page setting (default 12, cumulative) and lands on the first newly shown tile. Filter links land on the gallery.
-- A filter group renders only when it distinguishes something: both photos and videos exist, or there is more than one year.
-- Tiles are links to the full file in a CSS-columns masonry (4, 3 and 2 columns), each sized from its file's stored dimensions. A tile's accessible name ("View photo: ..." or "Play video: ...") and hover caption is the attachment caption, falling back to alt text, then title.
-- A `tekseries/media-stats` block-binding source gives templates the totals ("32 photos"). It is empty when there are none, so the chip hides.
-- The Gallery page pattern uses the block, and the interim `.ts-gallery` styling for core Gallery is removed.
+- Dynamic block `tekseries/media-gallery`. One query, cached for the request, reads every image and video attachment with a `media_album` term (ADR-044). Results sort by newest album year, then newest upload.
+- Filters are plain links with counts, using the URL parameters `media_type`, `media_year` and `media_shown`. A filter group shows only when it distinguishes something.
+- "Load more" is a link that raises `media_shown` by the block's per-page setting (default 12).
+- Tiles link to the full file in a CSS-columns masonry (4, 3 and 2 columns). A tile's accessible name and hover caption come from the attachment caption, then the alt text, then the title.
+- A `tekseries/media-stats` binding source gives templates the totals ("32 photos").
+- The Gallery page pattern uses the block, and the interim styling for core Gallery is removed.
 - Deferred: the lightbox, and filtering and loading without a page reload.
 
-**Rationale:** `year` is a WordPress query variable. On a page URL it turns the request into a date archive and the page 404s. `type` is a reserved term. The set is small and curated, and every chip needs a count, so one query plus PHP filtering is simpler and cheaper than a count query per chip. CSS columns need no script, but reading and tab order run down each column, a known difference from the design's row order. On the migrated photos the captions are clean while the alt texts are file names. Links keep every state shareable and can be intercepted later for in-place navigation. This replaces the interim gallery of ADR-030.
+**Rationale:** `year` is a WordPress query variable that turns a page URL into a date archive, and `type` is a reserved term, so the parameters are prefixed. The set is small and every chip needs a count, so one query plus PHP filtering is simpler and cheaper than a count query per chip. CSS columns need no script, though reading order runs down each column, unlike the design's rows. Captions come first because the migrated alt texts are file names. Links keep every state shareable. This replaces the interim gallery of ADR-030.
 
 ## ADR-046: Build the Home motion blocks with CSS only
 
 **Status:** Superseded by ADR-052 (Home's static patterns only); by ADR-053 ("the carousel ships no script" only); by ADR-060 ("the Stat ships no script and counts on page load" only)
 
-**Context:** ADR-014 decided Home motion ships in two versions: static core blocks first, moving plugin blocks later (hero carousel, count-up stat, logo marquee). The design's count-up is CSS. Its marquee pauses only on hover, with no keyboard or touch control, which fails WCAG 2.2.2. Its slider dots have nothing to slide. Server HTML must work without JavaScript, and motion must respect `prefers-reduced-motion`.
+**Context:** ADR-014 decided Home motion ships in two versions: static core blocks first, moving plugin blocks later (hero carousel, count-up stat, logo marquee). The design's count-up is CSS. Its marquee pauses only on hover, which fails WCAG 2.2.2, and its slider dots have nothing to slide. Server HTML must work without JavaScript, and motion must respect `prefers-reduced-motion`.
 
 **Options:**
 - Wait and build all three with the Interactivity API.
@@ -765,18 +762,18 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - Build them with CSS only, so they are complete now.
 
 **Decision:** Three dynamic blocks that ship no script and move only under `prefers-reduced-motion: no-preference`.
-- `tekseries/stat` (attributes `value`, `suffix`): the number is a CSS counter fed by a registered custom property (`@property`) that animates from 0. The drawn figure is hidden from assistive technology, and a screen-reader copy carries the plain "312+", which is also what shows without CSS.
-- `tekseries/logo-marquee` (Image inner blocks): the server repeats the set so each half of the strip holds at least eight logos, and the strip slides by half its width. Repeats are `aria-hidden` and `inert` with empty alt text. The pause control is a checkbox drawn as a button, placed before the logos in the document, and hovering pauses too. Without motion, and in the editor, it is a still wrapping row.
-- `tekseries/hero-carousel` (Cover inner blocks): a scroll-snap track that can be swiped. The server gives each slide an id and slide roles, the dots are links to those ids, and the current dot follows `:target`. One slide renders with no dots or carousel roles.
+- `tekseries/stat` (attributes `value`, `suffix`): the number is a CSS counter fed by a registered custom property that animates from 0. The drawn figure is hidden from assistive technology, and a screen-reader copy carries the plain "312+", which also shows without CSS.
+- `tekseries/logo-marquee` (Image inner blocks): the server repeats the set so each half of the strip holds at least eight logos, and the strip slides by half its width. Repeats are `aria-hidden` and `inert`. The pause control is a checkbox drawn as a button, placed before the logos in the document, and hovering pauses too. Without motion, and in the editor, it is a still wrapping row.
+- `tekseries/hero-carousel` (Cover inner blocks): a scroll-snap track that can be swiped. The dots are links to slide ids, and the current dot follows `:target`. One slide renders with no dots or carousel roles.
 - Home keeps its static patterns until the site owner asks for the switch.
 
-**Rationale:** CSS covers what the design shows, so nothing waits on a later phase and nothing breaks without JavaScript. A checkbox gives a real pause control with no script, where an inert button would be worse than none. Anchor dots plus native scrolling make a usable carousel without script. This delivers the blocks that ADR-014 deferred. Later, optional behaviour is listed in Future work.
+**Rationale:** CSS covers what the design shows, so nothing waits on a later phase and nothing breaks without JavaScript. A checkbox gives a real pause control with no script, where an inert button would be worse than none. This delivers the blocks that ADR-014 deferred. Later, optional behaviour is listed in Future work.
 
 ## ADR-047: Give each behaving block one Interactivity API script module
 
 **Status:** Superseded by ADR-060 (one module that is no block's own only)
 
-**Context:** ADR-005 allows frontend behaviour only through the Interactivity API. Several blocks now need it: Share Links, Table of Contents, Media Gallery and Job Listings. Script modules have no translation loading. Core enqueues a view module on every render of a block that supports interactivity, and Share Links sits on every post and event, where most of its services have no behaviour.
+**Context:** ADR-005 allows frontend behaviour only through the Interactivity API. Share Links, Table of Contents, Media Gallery and Job Listings now need it. Script modules have no translation loading. Core enqueues a view module on every render of a block that supports interactivity, and Share Links sits on every post and event, where most of its services have no behaviour.
 
 **Options:**
 - jQuery or hand-written DOM scripts.
@@ -784,14 +781,14 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - One `view.ts` per block, with WordPress supplying the Interactivity API runtime.
 
 **Decision:**
-- A block that behaves has `src/<block>/view.ts`, declared as `viewScriptModule` in `block.json` with `supports.interactivity: true`. `@wordpress/interactivity` and `@wordpress/interactivity-router` are type-only devDependencies of the plugin workspace (ADR-034). Nothing is bundled.
-- Behaviour hooks onto the markup `render.php` already prints, using `data-wp-*` attributes. The page without JavaScript is the same page, and every JavaScript-off test stayed unchanged (ADR-005).
+- A block that behaves has `src/<block>/view.ts`, declared as `viewScriptModule` in `block.json` with `supports.interactivity: true`. `@wordpress/interactivity` and `@wordpress/interactivity-router` are type-only devDependencies (ADR-034). Nothing is bundled.
+- Behaviour hooks onto the markup `render.php` already prints, using `data-wp-*` attributes, so the page without JavaScript is the same page (ADR-005).
 - Translated strings reach a script through `wp_interactivity_state()` or `wp_interactivity_config()`.
-- A block's script loads only on pages that contain the block. Share Links also dequeues its module in a `render_block_tekseries/share-links` filter (`includes/share-links.php`) unless a block offers "Link to this page".
-- `specs/visitor-scripts.spec.ts` checks each kind of public page: no React, no jQuery (except the job submission form, ADR-007), and block scripts only with their block.
-- Share Links behaviour: "Link to this page" copies the link with the Clipboard API, shows "Link copied" for 2.5 seconds and announces it in a status element. Once the script runs, its accessible name becomes "Copy the link to this page". A modified click, an insecure page or a refused copy keep the plain link.
+- A block's script loads only on pages that contain the block. Share Links also dequeues its module unless a block offers "Link to this page".
+- A spec checks each kind of public page: no React, no jQuery (except the job submission form, ADR-007), and block scripts only with their block.
+- Share Links: "Link to this page" copies the link with the Clipboard API, shows "Link copied" for 2.5 seconds and announces it in a status element. Its accessible name becomes "Copy the link to this page" once the script runs. A modified click, an insecure page or a refused copy keep the plain link.
 
-**Rationale:** The Interactivity API ships no React to visitors and adds no second runtime. Hooking onto existing markup keeps the no-JavaScript page complete. Passing strings through state works around the missing translation loading. Dequeuing the unused module keeps the extra request off every post and event. The scripts spec turns the "no React, no jQuery" rule into a test. This delivers the copy-link item that ADR-038 deferred.
+**Rationale:** The Interactivity API ships no React to visitors and adds no second runtime. Hooking onto existing markup keeps the no-JavaScript page complete. Passing strings through state works around the missing translation loading. Dequeuing the unused module keeps the extra request off every post and event. This delivers the copy-link item that ADR-038 deferred.
 
 ## ADR-048: Build the gallery lightbox as a native modal dialog that reads the tiles on the page
 
@@ -806,9 +803,9 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - A native `<dialog>` rendered by the block, reading the tiles.
 
 **Decision:**
-- `render.php` of `tekseries/media-gallery` prints a `<dialog>`, opened with `showModal()`. The browser provides the focus trap, Escape, the inert page and the return of focus to the tile.
-- The lightbox steps through the tiles loaded under the current filter. When it opens, it reads each item (file, caption, picture, proportions) from the tile's own markup. There is no second data source and no request.
-- Features: a counter, Previous and Next that wrap, thumbnails, arrow keys and a sideways swipe. Photos use the tile's `srcset`. Videos play in `<video controls>` and pause when the viewer moves on or closes. A polite live region reads "3 of 12: caption". The opening fade runs only without a reduced-motion preference. A modified click still opens the file.
+- `tekseries/media-gallery` prints a `<dialog>`, opened with `showModal()`. The browser provides the focus trap, Escape, the inert page and the return of focus to the tile.
+- The lightbox steps through the tiles loaded under the current filter and reads each item from the tile's own markup when it opens. There is no second data source and no request.
+- Features: a counter, Previous and Next that wrap, thumbnails, arrow keys and a sideways swipe. Videos play in `<video controls>` and pause when the viewer moves on or closes. A polite live region reads "3 of 12: caption". The opening fade runs only without a reduced-motion preference. A modified click still opens the file.
 - The phone layout has a bottom bar instead of side buttons and thumbnails, as on the boards. On tablets the side buttons get a dark backing so they stay visible over a photo. The boards do not show that backing.
 
 **Rationale:** The browser already does the hard accessibility work for a modal dialog. Reading the tiles keeps one source of truth, so filters and Load more (ADR-049) need no extra wiring. Tiles stay real links, so the page works without JavaScript (ADR-047).
@@ -825,7 +822,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Decision:**
 - A block, or part of it, is a `data-wp-router-region`. The script follows the same links and form addresses, and the router swaps in what the server rendered. The address still changes, so views can be shared and Back and Forward work. A failed fetch falls back to loading the page. The router's generic "Page loaded" announcement is turned off in both blocks.
-- Media Gallery: the whole block is the region. Filter links and Load more are fetched without their `#media...` fragment, so the page does not jump, and get it back afterwards. Tiles are keyed. After Load more, focus goes to the first new tile. A visually hidden status element reads the server's summary ("Showing 4 of 6", "No videos from 2019 yet") after each update, taken from the server state of the page the router last showed.
+- Media Gallery: the whole block is the region. Filter links and Load more are fetched without their `#media...` fragment, so the page does not jump, and the fragment is restored in the address afterwards. Tiles are keyed. After Load more, focus goes to the first new tile. A visually hidden status element reads the server's summary ("Showing 4 of 6") after each update.
 - Job Listings: only the results section is the region. The search form stays outside it, because a region is redrawn from the server's HTML and would overwrite a field while someone types. Typing in Keywords or Location is followed after a 400 ms pause and replaces the history entry. Chips, the remote switch, the category and Enter add an entry. After an update the script sets checkboxes and the select from the address, and text fields only on Back and Forward and on "Clear filters". Empty fields, and a checkbox group with every box ticked, are left out of the address. A page change moves focus and the view to the results. The count line is a status element.
 - WPJM statistics keep working. Job rows are keyed, so a row that arrives in place is a new element that the observer sees. `ul.job_listings` is always rendered, hidden when empty, because the script binds to the first list. The statistics script now loads even when the first view finds nothing.
 
@@ -844,9 +841,9 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - A CSS grid with thin rows and tiles that span several rows.
 
 **Decision:**
-- A row is 1/40 of a column's width, using a container query unit on the block. `render.php` computes the number of rows from the file's width and height, adds two for the gap, and passes it as `--ts-media-rows`. Auto-placement in document order puts each tile in the shortest column, left to right, as the boards do. Appended tiles never move earlier ones. No script is involved.
-- The tile fills its rows minus the gap and the picture covers it. Gaps are exact and the picture is cropped by a few pixels at most.
-- Browsers without container units keep the CSS columns layout (`@supports (width: 1cqw)`).
+- A row is 1/40 of a column's width, using a container query unit on the block. The block computes each tile's row count from the file's width and height, adds two for the gap, and passes it as `--ts-media-rows`. Auto-placement in document order puts each tile in the shortest column, left to right, as the boards do. Appended tiles never move earlier ones. No script is involved.
+- The tile fills its rows minus the gap and the picture covers it, so gaps are exact and the picture is cropped by a few pixels at most.
+- Browsers without container units keep the CSS columns layout.
 
 **Rationale:** Document-order placement matches the boards' reading order and makes Load more additive. Spanning rows needs only CSS, so the block stays script-free for layout (ADR-005). A measuring script would add a second layout engine and a flash on load.
 
@@ -878,7 +875,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - Switch the stat and logo sections and wait on the hero.
 - Switch all three, including a two-slide hero.
 
-**Decision:** `home-impact` uses `tekseries/stat` for 312+, 675+, 25+ and 100's. `home-partners` wraps its logos in `tekseries/logo-marquee`. Both are CSS-only, so Home still loads no script of ours. The hero stays one static Cover. The Hero Carousel waits for a second slide, so carousel controls (autoplay, Previous and Next, dots that follow swipes) were not built.
+**Decision:** `home-impact` uses `tekseries/stat` for 312+, 675+, 25+ and 100's. `home-partners` wraps its logos in `tekseries/logo-marquee`. Both are CSS-only, so Home still loads no script of ours. The hero stays one static Cover. The Hero Carousel waits for a second slide, so the controls it still lacks (autoplay, Previous and Next, and dots that follow swipes) were not built.
 
 **Rationale:** The stat and marquee blocks are complete and need nothing more. A carousel with one slide has nothing to show. This changes only the "Home keeps its static patterns" part of ADR-046.
 
@@ -886,7 +883,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Status:** Superseded by ADR-068 (the fixed 7-second stay, the unconditional hold under the pointer and the dot spacing only)
 
-**Context:** ADR-052 kept the Home hero a single Cover until a second slide existed. On 2026-10-10 the site owner decided that Home shows the carousel the design board draws: a hero with slider dots. The current live site's slider already rotates by itself. ADR-046 built the carousel with CSS only, with dots as `:target` links.
+**Context:** ADR-052 kept the Home hero a single Cover until a second slide existed. On 2026-10-10 the site owner decided that Home shows the carousel the design board draws: a hero with slider dots. The live site's slider already rotates by itself. ADR-046 built the carousel with CSS only, with dots as `:target` links.
 
 **Options:**
 - Keep one static Cover.
@@ -894,13 +891,13 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - A carousel whose automatic change is an editor setting, with a pause control.
 
 **Decision:**
-- `patterns/home-hero.php` is a `tekseries/hero-carousel` block with two Cover slides and "Change slides automatically" on. Slide 2 is the live site's second slide: "One Youth Career At A Time" over the 2025 Jr. Rural Camp photo (`assets/images/home/hero-camp.jpg`). Only slide 1 holds the page's H1. Slide 2's headline is an H2 with the H1's size. Slide 2's chip, lead and buttons are a first draft from existing site copy, for the owner to edit.
-- The carousel now has an Interactivity API script module (`view.ts`, ADR-047). This ends "ships no script" for the carousel in ADR-046. Stat and Logo Marquee are unchanged and stay CSS-only.
+- The Home hero pattern is a `tekseries/hero-carousel` block with two Cover slides and "Change slides automatically" on. Slide 2 is the live site's second slide: "One Youth Career At A Time" over the 2025 Jr. Rural Camp photo. Only slide 1 holds the page's H1. Slide 2's headline is an H2 with the H1's size. Slide 2's chip, lead and buttons are a first draft from existing site copy, for the owner to edit.
+- The carousel now has an Interactivity API script module (`view.ts`, ADR-047). This ends "ships no script" for the carousel in ADR-046. Stat and Logo Marquee stay CSS-only.
 - Dots: the track's scroll position names the slide in view, and that slide's dot gets `aria-current`. The no-JavaScript `:target` styling applies only while no dot has `aria-current`. A dot click moves the track alone, so the page does not jump and the address gets no fragment.
 - New attribute `autoplay`, an editor switch, off by default. Each slide waits 7 seconds. The wait restarts when the slide changes or the visitor pauses. A turn is skipped while the pointer is over the carousel, focus is inside it or the tab is hidden. The server renders a pause/play button hidden, and the script shows it. Under `prefers-reduced-motion: reduce` nothing starts and the button stays hidden.
-- Corner radius is a block support of the carousel. The track clips the slides to it, so they move inside one rounded frame.
+- Corner radius is a block support of the carousel, and the track clips the slides to it.
 - Not built, on purpose: Previous and Next arrows, which the board does not show. Dot spacing stays at the design system's 44px tap target (ADR-005), though the board draws 8px gaps.
-- Editors add a slide by duplicating a Cover inside the carousel and remove one by deleting it (`specs/home-motion.spec.ts`). Inserted from the theme pattern, the hero is treated as a pattern in WordPress 7.1, which asks for "Edit pattern" before structural changes. Page content that holds the blocks directly is edited freely.
+- Editors add a slide by duplicating a Cover inside the carousel and remove one by deleting it. Inserted from the theme pattern, the hero is treated as a pattern in WordPress 7.1, which asks for "Edit pattern" before structural changes. Page content that holds the blocks directly is edited freely.
 
 **Rationale:** The board shows the dots, and the live slider already rotates. Motion that starts by itself needs a pause control (WCAG 2.2.2), the reasoning ADR-046 used for the marquee. An off-by-default setting leaves the choice with editors, and the Home pattern turns it on to match the live site. Everything is an enhancement of the server markup, so the page without JavaScript is unchanged (ADR-005). This reverses the hero part of ADR-052 and delivers the carousel items in Future work.
 
@@ -908,7 +905,7 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 
 **Status:** Accepted
 
-**Context:** The design's photo overlay is a left-to-right gradient in the tone colour: 94% at the left edge, 72% at 45% and 15% at the right. An accessibility audit measured the real pixels behind text over photos, which axe cannot judge. With real site content, the month and year on listing cards with a featured image measured as low as 1.75:1. The Home hero's lead line measured 2.8:1 on phones, where text spans the whole photo. WCAG AA needs 4.5:1 for that text. A brighter photo would be worse.
+**Context:** The design's photo overlay is a left-to-right gradient in the tone colour: 94% at the left edge, 72% at 45% and 15% at the right. An accessibility audit measured the real pixels behind text over photos, which axe cannot judge. With real site content, the month and year on listing cards with a featured image measured as low as 1.75:1, and the Home hero's lead line 2.8:1 on phones. WCAG AA needs 4.5:1 for that text, and a brighter photo would be worse.
 
 **Options:**
 - A stronger overlay.
@@ -917,11 +914,11 @@ React never ships to visitors. Our code uses no inline `<script>`, jQuery or CDN
 - Keep the overlay and the photo as designed and give the text a soft halo.
 
 **Decision:** Give the text a halo of six stacked `text-shadow`s (blur 3, 3, 6, 6, 12 and 12px, no offset) in the overlay's own colour. It applies to:
-- The card month label, only when the card has a featured image, in the card tone's colour (`--ts-tone-bg`, `wp-content/themes/tekseries/assets/css/blocks/post-tone.css`).
-- Headings, paragraphs without their own background (chips are left out) and outline buttons inside a Cover that uses the plum overlay gradient. This is the new `assets/css/blocks/cover.css`, loaded for `core/cover` through the per-block stylesheet list in `functions.php`.
+- The card month label, only when the card has a featured image, in the card tone's colour (`--ts-tone-bg`).
+- Headings, paragraphs without their own background (chips are left out) and outline buttons inside a Cover that uses the plum overlay gradient, through a new Cover stylesheet.
 - Each Hero Carousel dot also gets a 1.5px dark ring (ink at 72%), like the pause button's dark disc, so dots stay visible over a bright part of the photo.
 
-After the change the card month measures at least 5.1:1 and the hero lead at least 5.7:1 on a pure white photo (plum, ink) or a pure black one (saffron, lilac).
+After the change both measurements pass 4.5:1 against the worst-case photo (pure white under plum and ink, pure black under saffron and lilac).
 
 **Rationale:** A stronger overlay fails on phones, where text spans the photo: the whole photo would need about 80% tone and all but disappear. A box leaves a visible band across the photo. A text colour change alone still fails where the overlay thins. The halo keeps the photo and the overlay as designed. It is a small, visible deviation from the boards. ADR-056 adds a regression test that measures it.
 
@@ -929,19 +926,19 @@ After the change the card month measures at least 5.1:1 and the hero lead at lea
 
 **Status:** Accepted
 
-**Context:** The audit ran axe at WCAG 2.2 levels A and AA on 55 pages and states of the development site with real content (0 violations after the fixes below). It also included a keyboard walk of every page type at 1280px and 390px and a read of the accessibility tree. No real screen reader was used. Each item below failed a WCAG criterion or was announced wrongly.
+**Context:** The audit ran axe at WCAG 2.2 levels A and AA on the development site with real content, and added a keyboard walk of every page type at 1280px and 390px and a read of the accessibility tree. No real screen reader was used. Each item below failed a WCAG criterion or was announced wrongly. After the fixes below, axe found no violations.
 
 **Options:**
 - Fix each finding in the markup or CSS that caused it.
 - Leave some findings as found, where the cause is outside our code or is content.
 
 **Decision:**
-1. `:focus-visible` shares the anchors' 96px `scroll-margin-top`, so keyboard focus is never left under the sticky header (WCAG 2.4.11 Focus Not Obscured). In `global.css`.
-2. The eyebrow's coral text measured 3.95:1 on lilac. On lilac surfaces (`.is-style-card-lilac`, `.has-lilac-background-color` and the job sign-in panel's "How posting works") it is `color-mix(in srgb, coral-text 85%, ink)`, about 4.8:1, with no new palette colour. The boards use the lighter coral there, about 2.5:1.
+1. `:focus-visible` shares the anchors' 96px `scroll-margin-top`, so keyboard focus is never left under the sticky header (WCAG 2.4.11 Focus Not Obscured).
+2. The eyebrow's coral text measured 3.95:1 on lilac. On lilac surfaces (the lilac card style, lilac backgrounds and the job sign-in panel's "How posting works") it is `color-mix(in srgb, coral-text 85%, ink)`, about 4.8:1, with no new palette colour. The boards use the lighter coral there, about 2.5:1.
 3. The Stat block's suffix uses the `coral-text` colour. The light coral was 2.91:1 on the blush tile, and large text needs 3:1.
-4. Fluent Forms: the submit button gets a focus ring (it only faded), and a topic chip is ringed as a whole when its radio has keyboard focus. In `fluentform.css`.
-5. The "Read more" arrow is CSS content with empty alternative text (`content: "\2192" / ""`, the plain declaration first as the fallback), so it is no longer read as part of the link's name.
-6. Images in a job description get `alt=""` when they have no alt attribute, through the `wpjm_the_job_description` filter in the plugin's `includes/wpjm.php`. 41 imported descriptions carried a source logo without one.
+4. Fluent Forms: the submit button gets a focus ring (it only faded), and a topic chip is ringed as a whole when its radio has keyboard focus.
+5. The "Read more" arrow is CSS content with empty alternative text, so it is no longer read as part of the link's name.
+6. Images in a job description get `alt=""` when they have no alt attribute, through the `wpjm_the_job_description` filter. Forty-one imported descriptions carried a source logo with no alt attribute.
 7. Two Groups carried an `aria-label` on a plain `div`, which ARIA does not allow. The previous and next post links are now a `nav` named "More posts". The Home figures group lost its label.
 8. The Job Listings block prints a screen-reader-only `h2` "Job listings". It names the results region (`aria-labelledby`) and puts the job titles (`h3`) under a heading.
 
@@ -967,12 +964,12 @@ Left as found:
 - `@axe-core/playwright` in the existing end-to-end suite, plus a pixel measurement for text over photos.
 
 **Decision:**
-- `specs/a11y.spec.ts` uses `@axe-core/playwright` 4.13 (root devDependency). It builds one page of every public kind on the test site: front page, the Home and Contact page patterns, events archive, event type archive, event, news post, gallery, an empty gallery filter, legal page, job listings, a job search with no results, job, job dashboard, job submission, search results, an empty search and not found. It expects no axe violation against WCAG 2.2 A and AA at 1280px and 390px.
-- It also scans states only a script or a click reaches: hero on its second slide and paused, header menu open at 834px and 390px, gallery viewer open, table of contents opened on a phone, apply box opened, and, signed in, the job submission form and the dashboard.
-- Excluded as not ours, with a comment in the spec: WordPress's admin toolbar (`#wpadminbar`) and the TinyMCE editor's own buttons (`.mce-tinymce`).
+- An axe spec (`@axe-core/playwright`, a root devDependency) builds one page of every public kind on the test site, including empty states, and expects no axe violation against WCAG 2.2 A and AA at 1280px and 390px.
+- It also scans states only a script or a click reaches: the hero on its second slide and paused, the open header menu, gallery viewer, table of contents on a phone and apply box, and, signed in, the job submission form and the dashboard.
+- Excluded as not ours: WordPress's admin toolbar (`#wpadminbar`) and the TinyMCE editor's own buttons (`.mce-tinymce`).
 - A Shift+Tab walk checks that focus is never under the sticky header.
-- `specs/utils/contrast.ts` measures text over a photo. It captures the text's box twice, as drawn and with the letters' fill made transparent (a text shadow stays). It takes the differing pixels as the letters and returns the WCAG contrast ratio that all but the worst twentieth of those pixels, and one pixel around them, reach. The test puts a pure white photo under plum and ink cards and the hero, and a pure black one under saffron and lilac cards. It expects 4.5:1 for small text and 3:1 for the hero's large heading at 1280, 834 and 390px.
-- The card-month test and the focus walk were checked to fail without their fix (card month 1.76:1; eight focus stops under the header) and to pass with it. The suite went from 94 to 119 tests.
+- A contrast helper measures text over a photo. It captures the text's box as drawn and again with the letters' fill made transparent (a text shadow stays). It takes the differing pixels as the letters. It returns the WCAG contrast ratio that all but the worst twentieth of those pixels, and one pixel around them, reach. The test puts a pure white photo under plum and ink cards and the hero, and a pure black one under saffron and lilac cards. It expects 4.5:1 for small text and 3:1 for the hero's large heading at 1280, 834 and 390px.
+- The card-month test and the focus walk were checked to fail without their fix and to pass with it.
 
 **Rationale:** The check runs where the other browser tests run and fails with a list of violations. Worst-case photos make the contrast test independent of what editors upload. Limits: axe sees names, roles, structure and solid colours, not everything. The Contact form (Fluent Forms) exists only on the development site, so it is scanned there by hand and not in the suite.
 
@@ -980,46 +977,41 @@ Left as found:
 
 **Status:** Accepted
 
-**Context:** Lighthouse 13.5 on the development site (simulated throttling, medians of three runs) already scored 95 to 99 on mobile and 100 on desktop for Home, Gallery, Job Series and an event page. The remaining loss on Home was a layout shift of 0.044 on phones: the headline reflowed when its font arrived.
+**Context:** Lighthouse on the development site already scored 95 to 99 on mobile and 100 on desktop for Home, Gallery, Job Series and an event page. The remaining loss on Home was a layout shift on phones: the headline reflowed when its font arrived.
 
 **Options:**
 - Preload the Latin font files and lower the priority of later carousel photos.
-- `fetchpriority="high"` on the first two gallery tiles. Tried and dropped: Largest Contentful Paint went from 2.88 s to 3.03 s.
-- Raise WordPress's inline-style limit to remove five small render-blocking stylesheets. Not done: bigger HTML on every page for an estimated 150 ms on throttled mobile.
+- `fetchpriority="high"` on the first two gallery tiles. Tried and dropped: it made Largest Contentful Paint slower.
+- Raise WordPress's inline-style limit to remove five small render-blocking stylesheets. Not done: bigger HTML on every page for a small gain on throttled mobile.
 - Convert uploads to WebP or AVIF. Not done: content and host work.
 
 **Decision:** A `wp_preload_resources` filter in the theme preloads the Latin file of each family (Schibsted Grotesk and Onest). Other unicode ranges still load on demand. The Hero Carousel sets `fetchpriority="low"` on the photos of slides after the first. They still load at once, behind the first, rather than lazily, so they are there before their slide comes.
 
-Mobile results, before to after:
-- First Contentful Paint: Home 1.53 to 1.15 s, Gallery 1.38 to 1.11 s, Job Series 1.53 to 1.16 s, event 1.38 to 1.21 s.
-- Home's Cumulative Layout Shift: 0.044 to 0.001.
-- Largest Contentful Paint within 0.1 s: Home 2.58 to 2.65 s, Gallery 2.96 to 2.96 s back to back, Job Series 1.83 to 1.68 s, event 2.67 to 2.65 s.
-- Total Blocking Time: 0 to about 60 ms.
-- Scores after: Home 96, Gallery 95, Job Series 99, event 96 on mobile, and 100 on desktop. Accessibility, best practices and SEO are 100 on all four (Job Series' accessibility went 99 to 100 with the list heading of ADR-055).
+On mobile, First Contentful Paint fell by 0.2 to 0.4 s and Home's layout shift went from 0.044 to 0.001. Largest Contentful Paint stayed within 0.1 s, and Total Blocking Time rose from 0 to about 60 ms. Mobile scores are now 95 to 99, and desktop scores are 100. Accessibility, best practices and SEO are 100 on all four pages (Job Series' accessibility went 99 to 100 with the list heading of ADR-055).
 
-**Rationale:** Preloading removes the font reflow, the one measurable loss, and brings First Contentful Paint down by 0.2 to 0.4 s. Low priority for later slides keeps their bandwidth from competing with the first photo without delaying them. What remains is the host's: server response time (the development site has no page cache, and the live site answers from one) and cache lifetimes for static files.
+**Rationale:** Preloading removes the font reflow, the one measurable loss. Low priority for later slides keeps their bandwidth from competing with the first photo without delaying them. What remains is the host's: server response time (the development site has no page cache, and the live site answers from one) and cache lifetimes for static files.
 
 ## ADR-058: Release 1.0.0 as two uploaded zips, with database content as a scripted bundle
 
 **Status:** Superseded by ADR-059 (the apply step: the WP-CLI script and the WP-CLI tone backfill on the live site)
 
-**Context:** On 2026-10-10 the site owner chose to deploy by uploading zips, not by pulling git on the server. The theme and the plugin are always released together. Much of the new site also lives in the development site's database: page content built from the patterns, gallery albums, topic icons and the contact form's fields. Zips do not carry it, and the development database must not replace the live one, because it is an old copy.
+**Context:** On 2026-10-10 the owner chose to deploy by uploading zips, not by pulling git on the server. The theme and the plugin are always released together. Much of the new site also lives in the development database: page content built from the patterns, gallery albums, topic icons and the contact form's fields. Zips do not carry it, and the development database is an old copy that must not replace the live one.
 
 **Options:**
 - A git pull on the server. The owner chose otherwise, and it needs a build step on the server.
-- Copy the development database to live. It would overwrite newer live content and bring an old copy's damage.
+- Copy the development database to live. It would overwrite newer live content.
 - Paste ten pages by hand. It is slow, error-prone and has no dry run.
-- Two zips plus a scripted bundle of the database content.
+- Two zips plus a scripted bundle of the database content (chosen).
 
 **Decision:**
 - One version, 1.0.0, in the theme header, the plugin header and both package files, kept equal by a unit test.
-- `npm run plugin-zip` (after `npm run build`) and the new `npm run theme-zip` produce the two files. The theme zip is `zip -FS` of the theme folder, which holds only files that ship: it is exactly the 91 tracked theme files. Both zips are git-ignored.
+- `npm run plugin-zip` (after `npm run build`) and `npm run theme-zip` produce the two zips. Both are git-ignored, and the theme zip holds only the files that ship.
 - The database content travels as a bundle exported from the development site: ten pages and posts with the development domain replaced, the icons, the albums, the gallery video's poster image and the contact form's fields.
-- A WP-CLI script applies the bundle on the live site. It does a dry run by default, checks every item before touching it (same ID, type and address) and skips what is already done. Tones for existing posts come from the plugin's own `wp tekseries backfill-tones`.
-- The export and apply scripts and the step-by-step runbook are kept outside the repository with the site's private working files.
+- A WP-CLI script applies the bundle on the live site. It does a dry run by default, checks every item before touching it and skips what is already done. Tones for existing posts come from the plugin's `wp tekseries backfill-tones`.
+- The export and apply scripts and the runbook are kept outside the repository.
 - A release tag is made only after the owner approves. There is no CI, so the gate runs on a developer's machine.
 
-Verified: both zips were installed through WordPress's own installer on a fresh WordPress 7.1.3 (with ACF 6.8.10 and WP Job Manager 2.4.8). Both activate at 1.0.0 with nothing of ours in the debug log. The apply script was rehearsed on the test site with a made-up bundle (12 changes on the first run, 0 on the second). It has never run against the live site or a copy of it. The live site's page, post and media IDs were compared with the development site's through its public REST API and match.
+Verified: both zips install through WordPress's own installer on a fresh site and activate at 1.0.0 with nothing of ours in the debug log. The apply script was rehearsed with a made-up bundle, and a second run changed nothing. The live site's page, post and media IDs match the development site's. Not verified: the script has never run against the live site or a copy of it.
 
 **Rationale:** Zips match the owner's choice and carry only what ships (ADR-001). A checked, dry-run-first script moves database content without overwriting live content, and a second run changes nothing. One equal version keeps the two packages from drifting.
 
@@ -1027,126 +1019,105 @@ Verified: both zips were installed through WordPress's own installer on a fresh 
 
 **Status:** Superseded by ADR-073 (what the bundle carries, the refusals, and what stays after the plugin is deleted only)
 
-**Context:** ADR-058 had a WP-CLI script apply the bundle on the live site, and the plugin's `wp tekseries backfill-tones` set the tones of existing posts. On 2026-10-11 the site owner said the live host has no SSH and no WP-CLI, because the account is not on a plan with SSH. Neither step can run there. The rest of ADR-058 stands: one version, two release zips, a bundle exported from the development site, no copy of the development database, and a tag only after the owner approves (`v1.0.0` was tagged on 2026-10-11).
+**Context:** ADR-058 had a WP-CLI script apply the bundle on the live site, and the plugin's `wp tekseries backfill-tones` set the tones of existing posts. On 2026-10-11 the owner said the live host has no SSH and no WP-CLI, so neither step can run there. The rest of ADR-058 stands: one version, two release zips, a bundle exported from the development site, no copy of the development database, and a tag only after the owner approves (`v1.0.0` was tagged on 2026-10-11).
 
 **Options:**
-- Apply the bundle by hand in wp-admin (paste ten pages, create seven albums, pick icons). It is slow, error-prone, has no dry run and cannot set the tones of existing posts in bulk.
+- Apply the bundle by hand in wp-admin. It is slow, error-prone, has no dry run and cannot set the tones of existing posts in bulk.
 - Put a migration screen inside TekSeries Blocks. The released plugin would carry one-off code and one site's content for good.
-- Ask the host for SSH on a different plan. It costs money, needs an owner decision and is not needed.
+- Ask the host for SSH on a different plan. It costs money and is not needed.
 - A one-off plugin, uploaded as a third zip.
 
 **Decision:**
-- The bundle is applied from wp-admin by "TekSeries Migration (one-off)": folder `tekseries-migration`, zip `tekseries-migration.zip`. The export script builds it from the development site. It holds the plugin's code plus the bundle, written for one site address.
-- It adds one screen, Tools → TekSeries migration. Opening the screen is the dry run: it lists what would change and changes nothing. A button, behind a required "I took a backup" tick, applies the changes.
-- It refuses the whole run when the site's address is not the one the bundle was written for, TekSeries Blocks is not active, the TekSeries theme is not installed, Advanced Custom Fields is older than 6.8.10, or a bundle file is missing or fails its SHA-1 checksum in the manifest.
-- Every step looks first. Items already right are left alone, so a second run makes 0 changes. Items not found as expected (ID, type and address) are listed as skipped and left alone. Changes that do not go through are listed as failed.
-- It stores each old page as a revision before replacing it. WordPress on its own keeps a revision of what it saves, not of what was there.
-- Page content is saved byte for byte. WordPress's HTML filter for accounts without `unfiltered_html` is switched off during the save and restored after, and the stored content is compared with the bundle. Measured: that filter would alter 3 of the 10 pages (Home, Gallery, Terms), which gives broken blocks in the editor.
-- When WordPress updates a page it re-checks the page's current template against the active theme, and fails the save with "Invalid page template." if that theme does not have it. That can happen on a second run while Divi is still active, on a page that already has its new template. The plugin skips that re-check during the save and sets the template itself. Measured without the skip: the run reported that page as failed although its content had been saved.
-- Tones for existing events and news posts come from the plugin's own planner, `tekseries_blocks_plan_tones()`, the function the WP-CLI command uses. The migration saves its result. The WP-CLI command stays, for development sites.
+- The bundle is applied from wp-admin by "TekSeries Migration (one-off)" (folder `tekseries-migration`, zip `tekseries-migration.zip`). The export script builds it from the development site. It holds the plugin's code plus the bundle, written for one site address.
+- It adds one screen under Tools, "TekSeries migration". Opening the screen is the dry run: it lists what would change and changes nothing. A button, behind a required "I took a backup" tick, applies the changes.
+- It refuses the whole run when the site address is not the one the bundle was written for, TekSeries Blocks is not active, the TekSeries theme is not installed, Advanced Custom Fields is older than 6.8.10, or a bundle file is missing or fails its SHA-1 checksum.
+- Every step looks first. Items already right are left alone, so a second run makes no changes. Items not found as expected (ID, type and address) are listed as skipped and left alone. Changes that do not go through are listed as failed.
+- Each old page is stored as a revision before it is replaced. WordPress on its own keeps a revision of what it saves, not of what was there.
+- Page content is saved byte for byte. WordPress's HTML filter for accounts without `unfiltered_html` is switched off during the save and restored after. The stored content is then compared with the bundle. Left on, the filter would alter some pages and break their blocks in the editor.
+- When WordPress updates a page, it re-checks the page's template against the active theme and fails the save with "Invalid page template." if that theme lacks it. The plugin skips that re-check during the save and sets the template itself. Without the skip, a second run while Divi was still active reported a page as failed although its content had been saved.
+- Tones for existing events and news posts come from `tekseries_blocks_plan_tones()`, the planner the WP-CLI command also uses. The command stays, for development sites.
 - It also sets the site logo option. It switches the theme to TekSeries last, in the same request as the content, so visitors never see the new content under Divi or the Divi content under the new theme.
 - Only administrators (`manage_options`) can open the screen or run it, and the apply request needs the screen's nonce.
 - Deleting the plugin removes its files and the one option it stores, the report of its last run. Nothing it changed is undone.
-- Like the export script and the runbook (ADR-058), the migration plugin is kept outside the repository with the site's private working files. Released TekSeries Blocks 1.0.0 and the theme are unchanged by it.
+- Like the export script and the runbook (ADR-058), the plugin is kept outside the repository. Released TekSeries Blocks 1.0.0 and the theme are unchanged by it.
 
-Verified in a rehearsal on 2026-10-11, run again from a fresh site on the final code: 46 checks, 0 failed (4 refusals + 16 browser checks + 16 database and uploads checks + 2 leftover checks + 8 edge cases). A throwaway WordPress was set up like the live site before the move: WordPress 7.1.3 on PHP 8.2, a copy of Divi 4.27.9 with its child theme active, Divi-built stand-in pages, ACF 6.8.10, WP Job Manager 2.4.8, Fluent Forms 6.2.15, Rank Math 1.0.279, and the live site's page, post and media IDs, addresses and dates (9 pages, 19 events, 20 posts, 35 media rows). The seeded pages carried a page template as saved pages do (Divi's blank page template on Contact, `default` on the rest). A browser did what the owner will do: uploaded the three zips, read the dry run, pressed the button and deleted the plugin.
-- 4 of 4 refusals gave the right reason: plugin not active, theme not installed, a bundle file with one byte added, a bundle written for another site.
-- 16 of 16 browser checks: the dry run listed 50 changes and nothing skipped. A request without the nonce got 403, and an editor got 403 on the screen and on the apply request. A request without the backup tick changed nothing. The run made 50 changes, 0 skipped, 0 failed, and a second look found nothing left. Ten public pages returned 200 with no Divi shortcode and no PHP message. The block editor reported no broken block on the eight pages. The plugin deactivated and deleted from the Plugins screen.
-- 16 of 16 checks of the database and uploads folder: all ten pages and posts match the bundle and each keeps its old content as a revision; 16 icons; 7 albums with their years and 33 files; the poster uploaded with thumbnails; the duplicate video and its file gone and the other video's file kept; the contact form's title and fields; and all 39 events and posts got exactly the tone the same post has on the development site.
-- 2 of 2 leftover checks: the deleted plugin left no folder and no option (1), and the debug log named none of our code (1).
-- 8 of 8 edge cases: with the HTML filter on, Home still landed byte for byte. A save that something altered was reported as failed, the screen offered it again, and pressing again finished it. With Divi active again and Contact already on its new template, the page was saved all the same and the theme switched (2 checks).
+Verified in a rehearsal on 2026-10-11, run again from a fresh site on the final code: 46 checks, 0 failed. The throwaway site was set up like live, with Divi's child theme active, stand-in pages and the live site's IDs, and a browser did what the owner will do: uploaded the three zips, read the dry run, applied it and deleted the plugin. Not verified: the plugin has never run on the live site or on a copy of its database. Read-only checks of the live site's public REST API and home page show that its address is `https://tekseries.com`, that the Divi child theme is active, and that the IDs compared in ADR-058 match.
 
-Separate from the 46: on the development site, a bundle written for that site reports 0 to change, 0 skipped, 43 already done.
-
-Not verified: the plugin has never run on the live site or on a copy of its database. Read-only facts about the live site, from its public REST API and home page: its address is `https://tekseries.com`, the Divi child theme is active, and the IDs compared in ADR-058 match.
-
-**Rationale:** The host allows uploads in wp-admin and nothing else, and a plugin zip is that route. It keeps ADR-058's checked, dry-run-first, second-run-changes-nothing behaviour without WP-CLI. Keeping it as a third zip keeps one-off code and one site's content out of the released plugin and theme (ADR-001). The refusals, the backup tick, the nonce and the capability check stop it from running against the wrong site or by the wrong person. The byte-for-byte save and the single-request theme switch protect the pages and the visitors during the move.
+**Rationale:** The host allows uploads in wp-admin and nothing else, and a plugin zip is that route. It keeps ADR-058's checked, dry-run-first, second-run-changes-nothing behaviour without WP-CLI. A third zip keeps one-off code and one site's content out of the released plugin and theme (ADR-001). The refusals, the backup tick, the nonce and the capability check stop it from running against the wrong site or by the wrong person. The byte-for-byte save and the single-request theme switch protect the pages and the visitors during the move.
 
 ## ADR-060: Animate Home in CSS, with one small script that only says when a block is in view
 
 **Status:** Superseded by ADR-062 (how a focused block is kept shown while its entrance plays only)
 
-**Context:** The design canvas pulled on 2026-10-11 animates the three Home boards with GSAP 3.15.0 (core only, no ScrollTrigger). Four animations:
-- On load, the hero chip, headline, lead, buttons and pillar labels rise 28px and fade in over 0.8s, 0.12s apart, starting at 0.15s. The photo stays still.
-- The impact counters count from 0 over 2s, 0.12s apart, when their grid is in view.
-- Each of the three pillar cards rises 64px and fades in over 0.9s, then its contents follow (20px, 0.7s, 0.1s apart, after 0.2s).
-- The four section headings rise 24px and fade in over 0.8s.
-
-"In view" on the boards is a plain `IntersectionObserver` at 18% of the element. GSAP only moves, fades and counts. With reduced motion the boards animate nothing. No other board animates, and the design system has no motion tokens.
-
-`gsap.min.js` is 72,927 bytes (28,268 gzipped), against 8,476 bytes for all five visitor script modules together (ADR-047). Its standard licence is free for commercial sites but proprietary, not GPL. Pure CSS cannot yet start a timed animation on scroll everywhere (MDN browser-compat-data, 2026-10-11). `animation-trigger` is in Chrome 146+ only. `animation-timeline: view()` is in Chrome 115+, Safari 26 and Firefox preview builds only, and it ties the animation to scroll position, so it does not play for a set time and runs backwards when scrolling up.
-
-Before this, the impact figures counted on page load (ADR-046). Measured on the development site, they sit just below the first screen at 1440x900 and at 390x844, so the count had usually finished unseen.
+**Context:**
+- The design canvas pulled on 2026-10-11 animates the three Home boards with GSAP 3.15.0 (core only): a hero entrance on load, impact counters, pillar cards and section headings that rise in. "In view" on the boards is a plain `IntersectionObserver` at 18% of the element, and with reduced motion nothing animates. The design system has no motion tokens.
+- GSAP is about 73 KB, against about 8 KB for all five visitor script modules together (ADR-047), and its licence is proprietary, not GPL.
+- Pure CSS cannot yet start a timed animation on scroll everywhere. `animation-trigger` is Chrome 146+ only, and `animation-timeline: view()` ties the animation to scroll position, so it does not play for a set time.
+- The impact figures counted on page load (ADR-046). They sit just below the first screen, so the count had usually finished unseen.
 
 **Options:**
-- Ship GSAP.
+- Ship GSAP. It is heavy and proprietary.
 - Pure-CSS `animation-trigger`. Chrome only today.
 - Pure-CSS scroll-linked timelines. Wrong feel, no stable Firefox.
 - Hide blocks with CSS under `@media (scripting: enabled)` before the script runs. A failed script would leave content hidden unless a timed fallback were added.
-- CSS does every animation; one small script marks a block when it enters view.
+- CSS does every animation; one small script marks a block when it enters view (chosen).
 
 **Decision:** The last option, chosen by the site owner.
-- `theme.json` `settings.custom.motion` gains `ease.out` (cubic ease-out, GSAP's power2.out), `ease.out-strong` (quartic, power3.out), and `reveal.duration` 0.8s, `reveal.distance` 24px and `reveal.stagger` 0.12s. Single-use values stay beside the rule that uses them. A unit test checks that every motion token used in styles is defined.
-- The last section of `assets/css/global.css` holds the look. A block with the class `ts-reveal` rises in the first time it is scrolled to. A marked Group comes from further down and its direct children follow in turn. Decorative icons stay put. The states are `is-reveal-pending` and `is-revealed`. Rules sit under `prefers-reduced-motion: no-preference` and are screen-only, so print is unaffected. `:focus-within` shows a waiting block at once.
-- `src/reveal/view.ts` (684 bytes built) is an Interactivity API script module. It is not a block's, so it is a module entry in `webpack.config.js`. `includes/reveal.php` is a `render_block` filter: blocks with the class get `data-wp-init---reveal="tekseries/reveal::callbacks.watch"`, plus `data-wp-interactive` only when they have none. The module is enqueued only on pages with such a block.
-- The script marks a block still below the screen as pending and watches it with one observer. Once 18% of it is on screen, or 18% of the screen for a block taller than that, it is marked revealed. Blocks arriving in the same observer batch get `--ts-reveal-place` 0, 1, 2, and so on, which CSS turns into 0.12s steps.
-- The Stat block lists the same module by id and carries the directive. Below the screen at load it waits at 0 and counts (2s) when revealed. On screen at load it counts from load, as before.
-- The hero animation is CSS only, in `hero-carousel/style.scss`, on whatever sits beside the first slide's H1.
-- The Home patterns `home-about`, `home-impact`, `home-services` and `home-team` carry the class on the four section headings and the three pillar cards.
-- The in-page link offsets stay at 96px, although the boards now use 100, 96 and 88px. GSAP is not installed and its file is not copied into the design reference.
+- `theme.json` `settings.custom.motion` gains `ease.out`, `ease.out-strong`, `reveal.duration` (0.8s), `reveal.distance` (24px) and `reveal.stagger` (0.12s). Single-use values stay beside the rule that uses them. A unit test checks that every motion token used in styles is defined.
+- A block with the class `ts-reveal` rises in the first time it is scrolled to. A marked Group's direct children follow in turn. Decorative icons stay put. The rules sit in `assets/css/global.css` under `prefers-reduced-motion: no-preference`. They are screen-only, so print is unaffected. `:focus-within` shows a waiting block at once.
+- A small Interactivity API script module (`src/reveal/view.ts`), with a `render_block` filter that adds its directive to marked blocks, is enqueued only on pages with such a block. It marks a block below the screen as pending and, once 18% of it is on screen (or 18% of the screen, for a taller block), as revealed. Blocks revealed together are staggered 0.12s apart.
+- The Stat block carries the same directive. Below the screen at load it waits at 0 and counts when revealed. On screen at load it counts from load, as before.
+- The hero entrance is CSS only, in the Hero Carousel block's stylesheet. The Home patterns `home-about`, `home-impact`, `home-services` and `home-team` carry the class on the four section headings and the three pillar cards.
+- The in-page link offsets stay at 96px, although the boards now use 100, 96 and 88px. GSAP is not installed, and its file is not copied into the design reference.
 - Deliberate differences from the boards:
   - A block already on screen when the script starts does not animate in. The boards hide such blocks after load and then animate them, which flashes.
-  - Tall blocks are measured against the screen. The pillar cards are about 1,800px tall on phones and would sit blank for a third of the screen.
+  - Tall blocks are measured against the screen. The pillar cards are about 1,800px tall on phones and would otherwise sit blank for a third of the screen.
   - Counters start per figure as it comes into view, not all four with the grid.
-- Known limit: a fast jump (a hero link to a pillar card) can pass blocks before the observer sees them. They play when the visitor scrolls back to them.
-- Visitor scripts are now six modules, 9,160 bytes together. `specs/visitor-scripts.spec.ts` covers them, `specs/reveal.spec.ts` and `specs/home-motion.spec.ts` cover the behaviour and the Home marks.
+- Known limit: a fast jump (a hero link to a pillar card) can pass blocks before the observer sees them. They play when the visitor scrolls back.
 
-Measured on the development site: the largest paint is the hero photo with and without motion (desktop medians 616 ms without and 572 ms with; phone 588 ms both; three loads each), so hiding the hero text briefly does not delay it.
+Checked on the development site: the hero photo is the largest paint with and without the motion, so hiding the hero text briefly does not delay it.
 
-**Rationale:** The boards' trigger is an `IntersectionObserver` and the library only tweens, which CSS does natively, so 72.9 KB of library buys nothing here. It also avoids a proprietary, non-GPL licence. Server HTML stays complete without JavaScript (ADR-005): nothing is hidden unless the script is running and the block is off screen. No script, a failed script or JavaScript off leave the page as it was, and counters count on load. With reduced motion the script marks nothing and the CSS is guarded too. This changes ADR-046, where the Stat ships no script and counts on page load. Without the script it still counts on load. The marquee is unchanged. It also changes ADR-047: one module is now no block's own, but nothing is bundled and it still loads only with the blocks that need it.
+**Rationale:** The boards' trigger is an `IntersectionObserver` and the library only tweens, which CSS does natively, so the library buys nothing here and its licence is avoided. Server HTML stays complete without JavaScript (ADR-005): nothing is hidden unless the script is running and the block is off screen. With no script, a failed script or JavaScript off, the page stays as it was and counters count on load. With reduced motion, the script marks nothing and the CSS is guarded too. This changes ADR-046, where the Stat ships no script and counts on page load. Without the script it still does, and the marquee is unchanged. It also changes ADR-047: one module is now no block's own, but nothing is bundled and it still loads only with the blocks that need it.
 
 ## ADR-061: Animate the compact menu's opening in CSS, and let it close instantly
 
 **Status:** Superseded by ADR-062 (how a focused link is shown at once only)
 
-**Context:** At 1100px and below, the header menu is core's Navigation overlay restyled into a panel under the header bar (ADR-018). Core keeps the toggle, focus trap, Escape and ARIA state. The close button sits over the menu button, 54 to 56px above the panel's top edge. The panel appeared with no motion, and the site owner asked for an animation at tablet and phone widths, built in CSS. The motion tokens from ADR-060 (`ease.out`, `ease.out-strong`) are reused. This is their first use outside Home, and the menu is on every page.
+**Context:** At 1100px and below, the header menu is core's Navigation overlay restyled into a panel under the header bar (ADR-018). Core keeps the toggle, focus trap, Escape and ARIA state. The panel appeared with no motion, and the owner asked for an animation at tablet and phone widths, built in CSS. It reuses the motion tokens of ADR-060, their first use outside Home.
 
 **Options:**
-- Animate the opening in CSS and let the closing be instant.
-- Also animate the closing by copying core's open-state layout rules onto the closed state, so an exit transition could hold the layout. Fragile against core updates, and discrete `display` transitions are not in every browser.
+- Animate the opening in CSS and let the closing be instant (chosen).
+- Also animate the closing by copying core's open-state layout rules onto the closed state. It is fragile against core updates.
 - Add a script for the closing. The request was for CSS, and the rest needs no script.
 - Add a dimming layer behind the panel. It would change the look of the page, which was not asked for.
 
-**Decision:** The first option. The last section of `assets/css/blocks/navigation.css` holds it, all under `prefers-reduced-motion: no-preference`. With reduced motion the menu behaves as before. There is no markup change, no script and no new token.
-- The panel unrolls from under the header bar with a `clip-path` animation from `inset(-80px 0 100% 0)` to `inset(-80px 0 0 0)` over 0.45s.
-- The links rise 12px one after another (0.4s each, 0.04s apart, from 0.06s), then the two buttons.
-- The close cross turns into place from -90 degrees and 0.6 scale over 0.4s.
-- While the menu is open, the menu button's bars are held turned 90 degrees and transparent under the cross (`:has(.is-menu-open)`). A transition on them makes them swing back when the menu closes. This is the only motion on closing.
+**Decision:** The first option, in the last section of `assets/css/blocks/navigation.css`, all under `prefers-reduced-motion: no-preference`. With reduced motion the menu behaves as before. There is no markup change, no script and no new token.
+- The panel unrolls from under the header bar with a `clip-path` animation.
+- The links rise one after another, then the two buttons, and the close cross turns into place.
+- While the menu is open, the menu button's bars are held turned and transparent under the cross. They swing back when the menu closes, which is the only motion on closing.
 - A link with `:focus-visible` drops its animation.
-- `specs/header.spec.ts` covers it.
 
-**Rationale:** The clip reaches 80px above the panel so it never cuts the close button. This is also why `overflow: hidden` is not used. Core moves focus to the first link when the menu opens, and a keyboard user must not see a focus ring on a link still fading in. Pointer users get the whole cascade. The panel does not animate out because core closes the menu by removing the class that also lays the panel out, so the contents collapse into a row at once (seen in the browser). The bars' swing gives the closing some motion without depending on that class. Core's overlay class names are still relied on, as in ADR-018.
+**Rationale:** The clip reaches above the panel so it never cuts the close button, which is why `overflow: hidden` is not used. A keyboard user must not see a focus ring on a link still fading in, because core moves focus to the first link when the menu opens. The panel does not animate out because core closes the menu by removing the class that also lays the panel out, so the contents collapse at once. The bars' swing gives the closing some motion without depending on that class. Core's overlay class names are still relied on, as in ADR-018.
 
 ## ADR-062: Show a focused block by overriding its animated properties, never by removing the animation
 
 **Status:** Superseded by ADR-077 (the `translate: none` part, for pointer focus)
 
-**Context:** ADR-060 and ADR-061 say a block that holds keyboard focus is shown at once. It was built as `animation: none` on `:focus-within` (the hero's first-slide text in the hero carousel block's stylesheet; a revealed `ts-reveal` block and a revealed Group's children in the theme's `assets/css/global.css`) and on `li:has(:focus-visible)` (the compact menu's links in `assets/css/blocks/navigation.css`). Found on 2026-10-12, in 1.1.0 and 1.1.1: when focus moved on, `animation-name` came back and the browser started a new animation. The block vanished and rose in again. In Chromium, after focus left, the hero item, the first menu link and a revealed card were each at opacity 0 with a running animation.
+**Context:** ADR-060 and ADR-061 say a block that holds keyboard focus is shown at once. It was built as `animation: none` on `:focus-within` and on the compact menu's links with `:focus-visible`. Found on 2026-10-12, in 1.1.0 and 1.1.1: when focus moved on, `animation-name` came back and the browser started a new animation, so the block vanished and rose in again.
 
 **Options:**
-- Cut the animation short on focus by changing `animation-duration` or `animation-delay`. It depends on browsers updating a running animation, and after an early blur the animation resumes from where it was cut.
+- Cut the animation short on focus by changing `animation-duration` or `animation-delay`. It depends on browsers updating a running animation, and an early blur resumes it from where it was cut.
 - Animate a registered custom property and override it normally. It runs off the compositor and needs `@property`.
-- Replace the keyframes with `@starting-style` transitions. They cannot replay, but it rewrites three shipped mechanisms and has narrower browser support.
-- Keep the animation and override the properties it animates while focus is inside.
+- Replace the keyframes with `@starting-style` transitions. It rewrites three shipped mechanisms and has narrower browser support.
+- Keep the animation and override the properties it animates while focus is inside (chosen).
 
-**Decision:** The last option. The animation is never removed. While focus is inside, the rule sets `opacity: 1 !important; translate: none !important` (1.1.3).
-- An important author declaration ranks above animation declarations in the cascade (CSS Cascade, cascade sorting order). The block shows at once, the animation runs out on its own clock, and nothing restarts when focus leaves. If focus leaves before the animation's natural end, the block joins the animation where it then is.
-- In the reveal rule the override names only the animated children: `> :not([class*="is-style-deco"], .ts-reveal)`. Decorative icons have their own low opacity (0.06 to 0.1) and must not be forced to 1. Children marked `ts-reveal` have their own turn.
+**Decision:** The last option, in 1.1.3. The animation is never removed. While focus is inside, the rule sets `opacity: 1 !important; translate: none !important`.
+- An important author declaration ranks above animation declarations in the cascade. The block shows at once, the animation runs out on its own clock, and nothing restarts when focus leaves.
+- In the reveal rule the override names only the animated children. Decorative icons keep their own low opacity, and children marked `ts-reveal` have their own turn.
 - This replaces how a block is kept shown while its entrance plays: in ADR-060, a revealed `ts-reveal` block, a revealed Group's animated children and the hero's first-slide text; in ADR-061, "A link with `:focus-visible` drops its animation". The rule for a waiting block in ADR-060 is unchanged: a block still marked `is-reveal-pending` that takes focus is shown with a plain `opacity: 1`, because nothing is animating yet. The rest of both stands.
 - These are the only `!important` declarations on animated properties in the theme and plugin. Any future entrance animation uses the same pattern, never `animation: none` on a focus state.
-- `specs/home-motion.spec.ts`, `specs/reveal.spec.ts` and `specs/header.spec.ts` move the focus on after the entrance has played and assert that no animation is running and the block is fully shown. Each failed before the fix.
 
-Checked in Chromium 156 and Firefox 157: important beats the animation while focused, and nothing replays after. WebKit could not be run on the development machine (missing system library), so Safari is unverified here.
+Checked in Chromium and Firefox: the override beats the animation while focus is inside and nothing replays after. The end-to-end tests for Home, reveal and the header menu each failed before the fix. Not verified: Safari, because WebKit could not run on the development machine.
 
 **Rationale:** The important override is the smallest change and is what the cascade specifies. It removes the cause of the replay, which was the animation coming back, instead of racing it. If an engine did not honour the override, a focused block would finish fading in under the focus ring, and it still would not replay.
 
@@ -1154,81 +1125,72 @@ Checked in Chromium 156 and Firefox 157: important beats the animation while foc
 
 **Status:** Accepted
 
-**Context:** ADR-060 built two entrances. The hero carousel block raises the first slide's text when the page opens (CSS inside the block: `:has(> h1) > *`, 28px, 0.8s, 0.12s apart, from 0.15s). Any block with the class `ts-reveal` rises in when scrolled to (theme CSS plus a small script). The owner liked `ts-reveal` being a class and marked 38 Home blocks with it by hand. On 2026-10-12 the owner asked for the hero's on-load effect as a class too, so other pages' heroes can use it. Those heroes are a Group with the style `is-style-hero-plum` (decorative circles as pseudo-elements) holding a Group of text (breadcrumbs, H1, paragraph, buttons) and sometimes a card.
+**Context:** ADR-060 built two entrances: the Hero Carousel block raises the first slide's text when the page opens, and any block with the class `ts-reveal` rises in when scrolled to. The owner marks `ts-reveal` blocks by hand. On 2026-10-12 the owner asked for the hero's on-load effect as a class too, so other pages' heroes can use it. Those heroes are a Group with the style `is-style-hero-plum` holding a Group of text (breadcrumbs, H1, paragraph, buttons) and sometimes a card.
 
 **Options:**
-- Make `ts-reveal` also play for blocks on screen at load. ADR-060 leaves those alone on purpose, because hiding them after load flashes. It also needs the script, so the top of the page would depend on JavaScript.
-- Move the hero carousel's rule onto the class and mark the Home slide. The block lives in the plugin and must work without a theme class (ADR-001), and Home's content is the owner's, in the database.
-- A class for containers only. The owner marks single blocks with `ts-reveal`, and a class that did nothing on a single heading would confuse. Single marks also matter for speed (see the measurements below).
-- One class that reads the block it is on.
+- Make `ts-reveal` also play for blocks on screen at load. ADR-060 leaves those alone because hiding them after load flashes, and it needs the script, so the top of the page would depend on JavaScript.
+- Move the Hero Carousel's rule onto the class and mark the Home slide. The block lives in the plugin and must work without a theme class (ADR-001).
+- A class for containers only. A class that did nothing on a single heading would confuse, and single marks also matter for speed.
+- One class that reads the block it is on (chosen).
 
-**Decision:** The last option, in version 1.2.0. It is the last section of the theme's `assets/css/global.css`, under `screen and (prefers-reduced-motion: no-preference)`. CSS only: no script, no markup, no server code. It works with JavaScript off and prints whole.
-- On a Group (`.wp-block-group.ts-intro`; Row, Stack and Grid are Groups), the direct children rise in one after another and the Group itself does not move, so a hero's background and circles stay still.
-- On any other block, the block rises in itself. Marked siblings take turns with `:nth-child(n of .ts-intro)` (Chrome 111, Firefox 113, Safari 9). Where unsupported, the rule is dropped and they rise together.
-- The values are the hero's: 28px, `reveal.duration` 0.8s, `ease.out-strong`, start 0.15s, `reveal.stagger` 0.12s apart. There are six places (`--ts-intro-place` 0 to 5); later blocks come with the sixth. No new token: 28px and 0.15s sit beside the rule, as in the hero carousel. The design system's own motion tokens are still to come.
-- The outermost mark wins. A marked block inside a marked block is not animated on its own (`:not(.ts-intro *)`), so two animations never stack on one element. A marked Group inside a marked Group rises as one of the outer Group's blocks.
-- Decorative icons (`[class*="is-style-deco"]`) are left out, as in the reveal rules.
-- The place rules for a Group's children come after those for single marks, because both can match a marked block inside a marked Group and the Group's must win. A Group's first child gets place 0 explicitly, because custom properties inherit: a marked Group that is the second marked sibling carries place 1.
-- The editor stays still. The selectors exclude `.block-editor-block-list__block`, because the theme stylesheet is also loaded as an editor style. Otherwise the entrance would play on every editor load and for every inserted or moved block.
-- Keyboard focus follows ADR-062: the animated properties are overridden with important declarations while focus is inside, and the animation is never removed.
-- The hero carousel keeps its built-in rule. The two share values but not code (`ts-carousel-rise` in the plugin, `ts-intro-rise` in the theme).
+**Decision:** The last option, in 1.2.0. It is CSS only, with no script, markup or server code. It sits in the last section of the theme's `assets/css/global.css`, under `prefers-reduced-motion: no-preference`. It works with JavaScript off and prints whole.
+- On a Group marked `ts-intro` (Row, Stack and Grid are Groups), the direct children rise in one after another and the Group itself does not move, so a hero's background and circles stay still.
+- On any other block, the block rises in itself. Marked siblings take turns where the browser supports `:nth-child(n of .ts-intro)`, and rise together where it does not.
+- The values are the hero's: 28px, `reveal.duration`, `ease.out-strong`, a start of 0.15s and `reveal.stagger`. There are six places in the sequence, and later blocks come in with the sixth. There is no new token, and 28px and 0.15s sit beside the rule, as in the Hero Carousel. The design system's own motion tokens are still to come.
+- The outermost mark wins. A marked block inside a marked block is not animated on its own, so two animations never stack on one element. A marked Group inside a marked Group rises as one of the outer Group's blocks.
+- Where a single-mark rule and a Group's child rule both match a block, the Group's place wins. A Group's first child is set to place 0, so it does not inherit its Group's place.
+- Decorative icons are left out, as in the reveal rules.
+- The editor stays still. The theme stylesheet is also loaded as an editor style, so the selectors leave out editor blocks. Otherwise the entrance would play on every editor load and for every inserted or moved block.
+- Keyboard focus follows ADR-062.
+- The Hero Carousel keeps its built-in rule. The two share values but not code.
 - No page carries the class yet. On a text-led hero, mark the pieces (heading, buttons, card) and leave the large paragraph unmarked.
-- `specs/intro.spec.ts` has four tests:
-  - A Group's blocks come in turn (0.15s to 0.75s) and all are shown once played.
-  - Single marks take turns, a nested mark is left to the outer one, and a decorative icon stays still.
-  - A block the keyboard reaches is shown at once with no replay.
-  - Nothing moves under reduced motion, in print or in the editor, and no script is loaded.
-  - The editor test and the focus test were each checked to fail when their rule is broken.
 
-Measured cost (Chrome 156 on the development site, three loads each, medians). Chrome records a text block for Largest Contentful Paint only when its fade from opacity 0 has finished.
-- Contact at 1440px: unmarked 0.40s; the hero's text Group marked 1.78s; only the H1 and the buttons marked 0.33s. At 390px: 0.32s, 1.55s and 0.32s. On both, the largest element is the hero's lead paragraph.
-- Job Series at 1440 and 834px: about 0.4s unmarked, about 1.5s with the text Group marked. At 390px the largest element is outside the hero and the time did not change (about 0.28s).
-- Home is not affected: its largest element is the hero photo.
-- Starting the fade at a tiny non-zero opacity would hide the cost from the measure without changing what visitors see. That was not done.
+Measured cost: Chrome counts a text block for Largest Contentful Paint only once its fade from opacity 0 has finished. On Contact, and on Job Series at 1440 and 834px, marking the hero's whole text Group moved that time from about 0.3 to 0.4s to about 1.5 to 1.8s. Marking only the H1 and the buttons did not slow it. On Job Series at 390px the largest element is outside the hero, so the time did not change. Home is not affected. Starting the fade at a tiny non-zero opacity would hide the cost from the measure without changing what visitors see. That was not done.
 
-Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 834 and 390px by adding the class to the HTML on its way to the browser (no page was changed). The text rose in order, the background, circles and card stayed, and nothing was left hidden. Checked in Chromium 156 and Firefox 157. Safari is unverified, as in ADR-062.
+Tried on the Contact, Job Series and Privacy heroes at three widths by adding the class to the HTML on its way to the browser, with no page changed: the text rose in order, the background, circles and card stayed, and nothing was left hidden. Checked in Chromium and Firefox. Not verified: Safari, as in ADR-062.
 
-**Rationale:** One class that adapts to the block it is on matches how the owner already marks `ts-reveal`, and covers both a whole hero and single pieces. Pure CSS keeps the top of the page independent of JavaScript (ADR-005) and avoids the flash ADR-060 avoided. Keeping the hero carousel's own rule leaves the plugin working without the theme (ADR-001). The outermost-mark rule and the place ordering prevent stacked animations and wrong delays. The measured cost is why the class is opt-in and the advice is to leave a large lead paragraph unmarked.
+**Rationale:** One class that adapts to the block it is on matches how the owner already marks `ts-reveal`, and covers both a whole hero and single pieces. Pure CSS keeps the top of the page independent of JavaScript (ADR-005) and avoids the flash ADR-060 avoided. Keeping the Hero Carousel's own rule leaves the plugin working without the theme (ADR-001). The outermost-mark rule and the place ordering prevent stacked animations and wrong delays. The measured cost is why the class is opt-in and why the advice is to leave a large lead paragraph unmarked.
 
 ## ADR-064: Depart from the boards on page top spacing and hero and banner alignment
 
 **Status:** Accepted
 
-**Context:** The boards (`docs/design-reference/project`, for example `Events.dc.html`, `Contact.dc.html`, `EventPost.dc.html`, `NewsPostText.dc.html`) show three things the owner changed after reviewing the built site on 2026-10-11 and 2026-10-12. There are 48px between the sticky header and the first block. A hero's text is centred vertically against the card beside it on desktop. Post banners have a 480px minimum height with the text at the bottom. The owner asked for less space under the header, the hero text column at the top, and no 480px minimum. This is release 1.2.4 on branch `feat/hero-bands` (commit bf3eeb5), not merged yet. The six heroes with a card beside the text are Events, event types, News, Contact, Gallery and Job Series. The banners are the event and news post banners.
+**Context:** The boards (`docs/design-reference/project`) show 48px between the sticky header and the first block, a hero's text centred vertically against the card beside it on desktop, and post banners with a 480px minimum height and the text at the bottom. After reviewing the built site on 2026-10-11 and 2026-10-12, the owner asked for less space under the header, the hero text column at the top, and no 480px minimum. The six heroes with a card beside the text are Events, event types, News, Contact, Gallery and Job Series. The banners are the event and news post banners.
 
 **Options:**
 - Redefine the 32px spacing preset. It has 44 other uses in the theme's own files, and more in saved page content, which would all move.
-- A negative margin, or a CSS override on `main`. Editors could not see or change it in the Site Editor, because the padding is a block attribute.
+- A negative margin, or a CSS override on `main`. Editors could not see or change it in the Site Editor.
 - Keep the banner minimum for events only. The owner asked for both.
-- Change the block attributes in the templates and the pattern generator, and make the Post Tone block cope with short banners.
+- Change the block attributes in the templates and the pattern generator, and make the Post Tone block cope with short banners (chosen).
 
 **Decision:** The last option, in 1.2.4. It supersedes no ADR in full. It refines ADR-025 (responsive layout with per-block styles) and ADR-033 (Post Tone block) on the points below.
-- Top space: `main`'s top padding goes from the 32px spacing preset to the existing 4px preset in all 14 templates. WordPress's 16px block gap under the header part stays, so the visible gap goes from 48px to 20px. The 32px preset is not redefined.
-- Heroes: the text column of the plum hero (`heroPlum()` in the pattern generator) is `verticalAlignment: top` instead of `center`. Six patterns were regenerated: `template-events`, `template-event-type`, `template-news`, `contact-hero`, `gallery-hero`, `job-series-hero`.
-- Banners: in `template-single-event` and `template-single`, the `tekseries/post-tone` banner variant loses its `minHeight: 480px` (and the `0px` overrides for tablet and mobile) and the inner grid's `selfStretch: fill`. Its text column is `top` instead of `bottom`. A banner is as tall as its content.
-- Plugin: the banner's topic icon is 340px on desktop and bleeds off the bottom-right corner, with the block clipping overflow. A short banner would cut its top off. `post-tone/style.scss` now sizes the icon at `min(icon size, 100% / 0.85)` of the band's height and moves it with `translate: 9% 15%` from `right: 0; bottom: 0`, so the 85% of it above the bottom edge never exceeds the band. Where the icon fits, size and offsets are unchanged (measured on listing cards and banners).
-- Measured on the development site at 1440, 834 and 390px: the gap under the header is 20px on every page kind (was 48px). The first element of the hero text column sits at band top plus band padding on all six heroes. A news banner with a one-line title is 295px tall at 1440 (was 576px). An event banner with a four-line title is 568px (was 576px). In-page anchors still land 22px or more below the header, because scroll-margin is 96px and unchanged.
+- Top space: `main`'s top padding goes from the 32px spacing preset to the existing 4px preset in all 14 templates. With WordPress's 16px block gap under the header, the visible gap goes from 48px to 20px. The 32px preset is not redefined.
+- Heroes: the text column of the plum hero (`heroPlum()` in the pattern generator) is top-aligned instead of centred, in the six regenerated hero patterns.
+- Banners: in `template-single-event` and `template-single`, the `tekseries/post-tone` banner loses its `minHeight: 480px` and its text column is top-aligned instead of bottom. A banner is as tall as its content.
+- Plugin: the banner's topic icon is 340px on desktop and bleeds off the bottom-right corner, so a short banner would cut its top off. `post-tone/style.scss` now caps the icon's size by the band's height, so it never exceeds the band. Where the icon already fitted, it is unchanged.
 - Templates customised in the Site Editor keep their saved padding until reset. None is customised on the development site.
 
-**Rationale:** The owner's review outranks the boards, and the boards' own values stay in `docs/design-reference/`. Changing block attributes keeps every change visible and editable in the Site Editor, and leaves the other uses of the 32px preset alone. Putting the change in the pattern generator means regenerated patterns keep it. The icon rule in the plugin is needed only because a banner can now be shorter than the icon, and it leaves the icon unchanged where it already fitted. These three points now differ from the boards on purpose. A later design pull that still shows 48px, centred text or a 480px minimum must not be read as a regression to fix.
+Checked on the development site at three widths: the gap under the header is 20px on every page kind, a one-line news banner is about half its former height, and in-page anchors still land clear of the header.
+
+**Rationale:** The owner's review outranks the boards, and the boards' own values stay in `docs/design-reference/`. Changing block attributes keeps every change visible and editable in the Site Editor, and leaves the other uses of the 32px preset alone. Changing the pattern generator means regenerated patterns keep it. The icon rule is needed only because a banner can now be shorter than the icon. These three points now differ from the boards on purpose. A later design pull that still shows 48px, centred text or a 480px minimum must not be read as a regression to fix.
 
 ## ADR-065: Let the Home Mission card end with its text, with a class `ts-fit`
 
 **Status:** Accepted
 
-**Context:** On the Home board (`docs/design-reference/project/Main.dc.html`) the plum Mission card in "Who We Are" is as tall as the column beside it (the photo and the "Get Involved" card). As built, it stretched to the grid row and left about 55px of empty plum under its last paragraph at 1440px. On 2026-10-11 and 2026-10-12 the owner asked for the card to hug its text on desktop. This is release 1.2.5 on branch `feat/mission-fit` (commit 38e8e51), not merged yet.
+**Context:** On the Home board (`docs/design-reference/project/Main.dc.html`) the plum Mission card in "Who We Are" is as tall as the column beside it. As built, it stretched to the grid row and left about 55px of empty plum under its last paragraph at 1440px. On 2026-10-11 and 2026-10-12 the owner asked for the card to hug its text on desktop.
 
 **Options:**
-- The block's own vertical alignment control. In WordPress 7.1 a grid child has no per-item "align self" control in the editor. Only the stack's content alignment exists, and it does not stop the stretch.
+- The block's own vertical alignment control. In WordPress 7.1 a grid child has no per-item "align self" control in the editor.
 - A rule aimed at that one card. A class any card can take is no more code, and editors can reuse or remove it under Advanced, Additional CSS class(es).
-- A utility class in the theme.
+- A utility class in the theme (chosen).
 
 **Decision:** The last option, in 1.2.5.
 - `assets/css/blocks/group.css` gains `.ts-fit { align-self: start; }`.
-- The `home-about` pattern sets the class on the Mission card, through the pattern generator, so regeneration keeps it.
-- The development site's Home page got the class by a surgical edit of that block. The page carries the owner's own edits, so it is never regenerated.
-- There is no media query. At 1100px and below the layout is one column and each card is alone in its row, so the class has no effect.
-- Measured on the development site: at 1440px the card is 568px tall (was 624px). It ends 55px above the column beside it, with exactly its 44px padding under the last paragraph. At 834px and 390px its height is unchanged (450px and 714px).
+- The `home-about` pattern sets the class on the Mission card through the pattern generator, so regeneration keeps it. The development site's Home page got the class by a surgical edit, since it carries the owner's own edits and is never regenerated.
+- There is no media query. At 1100px and below each card is alone in its row, so the class has no effect.
+
+Checked on the development site: at 1440px the card now ends with just its padding under the last paragraph, and its height at 834px and 390px is unchanged.
 
 **Rationale:** The class is the smallest change that works in 7.1 and stays visible and editable in the editor. It is an editor-facing convention alongside `ts-reveal` (ADR-060) and `ts-intro` (ADR-063). This is a deliberate difference from the board, like ADR-064: a later design pull that shows the stretched card is not a regression to fix. It refines the per-block layout approach of ADR-025.
 
@@ -1236,60 +1198,53 @@ Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 
 
 **Status:** Accepted
 
-**Context:** On 2026-10-11 and 2026-10-12 the owner asked for the horizontal TekSeries logo in the header and the stacked one in the footer. Both files are in the Media Library on the development site and on the live site with the same IDs (horizontal 283171, 244 by 60; stacked 283170, 218 by 150), checked on live through its public REST API. The stacked logo is blue and dark grey on a transparent ground, and the footer panel is plum. This is release 1.4.0 on branch `feat/logos` (commit 762b2c0), not merged yet.
+**Context:** On 2026-10-11 and 2026-10-12 the owner asked for the horizontal TekSeries logo in the header and the stacked one in the footer. Both files are in the Media Library on the development and live sites with the same IDs (horizontal 283171, 244 by 60; stacked 283170), checked on live through its public REST API. The stacked logo is blue and dark grey on a transparent ground, and the footer panel is plum.
 
 **Options:**
 - An SVG of the logo in the theme for both places. No vector source was supplied, and the owner's own files are the source of truth.
 - A second Site Logo block in the footer. It would show the same horizontal file.
 - A Media Library image in the footer. Patterns must look complete on a fresh install (ADR-023).
-- Draw the footer plate with block background and padding attributes. The footer's other spacing is already in `global.css`, and the plate is part of the logo's look, not something to tune per page.
+- Draw the footer plate with block background and padding attributes. The plate is part of the logo's look, not something to tune per page.
 
-**Decision:**
-- Header: it stays the core Site Logo block, so the picture is the site's own `site_logo` setting and an editor swaps it in the Site Editor. The block's `width` goes from 64 to 179 (the horizontal file at 44px tall). The theme CSS is unchanged and sizes the logo by height, 44 / 40 / 34px at desktop / tablet / phone, with `width: auto`, so any file keeps its proportions. On the development site `site_logo` changed from 283170 to 283171. The release bundle for live already carries that option (ADR-059).
-- Footer: an Image block in the footer pattern, first in the brand column. It points at `assets/images/logo-stacked.png`, a copy of attachment 283170 shipped with the theme (ADR-023). It is 44px tall on a white rounded plate with 6px by 10px padding (56px in all), alt text "TekSeries". Theme CSS draws the plate and gives the picture its aspect ratio, so it has a width before the file loads.
-- Measured on the development site: header logo 178.9 by 44 at 1440, 162.7 by 40 at 834, 138.3 by 34 at 390 and 360. Bar height is unchanged, with 146px left to the menu button at 360. The footer panel is 311px at 1440 (was 279), 553px at 834 (was 483) and 689px at 390 (was 619).
+**Decision:** This ships in release 1.4.0.
+- Header: it stays the core Site Logo block, so the picture is the site's own `site_logo` setting and an editor swaps it in the Site Editor. The block's `width` goes from 64 to 179 (the horizontal file at 44px tall). The theme CSS is unchanged and sizes the logo by height (44, 40 and 34px at desktop, tablet and phone), so any file keeps its proportions. On the development site `site_logo` changed from 283170 to 283171. The release bundle for live already carries that option (ADR-059).
+- Footer: an Image block first in the brand column of the footer pattern. It points at `assets/images/logo-stacked.png`, a copy of attachment 283170 shipped with the theme (ADR-023). It is 44px tall on a white rounded plate, with alt text "TekSeries". Theme CSS draws the plate and gives the picture its aspect ratio, so it has a width before the file loads.
 
 **Rationale:** The Site Logo block keeps the header logo editable without code, and sizing by height keeps any replacement file in proportion. A theme file lets the footer look complete on a fresh install, and the plate keeps a dark-grey-and-blue logo legible on plum. Consequences:
 - The 244 by 60 horizontal file is slightly soft on high-density screens at 179 by 44. A larger or SVG copy can be swapped in the Site Editor with no code change. The owner has been told.
-- The development site's header and footer are saved copies in the database (edited in the Site Editor on 2026-10-12), so they were patched there by hand as well as in the patterns. A site with saved copies of these parts does not pick up pattern changes by itself (ADR-017). The release bundle does not yet carry saved template parts.
+- The development site's header and footer are saved copies in the database, so they were patched there by hand as well as in the patterns. A site with saved copies of these parts does not pick up pattern changes by itself (ADR-017), and the release bundle does not yet carry saved template parts.
 - The footer is 32px taller on desktop.
 
 ## ADR-067: Draw icons on core Buttons with classes in theme CSS, set by an editor-only panel in the plugin
 
 **Status:** Accepted
 
-**Context:** The boards put a Material Symbols icon on many buttons. Core's Button block has no icon in WordPress 7.1, and the first build left the icons off. That difference from the design was never recorded. On 2026-10-11 and 2026-10-12 the owner asked for every missing design icon and for a way to pick one in the editor. This is release 1.6.0 on branch `feat/button-icons` (commit e8b20e1), not merged yet. The first rule of the mechanism landed in 1.3.0 (commit 8402f6c).
+**Context:** The boards put a Material Symbols icon on many buttons. Core's Button block has no icon in WordPress 7.1, and the first build left the icons off without recording the difference from the design. On 2026-10-11 and 2026-10-12 the owner asked for every missing design icon and for a way to pick one in the editor. The first rule of the mechanism landed in 1.3.0.
 
 **Options:**
-- Classes on the core Button, drawn by theme CSS, with an editor panel that sets the class.
-- A `render_block` filter that injects an inline SVG. It runs PHP on every button render, its markup differs from the editor's, and the colour would still need CSS.
+- Classes on the core Button, drawn by theme CSS, with an editor panel that sets the class (chosen).
+- A `render_block` filter that injects an inline SVG. It runs PHP on every button render, and the colour would still need CSS.
 - A custom "icon button" block. Every existing Button would need converting, and block styles such as outline and glass would be rebuilt.
 - Core's Icon block beside the text in a Row. It is not a link target and splits the button's hover and focus into two controls.
 - An icon font. ADR-024 forbids it.
 
 **Decision:** The first option, in 1.6.0.
 - A core Button with the class `ts-icon-<name>` draws that icon before its text. With `ts-icon-after` as well, it draws it after. `ts-icon-small` draws it at 18px instead of 20px.
-- Theme, `assets/css/blocks/buttons.css`: one generic rule (a `::before` or `::after` box with `mask: var(--ts-button-icon, <transparent gradient>)` and `background-color: currentcolor`), plus one rule per icon that sets `--ts-button-icon` to a data URI. A name with no rule draws nothing, never a solid square.
-- A local script produces the data URIs from the plugin's SVG files in `assets/icons/`, so the artwork has one source.
-- Plugin, editor only: `src/button-icon/index.tsx`, a webpack entry like the post sidebar's (ADR-034), loaded on `enqueue_block_editor_assets`. An `editor.BlockEdit` filter adds an "Icon" panel to `core/button` with a dropdown and an "Icon after the text" switch. It only rewrites `className`.
-- The icon list is `tekseries_blocks_button_icons()` in `includes/editor.php` (15 names), passed to the script with their labels. A unit test checks that this list and the theme's per-icon rules name exactly the same icons.
-- The same technique, without the panel, draws the contact form's topic chip icons (by the radio's value) and the "Send message" icon in `fluentform.css` (ADR-029). It also draws an upload icon on the job form's file button, as a background image, because `::file-selector-button` takes no pseudo-element.
+- Theme, `assets/css/blocks/buttons.css`: one generic rule masks the icon in the text colour, and one rule per icon sets `--ts-button-icon` to a data URI. A name with no rule draws nothing. A local script produces the data URIs from the plugin's SVG files in `assets/icons/`, so the artwork has one source.
+- Plugin, editor only: `src/button-icon/index.tsx`, a webpack entry like the post sidebar's (ADR-034), adds an "Icon" panel to `core/button` with a dropdown and an "Icon after the text" switch. It only rewrites `className`.
+- The icon list is `tekseries_blocks_button_icons()` (15 names). A unit test checks that it and the theme's per-icon rules name exactly the same icons.
+- The same technique, without the panel, draws the contact form's topic chip icons and the "Send message" icon (ADR-029), and an upload icon on the job form's file button.
 - The job dashboard's row buttons get no icon, because no board draws one.
 
-**Rationale:**
-- No new attribute means the saved markup is exactly core's. A button stays valid with the plugin off, in patterns, and on a site that never had the plugin. Block validity is tested for every pattern and template.
-- Nothing ships to visitors: no script, no render filter, no inline SVG per button. Rule 1, that React never ships to visitors, is untouched.
-- Patterns carry icons as plain class names, which the pattern generator and the editor's "Additional CSS class(es)" field both handle.
-- Cost, measured: with 15 icons `buttons.css` is 12.2 KB (3.75 KB gzipped), and WordPress no longer inlines it in the page head, as it did at 3.2 KB. It is now one more linked stylesheet on every page with a button. First contentful paint on a throttled connection (150 ms latency, 1.6 Mbps, median of five cold loads on the development site) was 1096 ms with it against 1076 ms without on Home, and 1304 ms against 1392 ms on Contact. That is no difference outside the noise. Each icon added to the list costs about 0.5 KB.
-- Mask icons disappear in forced-colours mode, as the Register button's arrow already does. The buttons keep their text, so nothing is lost.
-- The contact form's topic chips hide the radio dot, except under forced colours. There the dot stays, because the chip's fill is not drawn.
-- This closes the unrecorded design difference. The icons now match the boards.
+**Rationale:** No new attribute means the saved markup is exactly core's, so a button stays valid with the plugin off, in patterns, and on a site that never had the plugin. Patterns carry icons as plain class names, which the pattern generator and the editor's "Additional CSS class(es)" field both handle. Nothing ships to visitors: no script, no render filter, no inline SVG per button. Rule 1, that React never ships to visitors, is untouched. This closes the unrecorded design difference, and the icons now match the boards. Consequences:
+- With 15 icons `buttons.css` is 12.2 KB (3.75 KB gzipped) and WordPress no longer inlines it, so it is one more linked stylesheet on pages with a button. Paint timing on a throttled connection showed no difference outside the noise. Each added icon costs about 0.5 KB.
+- Mask icons disappear in forced-colours mode, but the buttons keep their text. The contact form's topic chips hide the radio dot, except under forced colours, where the dot stays because the chip's fill is not drawn.
 
 ## ADR-068: Make the Hero Carousel's stay, pointer hold and dot spacing editor settings, and give a new slide whole
 
 **Status:** Accepted
 
-**Context:** ADR-053 fixed the stay at 7 seconds, always held the slides under the pointer, and kept every dot a 44px tap target although the board draws the dots 8px apart. Editors added a slide by duplicating one. On 2026-10-11 and 2026-10-12 the owner asked for the timing, the hover hold and the dot spacing to be settings, and for an "Add slide" control that gives a complete slide. This is release 1.7.0 on branch `feat/carousel-settings` (commit 4ff1b98), not merged yet.
+**Context:** ADR-053 fixed the stay at 7 seconds, always held the slides under the pointer, and kept every dot a 44px tap target although the board draws the dots 8px apart. Editors added a slide by duplicating one. On 2026-10-11 and 2026-10-12 the owner asked for the timing, the hover hold and the dot spacing to be settings, and for an "Add slide" control that gives a complete slide.
 
 **Options:**
 - A free "seconds" number field with no limits. Under 3 seconds nobody can read a slide, and over 30 it no longer reads as a carousel.
@@ -1298,100 +1253,79 @@ Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 
 - Offer the slide only as a block variation or a pattern. The appender is where an editor looks, and a variation of `core/cover` would show up everywhere Covers can go.
 - Attributes with settings controls, a custom appender and a slide template (chosen).
 
-**Decision:** The last option, for the block `tekseries/hero-carousel`.
-- Attributes: `interval` (integer seconds, default 7, clamped by the server to 3 to 30), `pauseOnHover` (boolean, default true) and `dotSpacing` (`touch`, the default, or `close`). The defaults reproduce 1.6.0 exactly, so no stored block changes behaviour.
-- `render.php` puts `stay` and `hover` in the block's Interactivity context and adds the class `has-close-dots`. `view.ts` reads them: one timeout of `stay` seconds per slide, and the pointer over the carousel passes a turn only when `hover` is true. Focus inside the carousel, a hidden tab and `prefers-reduced-motion: reduce` hold or stop the slides whatever the settings.
-- Close dots (`style.scss`): each dot link is only as wide as its dot (28px for the slide in view, 8px otherwise), 8px apart and still 44px tall. The controls sit 40px in from the corner (24px on phones) and 8px from the pause button. The focus ring goes outside the dot.
-- "Add slide": `edit.tsx` renders its own appender, a button that inserts a slide built from a template (`slide.ts`) with `createBlocksFromInnerBlocksTemplate` and `insertBlocks`. The slide is a Cover with the plum overlay, a label, an H2 at the H1's size, a line, two "#" buttons and the Share / Create / Solve row. The block's `template` is the same slide.
-- A bare Cover inserted from the block library is replaced by a whole slide in the same undo step (`__unstableMarkNextChangeAsNotPersistent`). Undo then removes the slide, and does not bring back a bare Cover to fill in again.
-- Empty placeholders draw nothing on the site (`:empty`).
+**Decision:** The last option, for the block `tekseries/hero-carousel`, in 1.7.0.
+- Attributes: `interval` (integer seconds, default 7, clamped by the server to 3 to 30), `pauseOnHover` (default true) and `dotSpacing` (`touch`, the default, or `close`). The defaults reproduce 1.6.0 exactly, so no stored block changes behaviour.
+- `render.php` passes `stay` and `hover` to the block's Interactivity context and adds the class `has-close-dots`, and `view.ts` reads them. Focus inside the carousel, a hidden tab and `prefers-reduced-motion: reduce` hold or stop the slides whatever the settings.
+- Close dots: each dot link is only as wide as its dot (8px, or 28px for the slide in view), 8px apart and still 44px tall, with 8px between the dots and the pause button.
+- "Add slide": `edit.tsx` renders its own appender, which inserts a complete slide built from a template (`slide.ts`): a Cover with the plum overlay, a label, an H2, a line, two "#" buttons and the Share / Create / Solve row. The block's `template` is the same slide.
+- A bare Cover inserted from the block library is replaced by a whole slide in the same undo step, through `__unstableMarkNextChangeAsNotPersistent`, so undo removes the slide and does not bring back a bare Cover.
+- Empty placeholders draw nothing on the site.
 - ADR-060's entrance of the first slide is unchanged.
 
-**Rationale:**
-- It is the owner's request. The defaults keep the accessible behaviour, and the control's help text tells an editor who loosens it what it costs.
-- WCAG 2.2 success criterion 2.5.8 (Target Size, Minimum, level AA) asks for 24 by 24 CSS pixels, or enough room that a 24px circle centred on a smaller target touches no other target.
-  - With close dots and two slides the dots pass. The 8px dot's centre is 12px from its neighbour (4px plus the 8px gap). The 8px gap to the pause button was added for the same reason. The accessibility suite (ADR-056) measures this with axe on the close-dots hero with the second slide in view and the slides paused, the worst case because the 8px dot then sits beside the pause button, at 1280 and 390px. It does not scan that page with the first slide in view.
-  - With three or more slides two 8px dots sit 16px apart centre to centre, and they fail it. The automated test would report such a page.
-  - The default, `touch`, keeps 44px, which also meets the design system's own rule (ADR-005). The setting's help text says close dots are harder to tap and fall under the guideline's smallest target with three or more slides.
-- Turning off the pointer hold does not affect WCAG 2.2.2 (Pause, Stop, Hide). The pause button stays.
-- Consequences:
-  - The slide template exists twice, in `slide.ts` (the editor) and in the pattern generator (the Home pattern), and the two must be kept alike by hand.
-  - The template names theme presets (overlay gradient, font sizes, spacing), like the rest of the plugin's blocks (ADR-046).
-  - `__unstableMarkNextChangeAsNotPersistent` is an unstable editor API. If it goes, the fallback is a visible extra undo step.
+**Rationale:** It is the owner's request. The defaults keep the accessible behaviour, and the control's help text tells an editor who loosens it what it costs.
+- WCAG 2.2 criterion 2.5.8 (Target Size, Minimum, level AA) asks for 24 by 24 CSS pixels, or enough room that a 24px circle centred on a smaller target touches no other target. With close dots and two slides the dots pass. The 8px gap to the pause button was added for the same reason. With three or more slides two 8px dots sit 16px apart centre to centre and fail it, and the automated test would report such a page. The accessibility suite (ADR-056) scans the worst two-slide case, with the second slide in view and the slides paused, at 1280 and 390px, but not that page with the first slide in view.
+- The default, `touch`, keeps 44px, which also meets the design system's own rule (ADR-005). Turning off the pointer hold does not affect WCAG 2.2.2 (Pause, Stop, Hide), because the pause button stays.
+- Consequences: the slide template exists twice, in `slide.ts` and in the pattern generator, and the two must be kept alike by hand. It names theme presets, like the rest of the plugin's blocks (ADR-046). `__unstableMarkNextChangeAsNotPersistent` is an unstable editor API, and if it goes the fallback is a visible extra undo step.
 
 ## ADR-069: Show a real Google map on Contact through a small server-rendered Map block that frames Google Maps embeds only
 
 **Status:** Accepted
 
-**Context:** The Contact board draws a stand-in for a map: a plum card with a street grid and a pin, with the address card over it. The old live site had a real Google Maps embed. The first build followed the board (ADR-029). On 2026-10-11 and 2026-10-12 the owner chose the real map, in the design's frame, as one of the optional features of this batch. This is release 1.9.0 on branch `feat/contact-map` (commit 7ff2f7c), not merged yet.
+**Context:** The Contact board draws a stand-in for a map: a plum card with a street grid and a pin, with the address card over it. The old live site had a real Google Maps embed, and the first build followed the board (ADR-029). On 2026-10-11 and 2026-10-12 the owner chose the real map, in the design's frame.
 
 **Options:**
 - Core's Embed block. It has no Google Maps provider.
-- Core's Custom HTML block. It lets any markup in, is not something to hand to site editors, and the pattern would carry raw HTML.
-- A static map image linking to Google Maps. There is no third-party request until the click, but it is not the real map the owner asked for, and Google's static images need an API key.
+- Core's Custom HTML block. It lets any markup in and is not something to hand to site editors.
+- A static map image linking to Google Maps. It is not the real map the owner asked for, and Google's static images need an API key.
 - OpenStreetMap or a JavaScript map library. Visitors would get a script and a different look from the live site's map.
 - Keep the address card over the map, as on the board. It would cover Google's own controls and attribution, which must stay visible.
 - A block of our own that frames Google Maps embeds only (chosen).
 
 **Decision:** The last option, in 1.9.0.
-- Block `tekseries/map` in the plugin (`src/map/`), with attributes `src` and `title`. It is dynamic: `save` returns nothing.
-- `render.php` prints an `<iframe>` only when `src` matches `^https://www.google.com/maps/embed` followed by `?` or `/`. The iframe has `loading="lazy"`, a `title` (the editor's, else "Map"), `referrerpolicy="no-referrer-when-downgrade"` and `allowfullscreen`. Any other `src` prints nothing.
-- The frame is 450px tall (the old site's height). The wrapper clips it to the block's corner radius, through a block support. There is no view script.
-- Editor (`edit.tsx`, `embed.ts`): the editor pastes Google's whole `<iframe ...>` snippet or the address alone. The block extracts and keeps the address. It refuses anything that is not a Google Maps embed, shows a notice and leaves the map as it was. The canvas shows a still card, not the live frame, so wp-admin asks nothing of Google and the pattern and editor tests stay self-contained.
-- Contact (`contact-message` pattern, through the pattern generator): the Map block with the large corner radius, using the embed address read from the live site's Contact page on 2026-10-11. The address and "Get directions" sit in their own card under it. The stand-in's CSS (`.ts-map` in the theme's `group.css`) is removed.
-- The development site's Contact page was patched by hand, because the owner has edited it.
+- Block `tekseries/map` in the plugin, with attributes `src` and `title`. It is dynamic: `save` returns nothing.
+- `render.php` prints a lazy-loaded, titled `<iframe>` only when `src` begins with `https://www.google.com/maps/embed` followed by `?` or `/`. Any other `src` prints nothing. The frame is 450px tall (the old site's height) and clipped to the block's corner radius. There is no view script.
+- Editor: the editor pastes Google's whole `<iframe>` snippet or the address alone, and the block keeps the address. It refuses anything that is not a Google Maps embed, shows a notice and leaves the map as it was. The canvas shows a still card, not the live frame, so wp-admin asks nothing of Google.
+- Contact (`contact-message` pattern, through the pattern generator): the Map block with the large corner radius, using the embed address read from the live Contact page on 2026-10-11. The address and "Get directions" sit in their own card under it. The stand-in's CSS is removed. The development site's Contact page was patched by hand, because the owner has edited it.
 
-**Rationale:**
-- A server-side allow-list of one host and one path means the block cannot frame anything else, whatever is saved in the attribute.
-- Rule 3 holds: the frame is plain server HTML and works without JavaScript. Rule 1 holds: nothing of ours ships to visitors. ADR-047 holds: this block has no script.
-- Tests stub Google. `specs/map.spec.ts` covers the frame, three refused addresses, no script, the editor's paste and refusal, and no request to Google from the editor. The accessibility suite's visitor contexts also stub it (ADR-056).
-- Consequences:
-  - Privacy: the Contact page now loads content from Google for visitors, which the stand-in did not. `loading="lazy"` leaves the timing to the browser. Measured on the development site, the map was requested on page load at 1440, 834 and 390px, because it sits within the browser's lazy-loading distance. The owner has been told the Privacy Policy may need a line about it. A click-to-load consent step was not asked for and is not built.
-  - The height is fixed at 450px in the block's stylesheet. There is no height control.
-- This is a deliberate difference from the board (a real map instead of the drawn one), at the owner's request, like ADR-064 to ADR-066. A later design pull that shows the drawn map is not a regression to fix.
+**Rationale:** A server-side allow-list of one host and one path means the block cannot frame anything else, whatever is saved in the attribute. Rule 3 holds, because the frame is plain server HTML. Rule 1 holds, because nothing of ours ships to visitors. ADR-047 holds, because this block has no script. Tests stub Google, including the accessibility suite's visitor contexts (ADR-056). This is a deliberate difference from the board (a real map instead of the drawn one), at the owner's request, like ADR-064 to ADR-066. A later design pull that shows the drawn map is not a regression to fix. Consequences:
+- Privacy: the Contact page now loads content from Google, which the stand-in did not. The browser requested the map on page load at every width checked, because it sits within lazy-loading distance. The owner has been told the Privacy Policy may need a line about it. A click-to-load consent step was not asked for and is not built.
+- The height is fixed at 450px in the block's stylesheet. There is no height control.
 
 ## ADR-070: Let visitors switch event and job lists between newest and oldest first with `?order=asc`
 
 **Status:** Accepted
 
 **Context:**
-- The boards draw a static "Newest first" label above the Events lists and the Job Series list. On 2026-10-11 the owner asked for the sort to work. This is release 1.11.0 on branch `feat/list-order` (commit cc4bcb4).
-- ADR-036 sorted on a meta query that was an OR of `event_date` EXISTS (named, used for ordering) and NOT EXISTS. For an event without a date, the join used for ordering holds the event's other meta rows. The database ordered it by whichever row it picked (its tone, for one), so it could be listed above every dated event. This was seen on the test site (wp-env), where three test events without a date led the Events page. Every event on the live site has a date.
+- The boards draw a static "Newest first" label above the Events lists and the Job Series list. On 2026-10-11 the owner asked for the sort to work.
+- ADR-036 sorted on a meta query joining `event_date`. For an event without a date, the join held the event's other meta rows, so the database ordered by whichever row it picked and the event could be listed above every dated event. This was seen on the test site. Every event on the live site has a date.
 
 **Options:**
-- A private parameter name, such as `list_order`, instead of WordPress's public `order` query variable.
+- A private parameter name, such as `list_order`, instead of WordPress's public `order` query variable. It is not needed (see Decision).
 - A select or a pair of links for the two orders.
 - Sorting in the browser.
 - For the Events page grid, keeping the offset and flipping the order. That would leave out the oldest event, not the newest.
 
-**Decision:**
-- The address carries the order. `?order=asc` is oldest first; anything else is newest first. `order` is WordPress's own public query variable, so the main query of the event type archives follows it with no extra code. `tekseries_blocks_list_order()` in `includes/list-order.php` reads it for everything else. On the development site, Rank Math's canonical link for `/events/?order=asc`, `/event_type/webinar/?order=asc` and `/jobs/?order=asc` is the address without the parameter, and nothing redirects. A private parameter is not needed.
-- The switch on event pages is a core Button with the class `ts-sort`, bound on `text` and `url` to a new Block Bindings source, `tekseries/list-order`. Key `label` is the order on show. Key `url` is the same list from its first page in the other order. It is a plain link, so it works without JavaScript. A `render_block_core/button` filter adds an `aria-label` that starts with the visible text and says what the link does ("Newest first. Show oldest first").
-- The theme draws `ts-sort` as plain text with the `swap_vert` icon at the design's sizes (15, 14 and 13px) and a 44px touch target. `swap_vert` joins the Button icon list of ADR-067, which now has 16 icons.
-- Events page: the Latest card stays the newest event in either order. The grid is the Query Loop with an offset (ADR-026). When the address asks for oldest first, the grid is turned round and leaves the newest events out with `post__not_in`, looked up with the same query arguments, instead of the offset. "The rest" is then the same set in both orders and the page count is exact. Only event loops with an offset follow the address; the Latest card and "More events" do not.
-- Event order mechanism, replacing ADR-036's meta query: `tekseries_blocks_event_order_args()` now only marks the query (`tekseries_event_order`). A `posts_clauses` filter joins `event_date` under its own alias and orders by "has no date" first, then the date, then the publish date. Undated events (no row or an empty value) come after the dated ones in either order. ADR-036's two filters (`query_loop_block_query_vars` and `pre_get_posts`) and its rule that only loops left on the default date orderby change stand.
-- Event type chips keep the chosen order: the existing `ts-type-chip` filter (ADR-037) adds the parameter.
-- Job Listings block: the label became a link inside the router region, with `actions.order`. A hidden `order` field at the end of the search form carries the order through a search, and the script keeps it in step with the address. Page links and "Clear filters" keep the order. The arrow icon turns for "Oldest first".
-- Departures from the design: on the Job Series phone board the label is hidden, and the switch is shown on phones because it now does something. The Job Series label is drawn at weight 600 (the board's static text is regular) to match the Events switch.
+**Decision:** The address carries the order, in 1.11.0.
+- `?order=asc` is oldest first; anything else is newest first. `order` is WordPress's own public query variable, so the main query of the event type archives follows it with no extra code, and `tekseries_blocks_list_order()` reads it for everything else. On the development site, Rank Math's canonical link for a list with the parameter is the address without it, and nothing redirects.
+- The switch on event pages is a core Button with the class `ts-sort`, bound on `text` and `url` to a new Block Bindings source, `tekseries/list-order`. It is a plain link, so it works without JavaScript. A `render_block_core/button` filter gives it an `aria-label` that starts with the visible text and says what the link does. The theme draws it as plain text with the `swap_vert` icon, which joins the Button icon list of ADR-067 (now 16 icons).
+- Events page: the Latest card stays the newest event in either order. The grid is the Query Loop with an offset (ADR-026). When the address asks for oldest first, the grid is turned round and leaves the newest events out with `post__not_in` instead of the offset, so "the rest" is the same set in both orders and the page count is exact. Only event loops with an offset follow the address; the Latest card and "More events" do not.
+- Event order mechanism, replacing ADR-036's meta query: `tekseries_blocks_event_order_args()` only marks the query, and a `posts_clauses` filter joins `event_date` under its own alias and orders by "has no date" first, then the date, then the publish date. Undated events come after dated ones in either order. ADR-036's two filters and its rule that only loops left on the default date orderby change stand.
+- Event type chips keep the chosen order through the existing `ts-type-chip` filter (ADR-037).
+- Job Listings block: the label became a link inside the router region. A hidden `order` field carries the order through a search, and page links and "Clear filters" keep it.
+- Departures from the design: on the Job Series phone board the label is hidden, but the switch is shown on phones because it now does something. The Job Series label is drawn at weight 600 to match the Events switch.
 
-**Rationale:**
-- A link with the state in the address works without JavaScript, can be shared and bookmarked, and needs no script on the event pages.
-- Core's own query variable means the inherited archive query needs no code. The canonical link keeps search engines on one address per list.
-- Block Bindings on a core Button keeps the templates core blocks (ADR-005, and the rule to try bindings before a dynamic block).
-- `post__not_in` keeps the Latest card and the grid from showing the same event and makes the oldest-first page count exact.
-- A join of its own makes the order deterministic for undated events.
-- Consequences:
-  - `?order=asc` on any page reaches WordPress's main query too. On singular pages that changes nothing visible.
-  - A Button with the class `ts-sort` that is not bound to the source would get a misleading `aria-label`. The class is for the bound switch only.
-  - The switch's wording and addresses come from the plugin. Without the plugin, the pattern's fallback link `?order=asc` still orders the type archives through core.
+**Rationale:** A link with the state in the address works without JavaScript, can be shared and bookmarked, and needs no script on the event pages. Core's own query variable means the archive query needs no code, and the canonical link keeps search engines on one address per list. Block Bindings on a core Button keeps the templates core blocks (ADR-005, and the rule to try bindings before a dynamic block). `post__not_in` keeps the Latest card and the grid from showing the same event. A join of its own makes the order deterministic for undated events. Consequences:
+- `?order=asc` on any page reaches WordPress's main query too. On singular pages that changes nothing visible.
+- A Button with the class `ts-sort` that is not bound to the source would get a misleading `aria-label`. The class is for the bound switch only.
+- The switch's wording and addresses come from the plugin. Without it, the pattern's fallback link `?order=asc` still orders the type archives through core.
 
 ## ADR-071: Share the Gallery's viewer with links elsewhere, marked by the class `ts-lightbox-open`
 
 **Status:** Accepted
 
 **Context:**
-- The viewer (a modal `<dialog>`, ADR-048) was part of the Media Gallery block's render output and could only show the Gallery's tiles.
-- On 2026-10-11 and 2026-10-12 the owner asked for two things that need it elsewhere: the event poster in the design's frame with a "View full size" link, and a "See video" pill on the Home page's Case Study card that opens a video. This is release 1.12.0 on branch `feat/viewer-anywhere` (commit 9604b8b).
+- The viewer (a modal `<dialog>`, ADR-048) was part of the Media Gallery block's output and could show only the Gallery's tiles.
+- The owner asked for the event poster in the design's frame with a "View full size" link, and for a "See video" pill on the Home page's Case Study card that opens a video. Both need the viewer outside the Gallery.
 
 **Options:**
 - A second, separate lightbox for single files.
@@ -1399,194 +1333,160 @@ Tried on the development site's Contact, Job Series and Privacy heroes at 1440, 
 - A new block for each opener.
 - A class on core blocks, with one shared dialog.
 
-**Decision:** The last option.
-- A block with the class `ts-lightbox-open` is an opener. A `render_block` filter in `includes/lightbox.php` looks at its first link. When the link leads to a photo or a video file, the link gets `data-wp-interactive`, a `data-wp-context` describing the file (address, kind, size, caption, a photo's `srcset`, a video's poster) and `data-wp-on--click="actions.openOne"`. The Gallery block's view module and stylesheet are enqueued. The attachment is looked up by address, and an unknown file is judged by its extension. Any other link (a page, `#`) stays an ordinary link. Without JavaScript the link opens the file.
-- A Featured Image block with the class has no link to its file, so the filter puts one around the picture, to the full-size file, with an `aria-label` built from the alt text.
-- The dialog moved to `includes/lightbox.php` and is printed once per page. The Gallery block prints it inside its router region (ADR-049) when the page has one. Otherwise it is printed in `wp_footer`, run through `wp_interactivity_process_directives`, when an opener asked for it.
-- The viewer has a single-item mode. `state.isSingle` puts `is-single` on the dialog, which hides the counter, Previous and Next, the thumbnails and the phone's step bar and gives the media their room. A Gallery with one tile gets it too.
-- Event poster: a Group `ts-poster` (card style, flow layout) holds the Featured Image and a caption row with "Event poster" and "View full size". "View full size" is a core Button drawn as plain text (`ts-poster-link`), with the `open_in_full` icon of ADR-067, which now has 17 icons. Its URL is bound to a new Block Bindings source, `tekseries/featured-image` (key `url`). A `render_block_core/group` filter leaves the frame out when the post has no featured image.
-- "See video": a Group `ts-photo-pill` holds the photo and a Buttons block positioned over the photo's bottom-left corner, so the card keeps its height. The pattern's link is `#`, because a theme pattern has no video of its own. A site's page links it to a video file.
-- The event sidebar stack is now `flexWrap: nowrap`. A vertical stack in WordPress is a wrapping column flexbox unless told otherwise. A wrapping column measures each item at its own content width before stretching it, so a poster file narrower than the column got a box shorter than the square picture, and the picture spilled over what followed. Measured on the test site with a 218px-wide file in a 379px column: the box was 218px tall and the picture 379px.
+**Decision:** The last option, in 1.12.0.
+- A block with the class `ts-lightbox-open` is an opener. When its first link leads to a photo or a video file, the link opens the shared viewer, and the Gallery block's view module and stylesheet load on that page. An unknown file is judged by its extension. Any other link (a page, `#`) stays an ordinary link. Without JavaScript the link opens the file.
+- A Featured Image block with the class has no link to its file, so the server wraps the picture in one, to the full-size file, with an `aria-label` built from the alt text.
+- The dialog is printed once per page. The Gallery block prints it inside its router region (ADR-049) when the page has one. Otherwise it is printed in the footer, and only when an opener asked for it.
+- The viewer has a single-item mode, used by openers and by a Gallery with one tile. It hides the counter, Previous and Next, the thumbnails and the phone's step bar.
+- Event poster: a Group `ts-poster` holds the Featured Image and a caption row with "Event poster" and "View full size". The link is a core Button drawn as plain text (`ts-poster-link`), with the `open_in_full` icon of ADR-067, which now has 17 icons. Its URL is bound to a new Block Bindings source, `tekseries/featured-image` (key `url`). The frame is left out when the post has no featured image.
+- "See video": a Group `ts-photo-pill` holds the photo and a Buttons block over its bottom-left corner. The pattern's link is `#`, because a theme pattern has no video of its own. A site's page links it to a video file.
+- The event sidebar stack is now `flexWrap: nowrap`. In a wrapping column, a poster file narrower than the column got a box shorter than its picture, and the picture spilled over what followed. Other vertical stacks still wrap.
 
 **Rationale:**
 - One dialog and one script: the Gallery's viewer already handles photos, videos, focus, Escape and reduced motion, and is tested for accessibility.
 - A class on core blocks keeps templates and patterns core blocks an editor can change (ADR-005), and lets an editor make any link to a media file an opener. It follows the class-keyed filters of ADR-037.
-- Printing the dialog in the footer only when asked keeps it off pages that have no opener.
+- Printing the dialog in the footer only when an opener asks for it keeps it off pages that have no opener.
 - Block Bindings give the Button its address without a custom block.
 - Consequences:
-  - A page with an opener loads the Gallery block's whole stylesheet (about 13 KB before compression) and its view module, though only the viewer's part is used.
-  - The attachment lookup by address (`attachment_url_to_postid`) is one database query per opener per page view.
-  - Other vertical stacks in the patterns still wrap (the generator's default). None holds a picture sized this way today. A stack that gets one needs `flexWrap: nowrap` too.
+  - A page with an opener loads the Gallery block's whole stylesheet and its view module, though only the viewer's part is used.
+  - Each opener costs one database lookup per page view, to find the attachment by its address.
+  - A vertical stack that gets a picture sized this way needs `flexWrap: nowrap` too.
 
 ## ADR-072: Give news posts a video through ACF fields and a Post Video block, and play YouTube and Vimeo links in the viewer from an address the server builds
 
 **Status:** Accepted
 
 **Context:**
-- On 2026-10-12 the site owner asked for news posts to carry a video: a switch, then an uploaded file or a YouTube or Vimeo link, plus a thumbnail, opening in the Gallery's viewer. This is release 1.13.0 on branch `feat/post-video` (commit 2b366b0).
+- The owner asked for news posts to carry a video: a switch, then an uploaded file or a YouTube or Vimeo link, plus a thumbnail, opening in the Gallery's viewer.
 - ADR-071 made the viewer available outside the Gallery, for photo and video files only.
 
 **Options:**
-- Core's Video and Embed blocks in the post's content. They load the provider's player with the page and sit in the text, not in a card of the design's. Nothing new to build.
-- WordPress oEmbed (`wp_oembed_get`). The server fetches markup from the provider and prints what the provider returns.
+- Core's Video and Embed blocks in the post's content. They load the provider's player with the page and sit in the text, not in a card of the design's.
+- WordPress oEmbed (`wp_oembed_get`). The server prints whatever markup the provider returns.
 - Post meta registered by the plugin with a custom sidebar panel, as for tone and icon (ADR-032), instead of ACF fields.
 - ACF fields with a dynamic block (chosen).
 
-**Decision:** The last option.
-- Fields: an ACF group "Video" on posts, registered in code like the event fields (ADR-010, ADR-035). `tekseries_video` is a switch. `tekseries_video_file` is a video file and stores the attachment ID. `tekseries_video_link` is a URL. `tekseries_video_thumbnail` is an image ID. The last three show once the switch is on. The group is exposed over REST.
-- Block: `tekseries/post-video`, dynamic, with no settings, placed after the post content in the single post pattern. It prints nothing unless the switch is on and the post has a video file or a YouTube or Vimeo link. A file wins over a link. The card is 16:9, with the Gallery's play disc and a "Watch the video" label on ink. Its picture is the thumbnail, else the file's poster (the attachment's featured image), else a plain plum card. The card is a link, to the file or to the video's own page, so it works without JavaScript.
-- Embedded player: `tekseries_blocks_video_embed()` accepts only YouTube (watch, youtu.be, shorts, live, embed) and Vimeo links, including the private hash of an unlisted video. It builds the player's address itself from the video's ID: `https://www.youtube-nocookie.com/embed/<id>?autoplay=1&rel=0` or `https://player.vimeo.com/video/<id>?autoplay=1&dnt=1`. Nothing else from the link is used, and any other link gives no card.
-- Viewer: an item can carry an `embed` address. The dialog has a `data-wp-each` template over `state.players`, which holds the one player only while the viewer is open on such an item. The `<iframe>` therefore exists only then. Closing the viewer removes the frame, which stops the video, and no history entry is added (changing a frame's `src` back to blank would add one). The frame has a title (the caption, or "Video player") and `allow` for autoplay, encrypted media, picture in picture and fullscreen.
-- `includes/lightbox.php` gained `tekseries_blocks_lightbox_request()` and `tekseries_blocks_lightbox_directives()`, which the opener filter and the Post Video block share.
+**Decision:** The last option, in 1.13.0.
+- Fields: an ACF group "Video" on posts, registered in code like the event fields (ADR-010, ADR-035). It holds a switch (`tekseries_video`), a video file (`tekseries_video_file`), a URL (`tekseries_video_link`) and a thumbnail (`tekseries_video_thumbnail`). The last three show once the switch is on. The group is exposed over REST.
+- Block: `tekseries/post-video`, dynamic, with no settings, placed after the post content in the single post pattern. It prints nothing unless the switch is on and the post has a video file or a YouTube or Vimeo link. A file wins over a link. The card is 16:9, with the Gallery's play disc. Its picture is the thumbnail, else the file's poster, else a plain plum card. The card is a link, to the file or to the video's own page, so it works without JavaScript.
+- Embedded player: `tekseries_blocks_video_embed()` accepts only YouTube and Vimeo links, including the private hash of an unlisted video. It builds the player's address itself from the video's ID, on `youtube-nocookie.com` or `player.vimeo.com`, with autoplay. Nothing else from the link is used, and any other link gives no card.
+- Viewer: an item can carry an `embed` address. The `<iframe>` exists only while the viewer is open on such an item, so closing the viewer removes the frame and stops the video. Removing the frame adds no history entry, which setting its address back to blank would.
 
 **Rationale:**
 - Building the address from the ID alone means no markup or address from another site reaches the page, and the two hosts framed are fixed in code. This is the approach of ADR-069 for Google Maps.
 - A frame that exists only while the viewer is open keeps third-party requests behind a visitor's own click, which page-level embeds would not.
-- ACF is already required for the event fields (ADR-010). It gives editors a file picker, a URL field and conditional fields with no editor code to write and test.
-- A block in the template, not in each post's content, shows the card in the same place on every post and needs nothing from the editor beyond the fields.
+- ACF is already required for the event fields (ADR-010), and it gives editors a file picker, a URL field and conditional fields with no editor code to write. A block in the template shows the card in the same place on every post.
 - Consequences:
-  - When a visitor opens a linked video, their browser contacts YouTube (its no-cookie domain) or Vimeo. The Privacy Policy may need a line, as for the Contact map (ADR-069).
-  - `autoplay=1` is sent because the visitor has just asked for the video. A browser may still hold playback until they press play.
-  - A post with a video loads the Gallery block's stylesheet and view module (ADR-071's consequence applies).
-  - The fields need ACF. Without it the block prints nothing.
-  - Tests stub YouTube and Vimeo. Real playback from the two services is not exercised by the test suite.
-  - The development site has dummy content for it: news post 284259 with the Media Library video 284253. It does not travel to live, because the migration leaves posts alone.
+  - A visitor who opens a linked video makes their browser contact YouTube (its no-cookie domain) or Vimeo, so the Privacy Policy may need a line, as for the Contact map (ADR-069). Autoplay is sent because the visitor has just asked for the video, though a browser may still hold playback.
+  - A post with a video loads the Gallery block's stylesheet and view module (ADR-071's consequence applies). The fields need ACF; without it the block prints nothing.
+  - Tests stub YouTube and Vimeo, so real playback from the two services is not exercised by the test suite.
 
 ## ADR-073: Carry what the owner saved in the Site Editor, and the media made on the development site, in the release bundle
 
 **Status:** Superseded by ADR-078 (carrying saved templates, parts and menus only; the rest stands)
 
 **Context:**
-- The owner edits the development site in the page editor and the Site Editor to set up how the live site should look. On 2026-10-12 the owner said the idea of that editing "was to prepare the theme for how I want it to look and behave on live", and asked that the saved header and footer "and any other such changes I make in the Editor to text, additional CSS styles and the like" go into the bundle.
-- The live host takes only wp-admin uploads (ADR-059). Until now the bundle (ADR-058, ADR-059) carried ten pages and posts, two options, topic icons, one event's fields, gallery albums, one video's poster and the contact form. It did not carry template parts, templates, menus, Site Editor styles, or media uploaded on the development site.
-- Found on the development site on 2026-10-12:
-  - The header and footer are saved copies in the database. The owner reworded the footer's line. The header points to a menu saved as its own post, by ID.
-  - Four templates are saved copies: `home`, `archive-event`, `single-event` and `page-legal`. Three carry an owner change (the class `ts-intro` on the plum hero band). `single-event` differs from the theme's file only by the editor's own re-serialisation.
-  - Home uses two photos and a 47 MB video uploaded there that day. A new gallery album holds those plus one more photo.
-  - The live site's public REST API returns 404 for those media IDs (its newest media is ID 293234), and live keeps creating posts. An ID given on the development site will belong to an unrelated post on live.
+- On 2026-10-12 the owner asked that the header and footer saved in the Site Editor "and any other such changes I make in the Editor to text, additional CSS styles and the like" go into the bundle. The owner sets up the live look on the development site.
+- The live host takes only wp-admin uploads (ADR-059). The bundle (ADR-058, ADR-059) did not carry template parts, templates, menus, Site Editor styles or media uploaded on the development site.
+- On the development site, the header, footer and four templates were saved copies. The header pointed to a saved menu by ID, and Home used two photos and a 47 MB video uploaded there. An ID made on the development site belongs to an unrelated post on live.
 - A saved copy of a template or part is used in place of the theme's file, so it stops following later theme releases.
 
 **Options:**
-- Leave the bundle as it was and redo the editor work by hand on live. It is slow and error-prone, and the photos and video would have to be re-picked in every block.
-- Move every owner edit into the theme's patterns and reset the saved copies. This is right for edits that belong to the design (still open as a follow-up, see Future work), but it needs a release for each wording change and cannot carry media or menus.
+- Redo the editor work by hand on live. It is slow and error-prone, and every photo and video would have to be re-picked.
+- Move every owner edit into the theme's patterns and reset the saved copies. This is right for design edits (see Future work), but it needs a release for each wording change and cannot carry media or menus.
 - Carry every saved template and part as it is. That would also freeze `single-event` on live, a copy with no change in it.
-- Put a large video inside the migration plugin's zip. A plugin zip of about 48 MB may be refused by wp-admin's upload limit, which is unknown for the live host.
+- Put the large video inside the migration plugin's zip. A zip of about 48 MB may be refused by the live host's upload limit, which is unknown.
 - Extend the bundle and the one-off migration plugin (now version 1.1.0) (chosen).
 
-**Decision:** The last option. The export script and the migration plugin both stay outside the repository, as in ADR-058 and ADR-059. Released TekSeries Blocks and the theme (1.13.0) are unchanged by this.
-- What the export adds, for the TekSeries theme: template parts and templates saved in the Site Editor; the menus (navigation posts) that those texts point to by ID; and the theme's Site Editor styles, including Additional CSS, when they hold anything. On 2026-10-12 they hold nothing, so none is carried.
-- A saved template or part is left out when it says what the theme's file says. Both are parsed into block trees with patterns expanded and compared. Only the editor's own rewriting is set aside: pattern labels in block metadata, attributes with a null value, whitespace, how a character is written as an entity, and http against https for the site's own address. Anything else counts as the owner's change, so a mistake in the comparison can only carry too much, never too little. Result on 2026-10-12: header, footer, `archive-event`, `home` and `page-legal` carried; `single-event` not carried.
-- The export adds every Media Library file that the carried texts or the albums use and that live lacks. It asks live's public REST API which of the files in use it lists under the same ID and path, then makes a HEAD request for the path of each one not listed. A file live serves but does not list is treated as present. An answer that is neither 200 nor 404 stops the export. Each carried file travels with its title, caption and alternative text. Result: five files (three photos, one video poster, one video).
-- A file over 5 MB stays out of the zip. The export copies it to a folder `upload-first` beside the zip, and the owner uploads it to live's Media Library by hand before running the migration. Today that is the one 47 MB video.
-- On the live site the plugin uploads the carried files, or finds a file that was uploaded by hand by comparing size and SHA-1 among the newest files of the same type, under whatever name WordPress gave it. It marks each upload and each menu it creates with a hidden post meta, `_tekseries_migration_source`, holding the ID the same thing has on the development site.
-- Before saving any text (page, post, template, template part, menu, styles) it rewrites three things to their values on that site: media IDs where blocks write one (`"id":`, `"mediaId":`, `"posterId":`, `wp-image-…`, `data-id="…"`); media addresses including sized copies, each mapped to the same size name on that site; and menu IDs inside Navigation blocks. Each kind is replaced in a single pass, so an ID that is both an old and a new one is never replaced twice.
-- Album membership and video posters use the same mapping. The earlier single-purpose poster step is replaced by the general one.
-- Two more refusals come before anything is changed: a file from `upload-first` that is not in the Media Library yet (the screen names it and offers no button), and a TekSeries Blocks plugin or theme older than the version the bundle was written with. These add to the refusals of ADR-059.
-- The export prints what it carries and what it leaves out. It warns about any page, post or event saved on the development site since the copy that the bundle does not carry.
-- What changes in ADR-059 (the partial supersession): (1) what the bundle carries and the refusals, as above; (2) "Deleting the plugin removes its files and the one option it stores" still holds, but the `_tekseries_migration_source` marks on the posts it made stay on purpose, so a later bundle (after more edits on the development site) finds the same uploads and menu instead of making them a second time. The rest of ADR-059 stands.
+**Decision:** The last option. The export script and the migration plugin stay outside the repository, as in ADR-058 and ADR-059. The released plugin and theme (1.13.0) are unchanged by this.
+- The export adds the theme's template parts and templates saved in the Site Editor, the menus they point to by ID, and the theme's Site Editor styles, including Additional CSS, when they hold anything.
+- A saved template or part is left out when its parsed blocks match the theme's file. Only the editor's own rewriting is set aside: pattern labels, null attributes, whitespace, character entities, and http against https for the site's own address. Any other difference counts as the owner's change, so the comparison can only carry too much, never too little.
+- The export adds every Media Library file that the carried texts or the albums use and that live lacks, checked against live's public REST API. Each file travels with its title, caption and alternative text. A file over 5 MB goes into an `upload-first` folder beside the zip, and the owner uploads it to live's Media Library before the migration.
+- On live, the plugin uploads the carried files, or finds a hand-uploaded one by size and SHA-1. It marks each upload and each menu it creates with the hidden post meta `_tekseries_migration_source`, holding the ID on the development site.
+- Before saving any text, it rewrites media IDs, media addresses (including sized copies) and menu IDs to their values on that site, each kind in a single pass. Album membership and video posters use the same mapping, which replaces the earlier poster step.
+- Two refusals are added to those of ADR-059: a file from `upload-first` that is not in the Media Library yet, and a TekSeries Blocks plugin or theme older than the bundle's version.
+- The export lists what it carries and what it leaves out, and warns about content saved on the development site that the bundle does not carry.
+- What changes in ADR-059: what the bundle carries and the refusals, as above. Deleting the plugin still removes its files and its one option, but the `_tekseries_migration_source` marks stay on purpose, so a later bundle finds the same uploads and menus instead of making them again. The rest of ADR-059 stands.
 
-Verified in a rehearsal on 2026-10-12, run from a fresh throwaway site set up like live before the move, with the 1.13.0 release zips and migration plugin 1.1.0. It is the same kind of site as in ADR-059: WordPress 7.1.3, PHP 8.2, Divi child theme active, ACF 6.8.10, WP Job Manager 2.4.8, Fluent Forms 6.2.15, Rank Math 1.0.279, live's IDs, and without the five media files. A draft page was seeded under the ID one of the photos has on the development site, and a file was seeded at that photo's address, so the upload had to take another name.
-- 64 checks, 0 failed: 4 refusals, 22 browser checks, 23 checks of the database and uploads folder, 2 leftover checks, 13 edge cases.
-- The screen first asked for the 47 MB video and offered no button. After a browser uploaded it under Media, the dry run listed 64 changes with nothing skipped. The run made 64 changes, 0 skipped, 0 failed, and a second look found nothing left.
-- Read back: the five files are there once each with the same SHA-1, title, caption, alternative text and thumbnails. The draft page with a photo's development-site ID is untouched, and Home no longer names that ID. No page points at an address a file has only on the development site (22 addresses differed on the rehearsal site). 1 menu, 2 template parts and 3 templates are saved for the theme with content equal to the bundle's after the rewrite. The header's Navigation block points to a menu that exists there. 8 albums hold their files under the IDs they have there. The poster is set.
-- In the browser: the footer shows the owner's wording, the saved menu shows its links, the saved events template is in use, the Gallery counts 35 photos and 2 videos, and the three new files Home uses are served from the site.
-- Edge cases added: a later bundle with a changed footer updates the saved copy in place and keeps the old one as a revision. Styles with Additional CSS (a stand-in, because the development site has none) are saved for the theme, their CSS is in the site's stylesheet, and a second run leaves them alone.
-
-Separate from the 64: on the development site itself, a bundle written for that site reports 0 to change, 0 skipped, 51 already done.
-
-Not verified:
-- The plugin has still never run on the live site or on a copy of its database (as in ADR-059).
-- The live host's upload size limit. Live's Media Library already holds a 50 MB video dated April 2026; how it got there was not checked.
-- The carrying of real Site Editor styles from the development site (it has none yet). Only the stand-in was exercised.
+Verified in a rehearsal on 2026-10-12, on a throwaway site set up like live (as in ADR-059), with the 1.13.0 release zips and migration plugin 1.1.0: 64 checks, 0 failed, including a seeded ID clash that forced the rewrite. Not verified: a run on live or on a copy of its database, the live host's upload limit, and carrying real Site Editor styles (only a stand-in was tested).
 
 **Rationale:**
 - The editors are where the owner works, and wp-admin uploads are the only road to live, so the bundle has to carry what the editors save.
-- IDs made on the development site cannot be trusted on live, so every ID and address is rewritten to the live value before a text is saved.
-- An unchanged saved copy would only freeze a template, so it is left out. Comparing the parsed blocks errs towards carrying too much, never too little.
-- A file too big for a plugin upload goes the way large media already goes: by hand into the Media Library.
-- The marks let a second bundle be applied after more edits, without making the same upload or menu twice.
-- Consequences:
-  - After the migration, live's header, footer and three templates come from the database. When a later release changes one of them in the theme, the saved copy needs the same change (on the development site, then a new migration zip) or a reset in the Site Editor.
-  - The follow-up offered to the owner, not decided, is to move the `ts-intro` marks and the footer line into the theme's patterns in a small release, so the saved copies can be reset and both sites follow the theme's files again.
+- IDs made on the development site cannot be trusted on live, so every ID and address is rewritten before a text is saved.
+- An unchanged saved copy would only freeze a template, so it is left out.
+- A file too big for a plugin upload goes by hand into the Media Library, as large media already does.
+- The marks let a later bundle run without making the same upload or menu twice.
+- Consequence: after the migration, live's header, footer and three templates come from the database. A later theme change to one of them needs the same change in the saved copy, or a reset in the Site Editor. Moving the `ts-intro` marks and the footer line into the theme's patterns has been offered to the owner, not decided.
 
 ## ADR-074: Count down to events in Nigerian time, and never print a clock the server cannot keep right
 
 **Status:** Accepted
 
 **Context:**
-- On 2026-10-13 the owner asked for a countdown on upcoming events, on the Events page and on each event's own page. This is release 1.14.0 on branch `feat/event-countdown`.
-- An event had a date (`event_date`, a day) and a free-text "Time" ("11:00 AM WAT"). Nothing a script can count down to.
-- WordPress's clock is on UTC on the development site and on live (checked through live's public REST API: offset 0). Events are announced in West Africa Time (UTC+1).
-- Live is behind a page cache, and the server's HTML must be complete and usable without JavaScript (ADR-005).
-- No design board exists for a countdown.
+- On 2026-10-13 the owner asked for a countdown on upcoming events, on the Events page and on each event's own page (release 1.14.0).
+- An event had a date (`event_date`) and a free-text "Time" ("11:00 AM WAT"), nothing a script can count down to.
+- WordPress's clock is on UTC on the development site and on live. Events are announced in West Africa Time (UTC+1).
+- Live is behind a page cache, and the server's HTML must be complete and usable without JavaScript (ADR-005). No design board exists for a countdown.
 - ADR-035 decided that an event has ended once its date has passed in the site time zone. This ADR changes that one detail. ADR-035 is not superseded.
 
 **Options:**
-- Set WordPress's time zone to Lagos on both sites. It would also shift every post's shown time and scheduled posts, and the countdown would break silently if someone changed the setting later.
-- A time zone field on every event. More for the editor to fill in, for a case (an event announced in another zone) that has not come up.
-- Print the full clock from the server and let the script correct it. A page from the cache, or a visitor without JavaScript, would see a clock that is wrong and does not move.
-- List the script in `block.json` (`viewScriptModule`). WordPress would then load it wherever the block is placed, including pages where every event is past (ADR-047 gives each block one module; this is the exception).
-- Parse the free-text "Time" field. It is written for people ("11:00 AM WAT", "5pm prompt") and cannot be relied on.
+- Set WordPress's time zone to Lagos on both sites. It would shift every post's time, and the countdown would break silently if the setting changed.
+- A time zone field on every event. It is more to fill in, for a case that has not come up.
+- Print the full clock from the server and let the script correct it. A cached page, or a visitor without JavaScript, would see a wrong clock that does not move.
+- List the script in `block.json` (`viewScriptModule`). It would load wherever the block is placed, even where every event is past (ADR-047 gives each block one module; this is the exception).
+- Parse the free-text "Time" field. It is written for people and cannot be relied on.
 - Block Bindings alone (ADR-035). A ticking figure needs behaviour, so a block is needed.
 
 **Decision:**
-- Block: `tekseries/event-countdown`, dynamic (`render.php`, Interactivity API `view.ts`). It reads the event from block context (`postId`), so one block serves the event page and cards in a Query Loop. Two sizes: full (tiles for days, hours, minutes and seconds) and compact (one line, such as "In 13 days").
-- Field: a new optional ACF field, "Start time" (`start_time`, time picker). With it the countdown runs to that moment. Without it only days count, as calendar days ("the day after tomorrow" is 2 days all day).
-- Time zone: event days and start times are read in one fixed zone, `Africa/Lagos`, through `tekseries_blocks_event_timezone()` and the filter `tekseries_blocks_event_timezone`, not through WordPress's time zone setting. The start is sent to the browser as an absolute instant, so every visitor sees the same time left in any zone.
-- Change to ADR-035: "has ended" (the Register button and the "This event has ended" note) uses the same Nigerian day. An event now ends at midnight in Nigeria, not at midnight UTC (1 a.m. in Nigeria).
-- States: from the start to the end of the event's day the block says "Happening now" ("Today" for an event without a start time). After that it prints nothing.
-- Server output: only what stays true for a while. That is the whole days, the compact line and one sentence for screen readers. The hours, minutes and seconds tiles are in the HTML but shown only once the script runs (CSS `visibility`, so they keep their room and nothing shifts). The ticking figures are `aria-hidden`; screen readers get the sentence.
-- Script loading: the script is not listed in `block.json`. It is its own webpack entry, and `render.php` enqueues it only when it prints a countdown. Pages that list only past events load nothing extra.
-- The arithmetic is written twice on purpose: in `src/event-countdown/time.ts` (unit tested) and in `tekseries_blocks_event_countdown()` in `includes/events.php`. A comment in each says to keep them alike.
-- Look: built from the theme's tokens (tile and pill shapes, the display font, the tone's accent colour on a banner), since there is no board.
+- Block: `tekseries/event-countdown`, dynamic, with an Interactivity API script. It reads the event from block context, so one block serves the event page and the cards in a Query Loop. It has two sizes: full (tiles for days, hours, minutes and seconds) and compact (one line, such as "In 13 days").
+- Field: a new optional ACF field, "Start time" (`start_time`). With it, the countdown runs to that moment. Without it, only calendar days count.
+- Time zone: event days and start times are read in one fixed zone, `Africa/Lagos`, through `tekseries_blocks_event_timezone()` and its filter, not through WordPress's setting. The start reaches the browser as an absolute instant, so every visitor sees the same time left.
+- Change to ADR-035: "has ended" uses the same Nigerian day. An event now ends at midnight in Nigeria, not at midnight UTC.
+- States: from the start to the end of the event's day, the block says "Happening now" ("Today" for an event without a start time). After that it prints nothing.
+- Server output holds only what stays true for a while: the whole days, the compact line and one sentence for screen readers. The hours, minutes and seconds tiles show only once the script runs, and the ticking figures are hidden from screen readers.
+- The script is its own entry, and `render.php` enqueues it only when it prints a countdown.
+- The arithmetic is written twice on purpose, in TypeScript and in PHP, with a comment in each to keep them alike.
+- The look is built from the theme's tokens, since there is no board.
 
 **Rationale:**
-- A fixed zone read in code does not depend on a setting that also governs posts and schedules. An absolute instant gives every visitor the same figure.
-- Printing only stable values means a cached page or a visitor without JavaScript never sees a clock that is wrong and frozen. The script adds the ticking figures.
+- A fixed zone read in code does not depend on a setting that also governs posts and schedules.
+- Printing only stable values means a cached page or a visitor without JavaScript never sees a wrong, frozen clock.
 - Enqueuing on demand keeps the script off pages that never show a countdown.
-- A start time field is reliable where the free-text "Time" is not, and leaving it optional keeps older events working in days.
-- Consequences:
-  - Editors fill one more, optional, field. Without it the countdown still works in days.
-  - On a cached page, the compact line can be as old as the cache's lifetime for a visitor without JavaScript (a day count one too high just after midnight). With JavaScript it is put right at once.
-  - Two implementations of the same arithmetic must be kept in step. The e2e spec compares what both print.
-  - If TekSeries runs events for another zone, the filter (or a per-event field) is the place to change.
+- A start time field is reliable where the free-text "Time" is not. Leaving it optional keeps older events working in days.
+- Consequences: the two copies of the arithmetic must be kept in step, and the e2e spec compares them. For a visitor without JavaScript, a cached compact line can be a day out just after midnight. Events in another zone would need the filter or a per-event field.
 
 ## ADR-075: Open Formbricks forms from marked buttons, and load Formbricks' script only when a visitor reaches for one
 
 **Status:** Superseded by ADR-076 (fallback, focus and settings; the rest stands)
 
 **Context:**
-- On 2026-10-13 the owner asked to connect Formbricks through its SDK, so that two forms built there as "Website & App" surveys ("Upload your CV", "Apply for the Maker's Prize") open over the page when their buttons are pressed. This is release 1.15.0 on branch `feat/survey-buttons`.
-- The owner's Formbricks is self-hosted and run by a partner company, Beekomm Technologies Limited. It is not Formbricks' own cloud.
-- A "Website & App" survey needs Formbricks' script on the page, set up with the server's address and an ID (`workspaceId` in current Formbricks, `environmentId` in older ones). It opens when an action fires: a no-code action (for example a click matched by CSS selector or text) or a code action fired with `formbricks.track( key )`.
+- The owner asked to connect Formbricks, self-hosted and run by a partner company, Beekomm Technologies Limited, so that two forms built there as "Website & App" surveys ("Upload your CV", "Apply for the Maker's Prize") open over the page when their buttons are pressed.
+- Such a survey needs Formbricks' script on the page, set up with the server's address and an ID. It opens when an action fires: a no-code action, or a code action fired with `formbricks.track( key )`.
 - Four buttons are links, in page content, in patterns and in the single job template. Their link was `#`.
-- Rule 1 of ADR-005: only our own Interactivity API code runs for visitors. Rule 3: the server's HTML is usable without JavaScript.
+- ADR-005 applies: only our own Interactivity API code runs for visitors (rule 1), and the server's HTML is usable without JavaScript (rule 3).
 
 **Options:**
-- Formbricks' snippet in the `<head>` of every page, as its docs say. Every visitor on every page would load a third-party script and call the Formbricks server, for two buttons most never press.
-- A no-code click action in Formbricks, matched by the button's text or a CSS selector. Nothing to maintain on our side, but the buttons are links, so a script of ours is still needed to stop the navigation and to cope with "Formbricks did not load". Matching by text breaks when a label changes ("Upload your CV" and "Upload your CV to Job Series" already differ).
-- "Link" surveys opened in a new tab or an iframe. No script, but not the form over the page that the owner asked for, and a second survey type to keep.
+- Formbricks' snippet in the `<head>` of every page. Every visitor would load a third-party script for two buttons most never press.
+- A no-code click action in Formbricks. The buttons are links, so a script of ours is still needed, and matching by text breaks when a label changes.
+- "Link" surveys opened in a new tab or an iframe. This is not the form over the page that the owner asked for.
 - A custom block for the button. Editors already style core Buttons, and a class follows the `ts-lightbox-open` and `ts-icon-*` convention (ADR-071, ADR-067).
 - The two values in `wp-config.php`. The owner has wp-admin only on live (ADR-059).
 
-**Decision:** A class marks the button, our own module loads Formbricks late, and the link stays real.
-- Marking: a core Button with the class `ts-survey-<key>` opens the survey whose trigger is the code action `<key>`. A `render_block` filter adds the directives to its link, as ADR-071 does for `ts-lightbox-open`. The single job template calls the same helper. A later form needs no code: a new action key in Formbricks and the class on a Button.
-- Settings: Settings, Forms (Formbricks), stored in one plugin option, `tekseries_blocks_formbricks`. It holds the server address (https only), the ID, and the ID's name. Neither value is a secret, since both are in the page for anyone to read. Until both are set, marked buttons stay plain links and no script is loaded.
-- Script: `src/surveys/view.ts`, store `tekseries/surveys`. It does what Formbricks' own snippet does (loads `<address>/js/formbricks.umd.cjs`, calls `setup`), but not on page load. It starts on the first sign that a visitor is going for a marked button, which is the pointer over it or keyboard focus. A click then fires the action.
-- Fallback: the button keeps its link. The link is followed with JavaScript off, on a modified click, and when Formbricks cannot be reached or does not answer within 8 seconds.
-- Third-party content: Formbricks' script and the survey it draws are a widget outside our build. It is accepted as an exception of the same kind as reCAPTCHA on the job form (ADR-007), the Google map (ADR-069) and the YouTube and Vimeo players (ADR-072).
+**Decision:** In 1.15.0, a class marks the button, our own module loads Formbricks late, and the link stays real.
+- Marking: a core Button with the class `ts-survey-<key>` opens the survey whose trigger is the code action `<key>`. A `render_block` filter adds the directives to its link, as ADR-071 does for `ts-lightbox-open`, and the single job template calls the same helper. A later form needs no code, only a new action key in Formbricks and the class on a Button.
+- Settings: Settings, Forms (Formbricks), stored in one plugin option, `tekseries_blocks_formbricks`. It holds the server address (https only), the ID, and the ID's name. Neither value is a secret, because both are in the page for anyone to read. Until both are set, marked buttons stay plain links and no script is loaded.
+- Script: store `tekseries/surveys`. It does what Formbricks' own snippet does, but not on page load. It starts on the first sign that a visitor is going for a marked button, which is the pointer over it or keyboard focus. A click then fires the action.
+- Fallback: the link is followed with JavaScript off, on a modified click, and when Formbricks cannot be reached or does not answer within 8 seconds.
+- Third-party content: Formbricks' script and the survey it draws are accepted as an exception of the same kind as reCAPTCHA on the job form (ADR-007), the Google map (ADR-069) and the YouTube and Vimeo players (ADR-072).
 
 **Rationale:**
-- Loading on first approach keeps the third-party script and the call to the Formbricks server away from visitors who never reach for a button. This is the same reasoning as ADR-072's frame that exists only after a click.
+- Loading on first approach keeps the third-party script away from visitors who never reach for a button. This is the same reasoning as ADR-072's frame that exists only after a click. The first press can wait on the script's download, and hovering or focusing the button starts it early.
 - Only our own Interactivity API code runs for visitors (rule 1), and the button is a working link without JavaScript (rule 3). A blocked or slow Formbricks costs the visitor nothing but the form.
-- A class on core Buttons keeps them editable in the Site Editor (ADR-005), and a new form needs only a new key in Formbricks.
-- Settings in wp-admin suit a host with no file access.
+- A class on core Buttons keeps them editable in the Site Editor (ADR-005). Settings in wp-admin suit a host with no file access.
 - Consequences:
-  - Answers and uploaded CVs leave the site for the Formbricks server run by Beekomm Technologies Limited. The Privacy Policy needs a line for it. It was suggested to the owner, who writes that page.
-  - The first press can wait on the script's download. Hovering or focusing the button starts it early.
-  - The forms depend on settings in Formbricks that the site cannot check: the survey type, the action's key, and "Keep showing while conditions match" with "Ignore Cooldown Period" (otherwise a form shows once per visitor). The settings screen lists them.
-  - A blocker that stops Formbricks' script sends the visitor along the button's link, so each button needs a useful link. Choosing those links is still open with the owner.
-  - Tested against a stand-in for Formbricks' script, not yet against the owner's Formbricks.
+  - Answers and uploaded CVs leave the site for the Formbricks server run by Beekomm Technologies Limited. The Privacy Policy needs a line for it, which was suggested to the owner, who writes that page.
+  - The forms depend on settings in Formbricks that the site cannot check: the survey type, the action's key, and "Keep showing while conditions match" with "Ignore Cooldown Period", without which a form shows once per visitor. The settings screen lists them.
+  - A blocker that stops Formbricks' script sends the visitor along the button's link, so each button needs a useful link. Choosing those links is still open with the owner. The buttons were tested against a stand-in for Formbricks' script, not yet against the owner's Formbricks.
 
 ## ADR-076: Follow the link when no Formbricks form appears, manage focus ourselves, and keep one ID setting
 
@@ -1594,10 +1494,9 @@ Not verified:
 
 **Context:**
 - ADR-075 is not merged or tagged yet, but it is recorded, so this entry corrects it rather than rewriting it.
-- On 2026-10-13 the buttons were tested against the owner's Formbricks 4.5.0, self-hosted by Beekomm Technologies Limited at an https address. The owner stays on 4.5.0 on purpose.
-- `setup()` and `track()` finish normally on a wrong ID, a server error, or an action with no published form, and nothing opens. ADR-075's fallback only covered a script that could not be loaded.
+- On 2026-10-13 the buttons were tested against the owner's self-hosted Formbricks 4.5.0. The owner stays on 4.5.0 on purpose. On a wrong ID, a server error or an action with no published form, Formbricks' `setup()` and `track()` calls finish normally and nothing opens. ADR-075's fallback covered only a script that could not be loaded.
 - Formbricks 4.5.0 draws its form at the end of the page, gives it no dialog role and leaves keyboard focus on the button behind it. Escape does not close it.
-- 4.5.0 knows only `environmentId`, and shows both a "Workspace ID" and an "Environment ID". Only the Environment ID works. ADR-075's third setting (the ID's name) defaulted to Workspace ID, which opened nothing and gave no message.
+- 4.5.0 knows only `environmentId`, though it shows both a "Workspace ID" and an "Environment ID". Only the Environment ID works. ADR-075's third setting (the ID's name) defaulted to Workspace ID, which opened nothing and gave no message.
 
 **Options:**
 - Fallback: follow the link only when the script fails to load (ADR-075). Or wait for Formbricks' panel to appear and follow the link otherwise.
@@ -1605,19 +1504,20 @@ Not verified:
 - ID name: keep the setting and change its default. Or remove it and pass the ID under both names.
 
 **Decision:**
-- Fallback: after firing the action, the script waits up to 8 seconds for Formbricks' panel (the element `#formbricks-modal-container` getting a child). If none appears, it follows the button's link. A `#` link still does nothing. This replaces the fallback line of ADR-075.
+- Fallback: after firing the action, the script waits up to 8 seconds for Formbricks' panel to appear. If none does, it follows the button's link. A `#` link still does nothing. This replaces the fallback line of ADR-075.
 - Focus: when the form opens, focus moves to the first thing the keyboard can reach in it. When it closes, focus returns to the button. Neither happens if the visitor has moved focus elsewhere. Escape is Formbricks' code and is left alone.
-- Settings: the ID's name setting is removed. The option `tekseries_blocks_formbricks` holds `url` and `id`. The script passes the ID to `setup` as both `workspaceId` and `environmentId`. The settings screen's help says to copy the Environment ID.
+- Settings: the ID's name setting is removed. The option `tekseries_blocks_formbricks` holds `url` and `id`, and the script passes the ID as both `workspaceId` and `environmentId`. The settings screen's help says to copy the Environment ID.
 - Links: the owner decided on 2026-10-13 to keep the four buttons' links as `#` for now, and to add real fallback links if the popup fails to load repeatedly.
+
+Checked on the development site: all four buttons open their real form by mouse, keyboard and at phone width. Nothing was submitted.
 
 **Rationale:**
 - Watching for the panel covers every way a form can fail to appear, not only a missing script. This keeps rule 3 of ADR-005 true for the real server.
-- Without a dialog role or focus handling, keyboard and screen-reader visitors are left behind the form. Moving focus is the smallest fix we own.
+- Moving focus is the smallest fix we own for keyboard and screen-reader visitors left behind the form.
 - One ID passed under both names works on old and current Formbricks and removes a setting that gave no error when wrong.
 - Consequences:
   - With `#` links, a visitor whose form does not appear sees nothing happen. This is accepted until the failure is seen in practice.
-  - The panel's element ID is Formbricks' internal detail. A Formbricks upgrade may change it and needs a retest.
-  - Tested on the development site: all four buttons open their real form by mouse, keyboard and at phone width. Nothing was submitted.
+  - The check relies on Formbricks' internal panel markup. An upgrade may change it and needs a retest.
   - Nothing is fetched from Formbricks before a visitor reaches for a button. Formbricks sets no cookie and keeps one local-storage entry.
 
 ## ADR-077: Move a focused block into place early only for keyboard focus, so a press still sends its click
@@ -1625,28 +1525,26 @@ Not verified:
 **Status:** Accepted
 
 **Context:**
-- ADR-062 overrides a focused block with `opacity: 1 !important; translate: none !important` on `:focus-within`. `:focus-within` also matches when a link is pressed with a mouse or finger, because the press gives the link focus.
-- Found on 2026-10-13, testing form buttons (ADR-075, ADR-076) on the development site: `translate: none` made a block still rising in jump to its final place between press and release. The jump was 28px for the Home hero's first slide and for `ts-intro` blocks (ADR-063), and up to 84px for a `ts-reveal` card with its contents (ADR-060). The release landed beside the link and the browser sent no click.
-- Measured: a press on "Explore Job Series" in the Home hero during its entrance moved the button 28px and the link was not followed. A second press worked.
+- ADR-062 overrides a focused block with `opacity: 1 !important; translate: none !important` on `:focus-within`. That also matches when a link is pressed with a mouse or finger, because the press gives the link focus.
+- Found on 2026-10-13, testing form buttons (ADR-075, ADR-076): `translate: none` made a block still rising in jump to its final place between press and release. The jump was 28px for the Home hero's first slide and for `ts-intro` blocks (ADR-063), and up to 84px for a `ts-reveal` card with its contents (ADR-060). The release landed beside the link, so the browser sent no click.
 
 **Options:**
-- Leave it. The window is about a second after a block appears, but the Home hero's main buttons are the most pressed links on the site and are in that window when the page opens.
+- Leave it. The window is about a second, but the Home hero's main buttons are the most pressed links on the site and are in it when the page opens.
 - Drop the override for all focus. Keyboard focus would again sit on something still fading and moving in, which is the reason for ADR-062.
 - Ignore presses until the entrance ends (`pointer-events`). The buttons would be dead for a second.
 - Split the override by kind of focus.
 
-**Decision:** The last option, in 1.15.1. CSS only, no script.
-- Any focus (`:focus-within`) still sets `opacity: 1 !important`, so the block is in full view at once.
-- Only keyboard focus also sets `translate: none !important`. The selector is `:is(:focus-visible, :has(:focus-visible))`, meaning the block or anything inside it.
+**Decision:** The last option, in 1.15.1. It is CSS only, with no script.
+- Any focus still sets `opacity: 1 !important`, so the block is in full view at once.
+- Only keyboard focus (`:focus-visible` on the block or anything inside it) also sets `translate: none !important`.
 - Under a pointer press the block keeps gliding in, the pointer stays on the link and the click is sent.
 - The animation is still left alone in both cases, so nothing replays. The rest of ADR-062 stands, including which children the reveal rule names.
-- Three rules change: `ts-reveal` and `ts-intro` in the theme's `assets/css/global.css`, and the first slide's text in the hero carousel block's `style.scss`.
-- `specs/reveal.spec.ts`, `specs/intro.spec.ts` and `specs/home-motion.spec.ts` each gain a case that presses a link during a slowed entrance.
+- The rules for `ts-reveal`, `ts-intro` and the hero carousel's first slide change. The reveal, intro and Home motion specs each gain a case that presses a link during a slowed entrance.
 
 **Rationale:**
 - A click needs the pointer to be on the same element at press and release, so the block must not move under a press. A keyboard user has no such need and still gets a settled block under the focus ring.
 - Consequences:
-  - Needs `:has()` and `:focus-visible`. The theme already relies on `:has()` (`:has(> h1)` in the carousel) and on `:nth-child(n of S)` (ADR-063). A browser without `:has()` shows a keyboard-focused block at once but does not move it into place early, which is harmless.
+  - It needs `:has()` and `:focus-visible`. The theme already relies on `:has()` and on `:nth-child(n of S)` (ADR-063). A browser without `:has()` shows a keyboard-focused block at once but does not move it into place early, which is harmless.
   - A text field focused with the pointer still matches `:focus-visible`, so a block holding one snaps into place on a press. Nothing is lost, because the field already has focus.
 
 ## ADR-078: Keep the owner's Site Editor choices in the theme's patterns, and keep no saved copies of the theme's templates and parts on the development site
@@ -1654,33 +1552,30 @@ Not verified:
 **Status:** Accepted
 
 **Context:**
-- The owner sets up the look of the live site on the development site, in the Site Editor and in pages. By 2026-10-12 the owner had saved copies there of the footer part, the header part and four templates. A saved copy wins over the theme's file, so ADR-073 made the migration bundle carry those copies to live, and every release that changed one of those templates had to patch the saved copy as well.
+- The owner sets up the look of the live site on the development site. A saved copy wins over the theme's file, so ADR-073 made the migration bundle carry the saved footer, header and four templates to live, and every release that changed one of those templates had to patch the copy as well.
 - On 2026-10-13 the owner asked: "Move my edits into the theme."
-- A block-for-block comparison of every saved copy and page with the theme's files showed what the owner's edits were:
-  - The class `ts-intro` on the plum hero band of three templates (the News list, Events, the legal pages) and of five pages.
+- A block-for-block comparison of every saved copy and page with the theme's files showed the owner's edits:
+  - The class `ts-intro` on the plum hero band of three templates and five pages.
   - The class `ts-reveal` on Home's and Contact's cards and tiles.
-  - New wording on the two Home slides and the case study.
-  - A new footer line: "Equipping underserved youth with Digital, AI, and Creative Economy Skills."
-  - The saved header and the saved single-event template held no change of the owner's, only the editor's own rewriting.
+  - New wording on the two Home slides and the case study, and a new footer line.
+  - The saved header and the saved single-event template held no change of the owner's.
 
 **Options:**
-- Keep carrying saved copies in the bundle (ADR-073 as it was). It works, but both sites then run on database copies that every later release must patch, and a reset in live's Site Editor would be needed by hand.
+- Keep carrying saved copies in the bundle (ADR-073 as it was). Both sites then run on database copies that every later release must patch.
 - Move only the three template marks and the footer line, and leave page-level classes and wording as page content only. A fresh install, or a pattern inserted by hand, would then not look like the site.
 - Move everything into the theme and reset the saved copies (chosen).
 
 **Decision:** The last option, released in 1.13.1.
-- All of the edits above went into the pattern generator, and the sixteen generated patterns were regenerated. The footer pattern is written by hand and was edited directly.
-- The event type pages' band shares the Events band, so it is marked too.
-- The theme's files were first shown to draw the same pages as each saved copy: the same HTML apart from generated IDs.
+- All of the edits above went into the pattern generator, and the sixteen generated patterns were regenerated. The footer pattern is written by hand and was edited directly. The event type pages' band shares the Events band, so it is marked too.
+- The theme's files were first shown to draw the same pages as each saved copy.
 - Then the six saved copies on the development site were moved to the trash, not deleted, and their content was backed up outside the repository. The reversible way was used because the owner had not answered that question in words. The owner was told.
 
 **Rationale:**
 - Both sites follow the theme's files again, so a release that changes a template needs no matching patch to a database copy.
 - Moving the page-level marks and wording too means a fresh install or a hand-inserted pattern looks like the site.
 - Consequences:
-  - The migration bundle carries no template parts, templates or menu any more, unless the owner saves one in the Site Editor again. Then it is carried again, as ADR-073 describes. ADR-073 is partly overtaken by this.
-  - Photos, portraits, partner logos, the video link and the contact form block stay page content, because a pattern can only use pictures that ship inside the theme.
-  - Page patterns are starting content. Changing them changes no existing page on either site. Existing pages keep the owner's own edits, including manual line breaks in one Home heading that the pattern does not have.
+  - The migration bundle carries no template parts, templates or menus any more, unless the owner saves one in the Site Editor again. Then it is carried again, as ADR-073 describes. ADR-073 is partly overtaken by this.
+  - Photos, portraits, partner logos, the video link and the contact form block stay page content, because a pattern can only use pictures that ship inside the theme. Page patterns are starting content, so changing them changes no existing page on either site. Existing pages keep the owner's own edits.
   - ADR-063 said no page or pattern carried `ts-intro` yet. Nine hero bands now do.
 
 ## ADR-079: Tell each Formbricks form which button opened it, with a second class `ts-entry-<value>`
@@ -1688,29 +1583,25 @@ Not verified:
 **Status:** Superseded by ADR-082 (entry values only; the rest stands)
 
 **Context:**
-- This builds on ADR-075 and ADR-076 and supersedes neither. It is release 1.16.0, branch `feat/survey-entry-point`.
-- On 2026-10-14 the owner added a hidden field `entry_point` to the Formbricks forms and asked: "Add a `?entry_point=home_job_series` in the CV embed and `?entry_point=home_makers_prize` in the Maker's Prize embed for example, so each record shows which button was clicked."
-- The forms are "Website & App" surveys opened by a code action (ADR-075). A `?name=value` address is how Formbricks "Link" surveys take hidden fields. For Website & App surveys the page's script passes them: `formbricks.track( key, { hiddenFields: { … } } )`.
-- Read on 2026-10-14 in the owner's Formbricks 4.5.0 script, served by their server: `track( key, options )` passes `options.hiddenFields` to the survey. The script keeps only the fields the survey declares, logs "Unknown hidden fields: …" for others, and logs "Hidden fields are not enabled for this survey" when the survey has them off. The survey gets them as `hiddenFieldsRecord`, which is saved with the answer.
+- This builds on ADR-075 and ADR-076 and supersedes neither.
+- The owner added a hidden field `entry_point` to the Formbricks forms and asked for `?entry_point=home_job_series` in the CV form and `?entry_point=home_makers_prize` in the Maker's Prize form, "so each record shows which button was clicked".
+- For "Website & App" surveys (ADR-075), the page's script passes hidden fields: `formbricks.track( key, { hiddenFields: { … } } )`. The owner's Formbricks 4.5.0 keeps only the fields the survey declares and saves them with the answer.
 - The buttons' links are `#`, the owner's choice (ADR-076), so a link address cannot carry the value today.
 
 **Options:**
 - The value in the button's link as `?entry_point=…`. It matches the owner's wording and how Link surveys work, but the links are `#`, the popup does not read the link, and a real link would be followed without JavaScript.
-- A second class `ts-entry-<value>` on the Button, next to `ts-survey-<key>`. This is the convention already used for the action key (ADR-075, ADR-071, ADR-067) and is editable in the editor. A class cannot hold `?` or `=`, so it holds only the value, and the field's name is fixed in code.
-- A prefix `ts-survey-entry-…`. Rejected, because the existing `ts-survey-<key>` rule would read it as an action key if it came first.
-- An editor panel on core Button. More code for one value, and classes already serve the owner.
+- A second class `ts-entry-<value>` on the Button, next to `ts-survey-<key>` (chosen). It follows the convention of the action key (ADR-075, ADR-071, ADR-067) and is editable in the editor. A class cannot hold `?` or `=`, so it holds only the value.
+- A prefix `ts-survey-entry-…`. The existing `ts-survey-<key>` rule would read it as an action key if it came first.
+- An editor panel on core Button. It is more code for one value.
 - Working the name out from the page and section. The markup has no reliable section name, and the owner wants to choose the names.
 
-**Decision:**
-- A Button with `ts-survey-<key>` and `ts-entry-<value>` (letters, digits, `_`, `-`) puts `{ "action": key, "fields": { "entry_point": value } }` in its link's Interactivity context. The hidden field's name, `entry_point`, is fixed in `includes/surveys.php`. Without the class nothing is sent, as before.
-- `src/surveys/view.ts` calls `track( action, { hiddenFields: { ...fields } } )`. The copy is plain because the context is a proxy. Without fields it calls `track( action )` as before.
-- The single job template (`templates/wpjm/content-single-job_listing.php`) passes `job_listing` to the same helper.
-- The site's buttons follow a `<page>_<section>` pattern:
-  - Home "Upload your CV": `home_job_series`.
-  - Home "Apply for the Maker's Prize": `home_makers_prize`. Both are the owner's names.
-  - Job Series hero: `job_series_hero`.
-  - Each job's "Upload your CV to Job Series": `job_listing`. The job itself is in the page address that Formbricks records.
-- The classes are in the theme's patterns (regenerated) and on the development site's Home and Job Series pages (surgical patches), so they reach live with the migration bundle (ADR-073, ADR-078).
+**Decision:** The second option, in 1.16.0.
+- A Button with `ts-survey-<key>` and `ts-entry-<value>` (letters, digits, `_`, `-`) passes the value to Formbricks as the hidden field `entry_point` when the survey opens. The field's name is fixed in code. Without the class nothing is sent, as before.
+- The single job template passes `job_listing` to the same helper.
+- The site's buttons follow a `<page>_<section>` pattern: `home_job_series` (Home "Upload your CV") and `home_makers_prize` (Home "Apply for the Maker's Prize"), both the owner's names, then `job_series_hero` (the Job Series hero) and `job_listing` (each job's "Upload your CV to Job Series"). The job itself is in the page address that Formbricks records.
+- The classes are in the theme's patterns and on the development site's Home and Job Series pages, so they reach live with the migration bundle (ADR-073, ADR-078).
+
+Checked with an e2e spec using a stand-in for Formbricks' script, and on the development site with the owner's real 4.5.0 script and stand-in forms: each of the four buttons' forms received its value. Not verified: the owner's real forms, because their server listed no active "Website & App" form on 2026-10-14.
 
 **Rationale:**
 - A class works while the links are `#` and in the editor, and follows the convention of the action key.
@@ -1719,28 +1610,26 @@ Not verified:
   - Each form must declare `entry_point` as a hidden field. A form without it still opens and records no name, and Formbricks logs an error in the browser console.
   - When real fallback links come (ADR-076), a link to a Formbricks Link survey should carry `?entry_point=…` itself. The site does not add it.
   - The `job_listing` name is in code, not in the editor.
-  - Tested: the e2e spec with a stand-in for Formbricks' script, and on the development site with the owner's real 4.5.0 script and stand-in forms (nothing sent to the server but GETs). Each of the four buttons' forms received its value. The owner's real forms could not be opened that day: the server listed no active "Website & App" form at 10:59 and 11:05 UTC on 2026-10-14.
 
 ## ADR-080: Keep the theme's own motion values instead of mapping the design system's `animation` tokens
 
 **Status:** Accepted
 
 **Context:**
-- This is release 1.16.1, branch `feat/design-copy`. The site owner decided on 2026-10-15.
-- The pulls of 2026-10-15 brought the Claude Design canvas (version `1792071928-3dca`) and the live design system "TekSeries New" (version `1792073420-4f3b`). The design system now has `animation` tokens (`docs/design-reference/design-system/tekseries/tokens.json`), the first it has had (ADR-060, ADR-063), and the Home boards moved from GSAP to CSS motion.
-- Until now the theme mapped its tokens from the design system, and the live design system wins over the canvas's embedded copy (ADR-009).
-- The design system's motion values differ from the build's `settings.custom.motion` in `theme.json` (ADR-060) and from the values beside the rules in `assets/css/global.css` and the Stat block:
+- The owner decided on 2026-10-15 (release 1.16.1).
+- The latest design pull brought the design system's first `animation` tokens (`docs/design-reference/design-system/tekseries/tokens.json`), and the Home boards moved from GSAP to CSS motion.
+- Until now the theme mapped its tokens from the design system, which wins over the canvas's embedded copy (ADR-009).
+- The design system's motion values differ from the build's, which sit in `settings.custom.motion` in `theme.json` (ADR-060) and beside the rules in the theme's CSS and the Stat block. The main differences:
 
 | What | Design system | Build (kept) |
 | --- | --- | --- |
-| Entrance easing `ease-out` | `cubic-bezier(0.33, 1, 0.68, 1)` | `cubic-bezier(0.165, 0.84, 0.44, 1)` (`ease.out-strong`) |
-| Gentle easing `ease-soft` | `cubic-bezier(0.5, 1, 0.89, 1)` | `cubic-bezier(0.215, 0.61, 0.355, 1)` (`ease.out`) |
-| Scroll-reveal rise `distance-reveal` | 28px | 24px (`reveal.distance`; the hero's on-load rise is 28px) |
-| Pillar card rise | 56px (2 x distance) | 64px (0.9s) |
-| Card contents rise / duration / spacing | 28px / 0.8s / 0.12s | 20px / 0.7s / 0.1s (both after 0.2s) |
-| Count-up on load | 2.2s, ease-out, after 0.3s | 2.2s, `cubic-bezier(0.2, 0.7, 0.2, 1)`, after 0.3s |
-| `duration-reveal`, `stagger-reveal`, hero start delay | 0.8s, 0.12s, 0.15s | same |
-| Hover transitions | no token | 150ms (`motion.duration`) |
+| Entrance easing | `cubic-bezier(0.33, 1, 0.68, 1)` | `cubic-bezier(0.165, 0.84, 0.44, 1)` |
+| Gentle easing | `cubic-bezier(0.5, 1, 0.89, 1)` | `cubic-bezier(0.215, 0.61, 0.355, 1)` |
+| Scroll-reveal rise | 28px | 24px (the hero's on-load rise is 28px) |
+| Pillar card rise | 56px | 64px (0.9s) |
+| Card contents rise / duration / spacing | 28px / 0.8s / 0.12s | 20px / 0.7s / 0.1s |
+| Count-up easing | ease-out | `cubic-bezier(0.2, 0.7, 0.2, 1)` |
+| Hover transitions | no token | 150ms |
 
 **Options:**
 - Map the design system's `animation` tokens into `settings.custom.motion` and the rules. This follows the rule for colours, type, spacing and radii, but it changes the easing, distances and timing the owner has already seen and accepted.
@@ -1756,16 +1645,15 @@ Not verified:
 - The build's motion is the one the owner has watched and approved (ADR-060, ADR-063). Taking the design system's values would change the site's feel for no gain.
 - Changing the design system to match keeps one source of truth, which is simpler than carrying two sets of numbers in the theme.
 - Consequences:
-  - No change to the site in 1.16.1 comes from this decision.
+  - This decision changes nothing on the site in 1.16.1.
   - `docs/design-reference/` keeps the design system's values verbatim, because that folder is never hand-edited.
-  - The board mapping document lists the values to send back.
 
 ## ADR-081: Keep one deadline per page as page meta, and switch open and closed states on the server and again in the browser
 
 **Status:** Accepted
 
 **Context:**
-- This is release 1.17.0, branch `feat/deadline-countdown`. The 2026-10-15 design update adds a Maker Prize page (built in 1.18.0). It has a live countdown to 1 December 2026, 11:59 PM WAT. After the deadline, "Apply now" becomes a disabled "Applications closed" button and a winners line appears. The board switches state in its own script.
+- This is release 1.17.0. The 2026-10-15 design update adds a Maker Prize page (built in 1.18.0) with a live countdown to 1 December 2026, 11:59 PM WAT. After the deadline, "Apply now" becomes a disabled "Applications closed" button and a winners line appears. The board switches state in its own script.
 - Live is behind a page cache, and the server's HTML must be complete and usable without JavaScript (ADR-005).
 - WordPress's clock is UTC. Event times are already read in Nigerian time (ADR-074).
 - Several blocks on the page (the countdown, the days line, the buttons, the winners line) must agree on one moment.
@@ -1774,41 +1662,38 @@ Not verified:
 - Where the deadline lives: an ACF field (ACF holds the event fields, ADR-010), or registered page meta.
 - How blocks get it: a block attribute on each block, or one value on the page.
 - Where the state switches: in the browser only, or on the server at render time plus a browser swap. In the browser only, a closed page would still print the Apply link and load the Formbricks script (ADR-075), and without JavaScript it would show "open".
-- The countdown: reuse the event countdown block (ADR-074), which reads event fields from block context, or a new block.
+- The countdown: reuse the event countdown block (ADR-074), which reads event fields, or a new block.
 
 **Decision:**
-- Field: page meta `tekseries_deadline`, registered on `page` in `includes/deadline.php`. The value is "Y-m-d\TH:i:s", read in Nigerian time through `tekseries_blocks_event_timezone()` (ADR-074). It is REST-visible and sanitised: an invalid value is stored as empty, and empty means no deadline. It is not an ACF field.
-- Block: `tekseries/deadline-countdown`, dynamic, with two views. Tiles show days, hours, minutes and seconds. The days line shows "12 days left to apply", or "Last day to apply" in the last 24 hours. It reads the page's deadline and prints nothing on a page without one. The days view prints nothing once closed. The tiles show 00, dimmed.
-- States: a block with the class `ts-when-open` shows before the deadline and one with `ts-when-closed` after it. A `render_block` filter at priority 5 decides this, before the survey link filter at priority 10. A closed page therefore prints no Apply link and loads no Formbricks script. A page without a deadline is always open. On a page made before the deadline, closed blocks are printed `hidden`, and the script swaps both kinds at zero.
+- Field: page meta `tekseries_deadline`, registered on `page`. It is read in Nigerian time through `tekseries_blocks_event_timezone()` (ADR-074), is REST-visible, and is sanitised: an invalid value is stored as empty, and empty means no deadline. It is not an ACF field.
+- Block: `tekseries/deadline-countdown`, dynamic, with two views. Tiles show days, hours, minutes and seconds. The days line shows "12 days left to apply", or "Last day to apply" in the last 24 hours. It reads the page's deadline and prints nothing on a page without one. Once closed, the days view prints nothing and the tiles show 00, dimmed.
+- States: a block with the class `ts-when-open` shows before the deadline and one with `ts-when-closed` after it. The server decides this before the survey link is built, so a closed page prints no Apply link and loads no Formbricks script. A page without a deadline is always open. On a page made before the deadline, closed blocks are printed `hidden`, and the script swaps both kinds at zero.
 - Disabled button: a Button set to be a `<button>` with the class `ts-disabled` gets `disabled`.
-- Script: the module is not listed in `block.json`. It is enqueued only while something counts down on an open page, from the block or from a `ts-when-*` block. This is the exception ADR-074 made to ADR-047. A closed page loads no script.
-- Server output: only what stays true for a while. That is the days, the days line and a screen-reader sentence by whole days ("Applications close in 12 days.", or "in less than a day"). The hours, minutes and seconds wait for the script, as in ADR-074.
-- The arithmetic and the words are written twice, in `src/deadline-countdown/time.ts` (unit tested) and in `includes/deadline.php`, and are kept alike. Words are [ one, many ] pairs sent to the script. This fixes the board's "1 days" and "0 days left".
+- Script: not listed in `block.json`. It is enqueued only while something counts down on an open page, whether that is the block itself or a `ts-when-*` block. This is the exception ADR-074 made to ADR-047. A closed page loads no script.
+- Server output holds only what stays true for a while: the days, the days line and a screen-reader sentence by whole days. The hours, minutes and seconds wait for the script, as in ADR-074.
+- The arithmetic and the words are written twice, in TypeScript and in PHP, and are kept alike. Words are [ one, many ] pairs, which fixes the board's "1 days" and "0 days left".
 
 **Rationale:**
 - Page meta is plain registered meta that works without ACF (ADR-032), and the editor sidebar and the migration can set it. One value on the page keeps every block agreeing, where attributes could drift apart.
 - Deciding on the server keeps a closed page free of the Apply link and the Formbricks script, and keeps rule 3 of ADR-005 true. The browser swap covers a page made before the deadline.
 - The event countdown reads event fields and an event day, so a new block is simpler than bending it.
 - Consequences:
-  - A page cached while open stays open for visitors until their script runs, which swaps it at zero. Without JavaScript it stays open until the cache expires. The owner should also close the form in Formbricks at the deadline, which covers cached pages.
+  - A page cached while open stays open until the visitor's script swaps it at zero, or, without JavaScript, until the cache expires. The owner should also close the form in Formbricks at the deadline, which covers cached pages. The deadline dates written in the page's copy are plain text and must be changed by hand with the deadline, as the help text reminds the editor. The two copies of the arithmetic must be kept in step, as in ADR-074.
   - The editor's date-time picker has no seconds, so a deadline picked as 11:59 PM is 23:59:00, a minute before the design's 23:59:59. The migration and the page's own value use 23:59:59.
-  - The picker works in the site's time zone setting (UTC) and may show a "UTC" note while the value is read as Nigerian time. The help text says so.
-  - The deadline dates written in the page's copy are plain text and must be changed by hand with the deadline. The help text reminds the editor.
-  - Two implementations of the same arithmetic must be kept in step, as in ADR-074.
+  - The picker works in the site's time zone setting (UTC) and may show a "UTC" note, while the value is read as Nigerian time. The help text says so.
 
 ## ADR-082: Give the Maker's Prize its own page, and open its form with the existing code action, not the board's id hook
 
 **Status:** Accepted
 
 **Context:**
-- This is release 1.18.0, branch `feat/maker-prize-page`. The site owner decided on 2026-10-15.
-- The 2026-10-15 design update adds Maker Prize boards, open and closed, in three widths. They hook "Apply now" for a no-code Formbricks click action with `id="maker-prize-apply"` and the class `maker-prize-apply`, on both Apply links. The id is therefore duplicated on the page.
+- The 2026-10-15 design update adds Maker Prize boards, open and closed, in three widths. They hook "Apply now" for a no-code Formbricks click action with `id="maker-prize-apply"` on both Apply links, so the id is duplicated on the page.
 - Home's Pillar III button "Apply for the Maker’s Prize" opened the form itself, with entry value `home_makers_prize` (ADR-075, ADR-079).
 - The live site has no shell. The migration plugin's runner (ADR-059) updates existing pages and creates menus, but does not create pages.
 
 **Options:**
 - Keep the form on Home only and add no page. The boards would have no place to live.
-- Use the board's id hook, as designed. A no-code action is set up in Formbricks, not in our code, and a repeated id is invalid HTML. It would also bypass the entry value (ADR-079).
+- Use the board's id hook, as designed. A no-code action is set up in Formbricks, not in our code, a repeated id is invalid HTML, and it would bypass the entry value (ADR-079).
 - Use the existing code action (ADR-075) on the new page (chosen).
 - Ship the page as a pattern only, and have the owner create it on live by hand. The migration plugin can do it, and the owner has wp-admin only (ADR-059).
 
@@ -1816,8 +1701,8 @@ Not verified:
 - Page: `/maker-prize/`, from the pattern `tekseries/page-maker-prize`, with the template `page-no-title`. Its deadline is page meta (ADR-081).
 - Home: the Pillar III button becomes a plain link to `/maker-prize/`. Entry value `home_makers_prize` is retired. This amends ADR-079's list of values, which is now `home_job_series`, `job_series_hero`, `job_listing`, `maker_prize_hero` and `maker_prize_cta`.
 - Apply links: the class `ts-survey-makers-prize` with `ts-entry-maker_prize_hero` or `ts-entry-maker_prize_cta`. ADR-075 stands. The board's id hook is rejected.
-- Breadcrumbs: the page sits under Home's What We Do (Home / What We Do / Maker Prize). A map of page slug to section crumb, `tekseries_breadcrumb_sections()`, is filterable through `tekseries_breadcrumb_sections`. Only `maker-prize` is in it.
-- Live: the migration plugin creates the page, marked with `_tekseries_migration_source` like the menus it creates, and skips an unmarked page already at that slug. The migration plugin 1.3.0 creates it: a step before the pages and posts creates each page in the bundle's `pages_new` list, with its template and `tekseries_deadline`, and updates it on later runs.
+- Breadcrumbs: the page sits under Home's What We Do. A map of page slug to section crumb, `tekseries_breadcrumb_sections()`, is filterable through the filter of the same name. Only `maker-prize` is in it.
+- Live: migration plugin 1.3.0 creates the page before it updates pages and posts, with its template and `tekseries_deadline`. It marks the page with `_tekseries_migration_source` like the menus it creates, updates it on later runs, and skips an unmarked page already at that slug.
 
 **Rationale:**
 - The code action keeps one way to open forms, with the entry value recorded and the link fallback of ADR-076, and no duplicate id.
@@ -1834,26 +1719,26 @@ Not verified:
 **Status:** Accepted
 
 **Context:**
-- This is release 1.19.0, branch `feat/video-poster`. The site owner decided on 2026-10-16.
-- The owner wanted to choose a Gallery video's poster from three frames across the video, when they upload a video and add it to an album. The Empower Her webinar poster was made by hand, drawn from a canvas in Chromium.
-- The Gallery, the viewer and the Post Video card already read a video's featured image as its poster (ADR-045, ADR-072). Core supports featured images on videos and `featured_media` on attachments over REST.
+- The owner decided on 2026-10-16 (release 1.19.0). The owner wanted to choose a Gallery video's poster from three frames across the video, when uploading a video and adding it to an album. The one existing poster was made by hand.
+- The Gallery, the viewer and the Post Video card already read a video's featured image as its poster (ADR-045, ADR-072). Core supports featured images on videos over REST.
 - The live host has no SSH or WP-CLI (ADR-059), so the picker must work through wp-admin alone. The owner asked for no third-party plugin.
 - The owner chose the middle frame, set automatically for a video with no poster that is in an album and is opened in wp-admin.
 
 **Options:**
-- Server-side ffmpeg. It is not on the development machine, the live host has no shell, and shared hosts rarely have it.
+- Server-side ffmpeg. The live host has no shell, and shared hosts rarely have it.
 - A third-party plugin such as Videopack. The owner said no, and it is heavy for one job.
 - Grab a frame on upload, in the background. An upload over REST or from a phone has no page open to grab it in.
 - Grab the frames in the editor's browser with `<video>` and `<canvas>` (chosen).
 
 **Decision:**
-- Row: `includes/video-poster.php` adds a "Poster frame" row to a video's details through `attachment_fields_to_edit`. It shows in every media modal and on Edit Media. The row is a placeholder with no inputs, so core saves nothing from it.
-- Frames: `src/video-poster/` grabs three frames at 25, 50 and 75% of the video. "Show other frames" picks three new moments between 10 and 90%. A slider with "Use this moment" picks an exact moment.
+- Row: a "Poster frame" row in a video's details, in every media modal and on Edit Media. It is a placeholder with no inputs, so core saves nothing from it.
+- Frames: the picker grabs three frames at 25, 50 and 75% of the video. "Show other frames" picks three new moments between 10 and 90%. A slider with "Use this moment" picks an exact moment.
 - Saving: the chosen frame is uploaded as a JPEG over core REST and set as the video's featured image. The front end is unchanged.
 - Marker: attachment meta `tekseries_poster_of` holds the video's ID on a JPEG the picker made. Picking again deletes the old poster only when it carries this video's ID. A poster added by hand is kept.
 - Automatic frame: a video in an album (ADR-044) with no poster gets its middle frame when it is opened in wp-admin.
-- Access: admin only, with `upload_files` and `edit_post` checked. The script is plain TypeScript with `@wordpress/api-fetch` and `@wordpress/i18n`, with no React. Visitors load nothing (ADR-005).
-- Tests: unit tests for the frame helpers, and `specs/video-poster.spec.ts` (7 checks) with a real GPL clip, `specs/fixtures/birds.mp4` (1 second long).
+- Access: admin only, with `upload_files` and `edit_post` checked. The script is plain TypeScript, with no React. Visitors load nothing (ADR-005).
+
+Checked with unit tests for the frame helpers and an e2e spec that uses a real short clip.
 
 **Rationale:**
 - The browser can decode and draw a video on any host, so the picker works on Local and on live with wp-admin alone.
