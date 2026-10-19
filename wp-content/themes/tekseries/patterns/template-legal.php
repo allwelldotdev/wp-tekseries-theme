@@ -28,7 +28,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p><?php echo esc_html__( 'Email', 'tekseries' ); ?> <a href="mailto:series@tekseries.com">series@tekseries.com</a> <?php echo esc_html__( 'or use our', 'tekseries' ); ?> <a href="/contact/#contact-form"><?php echo esc_html__( 'contact form', 'tekseries' ); ?></a>.</p>
+<p><?php echo esc_html__( 'Email', 'tekseries' ); ?> <a href="mailto:team@tekseries.com">team@tekseries.com</a> <?php echo esc_html__( 'or use our', 'tekseries' ); ?> <a href="/contact/#contact-form"><?php echo esc_html__( 'contact form', 'tekseries' ); ?></a>.</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group -->

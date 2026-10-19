@@ -321,7 +321,7 @@ test.describe( 'logos', () => {
 } );
 
 // The legal row under the footer panel (1.16.1): the copyright, the company's
-// registration number and the designer's credit, then the legal links. On
+// registration number and the builder's credit, then the legal links. On
 // phones each item has its own centred line, as on the mobile board.
 test.describe( 'footer legal row', () => {
 	test( 'shows the CR No. on every page', async ( { page } ) => {
@@ -335,6 +335,17 @@ test.describe( 'footer legal row', () => {
 		}
 	} );
 
+	test( 'credits Beekomm Technologies with a link to its site', async ( {
+		page,
+	} ) => {
+		await page.goto( '/' );
+		await expect(
+			page
+				.locator( '.ts-footer__legal' )
+				.getByRole( 'link', { name: 'Beekomm Technologies' } )
+		).toHaveAttribute( 'href', 'https://beekomm.com' );
+	} );
+
 	test( 'stacks its items one per line on phones', async ( { page } ) => {
 		await page.setViewportSize( { width: 390, height: 844 } );
 		await page.goto( '/' );
@@ -342,7 +353,7 @@ test.describe( 'footer legal row', () => {
 		const items = [
 			legal.getByText( /^Copyright © TekSeries \d{4}$/ ),
 			legal.getByText( 'CR No. 9920315.', { exact: true } ),
-			legal.getByText( /^Designed and developed by/ ),
+			legal.getByText( /^Built and maintained by Beekomm Technologies$/ ),
 			legal.getByRole( 'navigation', { name: 'Legal' } ),
 		];
 		const first = await items[ 0 ]!.boundingBox();

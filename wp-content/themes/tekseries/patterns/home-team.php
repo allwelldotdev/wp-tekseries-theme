@@ -30,7 +30,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph {"textColor":"muted","fontSize":"body-s"} -->
-<p class="has-muted-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'A Senior Software & Cloud Engineer with hands-on experience across backend systems, AI integration, and cloud infrastructure on AWS and GCP. Allwell holds the AWS Certified Solutions Architect – Associate certification and has led full-stack and Rust-based platform development across multiple international teams. He builds and maintains the TekSeries web platforms.', 'tekseries' ); ?></p>
+<p class="has-muted-color has-text-color has-body-s-font-size"><?php echo esc_html__( 'Allwell is the CEO of Beekomm Technologies Limited and a Senior Software & Cloud Engineer specialising in AI engineering: designing, building and integrating AI into reliable, production-ready software. With hands-on experience across backend systems and cloud infrastructure on AWS and GCP, Allwell has led full-stack and Rust-based platform development across international teams. Allwell is an AWS Certified Solutions Architect – Associate, an AWS Certified AI Practitioner (Early Adopter) and a Kubernetes and Cloud Native Associate (KCNA), and builds and maintains the TekSeries web platforms.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group -->
 
