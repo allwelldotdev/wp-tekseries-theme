@@ -2,6 +2,18 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.19.1] — 2026-10-19
+### New
+- The Privacy Policy now covers maps and videos from other services (the Google map, and YouTube and Vimeo videos that load only when played) under "Who We Share Personal Data With".
+- It also covers the forms, such as "Upload your CV" and "Apply for the Maker's Prize", which Beekomm Technologies Limited hosts for TekSeries.
+- It says how form answers are used, kept and deleted, and that the form service sets no cookies but keeps a small record in the browser's local storage.
+
+### Changed
+- The footer credit now reads "Built and maintained by Beekomm Technologies" and links to beekomm.com, where it read "Designed and developed by Allwell".
+- The Privacy Policy and Terms and Conditions now give team@tekseries.com as the contact address, in place of series@tekseries.com. The "Questions about this page?" card on those pages uses it too.
+- On Home, Allwell Agwu-Okoro's team card has a new description, and so does the Home page pattern that editors start from.
+- The Privacy Policy, Terms and Home page changes were made on the development site and reach the live site when it is moved over. "Job Series: series@tekseries.com" on Contact is unchanged.
+
 ## [1.19.0] — 2026-10-16
 ### New
 - Editors see a "Poster frame" panel in a video's details in the Media Library, in the pop-up and on the "Edit Media" page, showing three frames taken from across the video.
