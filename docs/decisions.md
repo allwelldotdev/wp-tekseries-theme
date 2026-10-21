@@ -1783,6 +1783,40 @@ Checked with unit tests for the frame helpers and an e2e spec that uses a real s
   - `@wordpress/date` has zone data to 2030, so labels for later deadlines use the last known rules.
   - A minute other than :59 cannot be given seconds.
 
+## ADR-085: Set a block's deadline behaviour and the closed button from a "Deadline" panel in the block sidebar
+
+**Status:** Accepted
+
+**Context:**
+- The owner decided on 2026-10-21 (release 1.21.0) that a non-technical admin runs the whole deadline flow from block settings.
+- Under ADR-081 the admin typed `ts-when-open` or `ts-when-closed` into Advanced > Additional CSS classes. The disabled "Applications closed" button needed the code editor, as `core/button` has no UI for `tagName` in WordPress 7.1.
+
+**Options:**
+- Block attributes or a block-supports extension. Saved markup would depend on the plugin and the server would need changes.
+- Class tokens, as the Button icon panel does (ADR-067) (chosen).
+- A panel under Advanced. The admin would not find it.
+- A panel of its own in the default settings group (chosen).
+- `ToggleGroupControl`. It is still `__experimental` in 7.1.
+- `RadioControl` (chosen).
+- A custom "Applications closed" block. It duplicates `core/button` and its styles.
+- `core/button` with a toggle (chosen).
+
+**Decision:**
+- Script: `src/deadline-tools`, editor only, enqueued from `includes/editor.php`. Visitors load nothing (ADR-005).
+- Panel: "Deadline", in the default settings group. It shows only on pages, for blocks that support `customClassName`, when the page has a deadline or the block already carries a token. The Deadline Countdown block is left out, as it has its own panel (ADR-084).
+- Show: a `RadioControl` with Always, Before the deadline (`ts-when-open`) and After the deadline (`ts-when-closed`).
+- Twin: on a before-the-deadline block, one action inserts its twin after it. For a Button the twin is a disabled "Applications closed" button: `tagName` `button`, classes `ts-icon-lock ts-disabled ts-when-closed`, as in the Maker Prize pattern (ADR-082). For any other block it is a copy with the token swapped.
+- Closed button: a toggle on Button, "Applications closed button (disabled)". On, it sets `tagName` `button` and `ts-disabled`, clears `url`, `linkTarget` and `rel`, and adds the lock icon unless the button has an icon. Off, it makes the button a link again with no URL, to be added from the toolbar.
+- Unchanged: the server, `tekseries_blocks_deadline_phase()` and `tekseries_blocks_disabled_button()` (ADR-081).
+
+**Rationale:**
+- Class tokens keep saved markup valid without the plugin and need no server change.
+- Showing the panel only where a deadline exists keeps every other block's sidebar uncluttered.
+- Consequences:
+  - The classes stay visible and editable under Advanced.
+  - Turning the toggle off loses the link. Undo brings it back.
+  - A block whose rendered root lacks its `className` misses the browser swap at zero, as in ADR-081.
+
 ## Future work
 
 - **Maker Prize page on live:** the migration plugin 1.3.0 creates `/maker-prize/` before it updates Home. What remains is running it on live after the rehearsal (owner; ADR-082, ADR-059).

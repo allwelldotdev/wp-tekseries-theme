@@ -191,7 +191,7 @@ export default function Edit( {
 									? sprintf(
 											/* translators: %s: the moment the deadline passes, e.g. "December 1, 2026, 11:59:59 PM WAT". */
 											__(
-												'Applications close at %s, for the whole page. Then the countdown ends, blocks with the class ts-when-open hide and blocks with ts-when-closed show. Saved with the page. When you change it, also change the dates written in the page’s text.',
+												'Applications close at %s, for the whole page. Then the countdown ends, and blocks set under Deadline › Show to show before the deadline hide while those set to show after it appear. Saved with the page. When you change it, also change the dates written in the page’s text.',
 												'tekseries-blocks'
 											),
 											dateI18n(

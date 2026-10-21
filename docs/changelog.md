@@ -2,6 +2,18 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.21.0] — 2026-10-21
+### New
+- On a page with a deadline, selecting a block shows a "Deadline" panel in its settings. "Show" offers Always, Before the deadline and After the deadline, so editors no longer type the two deadline classes.
+- For a block set to "Before the deadline", one click adds its after-the-deadline version right after it: "Add a copy to show after the deadline", or for a Button, "Add the closed button after it".
+- The closed button is a greyed, disabled "Applications closed" button with a lock icon.
+- Buttons have an "Applications closed button (disabled)" switch, which needed the code editor before, that turns the button into a greyed button visitors can't click, with no link. Switching it off makes it a link again, and the link is added again from the toolbar.
+
+### Changed
+- The Deadline panel only appears on pages with a deadline, or on a block already set to show before or after it. A warning explains when the page has no deadline.
+- Blocks already using the older deadline classes keep working.
+- Visitors notice no change.
+
 ## [1.20.0] — 2026-10-21
 ### New
 - Editors can pick a time zone for a page's deadline in the "Time zone" field under the date picker in the Deadline Countdown settings. The countdown and the switch to "Applications closed" happen at that moment in the chosen zone.
