@@ -2,6 +2,10 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.19.2] — 2026-10-21
+### Changed
+- The company registration line in the footer of every page now reads "RC 9920315." where it read "CR No. 9920315."
+
 ## [1.19.1] — 2026-10-19
 ### New
 - The Privacy Policy now covers maps and videos from other services (the Google map, and YouTube and Vimeo videos that load only when played) under "Who We Share Personal Data With".
