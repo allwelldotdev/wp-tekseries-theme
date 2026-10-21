@@ -18,6 +18,6 @@ TekSeries is distributed under the terms of the GNU GPL v2 or later.
 
 == Resources ==
 
-* Screenshot image: "assorted-color wooden blocks" by Michał Bożek, https://unsplash.com/photos/RcxR1aLw8X0, Unsplash License, https://unsplash.com/license
+* Screenshot image: a red code bracket on a lilac background, by Jackson Sophat, https://unsplash.com/photos/_t-l5FFH8VA, Unsplash License, https://unsplash.com/license
 * Onest font, (C) 2021 The Onest Project Authors, SIL Open Font License 1.1 (assets/fonts/onest/OFL.txt)
 * Schibsted Grotesk font, (C) 2023 The Schibsted-Grotesk Project Authors, SIL Open Font License 1.1 (assets/fonts/schibsted-grotesk/OFL.txt)
