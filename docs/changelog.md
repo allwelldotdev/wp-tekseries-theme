@@ -2,6 +2,15 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.22.1] — 2026-10-21
+### New
+- Editors see a picture of coloured wooden blocks on the theme's card under Appearance → Themes in wp-admin.
+- The theme now comes with a readme that credits the resources it uses.
+
+### Improved
+- The theme and the plugin now name "Beekomm Technologies" as their author, with a link, in the lists of themes and plugins.
+- Their descriptions are fuller, and the theme now has tags.
+
 ## [1.22.0] — 2026-10-21
 ### New
 - Editors can connect a paragraph or heading to the page's deadline under Attributes in the block settings: choose content, Page deadline, then "Deadline: date and time", "Deadline: date" or "Deadline: time".
