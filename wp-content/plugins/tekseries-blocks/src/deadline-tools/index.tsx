@@ -25,6 +25,7 @@ import {
 	withWhen,
 	type When,
 } from './tokens';
+import './bindings';
 
 type Props = {
 	name: string;

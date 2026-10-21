@@ -98,7 +98,8 @@ add_action( 'enqueue_block_editor_assets', 'tekseries_blocks_enqueue_button_icon
 /**
  * Loads the blocks' "Deadline" panel in the block editor: when visitors see
  * a block on a page with a deadline, and the disabled "Applications closed"
- * button (includes/deadline.php).
+ * button; and the editor's side of the `tekseries/page-deadline` binding source,
+ * with the formats the server writes the deadline in (includes/deadline.php).
  */
 function tekseries_blocks_enqueue_deadline_tools(): void {
 	$asset_file = dirname( __DIR__ ) . '/build/deadline-tools/index.asset.php';
@@ -109,5 +110,15 @@ function tekseries_blocks_enqueue_deadline_tools(): void {
 	$asset = require $asset_file;
 	wp_enqueue_script( 'tekseries-deadline-tools', plugins_url( 'build/deadline-tools/index.js', __DIR__ ), $asset['dependencies'], $asset['version'], true );
 	wp_set_script_translations( 'tekseries-deadline-tools', 'tekseries-blocks' );
+	wp_add_inline_script(
+		'tekseries-deadline-tools',
+		'window.tekseriesDeadlineText = ' . wp_json_encode(
+			array(
+				'formats'     => tekseries_blocks_deadline_formats(),
+				'defaultZone' => tekseries_blocks_event_timezone()->getName(),
+			)
+		) . ';',
+		'before'
+	);
 }
 add_action( 'enqueue_block_editor_assets', 'tekseries_blocks_enqueue_deadline_tools' );
