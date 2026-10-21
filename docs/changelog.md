@@ -2,6 +2,10 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.22.2] — 2026-10-21
+### Changed
+- The theme's picture under Appearance → Themes in wp-admin is now a red code bracket (</>) on a lilac background, replacing the coloured wooden blocks. The readme credit matches.
+
 ## [1.22.1] — 2026-10-21
 ### New
 - Editors see a picture of coloured wooden blocks on the theme's card under Appearance → Themes in wp-admin.
