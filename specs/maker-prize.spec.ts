@@ -170,6 +170,39 @@ test.describe( 'Maker Prize page', () => {
 		}
 	} );
 
+	test( 'writes its deadline in both dates', async ( { browser } ) => {
+		const context = await browser.newContext( NO_JS );
+		const visitor = await context.newPage();
+		await visitor.goto( page.link );
+		const moment = Number(
+			JSON.parse(
+				( await visitor
+					.locator( '.is-tiles' )
+					.getAttribute( 'data-wp-context' ) ) ?? '{}'
+			).deadline
+		);
+		const zone = { timeZone: 'Africa/Lagos' } as const;
+		const day = new Intl.DateTimeFormat( 'en-US', {
+			...zone,
+			month: 'long',
+			day: 'numeric',
+			year: 'numeric',
+		} ).format( moment );
+		const time = new Intl.DateTimeFormat( 'en-US', {
+			...zone,
+			hour: 'numeric',
+			minute: '2-digit',
+			hour12: true,
+		} ).format( moment );
+		await expect(
+			visitor.getByText( `${ day }, ${ time } WAT`, { exact: true } )
+		).toBeVisible();
+		await expect(
+			visitor.getByText( `${ day }.`, { exact: true } )
+		).toBeVisible();
+		await context.close();
+	} );
+
 	test( 'open, without JavaScript: the days, the open text and the links', async ( {
 		browser,
 	} ) => {

@@ -61,9 +61,15 @@
 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|8"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"top"}} -->
 <div class="wp-block-group"><!-- wp:icon {"icon":"tekseries/event","style":{"dimensions":{"width":"20px"}},"textColor":"saffron"} /-->
 
-<!-- wp:paragraph {"textColor":"lilac-deep","fontSize":"body-s"} -->
-<p class="has-lilac-deep-color has-text-color has-body-s-font-size"><strong><?php echo esc_html__( 'Submission Deadline:', 'tekseries' ); ?></strong> <?php echo esc_html__( 'December 1, 2026, 11:59 PM WAT', 'tekseries' ); ?></p>
+<!-- wp:group {"style":{"spacing":{"blockGap":"0.3em"}},"textColor":"lilac-deep","fontSize":"body-s","layout":{"type":"flex","flexWrap":"wrap"}} -->
+<div class="wp-block-group has-lilac-deep-color has-text-color has-body-s-font-size"><!-- wp:paragraph -->
+<p><strong><?php echo esc_html__( 'Submission Deadline:', 'tekseries' ); ?></strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"metadata":{"bindings":{"content":{"source":"tekseries/page-deadline","args":{"format":"datetime"}}}}} -->
+<p><?php echo esc_html__( 'December 1, 2026, 11:59 PM WAT', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
 <!-- /wp:group -->
 
 <!-- wp:buttons -->
@@ -136,9 +142,15 @@
 <p class="ts-when-closed"><?php echo esc_html__( 'Applications are closed', 'tekseries' ); ?></p>
 <!-- /wp:paragraph -->
 
-<!-- wp:paragraph {"style":{"typography":{"fontWeight":"700","lineHeight":"1.2"}},"fontSize":"card-title","fontFamily":"display"} -->
-<p class="has-display-font-family has-card-title-font-size" style="font-weight:700;line-height:1.2"><?php echo esc_html__( 'Submission Deadline: December 1, 2026.', 'tekseries' ); ?></p>
+<!-- wp:group {"style":{"spacing":{"blockGap":"0.3em"},"typography":{"fontWeight":"700","lineHeight":"1.2"}},"fontSize":"card-title","fontFamily":"display","layout":{"type":"flex","flexWrap":"wrap"}} -->
+<div class="wp-block-group has-display-font-family has-card-title-font-size" style="font-weight:700;line-height:1.2"><!-- wp:paragraph -->
+<p><?php echo esc_html__( 'Submission Deadline:', 'tekseries' ); ?></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"metadata":{"bindings":{"content":{"source":"tekseries/page-deadline","args":{"format":"date","after":"."}}}}} -->
+<p><?php echo esc_html__( 'December 1, 2026.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
 <!-- /wp:group -->
 
 <!-- wp:buttons -->
