@@ -1817,6 +1817,38 @@ Checked with unit tests for the frame helpers and an e2e spec that uses a real s
   - Turning the toggle off loses the link. Undo brings it back.
   - A block whose rendered root lacks its `className` misses the browser swap at zero, as in ADR-081.
 
+## ADR-086: Write a page's deadline into its text with a block bindings source
+
+**Status:** Accepted
+
+**Context:**
+- The owner decided on 2026-10-21 (release 1.22.0) that the deadline flow runs from block settings (ADR-085).
+- ADR-081 left written dates as plain text to change by hand: "December 1, 2026, 11:59 PM WAT" in the Maker Prize hero and "Submission Deadline: December 1, 2026." in its band.
+- The deadline and its zone are page meta (ADR-081, ADR-084).
+
+**Options:**
+- A dynamic "deadline date" block. Core's way for meta is bindings (rule 4).
+- A Block Bindings API source (chosen).
+- Fixed sentence templates in the plugin. The copy would live in the plugin.
+- Text tokens replaced on render. Saved text would show tokens, and the editor could not preview them.
+
+**Decision:**
+- Source: `tekseries/page-deadline` ("Page deadline"), registered on the server like the job-field sources. Args: `format` (`datetime` "F j, Y, g:i A T", `date` "F j, Y", `time` "g:i A T", all translatable) and an optional `after`, such as ".".
+- Output: `wp_date()` in the page's zone (ADR-084), escaped. It returns null outside a page or without a deadline, so the block's saved text stays as the fallback.
+- Editor: `src/deadline-tools/bindings.ts` calls `registerBlockBindingsSource` with `getFieldsList` (pages only). WordPress 7.1's Attributes panel then offers "Deadline: date and time / date / time", each with a preview. `getValues` reads the edited page's meta, so the text follows the deadline before saving. `canUserEditValue` is false. The formats come from the server.
+- Inserter: a "Deadline date" paragraph variation.
+- Name: `page-deadline`, because the icon test reads quoted `'tekseries/<word>'` ids as icons, and the name is clearer.
+- Maker Prize pattern and the Local page: each label and date is a flex-wrap group of a label paragraph and a bound paragraph. A binding replaces the whole content, so the label stays a separate editable paragraph. The fallback text is kept. When the line does not fit, the date wraps as a whole under its label.
+- Migration: the export now carries `tekseries_deadline_timezone`. Empty means WAT.
+
+**Rationale:**
+- Bindings are core's route for meta, need no new block, and keep the sentence in the page where editors can change it.
+- A null return keeps the page complete with no deadline or no JS (rule 3).
+- Consequences:
+  - Bound paragraphs cannot be typed into. The admin disconnects the binding in Attributes to edit.
+  - The live page gets the new markup through the migration bundle. The migration plugin marks the page, so owner edits on live would be replaced.
+  - The date formats exist in PHP and are passed to the editor, and the zone arithmetic exists twice, as in ADR-084. For deadlines after 2030 the editor preview uses `@wordpress/date`'s last known zone rules. The page itself is unaffected.
+
 ## Future work
 
 - **Maker Prize page on live:** the migration plugin 1.3.0 creates `/maker-prize/` before it updates Home. What remains is running it on live after the rehearsal (owner; ADR-082, ADR-059).

@@ -2,6 +2,18 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.22.0] — 2026-10-21
+### New
+- Editors can connect a paragraph or heading to the page's deadline: select it, then under Attributes in the block settings choose content, Page deadline, and "Deadline: date and time", "Deadline: date" or "Deadline: time". Each choice shows what it will say.
+- A connected text writes the deadline in the page's time zone, for example "December 1, 2026, 11:59 PM WAT". It changes by itself when the deadline or time zone changes, in the editor straight away and on the site.
+- A "Deadline date" block in the inserter does the same in one step.
+- A connected text can't be typed into; disconnect it under Attributes to write it by hand. On a page without a deadline it keeps the text it had.
+
+### Changed
+- On the Maker Prize page, the two "Submission Deadline" dates, in the countdown card and in the closing band, are now connected to the page's deadline, so changing the deadline changes them. Visitors see the same text.
+- On narrow screens, the date now moves under "Submission Deadline:" as a whole, where "WAT" used to break onto its own line.
+- The Maker Prize page change was made on the development site and in the theme's Maker Prize pattern, and reaches the live site when it is moved over.
+
 ## [1.21.0] — 2026-10-21
 ### New
 - On a page with a deadline, selecting a block shows a "Deadline" panel in its settings. "Show" offers Always, Before the deadline and After the deadline, so editors no longer type the two deadline classes.
