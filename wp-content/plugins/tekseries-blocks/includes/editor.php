@@ -94,3 +94,20 @@ function tekseries_blocks_enqueue_button_icon(): void {
 	wp_add_inline_script( 'tekseries-button-icon', 'window.tekseriesButtonIcons = ' . wp_json_encode( $icons ) . ';', 'before' );
 }
 add_action( 'enqueue_block_editor_assets', 'tekseries_blocks_enqueue_button_icon' );
+
+/**
+ * Loads the blocks' "Deadline" panel in the block editor: when visitors see
+ * a block on a page with a deadline, and the disabled "Applications closed"
+ * button (includes/deadline.php).
+ */
+function tekseries_blocks_enqueue_deadline_tools(): void {
+	$asset_file = dirname( __DIR__ ) . '/build/deadline-tools/index.asset.php';
+	if ( ! file_exists( $asset_file ) ) {
+		return;
+	}
+
+	$asset = require $asset_file;
+	wp_enqueue_script( 'tekseries-deadline-tools', plugins_url( 'build/deadline-tools/index.js', __DIR__ ), $asset['dependencies'], $asset['version'], true );
+	wp_set_script_translations( 'tekseries-deadline-tools', 'tekseries-blocks' );
+}
+add_action( 'enqueue_block_editor_assets', 'tekseries_blocks_enqueue_deadline_tools' );
