@@ -2,12 +2,13 @@
 /**
  * Plugin Name:       TekSeries Blocks
  * Plugin URI:        https://tekseries.com/
- * Description:       Custom blocks for tekseries.com.
- * Version:           1.22.0
+ * Description:       Blocks, fields and editor tools for the TekSeries theme: events with countdowns, the media gallery, Job Series listings, page deadlines and Formbricks forms.
+ * Version:           1.22.1
  * Requires at least: 7.1
  * Requires PHP:      8.2
  * Requires Plugins:  advanced-custom-fields
- * Author:            TekSeries
+ * Author:            Beekomm Technologies
+ * Author URI:        https://beekomm.com/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       tekseries-blocks
