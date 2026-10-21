@@ -1,8 +1,9 @@
 {
 	"name": "tekseries",
-	"version": "1.22.0",
+	"version": "1.22.1",
 	"private": true,
 	"description": "TekSeries block theme and companion blocks plugin.",
+	"author": "Beekomm Technologies",
 	"license": "GPL-2.0-or-later",
 	"engines": {
 		"node": "^24.15.0 || >=26.0.0",

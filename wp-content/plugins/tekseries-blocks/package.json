@@ -1,8 +1,9 @@
 {
 	"name": "tekseries-blocks",
-	"version": "1.22.0",
+	"version": "1.22.1",
 	"private": true,
-	"description": "Custom blocks for tekseries.com.",
+	"description": "Blocks, fields and editor tools for the TekSeries theme.",
+	"author": "Beekomm Technologies",
 	"license": "GPL-2.0-or-later",
 	"files": [
 		"tekseries-blocks.php",
