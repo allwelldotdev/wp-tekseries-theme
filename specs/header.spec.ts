@@ -324,11 +324,11 @@ test.describe( 'logos', () => {
 // registration number and the builder's credit, then the legal links. On
 // phones each item has its own centred line, as on the mobile board.
 test.describe( 'footer legal row', () => {
-	test( 'shows the CR No. on every page', async ( { page } ) => {
+	test( 'shows the RC number on every page', async ( { page } ) => {
 		for ( const url of [ '/', '/?s=tekseries', '/no-such-page/' ] ) {
 			await page.goto( url );
 			await expect(
-				page.getByRole( 'contentinfo' ).getByText( 'CR No. 9920315.', {
+				page.getByRole( 'contentinfo' ).getByText( 'RC 9920315.', {
 					exact: true,
 				} )
 			).toBeVisible();
@@ -352,7 +352,7 @@ test.describe( 'footer legal row', () => {
 		const legal = page.locator( '.ts-footer__legal' );
 		const items = [
 			legal.getByText( /^Copyright © TekSeries \d{4}$/ ),
-			legal.getByText( 'CR No. 9920315.', { exact: true } ),
+			legal.getByText( 'RC 9920315.', { exact: true } ),
 			legal.getByText( /^Built and maintained by Beekomm Technologies$/ ),
 			legal.getByRole( 'navigation', { name: 'Legal' } ),
 		];
