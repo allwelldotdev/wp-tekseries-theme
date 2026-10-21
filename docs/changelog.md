@@ -2,6 +2,21 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.20.0] — 2026-10-21
+### New
+- Editors can pick a time zone for a page's deadline in the "Time zone" field under the date picker in the Deadline Countdown settings. The countdown and the switch to "Applications closed" happen at that moment in the chosen zone.
+- "Use Nigerian time (WAT)" in that field goes back to Nigerian time. Pages that never pick a zone stay on Nigerian time.
+
+### Fixed
+- A deadline set to a time ending in :59 now closes at the end of that minute: 11:59 PM is saved as 11:59:59 PM, where before it closed a minute early.
+
+### Improved
+- The help text under the date picker now gives the exact moment applications close in the chosen zone, for example "Applications close at December 1, 2026, 11:59:59 PM WAT".
+
+### Changed
+- The "UTC" note under the date picker no longer shows in the Deadline settings.
+- Visitors notice no other change, and the Maker Prize page still closes at 11:59:59 PM Nigerian time on December 1, 2026.
+
 ## [1.19.2] — 2026-10-21
 ### Changed
 - The company registration line in the footer of every page now reads "RC 9920315." where it read "CR No. 9920315."

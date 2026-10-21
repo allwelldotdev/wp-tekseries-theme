@@ -1650,7 +1650,7 @@ Checked with an e2e spec using a stand-in for Formbricks' script, and on the dev
 
 ## ADR-081: Keep one deadline per page as page meta, and switch open and closed states on the server and again in the browser
 
-**Status:** Accepted
+**Status:** Superseded by ADR-084 (the fixed Nigerian-time reading and the two picker consequences only)
 
 **Context:**
 - This is release 1.17.0. The 2026-10-15 design update adds a Maker Prize page (built in 1.18.0) with a live countdown to 1 December 2026, 11:59 PM WAT. After the deadline, "Apply now" becomes a disabled "Applications closed" button and a winners line appears. The board switches state in its own script.
@@ -1748,6 +1748,40 @@ Checked with unit tests for the frame helpers and an e2e spec that uses a real s
   - The automatic frame needs a browser. It does not run on an upload over REST, and on live it waits until someone opens the video.
   - A video the browser cannot decode, such as some .mov or HEVC files, gets a message. The Featured Image box still works.
   - On Edit Media the form's hidden `_thumbnail_id` is kept in step with the pick, so Update does not undo it.
+
+## ADR-084: Read a page's deadline in a time zone chosen for that page
+
+**Status:** Accepted
+
+**Context:**
+- The owner decided on 2026-10-21 (release 1.20.0) that a non-technical admin sets the deadline's date, time and time zone from the Deadline Countdown block's settings.
+- ADR-081 fixed the deadline to Nigerian time (ADR-074). Its picker has no seconds, so 11:59 PM saved as 23:59:00, a minute short of the design's 23:59:59.
+
+**Options:**
+- One site-wide zone through the filter `tekseries_blocks_event_timezone`. It cannot differ between pages.
+- A zone per page as page meta (chosen).
+- Format the preview with `Intl` alone. It lacks zone abbreviations such as WAT.
+- Format the help text with `dateI18n` from `@wordpress/date` (chosen, with `Intl` for the preview's arithmetic).
+- A seconds field or checkbox. It adds a control that editors must understand.
+- A fixed rule for seconds (chosen).
+
+**Decision:**
+- Meta: `tekseries_deadline_timezone`, a string on `page`, REST-visible, sanitised against PHP's `timezone_identifiers_list()`. Empty means Nigerian time, so existing pages keep WAT and the migration is unchanged.
+- Wall time: `tekseries_deadline` stays a wall time, `Y-m-d\TH:i:s`. `tekseries_blocks_deadline_wall_time()` checks it in UTC, so a time skipped by a clock change still makes a deadline (PHP moves it on) and does not leave the page open.
+- Editor: PHP's zone list reaches the editor as `window.tekseriesDeadline`, not `Intl.supportedValuesOf`, whose names differ. The preview uses `zonedTime()` in `src/deadline-countdown/time.ts`. It takes `Intl` offsets in two passes and matches PHP 8.2 for skipped and repeated hours, under unit test. The help text names the exact moment with `dateI18n`.
+- Seconds: a time picked at :59 saves :59 seconds, and any other minute saves :00. So 11:59 PM is 23:59:59.
+- Panel: core's UTC note under the picker is hidden here.
+- Unchanged: `view.ts`, `render.php` and the phase filter. Visitors still get only the millisecond moment.
+
+**Rationale:**
+- The zone belongs to the page, as each deadline has its own place and hour. Empty meaning WAT means nothing is migrated.
+- PHP's list keeps the editor's names the same as the ones the server accepts.
+- A rule needs no new control, and it removes the minute's gap.
+- This changes ADR-081 in three places. Its Nigerian-time reading of `tekseries_deadline` becomes the page's zone, with WAT as the default. Its consequence on the missing seconds no longer holds. Its consequence on the UTC picker note no longer holds. The rest of ADR-081 stands.
+- Consequences:
+  - The zone arithmetic exists twice, in PHP and in `time.ts`, and must stay alike, as for the countdown (ADR-074).
+  - `@wordpress/date` has zone data to 2030, so labels for later deadlines use the last known rules.
+  - A minute other than :59 cannot be given seconds.
 
 ## Future work
 
