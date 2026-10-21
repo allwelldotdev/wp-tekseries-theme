@@ -82,7 +82,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p><?php echo esc_html__( 'CR No. 9920315.', 'tekseries' ); ?></p>
+<p><?php echo esc_html__( 'RC 9920315.', 'tekseries' ); ?></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
