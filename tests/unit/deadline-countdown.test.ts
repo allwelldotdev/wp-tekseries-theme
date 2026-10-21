@@ -4,6 +4,7 @@ import {
 	daysLine,
 	line,
 	read,
+	zonedTime,
 	type Words,
 } from '../../wp-content/plugins/tekseries-blocks/src/deadline-countdown/time';
 
@@ -104,5 +105,65 @@ describe( 'deadline countdown', () => {
 		expect( line( read( deadline, deadline ), words ) ).toBe(
 			'Applications are closed.'
 		);
+	} );
+} );
+
+// A deadline's date and time are read in the page's time zone. The expected
+// moments are the ones PHP 8.2 gives (tekseries_blocks_parse_deadline()).
+describe( 'deadline time zone', () => {
+	it( 'reads Nigerian time as UTC+1', () => {
+		expect( zonedTime( '2026-12-01T23:59:59', 'Africa/Lagos' ) ).toBe(
+			at( '2026-12-01T22:59:59Z' )
+		);
+	} );
+
+	it( 'takes the seconds as 0 when they are left out', () => {
+		expect( zonedTime( '2026-12-01T23:59', 'Africa/Lagos' ) ).toBe(
+			at( '2026-12-01T22:59:00Z' )
+		);
+	} );
+
+	it( 'follows summer time', () => {
+		expect( zonedTime( '2026-01-15T12:00:00', 'Europe/London' ) ).toBe(
+			at( '2026-01-15T12:00:00Z' )
+		);
+		expect( zonedTime( '2026-07-15T12:00:00', 'Europe/London' ) ).toBe(
+			at( '2026-07-15T11:00:00Z' )
+		);
+		expect( zonedTime( '2026-03-07T12:00:00', 'America/New_York' ) ).toBe(
+			at( '2026-03-07T17:00:00Z' )
+		);
+		expect( zonedTime( '2026-03-09T12:00:00', 'America/New_York' ) ).toBe(
+			at( '2026-03-09T16:00:00Z' )
+		);
+	} );
+
+	it( 'reads a zone half an hour off the hour', () => {
+		expect( zonedTime( '2026-12-01T23:59:59', 'Asia/Kolkata' ) ).toBe(
+			at( '2026-12-01T18:29:59Z' )
+		);
+	} );
+
+	it( 'moves a time the clocks skip on, as PHP does', () => {
+		expect( zonedTime( '2026-03-08T02:30:00', 'America/New_York' ) ).toBe(
+			at( '2026-03-08T07:30:00Z' )
+		);
+		expect( zonedTime( '2026-03-29T01:30:00', 'Europe/London' ) ).toBe(
+			at( '2026-03-29T01:30:00Z' )
+		);
+	} );
+
+	it( 'reads a time the clocks repeat as PHP does', () => {
+		expect( zonedTime( '2026-11-01T01:30:00', 'America/New_York' ) ).toBe(
+			at( '2026-11-01T05:30:00Z' )
+		);
+		expect( zonedTime( '2026-10-25T01:30:00', 'Europe/London' ) ).toBe(
+			at( '2026-10-25T01:30:00Z' )
+		);
+	} );
+
+	it( 'gives NaN for a zone or a value it cannot read', () => {
+		expect( zonedTime( '2026-12-01T23:59:59', 'Mars/Base' ) ).toBeNaN();
+		expect( zonedTime( '1 December 2026', 'Africa/Lagos' ) ).toBeNaN();
 	} );
 } );

@@ -1,8 +1,9 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import type { BlockEditProps } from '@wordpress/blocks';
 import {
 	Button,
+	ComboboxControl,
 	DateTimePicker,
 	Notice,
 	PanelBody,
@@ -10,12 +11,29 @@ import {
 	SelectControl,
 } from '@wordpress/components';
 import { useEntityProp } from '@wordpress/core-data';
+import { dateI18n } from '@wordpress/date';
 
 import { two } from '../event-countdown/time';
-import { daysLine, read, type Words } from './time';
+import { daysLine, read, zonedTime, type Words } from './time';
+import './editor.scss';
 
 export type Attributes = { view: 'tiles' | 'days' };
-type DeadlineMeta = { tekseries_deadline?: string };
+type DeadlineMeta = {
+	tekseries_deadline?: string;
+	tekseries_deadline_timezone?: string;
+};
+
+declare global {
+	interface Window {
+		tekseriesDeadline?: {
+			zones: { value: string; label: string }[];
+			defaultZone: string;
+		};
+	}
+}
+
+const ZONES = window.tekseriesDeadline?.zones ?? [];
+const DEFAULT_ZONE = window.tekseriesDeadline?.defaultZone ?? 'Africa/Lagos';
 
 type Props = BlockEditProps< Attributes > & {
 	context: { postId?: number; postType?: string };
@@ -32,9 +50,15 @@ const WORDS: Pick< Words, 'left' | 'lastDay' > = {
 	lastDay: __( 'Last day to apply', 'tekseries-blocks' ),
 };
 
-// The deadline is read in Nigerian time, which keeps UTC+1 all year
-// (tekseries_blocks_event_timezone()).
-const moment = ( value: string ) => Date.parse( `${ value }+01:00` );
+// The picker has no seconds. A deadline picked at :59 closes at the end of
+// that minute, so 11:59 PM is the last moment of the day; any other minute
+// closes as it starts.
+const withSeconds = ( value: string ) =>
+	value
+		? `${ value.slice( 0, 16 ) }:${
+				value.slice( 14, 16 ) === '59' ? '59' : '00'
+			}`
+		: '';
 
 // Sets the page's deadline (page meta, saved with the page) and previews the
 // countdown as it stands when the editor opens; it doesn't tick here.
@@ -50,16 +74,23 @@ export default function Edit( {
 		'meta',
 		onPage ? postId : undefined
 	);
-	const deadline = onPage
-		? ( ( ( meta ?? {} ) as DeadlineMeta ).tekseries_deadline ?? '' )
-		: '';
+	const saved = ( onPage ? ( meta ?? {} ) : {} ) as DeadlineMeta;
+	const deadline = saved.tekseries_deadline ?? '';
+	const ownZone = saved.tekseries_deadline_timezone ?? '';
+	const zone = ownZone || DEFAULT_ZONE;
 	const setDeadline = ( value: string ) =>
-		setMeta( { ...meta, tekseries_deadline: value } );
+		setMeta( { ...meta, tekseries_deadline: withSeconds( value ) } );
+	const setZone = ( value: string ) =>
+		setMeta( {
+			...meta,
+			tekseries_deadline_timezone: value === DEFAULT_ZONE ? '' : value,
+		} );
 	const blockProps = useBlockProps( {
 		className: `is-${ view } is-live`,
 	} );
 
-	const reading = deadline ? read( moment( deadline ), Date.now() ) : null;
+	const moment = deadline ? zonedTime( deadline, zone ) : NaN;
+	const reading = Number.isNaN( moment ) ? null : read( moment, Date.now() );
 
 	let preview;
 	if ( ! reading ) {
@@ -121,7 +152,10 @@ export default function Edit( {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Deadline', 'tekseries-blocks' ) }>
+				<PanelBody
+					title={ __( 'Deadline', 'tekseries-blocks' ) }
+					className="ts-deadline-panel"
+				>
 					{ onPage ? (
 						<>
 							<DateTimePicker
@@ -131,11 +165,45 @@ export default function Edit( {
 								}
 								is12Hour
 							/>
+							<ComboboxControl
+								__next40pxDefaultSize
+								__nextHasNoMarginBottom
+								label={ __( 'Time zone', 'tekseries-blocks' ) }
+								value={ zone }
+								options={ ZONES }
+								onChange={ ( value ) => setZone( value ?? '' ) }
+								allowReset={ false }
+							/>
+							{ ownZone && (
+								<Button
+									__next40pxDefaultSize
+									variant="link"
+									onClick={ () => setZone( '' ) }
+								>
+									{ __(
+										'Use Nigerian time (WAT)',
+										'tekseries-blocks'
+									) }
+								</Button>
+							) }
 							<p className="components-base-control__help">
-								{ __(
-									'In Nigerian time (WAT), for the whole page. At this moment the countdown ends, blocks with the class ts-when-open hide and blocks with ts-when-closed show. Saved with the page. When you change it, also change the dates written in the page’s text.',
-									'tekseries-blocks'
-								) }
+								{ reading
+									? sprintf(
+											/* translators: %s: the moment the deadline passes, e.g. "December 1, 2026, 11:59:59 PM WAT". */
+											__(
+												'Applications close at %s, for the whole page. Then the countdown ends, blocks with the class ts-when-open hide and blocks with ts-when-closed show. Saved with the page. When you change it, also change the dates written in the page’s text.',
+												'tekseries-blocks'
+											),
+											dateI18n(
+												'F j, Y, g:i:s A T',
+												moment,
+												zone
+											)
+										)
+									: __(
+											'Pick the day and time applications close, and the time zone they are given in. Saved with the page.',
+											'tekseries-blocks'
+										) }
 							</p>
 							{ deadline && (
 								<Button

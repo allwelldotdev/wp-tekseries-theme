@@ -6,7 +6,9 @@ import {
 } from '@wordpress/e2e-test-utils-playwright';
 
 type Linked = { id: number; link: string };
-type Saved = { meta: { tekseries_deadline: string } };
+type Saved = {
+	meta: { tekseries_deadline: string; tekseries_deadline_timezone: string };
+};
 // The page's clock as the test sets it (see "swaps the blocks at zero").
 type Clocked = Window & { e2eClock: { time: number } };
 // What the stand-in for Formbricks' script writes down.
@@ -308,6 +310,53 @@ test.describe( 'deadline countdown', () => {
 		await context.close();
 	} );
 
+	test( 'reads the deadline in the page’s time zone', async ( {
+		browser,
+		requestUtils,
+	} ) => {
+		// 1 December 2099, 11:59:59 PM in New York (EST, UTC-5).
+		const made = await requestUtils.rest< Linked >( {
+			method: 'POST',
+			path: '/wp/v2/pages',
+			data: {
+				title: 'E2E Deadline Zone',
+				status: 'publish',
+				content: CONTENT,
+				meta: {
+					tekseries_deadline: '2099-12-01T23:59:59',
+					tekseries_deadline_timezone: 'America/New_York',
+				},
+			},
+		} );
+		pages.push( made.id );
+		const context = await browser.newContext( VISITOR );
+		const { page } = await open( context, made.link );
+		const state = await page
+			.locator( '.wp-block-tekseries-deadline-countdown.is-tiles' )
+			.getAttribute( 'data-wp-context' );
+		expect( JSON.parse( state ?? '{}' ).deadline ).toBe(
+			Date.parse( '2099-12-02T04:59:59Z' )
+		);
+		await context.close();
+	} );
+
+	test( 'keeps only a time zone it knows', async ( { requestUtils } ) => {
+		const made = await requestUtils.rest< Linked & Saved >( {
+			method: 'POST',
+			path: '/wp/v2/pages',
+			data: {
+				title: 'E2E Deadline Bad Zone',
+				status: 'draft',
+				meta: {
+					tekseries_deadline: '2099-12-01T23:59:59',
+					tekseries_deadline_timezone: 'Mars/Base',
+				},
+			},
+		} );
+		pages.push( made.id );
+		expect( made.meta.tekseries_deadline_timezone ).toBe( '' );
+	} );
+
 	test( 'a page without a deadline is open and shows no countdown', async ( {
 		browser,
 		requestUtils,
@@ -426,6 +475,18 @@ test.describe( 'deadline countdown', () => {
 		await panel.getByRole( 'spinbutton', { name: 'Minutes' } ).fill( '59' );
 		await panel.getByRole( 'radio', { name: 'PM' } ).click();
 		await expect( block.locator( '.ts-deadline__tile' ) ).toHaveCount( 4 );
+		await expect( panel ).toContainText(
+			'Applications close at December 1, 2099, 11:59:59 PM WAT'
+		);
+
+		const zone = panel.getByRole( 'combobox', { name: 'Time zone' } );
+		await zone.fill( 'New York' );
+		await page
+			.getByRole( 'option', { name: 'America/New York', exact: true } )
+			.click();
+		await expect( panel ).toContainText(
+			'Applications close at December 1, 2099, 11:59:59 PM EST'
+		);
 
 		await panel
 			.getByRole( 'combobox', { name: 'Show' } )
@@ -453,8 +514,12 @@ test.describe( 'deadline countdown', () => {
 			path: `/wp/v2/pages/${ id }`,
 			params: { context: 'edit' },
 		} );
-		// The picker has no seconds: 11:59 PM is saved as 23:59:00.
-		expect( saved.meta.tekseries_deadline ).toBe( '2099-12-01T23:59:00' );
+		// The picker has no seconds: a time at :59 closes at the end of
+		// that minute.
+		expect( saved.meta.tekseries_deadline ).toBe( '2099-12-01T23:59:59' );
+		expect( saved.meta.tekseries_deadline_timezone ).toBe(
+			'America/New_York'
+		);
 		expect( await editor.getBlocks() ).toMatchObject( [
 			{
 				name: 'tekseries/deadline-countdown',

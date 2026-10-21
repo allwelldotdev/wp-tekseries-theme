@@ -1,0 +1,9 @@
+// The date picker notes the site's own time zone when it differs from the
+// browser's. The deadline is read in the zone chosen under it instead.
+.ts-deadline-panel .components-datetime__timezone {
+	display: none;
+}
+
+.ts-deadline-panel .components-combobox-control {
+	margin-top: 16px;
+}

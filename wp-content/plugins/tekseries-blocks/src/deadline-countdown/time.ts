@@ -37,6 +37,73 @@ export const read = ( deadline: number, now: number ): Reading => {
 	};
 };
 
+// A date and time as numbers, [ year, month, day, hour, minute, second ],
+// read as if they were UTC.
+const asUtc = ( [
+	year = 1970,
+	month = 1,
+	day = 1,
+	hour = 0,
+	minute = 0,
+	second = 0,
+]: number[] ) => Date.UTC( year, month - 1, day, hour, minute, second );
+
+const UNITS = [ 'year', 'month', 'day', 'hour', 'minute', 'second' ];
+
+// How far a zone's clock is ahead of UTC at a moment, in milliseconds.
+const offsetAt = ( zone: string, moment: number ): number => {
+	const parts = new Intl.DateTimeFormat( 'en-US', {
+		timeZone: zone,
+		hourCycle: 'h23',
+		year: 'numeric',
+		month: 'numeric',
+		day: 'numeric',
+		hour: 'numeric',
+		minute: 'numeric',
+		second: 'numeric',
+	} ).formatToParts( moment );
+	const wall = asUtc(
+		UNITS.map( ( unit ) =>
+			Number( parts.find( ( { type } ) => type === unit )?.value )
+		)
+	);
+	return wall - Math.floor( moment / SECOND ) * SECOND;
+};
+
+/**
+ * Reads a deadline's date and time in a time zone, as the server does
+ * (tekseries_blocks_parse_deadline()). A time a clock change skips is moved
+ * on by the change, as PHP moves it.
+ *
+ * @param value "YYYY-MM-DDTHH:MM:SS", or without the seconds.
+ * @param zone  A time zone name, e.g. "Africa/Lagos".
+ * @return The moment in milliseconds since 1970, or NaN when the value or
+ *         the zone is not valid.
+ */
+export const zonedTime = ( value: string, zone: string ): number => {
+	const found = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(
+		value
+	);
+	if ( ! found ) {
+		return NaN;
+	}
+	const wall = asUtc(
+		found.slice( 1 ).map( ( part ) => Number( part ?? 0 ) )
+	);
+	try {
+		// Guess the offset at the wall time read as UTC, take it at the
+		// moment that guess gives, then at the moment that one gives: the
+		// two agree except in an hour a clock change skips.
+		const before = offsetAt( zone, wall - offsetAt( zone, wall ) );
+		const after = offsetAt( zone, wall - before );
+		// In a skipped hour PHP takes the offset from before the change,
+		// the smaller one, which moves the time on.
+		return wall - Math.min( before, after );
+	} catch {
+		return NaN;
+	}
+};
+
 /**
  * The words the server sends. A count comes as [ one, many ] with "%d" for
  * the number; "%s" and "%1$s" to "%3$s" stand for the parts of a sentence.
