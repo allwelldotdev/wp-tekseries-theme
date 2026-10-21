@@ -6,7 +6,8 @@
  * written "Y-m-d\TH:i:s" and read in the page's time zone, the meta
  * `tekseries_deadline_timezone`, or without one in Nigerian time like event
  * dates (tekseries_blocks_event_timezone()). The Deadline Countdown block
- * (src/deadline-countdown) counts down to it. Blocks with the class
+ * (src/deadline-countdown) counts down to it, and text connected to the
+ * `tekseries/page-deadline` binding source writes it out. Blocks with the class
  * `ts-when-open` show only before it and blocks with `ts-when-closed` only
  * after it: the server picks when it makes the page, and on a page made
  * before the deadline the script swaps them at zero.
@@ -155,6 +156,77 @@ function tekseries_blocks_deadline_editor_data(): void {
 	wp_add_inline_script( $handle, 'window.tekseriesDeadline = ' . wp_json_encode( $data ) . ';', 'before' );
 }
 add_action( 'enqueue_block_editor_assets', 'tekseries_blocks_deadline_editor_data' );
+
+/**
+ * Returns how the deadline is written in a page's text, as PHP date formats:
+ * the date and time, the date, or the time.
+ *
+ * @return array{datetime: string, date: string, time: string}
+ */
+function tekseries_blocks_deadline_formats(): array {
+	return array(
+		/* translators: Date and time format for a deadline, see https://www.php.net/manual/datetime.format.php. "T" is the time zone, e.g. WAT. */
+		'datetime' => __( 'F j, Y, g:i A T', 'tekseries-blocks' ),
+		/* translators: Date format for a deadline, see https://www.php.net/manual/datetime.format.php. */
+		'date'     => __( 'F j, Y', 'tekseries-blocks' ),
+		/* translators: Time format for a deadline, see https://www.php.net/manual/datetime.format.php. "T" is the time zone, e.g. WAT. */
+		'time'     => __( 'g:i A T', 'tekseries-blocks' ),
+	);
+}
+
+/**
+ * Writes a page's deadline in its time zone, e.g. "December 1, 2026, 11:59
+ * PM WAT".
+ *
+ * @param int    $post_id Page ID.
+ * @param string $format  "datetime", "date" or "time".
+ * @return string|null Null for a page without a deadline.
+ */
+function tekseries_blocks_deadline_text( int $post_id, string $format ): ?string {
+	$zone = tekseries_blocks_deadline_timezone( $post_id );
+	$at   = tekseries_blocks_parse_deadline( (string) get_post_meta( $post_id, 'tekseries_deadline', true ), $zone );
+	if ( ! $at ) {
+		return null;
+	}
+	$formats = tekseries_blocks_deadline_formats();
+	return wp_date( $formats[ $format ] ?? $formats['datetime'], $at->getTimestamp(), $zone );
+}
+
+/**
+ * Gives the text of a block connected to the `tekseries/page-deadline` source:
+ * the deadline of the page it is in, in the format its binding asks for,
+ * then an optional short ending such as ".". The editor writes the same
+ * text (src/deadline-tools/bindings.ts).
+ *
+ * @param array    $args  The binding's args: `format` and `after`.
+ * @param WP_Block $block The bound block.
+ * @return string|null Null keeps the block's own text: outside a page, or
+ *                     on a page without a deadline.
+ */
+function tekseries_blocks_deadline_binding_value( array $args, $block ): ?string {
+	$post_id = (int) ( $block->context['postId'] ?? get_the_ID() );
+	if ( 'page' !== get_post_type( $post_id ) ) {
+		return null;
+	}
+	$text = tekseries_blocks_deadline_text( $post_id, (string) ( $args['format'] ?? 'datetime' ) );
+	return null === $text ? null : esc_html( $text . (string) ( $args['after'] ?? '' ) );
+}
+
+/**
+ * Registers the `tekseries/page-deadline` binding source: a paragraph or heading
+ * connected to it shows the page's deadline and follows it.
+ */
+function tekseries_blocks_register_deadline_source(): void {
+	register_block_bindings_source(
+		'tekseries/page-deadline',
+		array(
+			'label'              => __( 'Page deadline', 'tekseries-blocks' ),
+			'get_value_callback' => 'tekseries_blocks_deadline_binding_value',
+			'uses_context'       => array( 'postId', 'postType' ),
+		)
+	);
+}
+add_action( 'init', 'tekseries_blocks_register_deadline_source' );
 
 /**
  * Works out what a page's deadline shows at a moment: the days, hours,
