@@ -26,6 +26,31 @@ function tekseries_enqueue_styles(): void {
 add_action( 'wp_enqueue_scripts', 'tekseries_enqueue_styles' );
 
 /**
+ * Takes out the stylesheet GoDaddy's platform plugin prints into the head on
+ * live. Its rules outrank the theme's on every form field and submit button,
+ * and they read colour presets this theme doesn't have, so fields lose their
+ * borders and backgrounds. It is echoed rather than enqueued, so it can only be
+ * removed from the head's output. Elsewhere nothing matches and nothing changes.
+ */
+function tekseries_strip_host_contrast_css(): void {
+	add_action(
+		'wp_head',
+		static function (): void {
+			ob_start();
+		},
+		PHP_INT_MIN
+	);
+	add_action(
+		'wp_head',
+		static function (): void {
+			echo preg_replace( '#<style\b[^>]*\bid=["\']wp-site-designer-contrast-fallback["\'][^>]*>.*?</style>\s*#s', '', (string) ob_get_clean() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the head WordPress already printed.
+		},
+		PHP_INT_MAX
+	);
+}
+add_action( 'template_redirect', 'tekseries_strip_host_contrast_css' );
+
+/**
  * Asks the browser for the two text fonts early, so the first paint is
  * already set in them and nothing shifts when they arrive. Only the Latin
  * files: the other ranges load when a page needs them.
