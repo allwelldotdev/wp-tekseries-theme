@@ -48,7 +48,7 @@ button{font-family:inherit}
           </div>
           <p style="margin:0;display:flex;align-items:flex-start;gap:8px;font-size:16px;line-height:1.5;color:#E5D3E0"><span class="ms" style="font-size:20px;color:#F4A261">event</span><span><strong style="color:#fff">Submission Deadline:</strong> December 1, 2026, 11:59 PM WAT</span></p>
           <span class="sr-only">{{ srCountdown }}</span>
-          <sc-if value="{{ isOpen }}" hint-placeholder-val="{{ true }}"><a id="maker-prize-apply" href="#" class="maker-prize-apply" style="width:max-content;box-sizing:border-box;display:flex;justify-content:center;align-items:center;gap:8px;padding:14px 26px;background:#F4A261;color:#2A1533;border-radius:999px;font-weight:700;font-size:17px" style-hover="background:#fff;color:#2A1533">Apply now<span class="ms" style="font-size:20px">arrow_forward</span></a></sc-if>
+          <sc-if value="{{ isOpen }}" hint-placeholder-val="{{ true }}"><a href="#" class="maker-prize-apply" style="width:max-content;box-sizing:border-box;display:flex;justify-content:center;align-items:center;gap:8px;padding:14px 26px;background:#F4A261;color:#2A1533;border-radius:999px;font-weight:700;font-size:17px" style-hover="background:#fff;color:#2A1533">Apply now<span class="ms" style="font-size:20px">arrow_forward</span></a></sc-if>
           <sc-if value="{{ isClosed }}" hint-placeholder-val="{{ false }}"><button type="button" disabled style="width:max-content;box-sizing:border-box;display:flex;justify-content:center;align-items:center;gap:8px;padding:14px 26px;background:rgba(255,255,255,.12);color:#E5D3E0;border:1.5px solid rgba(255,255,255,.3);border-radius:999px;font-family:inherit;font-weight:700;font-size:17px;cursor:not-allowed"><span class="ms" style="font-size:20px">lock</span>Applications closed</button></sc-if>
           <sc-if value="{{ isClosed }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:15px;line-height:1.55;color:#E5D3E0">Winners are announced beginning the first quarter of the new year.</p></sc-if>
         </div>
@@ -76,7 +76,7 @@ button{font-family:inherit}
         <p style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:28px;font-weight:700;line-height:1.25">Submission Deadline: December 1, 2026.</p>
       </div>
       <div style="display:flex;flex-direction:column;gap:10px;flex:none">
-          <sc-if value="{{ isOpen }}" hint-placeholder-val="{{ true }}"><a id="maker-prize-apply" href="#" class="maker-prize-apply" style="width:max-content;box-sizing:border-box;display:flex;justify-content:center;align-items:center;gap:8px;padding:14px 26px;background:#F4A261;color:#2A1533;border-radius:999px;font-weight:700;font-size:17px" style-hover="background:#fff;color:#2A1533">Apply now<span class="ms" style="font-size:20px">arrow_forward</span></a></sc-if>
+          <sc-if value="{{ isOpen }}" hint-placeholder-val="{{ true }}"><a href="#" class="maker-prize-apply" style="width:max-content;box-sizing:border-box;display:flex;justify-content:center;align-items:center;gap:8px;padding:14px 26px;background:#F4A261;color:#2A1533;border-radius:999px;font-weight:700;font-size:17px" style-hover="background:#fff;color:#2A1533">Apply now<span class="ms" style="font-size:20px">arrow_forward</span></a></sc-if>
           <sc-if value="{{ isClosed }}" hint-placeholder-val="{{ false }}"><button type="button" disabled style="width:max-content;box-sizing:border-box;display:flex;justify-content:center;align-items:center;gap:8px;padding:14px 26px;background:rgba(255,255,255,.12);color:#E5D3E0;border:1.5px solid rgba(255,255,255,.3);border-radius:999px;font-family:inherit;font-weight:700;font-size:17px;cursor:not-allowed"><span class="ms" style="font-size:20px">lock</span>Applications closed</button></sc-if>
       </div>
     </div>
@@ -97,7 +97,7 @@ button{font-family:inherit}
 class Component extends DCLogic {
   // WordPress: the Maker Prize page. The countdown runs to the submission deadline, Dec 1, 2026 23:59:59 WAT (UTC+1).
   // When it reaches zero, "Apply now" becomes a disabled "Applications closed" button on its own.
-  // "Apply now" keeps id="maker-prize-apply" (and class maker-prize-apply) with href="#" for the Formbricks click action.
+  // "Apply now" keeps class maker-prize-apply with href="#" for the Formbricks click action (no id: the button appears twice).
   state = { menuOpen: false, now: Date.now() };
   // In-page jumps (#id links): land each target just below the sticky header with 24px of breathing room,
   // whichever element is doing the scrolling (page, Play frame or canvas preview).
@@ -144,6 +144,7 @@ class Component extends DCLogic {
     const isOpen = left > 0;
     const s = Math.floor(left / 1000);
     const pad = n => String(n).padStart(2, '0');
+    const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
     const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
     const tiles = [{ value: pad(d), label: 'Days' }, { value: pad(h), label: 'Hours' }, { value: pad(m), label: 'Minutes' }, { value: pad(sec), label: 'Seconds' }];
     const nav = [['Who We Are', 'Tablet.dc.html#about'],['What We Do', 'Tablet.dc.html#services'],['News', 'NewsTablet.dc.html'],['Events', 'EventsTablet.dc.html'],['Gallery', 'GalleryTablet.dc.html'],['Team', 'Tablet.dc.html#team'],['Contact', 'ContactTablet.dc.html']]
@@ -152,8 +153,8 @@ class Component extends DCLogic {
     return {
       nav, tiles, isOpen, isClosed: !isOpen,
       tileColor: isOpen ? '#F4A261' : 'rgba(255,255,255,.45)',
-      ctaEyebrow: isOpen ? (d + (d === 1 ? ' day' : ' days') + ' left to apply') : 'Applications are closed',
-      srCountdown: isOpen ? ('Applications close in ' + d + ' days, ' + h + ' hours and ' + m + ' minutes.') : 'Applications are closed.',
+      ctaEyebrow: isOpen ? (d === 0 ? 'Last day to apply' : d + (d === 1 ? ' day' : ' days') + ' left to apply') : 'Applications are closed',
+      srCountdown: isOpen ? ('Applications close in ' + plural(d, 'day') + ', ' + plural(h, 'hour') + ' and ' + plural(m, 'minute') + '.') : 'Applications are closed.',
       menuOpen,
       menuIcon: menuOpen ? 'close' : 'menu',
       menuExpanded: menuOpen ? 'true' : 'false',

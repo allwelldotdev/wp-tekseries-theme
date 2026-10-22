@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TekSeries Event Post, ongoing - Tablet</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><style>:where([id]){scroll-margin-top:96px}</style><style>.ts-si{display:block;width:20px;height:20px;background:currentColor;-webkit-mask:var(--si) center/contain no-repeat;mask:var(--si) center/contain no-repeat}.ts-si-in{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/linkedin-in.svg)}.ts-si-fb{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/facebook-f.svg)}.ts-si-ig{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/instagram.svg)}.ts-si-wa{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/whatsapp.svg)}</style><link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&family=Onest:wght@400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBF7F9;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}a:hover{color:#E76F51}.ms{font-family:'Material Symbols Rounded';font-weight:400;font-style:normal;line-height:1;display:inline-block;letter-spacing:normal;text-transform:none;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
+.clamp3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+button{font-family:inherit}
+.ts-live{position:relative;display:inline-block;width:8px;height:8px;border-radius:50%;background:#E76F51;flex:none}.ts-live::after{content:'';position:absolute;inset:0;border-radius:50%;background:inherit;animation:ts-pulse 1.8s cubic-bezier(0.165, 0.84, 0.44, 1) infinite}@keyframes ts-pulse{from{transform:scale(1);opacity:.6}to{transform:scale(2.6);opacity:0}}@media (prefers-reduced-motion:reduce){.ts-live::after{animation:none}}
+</style></helmet>
+<div style="width:834px;height:3000px;font-family:'Onest',sans-serif;color:#2A1533;background:#FBF7F9;font-variant-ligatures:none">
+  <header style="position:sticky;top:0;z-index:5;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid #EADFE6;flex-wrap:wrap">
+    <img src="https://tekseries.com/wp-content/uploads/2025/08/tekseries_logo_no0goj.png" alt="TekSeries" style="height:40px;width:auto">
+    <button type="button" onClick="{{ toggleMenu }}" aria-label="Menu" aria-expanded="{{ menuExpanded }}" style="width:44px;height:44px;border-radius:50%;border:1px solid #EADFE6;background:#F1E6EE;color:#4A1D5E;display:grid;place-items:center;cursor:pointer"><span class="ms" style="font-size:24px">{{ menuIcon }}</span></button>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <nav aria-label="Main" style="display:flex;flex-basis:100%;flex-direction:column;gap:4px;padding:12px 0 8px;font-size:17px;font-weight:600;color:#4A1D5E">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="7"><a href="{{ n.href }}" aria-current="{{ n.current }}" onClick="{{ closeMenu }}" style="padding:12px 14px;border-radius:14px;background:{{ n.bg }}" style-hover="background:#F1E6EE">{{ n.label }}</a></sc-for>
+        <div style="display:flex;gap:8px;padding:8px 0 0">
+          <a href="JobSeriesTablet.dc.html" style="flex:1;text-align:center;padding:12px 18px;border-radius:999px;font-size:16px;font-weight:700;color:#4A1D5E;background:#F1E6EE">Job Series</a>
+          <a href="JobSubmitSignInTablet.dc.html" style="flex:1;text-align:center;padding:12px 18px;background:#4A1D5E;border-radius:999px;font-size:16px;font-weight:700;color:#fff">Post A Job</a>
+        </div>
+      </nav>
+    </sc-if>
+  </header>
+
+  <section style="padding:24px 24px 0">
+    <div style="position:relative;overflow:hidden;background:{{ post.bg }};color:{{ post.fg }};border-radius:28px;display:flex">
+      <span class="ms" aria-hidden="true" style="position:absolute;right:-24px;bottom:-44px;font-size:260px;color:{{ post.deco }}">{{ post.icon }}</span>
+      <div style="position:relative;padding:40px 32px;max-width:680px;display:flex;flex-direction:column;gap:16px">
+        <nav aria-label="Breadcrumb" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;font-weight:600;color:{{ post.sub }}"><a href="Tablet.dc.html" style="display:flex;align-items:center;gap:6px"><span class="ms" style="font-size:18px">home</span>Home</a><span aria-hidden="true">/</span><a href="EventsTablet.dc.html">Events</a><span aria-hidden="true">/</span><span aria-current="page" style="color:{{ post.fg }}">Eziama Junior Computer Bootcamp</span></nav>
+        <div style="position:relative;display:flex;flex-wrap:wrap;gap:8px"><span style="width:max-content;display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;background:{{ post.chipBg }};color:{{ post.chipFg }};font-size:13px;font-weight:700"><span class="ms" style="font-size:17px">{{ post.typeIcon }}</span>{{ post.type }}</span><sc-if value="{{ post.ongoing }}" hint-placeholder-val="{{ false }}"><span style="position:relative;width:max-content;display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;background:#fff;color:#4A1D5E;font-size:13px;font-weight:700"><span class="ts-live" aria-hidden="true"></span>Ongoing</span></sc-if></div>
+        <h1 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-weight:800;font-size:38px;line-height:1.08;letter-spacing:-.03em;text-wrap:balance">Eziama Junior Computer Bootcamp 2023</h1>
+        <div style="display:flex;flex-wrap:wrap;gap:8px 22px;font-size:16px;font-weight:600"><sc-for list="{{ heroMeta }}" as="m" hint-placeholder-count="3"><span style="display:flex;align-items:center;gap:7px"><span class="ms" style="font-size:20px;color:{{ post.accent }}">{{ m.icon }}</span>{{ m.text }}</span></sc-for></div>
+        <div style="display:flex;gap:12px;margin-top:4px">
+          <a href="ContactTablet.dc.html#support" style="display:flex;align-items:center;gap:8px;padding:13px 22px;background:{{ post.btnBg }};color:{{ post.btnFg }};border-radius:999px;font-weight:700;font-size:16px" style-hover="opacity:.88">Support this workshop<span class="ms" style="font-size:19px">volunteer_activism</span></a>
+          <a href="EventsTablet.dc.html" style="display:flex;align-items:center;gap:8px;padding:13px 22px;border:1.5px solid {{ post.line }};color:{{ post.fg }};border-radius:999px;font-weight:700;font-size:16px" style-hover="opacity:.8"><span class="ms" style="font-size:19px">arrow_back</span>All events</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:24px 24px 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start">
+    <div style="background:#4A1D5E;color:#F5E9F1;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px">
+      <span style="font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#F4A261">Event details</span>
+      <dl style="margin:0;display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ details }}" as="d" hint-placeholder-count="5">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="flex:none;width:38px;height:38px;border-radius:13px;background:rgba(255,255,255,.1);display:grid;place-items:center;color:#F4A261"><span class="ms" style="font-size:20px">{{ d.icon }}</span></span>
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><dt style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E5D3E0">{{ d.label }}</dt><dd style="margin:0;font-size:16px;font-weight:600;color:#fff;overflow-wrap:anywhere">{{ d.value }}</dd></div>
+          </div>
+        </sc-for>
+      </dl>
+      <a href="ContactTablet.dc.html#support" style="display:flex;justify-content:center;align-items:center;gap:8px;padding:13px 22px;background:#F4A261;color:#2A1533;border-radius:999px;font-weight:700;font-size:16px" style-hover="background:#fff">Support this workshop<span class="ms" style="font-size:19px">volunteer_activism</span></a>
+      <div style="border-top:1px solid rgba(255,255,255,.15);padding-top:14px;font-size:14px;line-height:1.5;color:#E5D3E0">Questions? Email <a href="mailto:team@tekseries.com" style="color:#fff;font-weight:700;text-decoration:underline">team@tekseries.com</a></div>
+    </div>
+    <figure style="margin:0;background:#fff;border:1px solid #EADFE6;border-radius:24px;padding:10px;display:flex;flex-direction:column;gap:10px">
+      <img src="https://tekseries.com/wp-content/uploads/2023/10/Eziama-Junior-Camp.png" alt="Eziama Junior Computer Bootcamp poster" style="width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:18px;display:block">
+      <figcaption style="padding:0 6px 4px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600;color:#5B4466"><span>Event poster</span><a href="https://tekseries.com/wp-content/uploads/2023/10/Eziama-Junior-Camp.png" target="_blank" rel="noopener" style="min-height:32px;display:flex;align-items:center;gap:4px;color:#4A1D5E;font-weight:700">View full size<span class="ms" style="font-size:17px">open_in_full</span></a></figcaption>
+    </figure>
+  </section>
+
+  <article style="padding:40px 24px 0;display:flex;flex-direction:column;gap:40px">
+    <div style="display:flex;flex-direction:column;gap:14px;font-size:16px;line-height:1.62;color:#3D2A47">
+      <span style="font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E76F51">About this event</span>
+      <p style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:24px;font-weight:700;line-height:1.25;color:#4A1D5E">A case study in perseverance to progressive impact.</p>
+      <p style="margin:0">This is an interactive learning program, designed as an introduction and supplement to current school level computer skills, helping children build a foundation for today’s job market.</p>
+      <p style="margin:0">The camp is comprised of 8-16 year olds, some of whom had never turned on a computer when they first started the after school program. 12-18 months from finding the power button on a laptop, most of the kids now code and design games using Scratch &amp; PictoBlox AI programming, build an entire Robot Car and design Event Cards and Flyers.</p>
+      <p style="margin:0">This reaffirms what we all know, that talent knows no boundaries and is the reason, we remain even more committed to improving and expanding our program.</p>
+    </div>
+
+
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <h2 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:30px;font-weight:800;letter-spacing:-.02em;color:#4A1D5E">What the kids learn</h2>
+      <ul style="margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px">
+        <sc-for list="{{ expect }}" as="x" hint-placeholder-count="4">
+          <li style="background:#fff;border:1px solid #EADFE6;border-radius:22px;padding:18px;display:flex;align-items:flex-start;gap:12px">
+            <span style="flex:none;width:44px;height:44px;border-radius:15px;background:#F1E6EE;color:#4A1D5E;display:grid;place-items:center"><span class="ms" style="font-size:22px">{{ x.icon }}</span></span>
+            <span style="padding-top:10px;font-size:15px;font-weight:600;line-height:1.45;color:#2A1533">{{ x.text }}</span>
+          </li>
+        </sc-for>
+      </ul>
+    </div>
+
+    <div style="background:#F4A261;color:#2A1533;border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase">Spread the word</span>
+        <p style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:22px;font-weight:700;line-height:1.3">Know a young learner in Eziama? Share this workshop and help us keep it growing.</p>
+      </div>
+      <div style="display:flex;gap:10px"><sc-for list="{{ shares }}" as="s" hint-placeholder-count="3"><a href="#" aria-label="{{ s.label }}" style="width:44px;height:44px;border-radius:50%;background:#2A1533;color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px" style-hover="background:#4A1D5E"><span class="ts-si ts-si-{{ s.mark }}" aria-hidden="true"></span></a></sc-for></div>
+    </div>
+  </article>
+
+  <section style="padding:56px 24px 48px;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+      <h2 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:36px;font-weight:800;letter-spacing:-.03em;color:#4A1D5E">More events</h2>
+      <a href="EventsTablet.dc.html" style="display:flex;align-items:center;gap:6px;padding:11px 18px;border-radius:999px;background:#F1E6EE;color:#4A1D5E;font-weight:700;font-size:15px" style-hover="background:#E5D3E0">View all<span class="ms" style="font-size:19px">arrow_forward</span></a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px">
+      <sc-for list="{{ more }}" as="e" hint-placeholder-count="2">
+        <article style="background:#fff;border:1px solid #EADFE6;border-radius:24px;padding:10px;display:flex;flex-direction:column;gap:16px" style-hover="border-color:#F4A261">
+          <div style="position:relative;overflow:hidden;aspect-ratio:16/10;border-radius:18px;background:{{ e.bg }};color:{{ e.fg }};padding:18px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box">
+            <img src="{{ e.img }}" alt="" style="display:{{ e.imgDisplay }};position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top"><span aria-hidden="true" style="display:{{ e.imgDisplay }};position:absolute;inset:0;background:{{ e.overlay }}"></span>
+            <span class="ms" aria-hidden="true" style="position:absolute;right:-14px;bottom:-24px;font-size:160px;color:{{ e.deco }}">{{ e.icon }}</span>
+            <span style="position:relative;width:max-content;display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:999px;background:{{ e.chipBg }};color:{{ e.chipFg }};font-size:12px;font-weight:700"><span class="ms" style="font-size:15px">{{ e.typeIcon }}</span>{{ e.type }}</span>
+            <div style="position:relative;display:flex;align-items:baseline;gap:8px"><span style="font-family:'Schibsted Grotesk',sans-serif;font-size:60px;font-weight:800;line-height:.9;letter-spacing:-.04em">{{ e.day }}</span><span style="font-family:'Schibsted Grotesk',sans-serif;font-size:16px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:{{ e.accent }}">{{ e.monthYear }}</span></div>
+          </div>
+          <div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:9px;flex:1">
+            <h3 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:20px;font-weight:700;line-height:1.25;color:#4A1D5E">{{ e.title }}</h3>
+            <div style="display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;font-weight:600;color:#5B4466"><span style="display:flex;align-items:center;gap:5px"><span class="ms" style="font-size:17px">calendar_month</span>{{ e.date }}</span><span style="display:flex;align-items:center;gap:5px"><span class="ms" style="font-size:17px">{{ e.typeIcon }}</span>{{ e.type }}</span></div>
+            <p class="clamp3" style="margin:0;font-size:15px;line-height:1.6;color:#3D2A47">{{ e.excerpt }}</p>
+            <a href="#" style="margin-top:auto;padding-top:6px;min-height:32px;width:max-content;display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;color:#4A1D5E">Read more<span class="ms" style="font-size:19px">arrow_forward</span></a>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </section>
+
+  <footer style="padding:0 24px 28px;display:flex;flex-direction:column;gap:18px">
+    <div style="background:#4A1D5E;color:#E5D3E0;border-radius:32px;padding:32px;display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start">
+      <div style="grid-column:span 2;display:flex;flex-direction:column;gap:12px"><div style="font-family:'Schibsted Grotesk',sans-serif;font-size:32px;font-weight:800;color:#fff;line-height:1.05;letter-spacing:-.02em">Share. Create. <span style="color:#F4A261">Solve.</span></div><p style="margin:0;font-size:15px;line-height:1.6;max-width:320px">Preparing underserved Nigerian youth for the future of work and innovation.</p></div>
+      <div style="display:flex;flex-direction:column;gap:9px;font-size:15px"><div style="font-weight:700;color:#fff;margin-bottom:5px">Explore</div><a href="Tablet.dc.html#about">Who We Are</a><a href="Tablet.dc.html#services">What We Do</a><a href="NewsTablet.dc.html">News</a><a href="EventsTablet.dc.html">Events</a><a href="GalleryTablet.dc.html">Gallery</a></div>
+      <div style="display:flex;flex-direction:column;gap:9px;font-size:15px"><div style="font-weight:700;color:#fff;margin-bottom:5px">Job Series</div><a href="JobSeriesTablet.dc.html">Find a job</a><a href="JobSubmitSignInTablet.dc.html">Post a job</a><a href="ContactTablet.dc.html#support">Support our work</a><a href="ContactTablet.dc.html">Contact</a></div>
+      <div style="display:flex;flex-direction:column;gap:11px;font-size:15px"><div style="font-weight:700;color:#fff;margin-bottom:5px">Find us on social media</div><div style="display:flex;gap:10px"><sc-for list="{{ socials }}" as="s" hint-placeholder-count="3"><a href="{{ s.href }}" aria-label="{{ s.name }}" style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);display:grid;place-items:center;font-weight:800;font-size:14px;color:#fff" style-hover="background:#F4A261;color:#2A1533"><span class="ts-si ts-si-{{ s.mark }}" aria-hidden="true"></span></a></sc-for></div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:#5B4466;padding:0 12px"><span style="display:flex;flex-wrap:wrap;gap:4px 14px"><span>Copyright © TekSeries 2026</span><span>CR No. 9920315.</span><span>Designed and developed by <a href="https://allwell.dev" target="_blank" rel="noopener" style="font-weight:700;color:#4A1D5E;text-decoration:underline;text-underline-offset:3px">Allwell</a></span></span><span style="display:flex;gap:16px"><a href="TermsTablet.dc.html">Terms and Conditions</a><a href="PrivacyTablet.dc.html">Privacy Policy</a></span></div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":834,"height":3000}}'>
+class Component extends DCLogic {
+  // In-page jumps (#id links): land each target just below the sticky header with 24px of breathing room,
+  // whichever element is doing the scrolling (page, Play frame or canvas preview).
+  componentDidMount() {
+    this._onJump = e => this._jump(e);
+    document.addEventListener('click', this._onJump, true);
+    const h = (window.location && window.location.hash || '').slice(1);
+    if (h && document.getElementById(h)) setTimeout(() => this._scrollTo(h, false), 60);
+  }
+  componentWillUnmount() { document.removeEventListener('click', this._onJump, true); }
+  _jump(e) {
+    const a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const id = a.getAttribute('href').slice(1);
+    if (!id || !document.getElementById(id)) return;
+    e.preventDefault(); e.stopPropagation();
+    if (this.state && this.state.menuOpen) this.setState({ menuOpen: false });
+    requestAnimationFrame(() => requestAnimationFrame(() => this._scrollTo(id, true)));
+  }
+  _scrollTo(id, animate) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const header = document.querySelector('header');
+    const offset = (header ? header.getBoundingClientRect().height : 72) + 24;
+    const smooth = animate && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    let sc = el.parentElement;
+    while (sc && !(/(auto|scroll)/.test(getComputedStyle(sc).overflowY) && sc.scrollHeight > sc.clientHeight)) sc = sc.parentElement;
+    if (!sc) sc = document.scrollingElement || document.documentElement;
+    if (sc.scrollHeight > sc.clientHeight) {
+      const base = sc === document.scrollingElement || sc === document.documentElement ? 0 : sc.getBoundingClientRect().top;
+      const top = el.getBoundingClientRect().top - base + sc.scrollTop - offset;
+      sc.scrollTo({ top: Math.max(0, top), behavior: smooth ? 'smooth' : 'auto' });
+    } else {
+      el.style.scrollMarginTop = offset + 'px';
+      el.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'auto' });
+    }
+  }
+  state = { menuOpen: false };
+  renderVals() {
+    const tones = {
+      plum:    { bg: '#4A1D5E', fg: '#FFFFFF', accent: '#F4A261', deco: 'rgba(255,255,255,.08)', chipBg: '#F4A261', chipFg: '#2A1533', overlay: 'linear-gradient(90deg,rgba(74,29,94,.94) 0%,rgba(74,29,94,.72) 45%,rgba(74,29,94,.15) 100%)' },
+      saffron: { bg: '#F4A261', fg: '#2A1533', accent: '#4A1D5E', deco: 'rgba(74,29,94,.12)',    chipBg: '#2A1533', chipFg: '#FFFFFF', overlay: 'linear-gradient(90deg,rgba(244,162,97,.94) 0%,rgba(244,162,97,.72) 45%,rgba(244,162,97,.15) 100%)' },
+      lilac:   { bg: '#F1E6EE', fg: '#4A1D5E', accent: '#2A1533', deco: 'rgba(74,29,94,.08)',    chipBg: '#4A1D5E', chipFg: '#FFFFFF', overlay: 'linear-gradient(90deg,rgba(241,230,238,.94) 0%,rgba(241,230,238,.72) 45%,rgba(241,230,238,.15) 100%)' },
+      ink:     { bg: '#2A1533', fg: '#FFFFFF', accent: '#F4A261', deco: 'rgba(255,255,255,.07)', chipBg: '#F1E6EE', chipFg: '#4A1D5E', overlay: 'linear-gradient(90deg,rgba(42,21,51,.94) 0%,rgba(42,21,51,.72) 45%,rgba(42,21,51,.15) 100%)' }
+    };
+    // Each post owns one tone (post meta set at publish, see the Events listing). It colours the post's card everywhere
+    // and this page's solid banner, so the card and the banner always match.
+    const bannerTones = {
+      plum:    { bg: '#4A1D5E', fg: '#FFFFFF', sub: '#E5D3E0', accent: '#F4A261', chipBg: '#F4A261', chipFg: '#2A1533', btnBg: '#F4A261', btnFg: '#2A1533', line: 'rgba(255,255,255,.7)', deco: 'rgba(255,255,255,.08)' },
+      saffron: { bg: '#F4A261', fg: '#2A1533', sub: '#2A1533', accent: '#4A1D5E', chipBg: '#2A1533', chipFg: '#FFFFFF', btnBg: '#2A1533', btnFg: '#FFFFFF', line: 'rgba(42,21,51,.55)', deco: 'rgba(74,29,94,.12)' },
+      lilac:   { bg: '#F1E6EE', fg: '#4A1D5E', sub: '#5B4466', accent: '#4A1D5E', chipBg: '#4A1D5E', chipFg: '#FFFFFF', btnBg: '#4A1D5E', btnFg: '#FFFFFF', line: 'rgba(74,29,94,.45)', deco: 'rgba(74,29,94,.08)' },
+      ink:     { bg: '#2A1533', fg: '#FFFFFF', sub: '#E5D3E0', accent: '#F4A261', chipBg: '#F1E6EE', chipFg: '#4A1D5E', btnBg: '#F4A261', btnFg: '#2A1533', line: 'rgba(255,255,255,.7)', deco: 'rgba(255,255,255,.07)' }
+    };
+    // Ongoing event: event_start set, event_end left empty (WordPress post meta). Its banner and card say "Ongoing",
+    // and the start date reads "Since …" until an end date is added.
+    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const nowD = new Date();
+    const nowLabel = MONTHS[nowD.getMonth()] + ' ' + nowD.getFullYear();
+    const post = { tone: 'plum', icon: 'computer', type: 'Workshop', typeIcon: 'handyman', day: '15', monthYear: 'Aug 2023', ongoing: true };
+    Object.assign(post, bannerTones[post.tone]);
+    const more = [
+      { title: 'Empower Her Future: Tech Scholarships & Global Career Opportunities', date: 'March 28, 2026', day: '28', monthYear: 'Mar 2026', tone: 'saffron', icon: 'school', img: '',
+        excerpt: 'Ladies, ready to take your career global? In celebration of Women’s History Month, we are pulling back the…' },
+      { title: 'Smart Job Search in 2026: Using AI to Stand Out', date: 'February 7, 2026', day: '07', monthYear: 'Feb 2026', tone: 'lilac', icon: 'travel_explore', img: '',
+        excerpt: 'Hey job seekers! Ready to outshine the algorithm in 2026? Tired of your applications disappearing into the digital…' }
+    ].map((e, i) => ({ ...e, type: 'Webinar', typeIcon: 'videocam', imgDisplay: e.img ? 'block' : 'none', ...tones[e.tone] }));
+    const nav = [['Who We Are', 'Tablet.dc.html#about'],['What We Do', 'Tablet.dc.html#services'],['News', 'NewsTablet.dc.html'],['Events', 'EventsTablet.dc.html'],['Gallery', 'GalleryTablet.dc.html'],['Team', 'Tablet.dc.html#team'],['Contact', 'ContactTablet.dc.html']]
+      .map(([label, href]) => ({ label, href, current: label === 'Events' ? 'page' : 'false', bg: label === 'Events' ? '#F1E6EE' : 'transparent' }));
+    const menuOpen = this.state.menuOpen;
+    return {
+      nav, more, post, nowLabel, menuOpen,
+      menuIcon: menuOpen ? 'close' : 'menu',
+      menuExpanded: menuOpen ? 'true' : 'false',
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      heroMeta: [
+        { icon: 'calendar_month', text: 'Since August 15, 2023' },
+        { icon: 'autorenew', text: 'Ongoing · ' + FULL[nowD.getMonth()] + ' ' + nowD.getFullYear() },
+        { icon: 'location_on', text: 'Eziama, Ikeduru LGA' }],
+      expect: [
+        { icon: 'code', text: 'Coding and game design with Scratch' },
+        { icon: 'smart_toy', text: 'AI programming with PictoBlox' },
+        { icon: 'precision_manufacturing', text: 'Building an entire Robot Car' },
+        { icon: 'palette', text: 'Designing Event Cards and Flyers' }],
+      details: [
+        { icon: 'calendar_month', label: 'Started', value: 'August 15, 2023' },
+        { icon: 'autorenew', label: 'Status', value: 'Ongoing' },
+        { icon: 'location_on', label: 'Venue', value: 'Emmanuel Anglican Church, Eziama, Ikeduru LGA' },
+        { icon: 'handyman', label: 'Event type', value: 'Workshop' },
+        { icon: 'groups', label: 'For', value: '8–16 year olds' }],
+      shares: [
+        { label: 'Share on LinkedIn', mark: 'in' },
+        { label: 'Share on Facebook', mark: 'fb' },
+        { label: 'Share on WhatsApp', mark: 'wa' }],
+      socials: [
+        { name: 'LinkedIn', mark: 'in', href: 'https://www.linkedin.com/company/tekseries/' },
+        { name: 'Facebook', mark: 'fb', href: 'https://www.facebook.com/share/18AH7UBXue/' },
+        { name: 'Instagram', mark: 'ig', href: 'https://instagram.com/tekseries' }]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -10,5 +10,5 @@
   "assetGroups": {},
   "blobs": {},
   "docs": {"readme": "project/README.md", "sections": []},
-  "lastChange": {"by": "Allwell", "at": "2026-10-12T09:43:51Z", "via": "Cowork", "note": "Motion now built with CSS animations (no GSAP): Animation token notes and README Motion section updated."}
+  "lastChange": {"by": "Allwell", "at": "2026-10-16T10:29:21Z", "via": "Cowork", "note": "Motion matched to the shipped site build: new ease-out and ease-soft curves, distance-reveal 24px, new duration-hover 150ms; README Motion timings updated."}
 }

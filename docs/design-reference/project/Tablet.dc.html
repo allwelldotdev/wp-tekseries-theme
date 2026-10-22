@@ -8,17 +8,17 @@
 </head>
 <body>
 <x-dc>
-<helmet><style>/* TekSeries New design system · Animation tokens (same names in the theme) */:root{--ease-out:cubic-bezier(0.33, 1, 0.68, 1);--ease-soft:cubic-bezier(0.5, 1, 0.89, 1);--duration-reveal:0.8s;--distance-reveal:28px;--stagger-reveal:0.12s}</style><style>/* Motion · CSS animations driven by the design system's Animation tokens (--ease-out, --ease-soft, --duration-reveal, --distance-reveal, --stagger-reveal). Scroll reveals wait for [data-in], which this board adds when the element comes into view. */
+<helmet><style>/* TekSeries New design system · Animation tokens (same names in the theme) */:root{--ease-out:cubic-bezier(0.165, 0.84, 0.44, 1);--ease-soft:cubic-bezier(0.215, 0.61, 0.355, 1);--duration-reveal:0.8s;--distance-reveal:24px;--stagger-reveal:0.12s;--duration-hover:150ms}</style><style>/* Motion · CSS animations driven by the design system's Animation tokens (--ease-out, --ease-soft, --duration-reveal, --distance-reveal, --stagger-reveal). Scroll reveals wait for [data-in], which this board adds when the element comes into view. */
 @keyframes ts-rise{from{opacity:0;transform:translateY(var(--rise,var(--distance-reveal)))}to{opacity:1;transform:none}}
-[data-anim="hero"]>*{animation:ts-rise var(--duration-reveal) var(--ease-out) both;animation-delay:calc(.15s + var(--i,0) * var(--stagger-reveal))}
+[data-anim="hero"]>*{--rise:28px;animation:ts-rise var(--duration-reveal) var(--ease-out) both;animation-delay:calc(.15s + var(--i,0) * var(--stagger-reveal))}
 [data-anim]>:nth-child(2){--i:1}[data-anim]>:nth-child(3){--i:2}[data-anim]>:nth-child(4){--i:3}[data-anim]>:nth-child(5){--i:4}[data-anim]>:nth-child(6){--i:5}
 html.ts-motion [data-anim="reveal"]:not([data-in]),html.ts-motion [data-anim="card"]:not([data-in]),html.ts-motion [data-anim="card"]:not([data-in])>:not(.ms){opacity:0}
 [data-anim="reveal"][data-in]{animation:ts-rise var(--duration-reveal) var(--ease-soft) both}
-[data-anim="card"][data-in]{--rise:calc(var(--distance-reveal) * 2);animation:ts-rise calc(var(--duration-reveal) + .1s) var(--ease-out) both}
-[data-anim="card"][data-in]>:not(.ms){--rise:var(--distance-reveal);animation:ts-rise var(--duration-reveal) var(--ease-soft) both;animation-delay:calc(.2s + var(--i,0) * var(--stagger-reveal))}
+[data-anim="card"][data-in]{--rise:64px;animation:ts-rise calc(var(--duration-reveal) + .1s) var(--ease-out) both}
+[data-anim="card"][data-in]>:not(.ms){--rise:20px;animation:ts-rise .7s var(--ease-soft) both;animation-delay:calc(.2s + var(--i,0) * .1s)}
 [data-anim="count"]>li:nth-child(2){--i:1}[data-anim="count"]>li:nth-child(3){--i:2}[data-anim="count"]>li:nth-child(4){--i:3}
 html.ts-motion [data-anim="count"]:not([data-in]) .ts-count{animation:none;--n:0}
-[data-anim="count"] .ts-count{animation-duration:2s;animation-delay:calc(var(--i,0) * var(--stagger-reveal))}
+[data-anim="count"] .ts-count{animation-duration:2.2s;animation-timing-function:cubic-bezier(0.2, 0.7, 0.2, 1);animation-delay:calc(.3s + var(--i,0) * var(--stagger-reveal))}
 @media (prefers-reduced-motion:reduce){[data-anim],[data-anim]>*{animation:none!important;opacity:1!important;transform:none!important}}
 </style><style>:where([id]){scroll-margin-top:96px}</style><style>.ts-si{display:block;width:20px;height:20px;background:currentColor;-webkit-mask:var(--si) center/contain no-repeat;mask:var(--si) center/contain no-repeat}.ts-si-in{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/linkedin-in.svg)}.ts-si-fb{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/facebook-f.svg)}.ts-si-ig{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/instagram.svg)}.ts-si-wa{--si:url(https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/svgs/brands/whatsapp.svg)}</style><link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;600;700;800&amp;family=Onest:wght@400;500;600;700&amp;family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@ html.ts-motion [data-anim="count"]:not([data-in]) .ts-count{animation:none;--n:0
 .marquee:hover .marquee-track{animation-play-state:paused}
 @media (prefers-reduced-motion:reduce){.marquee-track{animation:none!important}}
 @property --n{syntax:'<integer>';inherits:false;initial-value:0}
-.ts-count{counter-reset:n var(--n);animation:ts-count 2.2s var(--ease-out) .3s both}
+.ts-count{counter-reset:n var(--n);animation:ts-count 2.2s cubic-bezier(0.2, 0.7, 0.2, 1) .3s both}
 .ts-count::after{content:counter(n)}
 @keyframes ts-count{from{--n:0}to{--n:var(--to)}}
 @media (prefers-reduced-motion:reduce){.ts-count{animation:none;--n:var(--to)}}

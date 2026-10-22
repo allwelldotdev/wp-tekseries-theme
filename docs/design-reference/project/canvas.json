@@ -44,7 +44,7 @@
       "title": "TekSeries Event Post - Desktop (1440)",
       "w": 1440,
       "x": 0,
-      "y": 4820
+      "y": 10630
     },
     "EventPostMobile.dc.html": {
       "h": 4910,
@@ -53,7 +53,7 @@
       "title": "TekSeries Event Post - Mobile (390)",
       "w": 390,
       "x": 2434,
-      "y": 4820
+      "y": 10630
     },
     "EventPostTablet.dc.html": {
       "h": 3430,
@@ -62,10 +62,10 @@
       "title": "TekSeries Event Post - Tablet (834)",
       "w": 834,
       "x": 1520,
-      "y": 4820
+      "y": 10630
     },
     "Events.dc.html": {
-      "h": 2690,
+      "h": 2910,
       "is_interactive": true,
       "page": "events",
       "title": "TekSeries Events - Desktop (1440)",
@@ -74,7 +74,7 @@
       "y": 0
     },
     "EventsMobile.dc.html": {
-      "h": 4430,
+      "h": 4830,
       "is_interactive": true,
       "page": "events",
       "title": "TekSeries Events - Mobile (390)",
@@ -83,7 +83,7 @@
       "y": 0
     },
     "EventsTablet.dc.html": {
-      "h": 3400,
+      "h": 3780,
       "is_interactive": true,
       "page": "events",
       "title": "TekSeries Events - Tablet (834)",
@@ -603,6 +603,87 @@
       "w": 390,
       "x": 2434,
       "y": 2551
+    },
+    "EventPostOngoing.dc.html": {
+      "h": 2730,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Event Post, ongoing - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 15660
+    },
+    "EventPostOngoingTablet.dc.html": {
+      "h": 3000,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Event Post, ongoing - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 15660
+    },
+    "EventPostOngoingMobile.dc.html": {
+      "h": 4330,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Event Post, ongoing - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 15660
+    },
+    "EventsSearch.dc.html": {
+      "h": 2080,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Events, search results - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 4950
+    },
+    "EventsSearchTablet.dc.html": {
+      "h": 2480,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Events, search results - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 4950
+    },
+    "EventsSearchMobile.dc.html": {
+      "h": 3400,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Events, search results - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 4950
+    },
+    "EventsSearchEmpty.dc.html": {
+      "h": 1690,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Events, search with no results - Desktop (1440)",
+      "w": 1440,
+      "x": 0,
+      "y": 8470
+    },
+    "EventsSearchEmptyTablet.dc.html": {
+      "h": 1830,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Events, search with no results - Tablet (834)",
+      "w": 834,
+      "x": 1520,
+      "y": 8470
+    },
+    "EventsSearchEmptyMobile.dc.html": {
+      "h": 2040,
+      "is_interactive": true,
+      "page": "events",
+      "title": "TekSeries Events, search with no results - Mobile (390)",
+      "w": 390,
+      "x": 2434,
+      "y": 8470
     }
   },
   "createdOnFiles": {
@@ -612,10 +693,10 @@
   "designSystems": [
     {
       "artifact": "https://claude.ai/artifact/92of7TNC5fWLzLNt9JAKQb",
-      "copiedAt": "2026-10-12T09:44:07Z",
+      "copiedAt": "2026-10-16T10:29:36Z",
       "namespace": "tekseries",
       "title": "TekSeries New",
-      "version": "1791798236-b476"
+      "version": "1792146567-66a9"
     }
   ],
   "launch": {
@@ -628,9 +709,18 @@
     "Events.dc.html",
     "EventsTablet.dc.html",
     "EventsMobile.dc.html",
+    "EventsSearch.dc.html",
+    "EventsSearchTablet.dc.html",
+    "EventsSearchMobile.dc.html",
+    "EventsSearchEmpty.dc.html",
+    "EventsSearchEmptyTablet.dc.html",
+    "EventsSearchEmptyMobile.dc.html",
     "EventPost.dc.html",
     "EventPostTablet.dc.html",
     "EventPostMobile.dc.html",
+    "EventPostOngoing.dc.html",
+    "EventPostOngoingTablet.dc.html",
+    "EventPostOngoingMobile.dc.html",
     "News.dc.html",
     "NewsTablet.dc.html",
     "NewsMobile.dc.html",

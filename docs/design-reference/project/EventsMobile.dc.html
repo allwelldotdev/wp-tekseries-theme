@@ -14,8 +14,10 @@
 .clamp3{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .chips{scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
 button{font-family:inherit}
+.ts-live{position:relative;display:inline-block;width:8px;height:8px;border-radius:50%;background:#E76F51;flex:none}.ts-live::after{content:'';position:absolute;inset:0;border-radius:50%;background:inherit;animation:ts-pulse 1.8s cubic-bezier(0.165, 0.84, 0.44, 1) infinite}@keyframes ts-pulse{from{transform:scale(1);opacity:.6}to{transform:scale(2.6);opacity:0}}@media (prefers-reduced-motion:reduce){.ts-live::after{animation:none}}
+#event-search::-webkit-search-cancel-button{-webkit-appearance:none;display:none}#event-search::placeholder{color:#7A6584}#event-search:focus{outline:2px solid #F4A261;outline-offset:2px;border-color:#4A1D5E}.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 </style></helmet>
-<div style="width:390px;height:4430px;font-family:'Onest',sans-serif;color:#2A1533;background:#FBF7F9;font-variant-ligatures:none">
+<div style="width:390px;height:4830px;font-family:'Onest',sans-serif;color:#2A1533;background:#FBF7F9;font-variant-ligatures:none">
   <header style="position:sticky;top:0;z-index:5;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid #EADFE6;flex-wrap:wrap">
     <img src="https://tekseries.com/wp-content/uploads/2025/08/tekseries_logo_no0goj.png" alt="TekSeries" style="height:34px;width:auto">
     <button type="button" onClick="{{ toggleMenu }}" aria-label="Menu" aria-expanded="{{ menuExpanded }}" style="width:44px;height:44px;border-radius:50%;border:1px solid #EADFE6;background:#F1E6EE;color:#4A1D5E;display:grid;place-items:center;cursor:pointer"><span class="ms" style="font-size:22px">{{ menuIcon }}</span></button>
@@ -48,7 +50,33 @@ button{font-family:inherit}
     </div>
   </section>
 
+  <sc-if value="{{ showNow }}" hint-placeholder-val="{{ true }}">
+  <section aria-labelledby="now-title" style="padding:20px 16px 0">
+    <div style="background:#fff;border:1px solid #EADFE6;border-radius:22px;padding:20px;display:grid;grid-template-columns:1fr;gap:18px;align-items:center">
+      <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+        <span style="display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E76F51"><span class="ts-live" aria-hidden="true"></span>Happening now</span>
+        <h2 id="now-title" style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:22px;font-weight:800;line-height:1.12;letter-spacing:-.02em;color:#4A1D5E">{{ now.title }}</h2>
+        <div style="display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;font-weight:600;color:#5B4466"><span style="display:flex;align-items:center;gap:6px"><span class="ms" style="font-size:19px;color:#4A1D5E">{{ now.typeIcon }}</span>{{ now.type }}</span><span style="display:flex;align-items:center;gap:6px"><span class="ms" style="font-size:19px;color:#4A1D5E">calendar_month</span>{{ now.sinceLong }}</span><span style="display:flex;align-items:center;gap:6px"><span class="ms" style="font-size:19px;color:#4A1D5E">location_on</span>{{ now.place }}</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+        <div style="display:flex;justify-content:space-between;gap:12px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#5B4466"><span>Started {{ now.startShort }}</span><span style="color:#4A1D5E">Now · {{ nowLabel }}</span></div>
+        <div aria-hidden="true" style="position:relative;height:10px;border-radius:999px;background:#4A1D5E;margin-right:8px"><span class="ts-live" style="position:absolute;right:-8px;top:50%;width:12px;height:12px;margin-top:-9px;border:3px solid #fff"></span></div>
+        <span style="font-size:14px;line-height:1.5;font-weight:600;color:#3D2A47">Running for {{ now.running }}, and still going.</span>
+      </div>
+      <a href="{{ now.href }}" style="width:100%;box-sizing:border-box;display:flex;justify-content:center;align-items:center;gap:8px;padding:14px 24px;background:#4A1D5E;color:#fff;border-radius:999px;font-weight:700;font-size:15px;white-space:nowrap" style-hover="background:#F4A261;color:#2A1533">View workshop<span class="ms" style="font-size:20px">arrow_forward</span></a>
+    </div>
+  </section>
+  </sc-if>
+
   <section style="padding:24px 0 0;display:flex;flex-direction:column;gap:10px">
+    <div style="padding:0 16px">
+      <form role="search" onSubmit="{{ noSubmit }}" style="position:relative;width:100%;max-width:100%;box-sizing:border-box">
+        <label for="event-search" class="sr-only">Search events</label>
+        <span class="ms" aria-hidden="true" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:20px;color:#5B4466;pointer-events:none">search</span>
+        <input id="event-search" type="search" value="{{ query }}" onChange="{{ onSearch }}" placeholder="Search events, e.g. coding, AI, CV" autocomplete="off" enterkeyhint="search" style="width:100%;box-sizing:border-box;min-height:48px;padding:12px 52px 12px 48px;border-radius:999px;border:1px solid #EADFE6;background:#fff;font-family:inherit;font-size:16px;font-weight:500;color:#2A1533">
+        <sc-if value="{{ searching }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ clearSearch }}" aria-label="Clear search" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:0;background:#F1E6EE;color:#4A1D5E;display:grid;place-items:center;cursor:pointer"><span class="ms" style="font-size:20px">close</span></button></sc-if>
+      </form>
+    </div>
     <div role="group" aria-label="Filter events" class="chips" style="display:flex;gap:8px;overflow-x:auto;padding:0 16px">
       <sc-for list="{{ filters }}" as="f" hint-placeholder-count="3"><button type="button" onClick="{{ f.pick }}" aria-pressed="{{ f.pressed }}" style="flex:none;min-height:44px;padding:10px 14px;border-radius:999px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.fg }};font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px"><span class="ms" style="font-size:18px">{{ f.icon }}</span>{{ f.label }}</button></sc-for>
     </div>
@@ -56,23 +84,41 @@ button{font-family:inherit}
   </section>
 
   <section style="padding:16px 16px 0;display:flex;flex-direction:column;gap:16px">
+    <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <p role="status" style="margin:0;font-size:16px;line-height:1.4;font-weight:600;color:#3D2A47"><strong style="color:#4A1D5E">{{ resultCount }}</strong> for “{{ queryShown }}” {{ scopeText }}</p>
+        <button type="button" onClick="{{ clearSearch }}" style="min-height:44px;padding:0 4px;border:0;background:none;font-family:inherit;font-size:14px;font-weight:700;color:#4A1D5E;display:flex;align-items:center;gap:6px;cursor:pointer"><span class="ms" style="font-size:20px">close</span>Clear search</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+      <div role="status" style="background:#fff;border:1px solid #EADFE6;border-radius:28px;padding:32px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px">
+        <span aria-hidden="true" style="width:56px;height:56px;border-radius:20px;background:#F1E6EE;color:#4A1D5E;display:grid;place-items:center"><span class="ms" style="font-size:28px">search_off</span></span>
+        <h2 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:22px;font-weight:800;line-height:1.15;letter-spacing:-.02em;color:#4A1D5E;overflow-wrap:anywhere">No events match “{{ queryShown }}”</h2>
+        <p style="margin:0;max-width:520px;font-size:15px;line-height:1.6;color:#3D2A47">{{ emptyHint }}</p>
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;margin-top:4px"><span style="font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#E76F51">Try</span><sc-for list="{{ suggestions }}" as="t" hint-placeholder-count="4"><button type="button" onClick="{{ t.pick }}" style="min-height:44px;padding:0 16px;border-radius:999px;border:1px solid #EADFE6;background:#FBF7F9;color:#4A1D5E;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer" style-hover="border-color:#F4A261">{{ t.label }}</button></sc-for></div>
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:6px;width:100%;flex-direction:column;">
+          <button type="button" onClick="{{ clearSearch }}" style="min-height:48px;padding:0 24px;border:0;border-radius:999px;background:#4A1D5E;color:#fff;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer" style-hover="background:#F4A261;color:#2A1533">Clear search</button>
+          <sc-if value="{{ filtered }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ searchAll }}" style="min-height:48px;padding:0 24px;border:1.5px solid #4A1D5E;border-radius:999px;background:#fff;color:#4A1D5E;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;width:100%;">Search all event types</button></sc-if>
+        </div>
+      </div>
+    </sc-if>
     <sc-if value="{{ featured }}" hint-placeholder-val="{{ true }}">
       <article style="background:#fff;border:1px solid #EADFE6;border-radius:24px;padding:10px;display:flex;flex-direction:column;gap:12px" style-hover="border-color:#F4A261">
         <div style="position:relative;overflow:hidden;aspect-ratio:16/10;border-radius:18px;background:{{ featured.bg }};color:{{ featured.fg }};padding:18px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box">
           <img src="{{ featured.img }}" alt="" style="display:{{ featured.imgDisplay }};position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top"><span aria-hidden="true" style="display:{{ featured.imgDisplay }};position:absolute;inset:0;background:{{ featured.overlay }}"></span>
           <span class="ms" aria-hidden="true" style="position:absolute;right:-14px;bottom:-24px;font-size:160px;color:{{ featured.deco }}">{{ featured.icon }}</span>
-          <span style="position:relative;width:max-content;display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:999px;background:{{ featured.chipBg }};color:{{ featured.chipFg }};font-size:12px;font-weight:700"><span class="ms" style="font-size:15px">{{ featured.typeIcon }}</span>{{ featured.type }}</span>
+          <div style="position:relative;display:flex;flex-wrap:wrap;gap:8px"><span style="position:relative;width:max-content;display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:999px;background:{{ featured.chipBg }};color:{{ featured.chipFg }};font-size:12px;font-weight:700"><span class="ms" style="font-size:15px">{{ featured.typeIcon }}</span>{{ featured.type }}</span><sc-if value="{{ featured.ongoing }}" hint-placeholder-val="{{ false }}"><span style="position:relative;width:max-content;display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;background:#fff;color:#4A1D5E;font-size:12px;font-weight:700"><span class="ts-live" aria-hidden="true"></span>Ongoing</span></sc-if></div>
           <div style="position:relative;display:flex;align-items:baseline;gap:8px">
             <span style="font-family:'Schibsted Grotesk',sans-serif;font-size:64px;font-weight:800;line-height:.9;letter-spacing:-.04em">{{ featured.day }}</span>
             <span style="font-family:'Schibsted Grotesk',sans-serif;font-size:17px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:{{ featured.accent }}">{{ featured.monthYear }}</span>
           </div>
         </div>
         <div style="padding:4px 10px 10px;display:flex;flex-direction:column;gap:10px">
-          <span style="font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E76F51">Latest event</span>
+          <sc-if value="{{ featuredLatest }}" hint-placeholder-val="{{ true }}"><span style="font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E76F51">Latest event</span></sc-if><sc-if value="{{ featured.ongoing }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#E76F51"><span class="ts-live" aria-hidden="true"></span>Ongoing event</span></sc-if>
           <h2 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:22px;font-weight:800;line-height:1.2;letter-spacing:-.02em;color:#4A1D5E">{{ featured.title }}</h2>
           <div style="display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;font-weight:600;color:#5B4466"><span style="display:flex;align-items:center;gap:5px"><span class="ms" style="font-size:17px;color:#4A1D5E">calendar_month</span>{{ featured.date }}</span><span style="display:flex;align-items:center;gap:5px"><span class="ms" style="font-size:17px;color:#4A1D5E">{{ featured.typeIcon }}</span>{{ featured.type }}</span></div>
           <p style="margin:0;font-size:15px;line-height:1.6;color:#3D2A47">{{ featured.excerpt }}</p>
-          <a href="#" style="margin-top:4px;display:flex;justify-content:center;align-items:center;gap:8px;padding:12px 20px;background:#4A1D5E;color:#fff;border-radius:999px;font-weight:700;font-size:15px" style-hover="background:#F4A261;color:#2A1533">Read more<span class="ms" style="font-size:19px">arrow_forward</span></a>
+          <a href="{{ featured.href }}" style="margin-top:4px;display:flex;justify-content:center;align-items:center;gap:8px;padding:12px 20px;background:#4A1D5E;color:#fff;border-radius:999px;font-weight:700;font-size:15px" style-hover="background:#F4A261;color:#2A1533">Read more<span class="ms" style="font-size:19px">arrow_forward</span></a>
         </div>
       </article>
     </sc-if>
@@ -82,7 +128,7 @@ button{font-family:inherit}
         <div style="position:relative;overflow:hidden;aspect-ratio:16/9;border-radius:16px;background:{{ e.bg }};color:{{ e.fg }};padding:16px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box">
           <img src="{{ e.img }}" alt="" style="display:{{ e.imgDisplay }};position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top"><span aria-hidden="true" style="display:{{ e.imgDisplay }};position:absolute;inset:0;background:{{ e.overlay }}"></span>
           <span class="ms" aria-hidden="true" style="position:absolute;right:-12px;bottom:-22px;font-size:140px;color:{{ e.deco }}">{{ e.icon }}</span>
-          <span style="position:relative;width:max-content;display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:{{ e.chipBg }};color:{{ e.chipFg }};font-size:12px;font-weight:700"><span class="ms" style="font-size:15px">{{ e.typeIcon }}</span>{{ e.type }}</span>
+          <div style="position:relative;display:flex;flex-wrap:wrap;gap:8px"><span style="position:relative;width:max-content;display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;background:{{ e.chipBg }};color:{{ e.chipFg }};font-size:12px;font-weight:700"><span class="ms" style="font-size:15px">{{ e.typeIcon }}</span>{{ e.type }}</span><sc-if value="{{ e.ongoing }}" hint-placeholder-val="{{ false }}"><span style="position:relative;width:max-content;display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:999px;background:#fff;color:#4A1D5E;font-size:12px;font-weight:700"><span class="ts-live" aria-hidden="true"></span>Ongoing</span></sc-if></div>
           <div style="position:relative;display:flex;align-items:baseline;gap:8px">
             <span style="font-family:'Schibsted Grotesk',sans-serif;font-size:52px;font-weight:800;line-height:.9;letter-spacing:-.04em">{{ e.day }}</span>
             <span style="font-family:'Schibsted Grotesk',sans-serif;font-size:15px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:{{ e.accent }}">{{ e.monthYear }}</span>
@@ -92,7 +138,7 @@ button{font-family:inherit}
           <h3 style="margin:0;font-family:'Schibsted Grotesk',sans-serif;font-size:19px;font-weight:700;line-height:1.25;color:#4A1D5E">{{ e.title }}</h3>
           <div style="display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;font-weight:600;color:#5B4466"><span style="display:flex;align-items:center;gap:5px"><span class="ms" style="font-size:16px">calendar_month</span>{{ e.date }}</span><span style="display:flex;align-items:center;gap:5px"><span class="ms" style="font-size:16px">{{ e.typeIcon }}</span>{{ e.type }}</span></div>
           <p class="clamp3" style="margin:0;font-size:14px;line-height:1.6;color:#3D2A47">{{ e.excerpt }}</p>
-          <a href="#" style="min-height:36px;width:max-content;display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;color:#4A1D5E">Read more<span class="ms" style="font-size:18px">arrow_forward</span></a>
+          <a href="{{ e.href }}" style="min-height:36px;width:max-content;display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;color:#4A1D5E">Read more<span class="ms" style="font-size:18px">arrow_forward</span></a>
         </div>
       </article>
     </sc-for>
@@ -105,6 +151,7 @@ button{font-family:inherit}
     </div>
   </section>
 
+  <sc-if value="{{ showPager }}" hint-placeholder-val="{{ true }}">
   <nav aria-label="Pagination" style="padding:32px 16px 40px;display:flex;justify-content:center;align-items:center;gap:6px">
     <span aria-disabled="true" style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#B9A7BF"><span class="ms" style="font-size:22px">chevron_left</span></span>
     <a href="#" aria-current="page" style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#4A1D5E;color:#fff;font-weight:700;font-size:15px">1</a>
@@ -113,6 +160,8 @@ button{font-family:inherit}
     <a href="#" style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1px solid #EADFE6;box-sizing:border-box;color:#4A1D5E;font-weight:700;font-size:15px">4</a>
     <a href="#" aria-label="Next page" style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#F1E6EE;color:#4A1D5E"><span class="ms" style="font-size:22px">chevron_right</span></a>
   </nav>
+  </sc-if>
+  <sc-if value="{{ searching }}" hint-placeholder-val="{{ false }}"><div aria-hidden="true" style="height:40px"></div></sc-if>
 
   <footer style="padding:0 16px 24px;display:flex;flex-direction:column;gap:16px">
     <div style="background:#4A1D5E;color:#E5D3E0;border-radius:24px;padding:28px 22px;display:grid;grid-template-columns:1fr;gap:28px;align-items:start">
@@ -125,7 +174,7 @@ button{font-family:inherit}
   </footer>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":4430}}'>
+<script type="text/x-dc" data-dc-script data-props='{"query":{"editor":"text","default":"","tsType":"string","section":"Search preview"},"$preview":{"width":390,"height":4830}}'>
 class Component extends DCLogic {
   // In-page jumps (#id links): land each target just below the sticky header with 24px of breathing room,
   // whichever element is doing the scrolling (page, Play frame or canvas preview).
@@ -163,7 +212,7 @@ class Component extends DCLogic {
       el.scrollIntoView({ block: 'start', behavior: smooth ? 'smooth' : 'auto' });
     }
   }
-  state = { filter: 'all', menuOpen: false };
+  state = { query: this.props.query ?? '', filter: 'all', menuOpen: false };
   renderVals() {
     const tones = {
       plum:    { bg: '#4A1D5E', fg: '#FFFFFF', accent: '#F4A261', deco: 'rgba(255,255,255,.08)', chipBg: '#F4A261', chipFg: '#2A1533', overlay: 'linear-gradient(90deg,rgba(74,29,94,.94) 0%,rgba(74,29,94,.72) 45%,rgba(74,29,94,.15) 100%)' },
@@ -175,7 +224,10 @@ class Component extends DCLogic {
     // the newest post's in the cycle saffron → plum → ink → lilac → saffron, so newest-first lists read plum, saffron, lilac, ink, …
     // The card shows the post's featured image under its tone's overlay; with no image the solid tone shows. The same tone
     // colours the post's own page banner and its card in "More events". Paging changes which posts fill the grid, never their tones.
-    const types = { webinar: { type: 'Webinar', typeIcon: 'videocam' }, prize: { type: 'Makers Prize', typeIcon: 'emoji_events' } };
+    const types = { webinar: { type: 'Webinar', typeIcon: 'videocam' }, workshop: { type: 'Workshop', typeIcon: 'handyman' }, prize: { type: 'Makers Prize', typeIcon: 'emoji_events' } };
+    const now = Date.now();
+    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const nowLabel = MONTHS[new Date(now).getMonth()] + ' ' + new Date(now).getFullYear();
     // Newest first. Excerpts are the opening lines from the current site.
     const events = [
       { title: 'Women in Engineering Series: Skills, Challenges & Opportunities for Women in Engineering', date: 'September 26, 2026', day: '26', monthYear: 'Sep 2026', kind: 'webinar', tone: 'plum', icon: 'engineering', img: '/_blob/ae457e09dba42d52e7e0ac938054a97f',
@@ -189,13 +241,51 @@ class Component extends DCLogic {
       { title: 'Tech Career Explore 2025: Kickstart Your Tech Journey with Expert Insights', date: 'May 30, 2025', day: '30', monthYear: 'May 2025', kind: 'webinar', tone: 'plum', icon: 'rocket_launch',
         excerpt: 'Hey there, future tech leaders! Ever wondered what it really takes to thrive in the dynamic world of technology? Or…' },
       { title: 'TekSeries Makers’ Prize 2024', date: 'November 25, 2024', day: '25', monthYear: 'Nov 2024', kind: 'prize', tone: 'saffron', icon: 'emoji_events',
-        excerpt: '“What can you solve?” “Life can be much broader once you discover one simple fact: Everything around you that you call…' }
-    ].map(e => ({ ...e, ...types[e.kind], img: e.img || '', imgDisplay: e.img ? 'block' : 'none' }));
+        excerpt: '“What can you solve?” “Life can be much broader once you discover one simple fact: Everything around you that you call…' },
+      // Older posts (pages 2–4). They show on page 1 only through a filter, or in "Happening now" while ongoing.
+      { title: 'Eziama Junior Computer Bootcamp 2023', start: '2023-08-15', end: null, date: 'August 15, 2023', day: '15', monthYear: 'Aug 2023', kind: 'workshop', tone: 'plum', icon: 'computer', img: 'https://tekseries.com/wp-content/uploads/2023/10/Eziama-Junior-Camp.png', older: true,
+        place: 'Eziama, Ikeduru LGA', href: 'EventPostOngoingMobile.dc.html',
+        excerpt: 'This will be an interactive learning program, designed as an introduction and supplement to current school level…' },
+      { title: 'Junior Virtual Coding Camp 4.0', date: 'August 22, 2022', day: '22', monthYear: 'Aug 2022', kind: 'workshop', tone: 'saffron', icon: 'code', older: true,
+        excerpt: 'Our free annual summer coding camp for 8 - 16 year old juniors is here. Designed to introduce and reinforce entry to…' },
+      { title: 'Summer of Code', date: 'July 31, 2021', day: '31', monthYear: 'Jul 2021', kind: 'workshop', tone: 'plum', icon: 'wb_sunny', older: true,
+        excerpt: 'Free kiddies virtual coding camp. This program is a much-demanded follow-up to our last in-person boot camp. It is…' },
+      { title: 'Kiddies Tech Bootcamp 2.0', date: 'February 20, 2021', day: '20', monthYear: 'Feb 2021', kind: 'workshop', tone: 'saffron', icon: 'child_care', older: true,
+        excerpt: 'Early coding concepts and building blocks for the future. This will be a two-weekend interactive session, designed to…' },
+      { title: 'TekSeries + LearnFactory', date: 'March 26, 2019', day: '26', monthYear: 'Mar 2019', kind: 'workshop', tone: 'lilac', icon: 'factory', older: true,
+        excerpt: 'Immerse yourself in the introduction of Web Design using HTML, CSS, and JavaScript. Save the date: Tuesday, March 26,…' }
+    ].map(e => ({ ...e, ...types[e.kind], img: e.img || '', imgDisplay: e.img ? 'block' : 'none' }))
+    // Ongoing: a post with a start date in the past and no end date (WordPress: event_start set, event_end left empty).
+    // It keeps its own tone and card, and also shows in "Happening now" above the filters. Any event type can be ongoing.
+    .map(e => {
+      const ongoing = !!e.start && !e.end && Date.parse(e.start) <= now;
+      return { ...e, ongoing, href: e.href || (e.title.indexOf('Women in Engineering') === 0 ? 'EventPostMobile.dc.html' : '#'),
+        date: ongoing ? 'Since ' + e.date : e.date, monthYear: ongoing ? e.monthYear + ' – Now' : e.monthYear };
+    });
     const filter = this.state.filter;
-    const list = (filter === 'all' ? events : events.filter(e => e.kind === filter)).map(e => ({ ...e, ...tones[e.tone] }));
-    const filters = [['all', 'All events', 'apps'], ['webinar', 'Webinars', 'videocam'], ['prize', 'Makers Prize', 'emoji_events']].map(([id, label, icon]) => {
+    // Search: matches title, type, date, venue and excerpt (and "ongoing"), across every page of posts, within the chosen type.
+    // WordPress: the Search block scoped to the event post type (?s=…&post_type=event), results newest first, no pagination
+    // until there are more than 12 matches.
+    const query = this.state.query || '';
+    const q = query.trim().toLowerCase();
+    const searching = q.length > 0;
+    const byType = filter === 'all' ? events : events.filter(e => e.kind === filter);
+    const hay = e => [e.title, e.type, e.date, e.place || '', e.excerpt, e.ongoing ? 'ongoing' : ''].join(' ').toLowerCase();
+    const terms = q.split(/\s+/).filter(Boolean);
+    const matched = byType.filter(e => terms.every(t => hay(e).indexOf(t) !== -1));
+    const list = (searching ? matched : (filter === 'all' ? events.filter(e => !e.older) : byType)).map(e => ({ ...e, ...tones[e.tone] }));
+    const ongoing = events.filter(e => e.ongoing);
+    const nowItem = ongoing[0] ? (() => {
+      const e = ongoing[0], s = new Date(e.start), d = new Date(now);
+      let months = (d.getFullYear() - s.getFullYear()) * 12 + d.getMonth() - s.getMonth() - (d.getDate() < s.getDate() ? 1 : 0);
+      const y = Math.floor(months / 12), m = months % 12;
+      const part = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+      return { ...e, sinceLong: 'Since ' + e.date.replace(/^Since /, ''), startShort: MONTHS[s.getMonth()] + ' ' + s.getFullYear(),
+        running: [y ? part(y, 'year') : '', m ? part(m, 'month') : ''].filter(Boolean).join(', ') || 'less than a month' };
+    })() : null;
+    const filters = [['all', 'All events', 'apps'], ['webinar', 'Webinars', 'videocam'], ['workshop', 'Workshops', 'handyman'], ['prize', 'Makers Prize', 'emoji_events']].map(([id, label, icon]) => {
       const on = id === filter;
-      return { label, icon, pressed: on ? 'true' : 'false', bg: on ? '#4A1D5E' : '#FFFFFF', fg: on ? '#FFFFFF' : '#4A1D5E', border: on ? '#4A1D5E' : '#EADFE6', pick: () => this.setState({ filter: id }) };
+      return { on, label, icon, pressed: on ? 'true' : 'false', bg: on ? '#4A1D5E' : '#FFFFFF', fg: on ? '#FFFFFF' : '#4A1D5E', border: on ? '#4A1D5E' : '#EADFE6', pick: () => this.setState({ filter: id }) };
     });
     const nav = [['Who We Are', 'Mobile.dc.html#about'],['What We Do', 'Mobile.dc.html#services'],['News', 'NewsMobile.dc.html'],['Events', 'EventsMobile.dc.html'],['Gallery', 'GalleryMobile.dc.html'],['Team', 'Mobile.dc.html#team'],['Contact', 'ContactMobile.dc.html']]
       .map(([label, href]) => ({ label, href, current: label === 'Events' ? 'page' : 'false', bg: label === 'Events' ? '#F1E6EE' : 'transparent' }));
@@ -206,8 +296,20 @@ class Component extends DCLogic {
       menuExpanded: menuOpen ? 'true' : 'false',
       toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
       closeMenu: () => this.setState({ menuOpen: false }),
-      featured: list[0] || null,
-      rest: list.slice(1),
+      query, searching, queryShown: query.trim(), filtered: filter !== 'all',
+      onSearch: e => this.setState({ query: e.target.value }),
+      clearSearch: () => this.setState({ query: '' }),
+      searchAll: () => this.setState({ filter: 'all' }),
+      noSubmit: e => e.preventDefault(),
+      hasResults: searching && list.length > 0, noResults: searching && list.length === 0, showPager: !searching,
+      resultCount: list.length + (list.length === 1 ? ' event' : ' events'),
+      scopeText: filter === 'all' ? 'across all events' : 'in ' + filters.find(f => f.on).label,
+      emptyHint: filter === 'all' ? 'Check the spelling, try a shorter word, or pick one of these.' : 'Nothing in ' + filters.find(f => f.on).label + ' matches. Try another word, or search every event type.',
+      suggestions: ['Coding', 'AI', 'Career', 'Women'].map(label => ({ label, pick: () => this.setState({ query: label }) })),
+      showNow: !!nowItem && filter === 'all' && !searching, now: nowItem, nowLabel,
+      featured: searching ? null : (list[0] || null),
+      featuredLatest: !searching && !!list[0] && !list[0].ongoing,
+      rest: searching ? list : list.slice(1),
       socials: [
         { name: 'LinkedIn', mark: 'in', href: 'https://www.linkedin.com/company/tekseries/' },
         { name: 'Facebook', mark: 'fb', href: 'https://www.facebook.com/share/18AH7UBXue/' },
