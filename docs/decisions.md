@@ -1815,6 +1815,77 @@ Unit tests for the frame helpers and an e2e spec with a real short clip passed.
   - The live page gets the new markup through the migration bundle. The migration plugin marks the page, so owner edits on live would be replaced.
   - The date formats exist in PHP and are passed to the editor, and the zone arithmetic exists twice, as in ADR-084. For deadlines after 2030 the editor preview uses `@wordpress/date`'s last known rules, and the page is unaffected.
 
+## ADR-087: Mark an ongoing event with an editor switch, not an empty end date
+
+**Status:** Accepted
+
+**Context:**
+- The design calls an event ongoing when `event_start` is set and `event_end` is empty. The build has one `event_date` field and no end date (ADR-035), so that rule would mark every event ongoing.
+- The owner chose a switch instead.
+
+**Options:**
+- The design's rule. It marks every event ongoing.
+- An ACF true/false field (chosen).
+
+**Decision:** The ACF field `event_ongoing` marks an event ongoing. Its date reads "Since …", an Ongoing chip follows the type badge, and it is never "ended" and has no countdown (ADR-035).
+- The Events page "Happening now" card is a Query Loop whose query carries the custom key `"tekseriesOngoing":true`. Template blocks use the classes `ts-ongoing-only` and `ts-not-ongoing`.
+- Texts come from the binding source `tekseries/event-ongoing`, in Nigerian time.
+- Card columns start at the top, as the owner's alignment rule says, not centred as on the board.
+- Event CTA buttons that link to this site open in the same tab.
+
+**Rationale:** A switch is the only signal the data can carry, and editors set it in the event.
+- Texts and states come from one source, so templates stay core blocks (ADR-005).
+
+## ADR-088: Search events by title with `?q=`, updated in place through the router
+
+**Status:** Accepted
+
+**Context:**
+- The board's search matches type, date, venue and excerpt, and WordPress's `?s=` switches to the site search template.
+- The owner chose a title-only match.
+
+**Options:**
+- `?s=`. It leaves the Events page.
+- The board's wider match. The owner chose title only.
+- `?q=` with a title match (chosen).
+
+**Decision:** The block `tekseries/event-search` (form and status parts) filters the Events page grid loop marked `"tekseriesSearch":true`, 12 a page while searching.
+- The Latest card and "Happening now" carry `ts-hide-searching` and hide while searching.
+- Results update in place through Interactivity router regions (classes `ts-event-region--*`), as Job Series does (ADR-049). The placeholder is "Search events by name".
+- Core numbers a block style variation per instance (`is-style-card-plum--21`), and the router disables the first page's variation stylesheet, which left the footer unstyled. The script re-enables it after each navigation, since a variation's rules are the same for any number.
+
+**Rationale:** `?q=` keeps the Events template and works as a link without JavaScript (ADR-005).
+- Re-enabling the stylesheet is safe because the rules do not depend on the number.
+
+## ADR-089: Let a video's poster be a Media Library picture or an upload
+
+**Status:** Accepted
+
+**Context:** ADR-083 offers only frames grabbed from the video. Editors also need a designed picture.
+
+**Options:**
+- Frames only. A designed poster could not be used.
+- Frames, plus a picture from the Media Library or an upload (chosen).
+
+**Decision:** The "Poster frame" row also opens core's `wp.media` frame, where the editor picks a picture or uploads one, and it becomes the featured image.
+- Only posters the picker made (`tekseries_poster_of`) are deleted when replaced, so a Library picture is never removed.
+
+**Rationale:** It reuses core's media frame and ADR-083's marker, with no front-end change.
+
+## ADR-090: List six events per page on event type pages
+
+**Status:** Accepted
+
+**Context:** Event type pages use an inherited query (ADR-026), so the grid took the default page size, not rows of three.
+
+**Options:**
+- The default page size. Rows end short.
+- `pre_get_posts` sets 6, two rows of three (chosen).
+
+**Decision:** A `pre_get_posts` filter lists 6 events a page on type pages. On paged archives the current type chip stays marked, because the path is compared without `/page/N` (ADR-028).
+
+**Rationale:** Full rows keep the grid even, and the chip stays correct on every page.
+
 ## Future work
 
 - **Maker Prize page on live:** the migration plugin 1.3.0 creates `/maker-prize/` before it updates Home. What remains is running it on live after the rehearsal (owner; ADR-082, ADR-059).

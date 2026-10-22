@@ -67,8 +67,14 @@
 		margin-inline-end: 0.25em;
 	}
 
-	&__other {
+	&__other,
+	&__library {
 		justify-self: start;
+	}
+
+	// Without core's media scripts there is no Library to open.
+	&__library[hidden] {
+		display: none;
 	}
 
 	&__moment {
