@@ -431,3 +431,56 @@ h3 {
 		width: 100%;
 	}
 }
+
+/*
+ * Ongoing events (the plugin's includes/event-ongoing.php): a coral dot that
+ * pulses, on its own (.ts-live) or before a label (.ts-live-label), and the
+ * white "Ongoing" chip after a type badge. Under reduced motion the dot is
+ * still.
+ */
+.ts-live,
+.ts-live-label::before {
+	flex: none;
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background-color: var(--wp--preset--color--coral);
+	box-shadow: 0 0 0 0 rgb(231 111 81 / 60%);
+}
+
+.ts-live-label {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.ts-live-label::before {
+	content: "";
+}
+
+@media (prefers-reduced-motion: no-preference) {
+
+	.ts-live,
+	.ts-live-label::before {
+		animation: ts-pulse 1.8s var(--wp--custom--motion--ease--out-strong) infinite;
+	}
+}
+
+@keyframes ts-pulse {
+
+	to {
+		box-shadow: 0 0 0 9px rgb(231 111 81 / 0%);
+	}
+}
+
+.ts-ongoing-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	padding: 6px 11px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background-color: var(--wp--preset--color--white);
+	color: var(--wp--preset--color--plum);
+	font-weight: 700;
+}

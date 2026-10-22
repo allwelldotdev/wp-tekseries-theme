@@ -336,3 +336,122 @@
 	font-size: 0.75rem;
 	font-weight: 800;
 }
+
+/*
+ * Happening now on the Events page: the ongoing event in a white card, with
+ * its details, how long it has run, and a link. Three columns on desktop,
+ * started from the top (the owner's alignment rule); one column below 1100px.
+ */
+.ts-now .wp-block-post-template {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.ts-now__card {
+	display: grid;
+	grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) auto;
+	gap: 40px;
+	align-items: start;
+}
+
+.wp-block-group.ts-now__card > * {
+	min-width: 0;
+	margin-block: 0;
+}
+
+.ts-now .wp-block-post-title {
+	color: var(--wp--preset--color--plum);
+	font-size: 1.875rem;
+	letter-spacing: -0.02em;
+}
+
+.ts-now__icon {
+	color: var(--wp--preset--color--plum);
+	fill: currentcolor;
+}
+
+.ts-now__ends {
+	color: var(--wp--preset--color--muted);
+	font-size: 0.8125rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.ts-now__ends > * {
+	margin: 0;
+}
+
+.ts-now__now {
+	color: var(--wp--preset--color--plum);
+}
+
+.ts-now__bar {
+	position: relative;
+	height: 10px;
+	margin-right: 8px;
+	border-radius: var(--wp--preset--border-radius--pill);
+	background-color: var(--wp--preset--color--plum);
+}
+
+.ts-now__bar::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	right: -8px;
+	box-sizing: content-box;
+	width: 12px;
+	height: 12px;
+	margin-top: -9px;
+	border: 3px solid var(--wp--preset--color--white);
+	border-radius: 50%;
+	background-color: var(--wp--preset--color--coral);
+}
+
+.ts-now__running {
+	color: var(--wp--preset--color--body);
+	font-size: 0.9375rem;
+	font-weight: 600;
+	line-height: 1.5;
+}
+
+@media (width <= 1100px) {
+
+	.ts-now__card {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 20px;
+	}
+
+	.ts-now .wp-block-post-title {
+		font-size: 1.625rem;
+	}
+
+	.ts-now__ends {
+		font-size: 0.75rem;
+	}
+}
+
+@media (width <= 640px) {
+
+	.ts-now__card {
+		gap: 18px;
+	}
+
+	.ts-now .wp-block-post-title {
+		font-size: 1.375rem;
+	}
+
+	.ts-now__ends {
+		font-size: 0.6875rem;
+	}
+
+	.ts-now__running {
+		font-size: 0.875rem;
+	}
+
+	.ts-now__action,
+	.ts-now__action .wp-block-button {
+		width: 100%;
+	}
+}

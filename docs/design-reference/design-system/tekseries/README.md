@@ -65,9 +65,9 @@ Rules:
 
 Motion is used sparingly, for a handful of reveals that make the page feel alive without slowing reading. It is built with CSS animations (`@keyframes` plus the `animation` tokens as custom properties), with no animation library; the tokens keep the same names in the boards and the WordPress theme. Scroll reveals start when an element comes into view: a small IntersectionObserver adds a `data-in` attribute, and CSS does the rest.
 
-- **Easing.** `ease-out` for entrances (hero copy, Pillar cards, impact counters); `ease-soft` for gentler follow-ups (section headings, the content inside a Pillar card). Both are CSS `cubic-bezier()` curves.
-- **Timing.** One reveal lasts `duration-reveal` (0.8s); items shown in sequence are spaced by `stagger-reveal` (0.12s). The impact count-up runs 2s.
-- **Distance.** Revealed elements rise by `distance-reveal` (28px); Pillar cards travel twice that.
+- **Easing.** `ease-out` for entrances (hero copy, Pillar cards); `ease-soft` for gentler follow-ups (section headings, the content inside a Pillar card). Both are CSS `cubic-bezier()` curves. The impact count-up uses its own curve, `cubic-bezier(0.2, 0.7, 0.2, 1)`.
+- **Timing.** One reveal lasts `duration-reveal` (0.8s); items shown in sequence are spaced by `stagger-reveal` (0.12s). The hero copy starts after 0.15s. Pillar cards run 0.9s; their contents run 0.7s, spaced 0.1s apart, starting after 0.2s. The impact count-up runs 2.2s after 0.3s. Hover and focus transitions take `duration-hover` (150ms).
+- **Distance.** Scroll-revealed elements rise by `distance-reveal` (24px). The hero copy rises 28px on load, Pillar cards 64px and their contents 20px.
 - **What moves.** The hero copy rises in on load (the photo stays still); the impact numbers count up from 0 when the card comes into view; each Pillar card slides up, its content a beat later; section headings fade up. Nothing loops except the partner logo strip.
 - **Reduced motion.** With "reduce motion" on, nothing animates: the page shows finished, with the final numbers.
 

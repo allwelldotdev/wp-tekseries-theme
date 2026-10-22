@@ -26,6 +26,14 @@
 <!-- wp:post-date {"format":"F j, Y","metadata":{"bindings":{"datetime":{"source":"acf/field","args":{"key":"event_date"}}}},"className":"ts-event-value"} /--></div>
 <!-- /wp:group -->
 
+<!-- wp:group {"className":"ts-event-row ts-ongoing-only","style":{"spacing":{"blockGap":"var:preset|spacing|8"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+<div class="wp-block-group ts-event-row ts-ongoing-only"><!-- wp:icon {"icon":"tekseries/autorenew","className":"ts-tone-accent","style":{"dimensions":{"width":"20px"}}} /-->
+
+<!-- wp:paragraph {"metadata":{"bindings":{"content":{"source":"tekseries/event-ongoing","args":{"key":"status"}}}},"className":"ts-event-value"} -->
+<p class="ts-event-value"></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+
 <!-- wp:group {"className":"ts-event-row","style":{"spacing":{"blockGap":"var:preset|spacing|8"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
 <div class="wp-block-group ts-event-row"><!-- wp:icon {"icon":"tekseries/schedule","className":"ts-tone-accent","style":{"dimensions":{"width":"20px"}}} /-->
 
@@ -57,9 +65,17 @@
 <!-- /wp:group -->
 
 <!-- wp:group {"metadata":{"blockVisibility":{"viewport":{"tablet":false,"mobile":false}}},"className":"ts-card-date ts-banner__date","style":{"spacing":{"blockGap":"var:preset|spacing|4"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"right","verticalAlignment":"bottom"}} -->
-<div class="wp-block-group ts-card-date ts-banner__date"><!-- wp:post-date {"format":"j","metadata":{"bindings":{"datetime":{"source":"acf/field","args":{"key":"event_date"}}}},"className":"ts-card-date__day"} /-->
+<div class="wp-block-group ts-card-date ts-banner__date"><!-- wp:paragraph {"className":"ts-banner__since ts-ongoing-only"} -->
+<p class="ts-banner__since ts-ongoing-only"><?php echo esc_html__( 'Since', 'tekseries' ); ?></p>
+<!-- /wp:paragraph -->
 
-<!-- wp:post-date {"format":"M Y","metadata":{"bindings":{"datetime":{"source":"acf/field","args":{"key":"event_date"}}}},"className":"ts-card-date__month"} /--></div>
+<!-- wp:post-date {"format":"j","metadata":{"bindings":{"datetime":{"source":"acf/field","args":{"key":"event_date"}}}},"className":"ts-card-date__day"} /-->
+
+<!-- wp:post-date {"format":"M Y","metadata":{"bindings":{"datetime":{"source":"acf/field","args":{"key":"event_date"}}}},"className":"ts-card-date__month ts-no-since"} /-->
+
+<!-- wp:paragraph {"metadata":{"bindings":{"content":{"source":"tekseries/event-ongoing","args":{"key":"stillRunning"}}}},"className":"ts-live-label ts-banner__still ts-ongoing-only"} -->
+<p class="ts-live-label ts-banner__still ts-ongoing-only"></p>
+<!-- /wp:paragraph --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group -->
 <!-- /wp:tekseries/post-tone -->
@@ -91,11 +107,29 @@
 <div class="wp-block-group ts-event-row"><!-- wp:icon {"icon":"tekseries/calendar_month","className":"is-style-tile","style":{"dimensions":{"width":"40px"},"spacing":{"padding":{"top":"10px","right":"10px","bottom":"10px","left":"10px"}}}} /-->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"2px"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
-<div class="wp-block-group"><!-- wp:paragraph {"className":"ts-event-label","fontSize":"caption"} -->
-<p class="ts-event-label has-caption-font-size"><?php echo esc_html__( 'Date', 'tekseries' ); ?></p>
+<div class="wp-block-group"><!-- wp:paragraph {"className":"ts-event-label ts-not-ongoing","fontSize":"caption"} -->
+<p class="ts-event-label ts-not-ongoing has-caption-font-size"><?php echo esc_html__( 'Date', 'tekseries' ); ?></p>
 <!-- /wp:paragraph -->
 
-<!-- wp:post-date {"format":"F j, Y","metadata":{"bindings":{"datetime":{"source":"acf/field","args":{"key":"event_date"}}}},"className":"ts-event-value"} /--></div>
+<!-- wp:paragraph {"className":"ts-event-label ts-ongoing-only","fontSize":"caption"} -->
+<p class="ts-event-label ts-ongoing-only has-caption-font-size"><?php echo esc_html__( 'Started', 'tekseries' ); ?></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:post-date {"format":"F j, Y","metadata":{"bindings":{"datetime":{"source":"acf/field","args":{"key":"event_date"}}}},"className":"ts-event-value ts-no-since"} /--></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"ts-event-row ts-ongoing-only","style":{"spacing":{"blockGap":"14px"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+<div class="wp-block-group ts-event-row ts-ongoing-only"><!-- wp:icon {"icon":"tekseries/autorenew","className":"is-style-tile","style":{"dimensions":{"width":"40px"},"spacing":{"padding":{"top":"10px","right":"10px","bottom":"10px","left":"10px"}}}} /-->
+
+<!-- wp:group {"style":{"spacing":{"blockGap":"2px"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
+<div class="wp-block-group"><!-- wp:paragraph {"className":"ts-event-label","fontSize":"caption"} -->
+<p class="ts-event-label has-caption-font-size"><?php echo esc_html__( 'Status', 'tekseries' ); ?></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph {"className":"ts-event-value"} -->
+<p class="ts-event-value"><?php echo esc_html__( 'Ongoing', 'tekseries' ); ?></p>
+<!-- /wp:paragraph --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group -->
 
@@ -139,8 +173,8 @@
 <!-- /wp:group --></div>
 <!-- /wp:group -->
 
-<!-- wp:group {"className":"ts-event-row ts-register","style":{"spacing":{"blockGap":"14px"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
-<div class="wp-block-group ts-event-row ts-register"><!-- wp:icon {"icon":"tekseries/link","className":"is-style-tile","style":{"dimensions":{"width":"40px"},"spacing":{"padding":{"top":"10px","right":"10px","bottom":"10px","left":"10px"}}}} /-->
+<!-- wp:group {"className":"ts-event-row ts-register ts-not-ongoing","style":{"spacing":{"blockGap":"14px"}},"layout":{"type":"flex","flexWrap":"nowrap","verticalAlignment":"center"}} -->
+<div class="wp-block-group ts-event-row ts-register ts-not-ongoing"><!-- wp:icon {"icon":"tekseries/link","className":"is-style-tile","style":{"dimensions":{"width":"40px"},"spacing":{"padding":{"top":"10px","right":"10px","bottom":"10px","left":"10px"}}}} /-->
 
 <!-- wp:group {"style":{"spacing":{"blockGap":"2px"}},"layout":{"type":"flex","orientation":"vertical","justifyContent":"stretch"}} -->
 <div class="wp-block-group"><!-- wp:paragraph {"className":"ts-event-label","fontSize":"caption"} -->
