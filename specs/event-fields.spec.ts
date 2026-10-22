@@ -295,6 +295,58 @@ test.describe( 'event fields', () => {
 		}
 	} );
 
+	test( 'an event type page lists six events a page, and keeps its chip current on later pages', async ( {
+		page,
+		requestUtils,
+	} ) => {
+		const terms = await requestUtils.rest< { id: number }[] >( {
+			path: '/wp/v2/event_type',
+			params: { slug: 'webinar' },
+		} );
+		const webinar =
+			terms[ 0 ]?.id ??
+			(
+				await requestUtils.rest< { id: number } >( {
+					method: 'POST',
+					path: '/wp/v2/event_type',
+					data: { name: 'Webinar', slug: 'webinar' },
+				} )
+			).id;
+		// Seven, newer than any other test's event: they fill page 1 and start page 2.
+		for ( let day = 1; day <= 7; day++ ) {
+			const event = await publish( requestUtils, `E2E Paged ${ day }`, {
+				event_date: `2199010${ day }`,
+			} );
+			await requestUtils.rest( {
+				method: 'POST',
+				path: `/wp/v2/event/${ event.id }`,
+				data: { event_type: [ webinar ] },
+			} );
+		}
+
+		const cards = page.locator( '.ts-post-card' );
+		const chip = page
+			.getByRole( 'navigation', { name: 'Filter events' } )
+			.getByRole( 'link', { name: 'Webinars' } );
+
+		await page.goto( '/event_type/webinar/' );
+		await expect( cards ).toHaveCount( 6 );
+		await expect( chip ).toHaveAttribute( 'aria-current', 'page' );
+
+		await page
+			.locator( '.wp-block-query-pagination-numbers a', { hasText: '2' } )
+			.first()
+			.click();
+		await expect( page ).toHaveURL( /\/event_type\/webinar\/page\/2\/?$/ );
+		await expect(
+			page.locator( '.ts-post-card .wp-block-post-title' ).first()
+		).toHaveText( 'E2E Paged 1' );
+		await expect( chip ).toHaveAttribute( 'aria-current', 'page' );
+		await expect(
+			page.locator( '.ts-nav-chips .current-menu-item' )
+		).toHaveText( 'Webinars' );
+	} );
+
 	test( 'leaves out rows whose field is empty', async ( {
 		page,
 		requestUtils,

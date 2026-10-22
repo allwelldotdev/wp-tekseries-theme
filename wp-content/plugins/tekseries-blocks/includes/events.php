@@ -312,6 +312,9 @@ add_filter( 'query_loop_block_query_vars', 'tekseries_blocks_sort_event_query_lo
  * events with a Query Loop that inherits it. WordPress reads ?order=asc into
  * that query itself.
  *
+ * An event type page shows six events a page: two rows of the three-column
+ * grid. The loop inherits this query, so its own "perPage" is not used.
+ *
  * @param WP_Query $query Query being prepared.
  */
 function tekseries_blocks_sort_event_archives( WP_Query $query ): void {
@@ -320,6 +323,9 @@ function tekseries_blocks_sort_event_archives( WP_Query $query ): void {
 	}
 	foreach ( tekseries_blocks_event_order_args( (string) $query->get( 'order' ) ) as $key => $value ) {
 		$query->set( $key, $value );
+	}
+	if ( $query->is_tax( 'event_type' ) ) {
+		$query->set( 'posts_per_page', 6 );
 	}
 }
 add_action( 'pre_get_posts', 'tekseries_blocks_sort_event_archives' );
