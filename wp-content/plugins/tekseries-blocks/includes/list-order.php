@@ -65,6 +65,9 @@ function tekseries_blocks_list_order_url( string $order ): string {
 		$base = get_permalink( $object );
 	}
 	$base = is_string( $base ) && '' !== $base ? $base : home_url( '/' );
+	// An event search stays on (includes/event-search.php).
+	$search = function_exists( 'tekseries_blocks_event_search' ) ? tekseries_blocks_event_search() : '';
+	$base   = '' !== $search ? add_query_arg( 'q', rawurlencode( $search ), $base ) : $base;
 
 	return 'asc' === $order ? add_query_arg( 'order', 'asc', $base ) : $base;
 }

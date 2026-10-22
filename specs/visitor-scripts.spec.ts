@@ -16,7 +16,7 @@ const PAGES: [ name: string, scripts: string[] ][] = [
 	// Its countdown ticks until the deadline; after it, nothing moves.
 	[ 'Maker Prize page, open', [ 'deadline-countdown/view.js' ] ],
 	[ 'Maker Prize page, closed', [] ],
-	[ 'events archive', [] ],
+	[ 'events archive', [ 'event-search/view.js' ] ],
 	[ 'event', [] ],
 	// Its poster opens in the Gallery's viewer.
 	[ 'event with a poster', [ 'media-gallery/view.js' ] ],

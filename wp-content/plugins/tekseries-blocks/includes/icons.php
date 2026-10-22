@@ -125,6 +125,7 @@ function tekseries_blocks_icon_labels(): array {
 		'schedule'             => __( 'Schedule', 'tekseries-blocks' ),
 		'school'               => __( 'School', 'tekseries-blocks' ),
 		'search'               => __( 'Search', 'tekseries-blocks' ),
+		'search_off'           => __( 'Nothing found', 'tekseries-blocks' ),
 		'send'                 => __( 'Send', 'tekseries-blocks' ),
 		'settings_suggest'     => __( 'Settings', 'tekseries-blocks' ),
 		'shield_person'        => __( 'Privacy', 'tekseries-blocks' ),

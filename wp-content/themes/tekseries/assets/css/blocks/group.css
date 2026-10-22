@@ -455,3 +455,12 @@
 		width: 100%;
 	}
 }
+
+/*
+ * The Events filter row: the type chips on the left, the search field and the
+ * order switch on the right. The plugin's Event Search block takes a row of
+ * its own above the chips below 1100px.
+ */
+.ts-event-filters > .ts-nav-chips {
+	margin-inline-end: auto;
+}
