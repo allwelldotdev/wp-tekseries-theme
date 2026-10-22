@@ -89,11 +89,12 @@ function tekseries_blocks_event_start( int $post_id ): ?array {
  * @param int|null $now     The moment as a Unix time. Default: now.
  * @return array{start: int, end: int, timed: bool, phase: string, days: int, hours: int, minutes: int, seconds: int}|null
  *         `start` and `end` (the end of the event's day) in milliseconds, for the script; `phase` is
- *         "before" or "during". Null without a valid date, and once the event's day is over.
+ *         "before" or "during". Null without a valid date, once the event's day is over, and for an
+ *         ongoing event.
  */
 function tekseries_blocks_event_countdown( int $post_id, ?int $now = null ): ?array {
 	$start = tekseries_blocks_event_start( $post_id );
-	if ( ! $start ) {
+	if ( ! $start || tekseries_blocks_event_is_ongoing( $post_id ) ) {
 		return null;
 	}
 
@@ -196,12 +197,16 @@ function tekseries_blocks_event_date( int $post_id ): ?DateTimeImmutable {
 }
 
 /**
- * Tells whether an event's day is over, in Nigerian time.
+ * Tells whether an event's day is over, in Nigerian time. An ongoing event
+ * (includes/event-ongoing.php) has not ended.
  *
  * @param int $post_id Event ID.
  * @return bool False for an event without a date.
  */
 function tekseries_blocks_event_has_ended( int $post_id ): bool {
+	if ( tekseries_blocks_event_is_ongoing( $post_id ) ) {
+		return false;
+	}
 	$date = tekseries_blocks_event_date( $post_id );
 	return null !== $date && $date < new DateTimeImmutable( 'today', tekseries_blocks_event_timezone() );
 }
@@ -356,9 +361,20 @@ function tekseries_blocks_render_registration( string $content, array $parsed ):
 
 	if ( $is_button ) {
 		$link = new WP_HTML_Tag_Processor( $content );
+		$link->next_tag( 'div' );
+		$link->set_bookmark( 'wrapper' );
 		if ( ! $link->next_tag( 'a' ) || ! $link->get_attribute( 'href' ) ) {
 			return '';
 		}
+		// A link to this site (e.g. /contact/#support) opens in the same tab.
+		$host = wp_parse_url( (string) $link->get_attribute( 'href' ), PHP_URL_HOST );
+		if ( ! $host || wp_parse_url( home_url(), PHP_URL_HOST ) === $host ) {
+			$link->remove_attribute( 'target' );
+			$link->remove_attribute( 'rel' );
+			$link->seek( 'wrapper' );
+			$link->add_class( 'ts-register--here' );
+		}
+		return $link->get_updated_html();
 	}
 
 	return $content;

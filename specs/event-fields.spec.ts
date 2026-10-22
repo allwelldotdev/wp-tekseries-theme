@@ -11,6 +11,7 @@ type EventFields = {
 	venue: string;
 	cta_link: { title: string; url: string; target: string } | string;
 	cta_name: string;
+	event_ongoing: boolean;
 };
 type Event = { id: number; link: string; acf: EventFields };
 
@@ -25,6 +26,7 @@ const FIELDS: EventFields = {
 		target: '_blank',
 	},
 	cta_name: 'Register and attend',
+	event_ongoing: false,
 };
 
 // The ACF "Events" field group is registered in the plugin (same keys as the

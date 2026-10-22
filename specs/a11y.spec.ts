@@ -30,6 +30,7 @@ const PAGES = [
 	'events archive, last page',
 	'event type archive',
 	'event',
+	'ongoing event',
 	'news post',
 	'news post with a video',
 	'gallery',
@@ -207,18 +208,24 @@ test.describe( 'accessibility', () => {
 		}
 		// Three older events open a second page of the listing: the latest
 		// card and five in the grid fill the first.
+		// The first is ongoing: the Events page shows it under Happening now.
 		for ( const n of [ 1, 2, 3 ] ) {
-			await create( `extra event ${ n }`, '/wp/v2/event', {
-				title: `E2E A11y Extra ${ n }`,
-				content: 'An event.',
-				acf: {
-					event_date: `2000010${ n }`,
-					time_label: '',
-					venue: '',
-					cta_link: { title: '', url: '', target: '' },
-					cta_name: '',
-				},
-			} );
+			await create(
+				1 === n ? 'ongoing event' : `extra event ${ n }`,
+				'/wp/v2/event',
+				{
+					title: `E2E A11y Extra ${ n }`,
+					content: 'An event.',
+					acf: {
+						event_date: `2000010${ n }`,
+						time_label: '',
+						venue: '',
+						cta_link: { title: '', url: '', target: '' },
+						cta_name: '',
+						event_ongoing: 1 === n,
+					},
+				}
+			);
 		}
 		await create( 'news post', '/wp/v2/posts', {
 			title: 'E2E A11y Post',

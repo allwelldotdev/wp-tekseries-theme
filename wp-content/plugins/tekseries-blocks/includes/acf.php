@@ -16,8 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Registers the Events field group: date, time, start time, venue and the call
- * to action.
+ * Registers the Events field group: date, time, start time, venue, the
+ * Ongoing switch and the call to action.
  */
 function tekseries_blocks_register_event_fields(): void {
 	$fields = array(
@@ -54,6 +54,14 @@ function tekseries_blocks_register_event_fields(): void {
 			'name'         => 'venue',
 			'type'         => 'text',
 			'instructions' => __( 'Where the event takes place, e.g. "Online (Zoom)".', 'tekseries-blocks' ),
+		),
+		array(
+			'key'          => 'field_tekseries_event_ongoing',
+			'label'        => __( 'Ongoing', 'tekseries-blocks' ),
+			'name'         => 'event_ongoing',
+			'type'         => 'true_false',
+			'instructions' => __( 'Turn on for an event that started on its date and is still running. Its date then reads "Since …", it never shows as ended, and the Events page shows it under "Happening now".', 'tekseries-blocks' ),
+			'ui'           => 1,
 		),
 		array(
 			'key'           => 'field_643e9990a254f',

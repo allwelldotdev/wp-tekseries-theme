@@ -90,6 +90,12 @@ function tekseries_blocks_render_type_badges( string $content, array $parsed, WP
 		$anchor  = '<a href="' . esc_url( $link ) . '" rel="tag">';
 		$content = str_replace( $anchor, $anchor . tekseries_blocks_icon_svg( tekseries_blocks_event_type_icon( $term ) ), $content );
 	}
+
+	// An ongoing event's badge ends with the "Ongoing" chip.
+	$close = strrpos( $content, '</div>' );
+	if ( false !== $close && tekseries_blocks_event_is_ongoing( (int) ( $block->context['postId'] ?? 0 ) ) ) {
+		$content = substr_replace( $content, tekseries_blocks_ongoing_chip(), $close, 0 );
+	}
 	return $content;
 }
 add_filter( 'render_block_core/post-terms', 'tekseries_blocks_render_type_badges', 10, 3 );

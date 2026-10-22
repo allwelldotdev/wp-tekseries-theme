@@ -146,3 +146,25 @@
 		font-size: 20px;
 	}
 }
+
+/*
+ * An ongoing event's large date: "Since" above it, "Still running · Oct
+ * 2026" under it.
+ */
+.ts-banner .ts-banner__since {
+	margin-bottom: 6px;
+	color: var(--ts-tone-sub);
+	font-size: 1rem;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.ts-banner .ts-banner__still {
+	margin-top: 10px;
+	font-family: var(--wp--preset--font-family--text);
+	font-size: 1rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
