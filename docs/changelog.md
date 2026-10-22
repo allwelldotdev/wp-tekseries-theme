@@ -2,6 +2,13 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.22.3] — 2026-10-22
+### Fixed
+- On page 2 and later of an event type, such as Webinars, the type's filter button now stays highlighted and is announced as the current page.
+
+### Changed
+- Event type pages (Webinars, Workshops, Makers' Prize) now show 6 events per page, in two rows of three, instead of 10.
+
 ## [1.22.2] — 2026-10-21
 ### Changed
 - The theme's picture under Appearance → Themes in wp-admin is now a red code bracket (</>) on a lilac background, replacing the coloured wooden blocks. The readme credit matches.
