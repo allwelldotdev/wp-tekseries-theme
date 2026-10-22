@@ -3,6 +3,8 @@
  * modal and the "Edit Media" screen). includes/video-poster.php draws a
  * placeholder; this fills it with three frames grabbed from the video in the
  * browser, and sets the one clicked as the video's poster (featured image).
+ * A picture from the Media Library, or one uploaded there, can be the poster
+ * instead.
  */
 import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
@@ -26,12 +28,31 @@ type Media = {
 
 type Frame = { time: number; blob: Blob; url: string };
 
+type Chosen = {
+	id: number;
+	url: string;
+	sizes?: Record< string, { url: string } >;
+};
+
+// The media frame core's wp.media() opens: the Library, with an upload tab.
+type MediaFrame = {
+	on: ( event: string, callback: () => void ) => void;
+	open: () => void;
+	state: () => {
+		get: ( key: 'selection' ) => {
+			first: () => { toJSON: () => Chosen } | undefined;
+		};
+	};
+};
+
 // The parts of core's wp.media this script touches, when the page has them.
-type WpMedia = {
+type WpMedia = ( ( options: Record< string, unknown > ) => MediaFrame ) & {
 	attachment?: ( id: number ) => { fetch: () => unknown };
 	featuredImage?: { set: ( id: number ) => void };
 	view?: { settings?: { post?: { id?: number } } };
 };
+
+const wpMedia = () => ( window as { wp?: { media?: WpMedia } } ).wp?.media;
 
 const LOAD_TIMEOUT = 20000;
 const SEEK_TIMEOUT = 15000;
@@ -56,6 +77,8 @@ class Picker {
 	private readonly empty: HTMLParagraphElement;
 	private readonly grid: HTMLDivElement;
 	private readonly other: HTMLButtonElement;
+	private readonly library: HTMLButtonElement;
+	private frame?: MediaFrame;
 	private readonly slider: HTMLInputElement;
 	private readonly sliderTime: HTMLSpanElement;
 	private readonly preview: HTMLImageElement;
@@ -77,6 +100,7 @@ class Picker {
 				<img alt="" hidden>
 				<p class="description"></p>
 			</div>
+			<button type="button" class="button ts-poster-picker__library"></button>
 			<p class="ts-poster-picker__status" role="status" aria-live="polite"></p>
 			<div class="ts-poster-picker__frames" role="group"></div>
 			<button type="button" class="button ts-poster-picker__other"></button>
@@ -94,6 +118,7 @@ class Picker {
 		this.empty = $( '.ts-poster-picker__current p' );
 		this.grid = $( '.ts-poster-picker__frames' );
 		this.other = $( '.ts-poster-picker__other' );
+		this.library = $( '.ts-poster-picker__library' );
 		this.slider = $( '.ts-poster-picker__moment input' );
 		this.sliderTime = $( '.ts-poster-picker__time' );
 		this.preview = $( '.ts-poster-picker__moment img' );
@@ -105,6 +130,11 @@ class Picker {
 			__( 'Frames from the video', 'tekseries-blocks' )
 		);
 		this.other.textContent = __( 'Show other frames', 'tekseries-blocks' );
+		this.library.textContent = __(
+			'Choose or upload a picture',
+			'tekseries-blocks'
+		);
+		this.library.hidden = ! wpMedia();
 		$( '.ts-poster-picker__label' ).textContent = __(
 			'Or pick a moment:',
 			'tekseries-blocks'
@@ -125,6 +155,7 @@ class Picker {
 			}
 		} );
 		this.other.addEventListener( 'click', () => this.showOther() );
+		this.library.addEventListener( 'click', () => this.openLibrary() );
 		this.slider.addEventListener( 'input', () => this.onSlide() );
 		this.useMoment.addEventListener( 'click', () => {
 			if ( this.moment ) {
@@ -149,7 +180,7 @@ class Picker {
 		} catch {
 			this.say(
 				__(
-					'This browser can’t play this video, so no frames can be shown. You can still set a picture as the video’s featured image.',
+					'This browser can’t play this video, so no frames can be shown. You can still choose or upload a picture.',
 					'tekseries-blocks'
 				)
 			);
@@ -373,6 +404,67 @@ class Picker {
 		}
 	}
 
+	// Core's Library, on images, with its upload tab. Opened over the media
+	// modal when the details are in one.
+	private openLibrary(): void {
+		const media = wpMedia();
+		if ( this.busy || ! media ) {
+			return;
+		}
+		if ( ! this.frame ) {
+			this.frame = media( {
+				title: __( 'Choose a poster', 'tekseries-blocks' ),
+				library: { type: 'image' },
+				multiple: false,
+				button: { text: __( 'Use as poster', 'tekseries-blocks' ) },
+			} );
+			this.frame.on( 'select', () => {
+				const chosen = this.frame
+					?.state()
+					.get( 'selection' )
+					.first()
+					?.toJSON();
+				if ( chosen ) {
+					this.usePicture( chosen );
+				}
+			} );
+		}
+		this.frame.open();
+	}
+
+	private async usePicture( picture: Chosen ): Promise< void > {
+		if ( this.busy || picture.id === this.poster ) {
+			return;
+		}
+		this.busy = true;
+		this.setDisabled( true );
+		this.say( __( 'Setting the poster…', 'tekseries-blocks' ) );
+		try {
+			await apiFetch( {
+				path: `/wp/v2/media/${ this.id }`,
+				method: 'POST',
+				data: { featured_media: picture.id },
+			} );
+			const old = this.poster;
+			this.poster = picture.id;
+			this.root.dataset.poster = String( picture.id );
+			await this.removeMadePoster( old );
+			this.showCurrent( picture.sizes?.medium?.url ?? picture.url );
+			this.refreshCore( picture.id );
+			this.say( __( 'Poster set.', 'tekseries-blocks' ) );
+		} catch {
+			this.say(
+				__(
+					'The poster couldn’t be saved. Check your connection and try again.',
+					'tekseries-blocks'
+				)
+			);
+		} finally {
+			this.busy = false;
+			this.setDisabled( ! this.video );
+		}
+	}
+
 	// Only a poster this picker made for this video is deleted; a picture
 	// added by hand stays in the Media Library.
 	private async removeMadePoster( id: number ): Promise< void > {
@@ -397,7 +489,7 @@ class Picker {
 	// Keeps core's own views in step: the Library's tile, and on "Edit Media"
 	// the Featured Image box, whose hidden field is saved with the form.
 	private refreshCore( poster: number ): void {
-		const media = ( window as { wp?: { media?: WpMedia } } ).wp?.media;
+		const media = wpMedia();
 		media?.attachment?.( this.id ).fetch();
 		const field = document.getElementById( '_thumbnail_id' );
 		if ( field instanceof HTMLInputElement ) {
@@ -416,10 +508,13 @@ class Picker {
 		}
 		this.empty.textContent = url
 			? __(
-					'The current poster. Pick a frame to change it.',
+					'The current poster. Pick a frame, or choose a picture, to change it.',
 					'tekseries-blocks'
 				)
-			: __( 'No poster yet. Pick a frame.', 'tekseries-blocks' );
+			: __(
+					'No poster yet. Pick a frame, or choose a picture.',
+					'tekseries-blocks'
+				);
 	}
 
 	private setDisabled( disabled: boolean ): void {
@@ -433,6 +528,8 @@ class Picker {
 		if ( ! disabled && ! this.moment ) {
 			this.useMoment.disabled = true;
 		}
+		// The Library needs no frames: only a save in progress holds it.
+		this.library.disabled = this.busy;
 	}
 
 	private say( message: string ): void {

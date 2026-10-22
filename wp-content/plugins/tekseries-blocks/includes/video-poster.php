@@ -74,7 +74,7 @@ function tekseries_blocks_poster_field( array $fields, WP_Post $post ): array {
 			$poster,
 			esc_url( $poster ? (string) wp_get_attachment_image_url( $poster, 'medium' ) : '' ),
 			$in_album ? 1 : 0,
-			esc_html__( 'Picking a frame needs JavaScript. You can still set a picture as the featured image.', 'tekseries-blocks' )
+			esc_html__( 'Picking a frame or a picture needs JavaScript. You can still set a picture as the featured image.', 'tekseries-blocks' )
 		),
 	);
 
@@ -108,6 +108,8 @@ add_action( 'wp_enqueue_media', 'tekseries_blocks_enqueue_video_poster' );
  */
 function tekseries_blocks_enqueue_video_poster_on_edit( string $hook_suffix ): void {
 	if ( 'post.php' === $hook_suffix && 'attachment' === get_current_screen()?->post_type ) {
+		// The picker opens the Library to choose a picture; this also loads it.
+		wp_enqueue_media();
 		tekseries_blocks_enqueue_video_poster();
 	}
 }

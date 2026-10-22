@@ -232,6 +232,117 @@ test.describe( 'video poster picker', () => {
 		);
 	} );
 
+	// Core's Library, opened over the details in a modal of its own. It
+	// opens on the tab the user chose last, so a test picks the tab.
+	const libraryOf = ( page: Page ) =>
+		page.locator( '.media-modal' ).filter( { hasText: 'Choose a poster' } );
+
+	const pickInLibrary = async ( page: Page, id: number ) => {
+		const library = libraryOf( page );
+		await expect( library ).toBeVisible();
+		await library.getByRole( 'tab', { name: 'Media Library' } ).click();
+		await library
+			.locator( `.attachments .attachment[data-id="${ id }"]` )
+			.click();
+		await library.getByRole( 'button', { name: 'Use as poster' } ).click();
+		await expect( library ).toBeHidden();
+	};
+
+	test( 'a picture from the Library, or one uploaded there, can be the poster', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		const chosen = await upload( requestUtils, PHOTO, {
+			title: 'E2E Library Poster',
+		} );
+		const video = await upload( requestUtils, VIDEO, {
+			caption: 'E2E library clip',
+		} );
+
+		// A frame first, so there is a poster the picker made.
+		const picker = await openDetails( admin, page, video.id );
+		const frames = picker.getByRole( 'button', { name: FRAME } );
+		await expect( frames ).toHaveCount( 3, { timeout: 30000 } );
+		await frames.nth( 1 ).click();
+		await expect( picker.getByRole( 'status' ) ).toHaveText(
+			'Poster set.'
+		);
+		const made = ( await read( requestUtils, video.id ) ).featured_media;
+		keepPoster( made );
+
+		// Choose a picture already in the Library.
+		await picker
+			.getByRole( 'button', { name: 'Choose or upload a picture' } )
+			.click();
+		await pickInLibrary( page, chosen.id );
+		await expect( picker.getByRole( 'status' ) ).toHaveText(
+			'Poster set.'
+		);
+		expect( ( await read( requestUtils, video.id ) ).featured_media ).toBe(
+			chosen.id
+		);
+		// The frame the picker made goes; nothing else does.
+		await expect.poll( () => exists( requestUtils, made ) ).toBe( false );
+		await expect(
+			picker.getByRole( 'img', { name: 'The current poster' } )
+		).toHaveAttribute( 'src', /about/ );
+
+		// Upload one in the Library: it is chosen, and the picture chosen
+		// before stays in the Library.
+		await picker
+			.getByRole( 'button', { name: 'Choose or upload a picture' } )
+			.click();
+		const library = libraryOf( page );
+		await expect( library ).toBeVisible();
+		await library.getByRole( 'tab', { name: 'Upload files' } ).click();
+		await library.locator( 'input[type="file"]' ).setInputFiles( PHOTO );
+		const use = library.getByRole( 'button', { name: 'Use as poster' } );
+		await expect( use ).toBeEnabled( { timeout: 30000 } );
+		await use.click();
+		await expect( picker.getByRole( 'status' ) ).toHaveText(
+			'Poster set.'
+		);
+		const uploaded = ( await read( requestUtils, video.id ) )
+			.featured_media;
+		keepPoster( uploaded );
+		expect( uploaded ).not.toBe( chosen.id );
+		expect( uploaded ).toBeGreaterThan( 0 );
+		expect( await exists( requestUtils, chosen.id ) ).toBe( true );
+	} );
+
+	test( 'a picture can be chosen on "Edit Media", and for a video no browser can play', async ( {
+		admin,
+		page,
+		requestUtils,
+	} ) => {
+		const chosen = await upload( requestUtils, PHOTO );
+		const video = await upload( requestUtils, BROKEN );
+		await admin.visitAdminPage(
+			'post.php',
+			`post=${ video.id }&action=edit`
+		);
+		const picker = page.locator( '.ts-poster-picker' );
+		await expect( picker.getByRole( 'status' ) ).toContainText(
+			'can’t play this video',
+			{ timeout: 30000 }
+		);
+		await picker
+			.getByRole( 'button', { name: 'Choose or upload a picture' } )
+			.click();
+		await pickInLibrary( page, chosen.id );
+		await expect( picker.getByRole( 'status' ) ).toHaveText(
+			'Poster set.'
+		);
+
+		// Update keeps it: the form's featured image field follows.
+		await page.getByRole( 'button', { name: 'Update' } ).click();
+		await expect( page.locator( '#message' ) ).toBeVisible();
+		expect( ( await read( requestUtils, video.id ) ).featured_media ).toBe(
+			chosen.id
+		);
+	} );
+
 	test( 'a video in an album with no poster gets the middle frame when opened', async ( {
 		admin,
 		page,
