@@ -61,14 +61,14 @@ The repo root is the WordPress root and `.gitignore` is a whitelist, so core, up
 
 ## Release
 
-Releases are tagged `vX.Y.Z` and go up as wp-admin zips, because the live host has no SSH or WP-CLI (ADR-058, ADR-059, ADR-073). Build the first two with `npm ci`, `npm run build`, `plugin-zip` and `theme-zip`; the migration zip comes from the development site. Upload in order:
+Releases are tagged `vX.Y.Z` and go up as wp-admin zips, because the live host has no SSH or WP-CLI (ADR-058, ADR-059). Build with `npm ci`, `npm run build`, `npm run plugin-zip` and `npm run theme-zip`.
 
-1. `upload-first` files (media over 5 MB), into the Media Library.
-2. `tekseries-blocks.zip` under Plugins, then activate it.
-3. `tekseries.zip` under Appearance → Themes. Don't activate it.
-4. `tekseries-migration.zip` under Plugins, then activate it.
+A routine release:
 
-Run the dry run under Tools → TekSeries migration first, and delete the plugin afterwards. It refuses an older blocks plugin or theme (ADR-073, ADR-082).
+1. `tekseries.zip` under Appearance → Themes, with "Replace current with uploaded".
+2. `tekseries-blocks.zip` under Plugins the same way, when its version changed.
+
+A release that carries development-site content also needs `tekseries-migration.zip`, built from that site (ADR-059, ADR-073). Upload `upload-first` media over 5 MB to the Media Library, then the two zips, then the migration zip under Plugins, and activate it. Run its dry run under Tools → TekSeries migration, apply, then delete the plugin. It refuses an older blocks plugin or theme (ADR-073, ADR-082).
 
 ## Status
 
