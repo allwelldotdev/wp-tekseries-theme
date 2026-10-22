@@ -288,7 +288,9 @@ function tekseries_blocks_sort_event_query_loop( array $query, WP_Block $block )
 	}
 
 	$order = (string) ( $query['order'] ?? 'DESC' );
-	$skip  = absint( $block->context['query']['offset'] ?? 0 );
+	// A searched grid starts from the first event (includes/event-search.php).
+	$searched = ! empty( $block->context['query']['tekseriesSearch'] ) && '' !== tekseries_blocks_event_search();
+	$skip     = $searched ? 0 : absint( $block->context['query']['offset'] ?? 0 );
 	if ( $skip && 'asc' === tekseries_blocks_list_order() ) {
 		$newest = new WP_Query(
 			array_merge(

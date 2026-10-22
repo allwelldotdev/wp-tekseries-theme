@@ -1,0 +1,27 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tekseries/event-search",
+	"version": "0.1.0",
+	"title": "Event Search",
+	"category": "widgets",
+	"icon": "search",
+	"description": "Finds events by their title on the Events page and event type pages. The form, or the line that counts what it found (with the card shown when nothing matches). The list follows as the visitor types; without JavaScript the form still searches.",
+	"keywords": [ "events", "search", "find" ],
+	"textdomain": "tekseries-blocks",
+	"attributes": {
+		"part": {
+			"type": "string",
+			"enum": [ "form", "status" ],
+			"default": "form"
+		}
+	},
+	"supports": {
+		"html": false,
+		"interactivity": true
+	},
+	"editorScript": "file:./index.js",
+	"viewScriptModule": "file:./view.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

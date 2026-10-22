@@ -122,7 +122,8 @@ add_filter( 'render_block_core/icon', 'tekseries_blocks_render_type_tile', 10, 2
 /**
  * Puts an icon in each event type filter chip (Navigation links with the
  * `ts-type-chip` class): the type's icon, or "apps" for the all-events chip.
- * A visitor who turned the list round keeps that order from chip to chip.
+ * A visitor who turned the list round, or searched it, keeps that from chip to
+ * chip.
  *
  * @param string $content Rendered block.
  * @param array  $parsed  Parsed block (attributes).
@@ -140,10 +141,17 @@ function tekseries_blocks_render_type_chip( string $content, array $parsed ): st
 		$svg  = tekseries_blocks_icon_svg( $term instanceof WP_Term ? tekseries_blocks_event_type_icon( $term ) : 'event' );
 	}
 
-	if ( 'asc' === tekseries_blocks_list_order() ) {
+	// The order and an event search carry from chip to chip.
+	$keep = array_filter(
+		array(
+			'q'     => rawurlencode( tekseries_blocks_event_search() ),
+			'order' => 'asc' === tekseries_blocks_list_order() ? 'asc' : '',
+		)
+	);
+	if ( $keep ) {
 		$tags = new WP_HTML_Tag_Processor( $content );
 		if ( $tags->next_tag( 'a' ) && is_string( $tags->get_attribute( 'href' ) ) ) {
-			$tags->set_attribute( 'href', add_query_arg( 'order', 'asc', $tags->get_attribute( 'href' ) ) );
+			$tags->set_attribute( 'href', add_query_arg( $keep, $tags->get_attribute( 'href' ) ) );
 			$content = $tags->get_updated_html();
 		}
 	}
