@@ -2,6 +2,16 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.23.0] — 2026-10-22
+### New
+- Editors can mark an event as ongoing with the "Ongoing" switch in the event's Events fields. It reads "Since August 15, 2023" on its page and "Aug 2023 – Now" on cards.
+- An ongoing event shows a white "Ongoing" label with a pulsing dot after its type, never says "This event has ended", and has no countdown. The dot stays still for visitors who reduce motion.
+- An ongoing event's page shows "Ongoing · " and the current month, with "Since" and "Still running" around the large date. The Event details card shows "Started" and "Status: Ongoing", with no "Join here" row.
+- The Events page shows a "Happening now" card above the filters for the ongoing event. It lists the title, type, start date and venue, a progress bar with "Running for 3 years, 2 months, and still going.", and a "View workshop" button. It is hidden when no event is ongoing.
+
+### Changed
+- An event's main button that links to a page on this site now opens in the same tab and has a forward arrow.
+
 ## [1.22.3] — 2026-10-22
 ### Fixed
 - On page 2 and later of an event type, such as Webinars, the type's filter button now stays highlighted and is announced as the current page.
