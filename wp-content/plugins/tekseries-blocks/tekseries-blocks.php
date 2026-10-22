@@ -3,7 +3,7 @@
  * Plugin Name:       TekSeries Blocks
  * Plugin URI:        https://tekseries.com/
  * Description:       Blocks, fields and editor tools for the TekSeries theme: events with countdowns, the media gallery, Job Series listings, page deadlines and Formbricks forms.
- * Version:           1.22.2
+ * Version:           1.22.3
  * Requires at least: 7.1
  * Requires PHP:      8.2
  * Requires Plugins:  advanced-custom-fields
