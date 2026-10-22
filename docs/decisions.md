@@ -1886,8 +1886,33 @@ Unit tests for the frame helpers and an e2e spec with a real short clip passed.
 
 **Rationale:** Full rows keep the grid even, and the chip stays correct on every page.
 
+## ADR-091: Remove the host's injected contrast style from the page head
+
+**Status:** Accepted
+
+**Context:**
+- On live (2026-10-22, after the 1.25.0 migration), GoDaddy's managed-WordPress must-use plugin echoes a style of about 90 KB, `<style id="wp-site-designer-contrast-fallback">`, into `wp_head` after the theme's stylesheet. wp-admin cannot turn it off, and the host has no SSH or WP-CLI.
+- Its field rule (`body .wp-site-blocks input:not([type="submit"])…`, `textarea`, `select`) scores (0,8,2). It sets background, colour and border from the `base` and `contrast` colour presets, which the theme does not define. The declarations are invalid at computed-value time, so fields lose their border and background.
+- A second rule, `.wp-site-blocks button[type="submit"]:not(.wp-element-button)`, restyles submit buttons.
+- Contact (Fluent Forms, ADR-029), the Job Series filters, Post a Job, the Events search (ADR-088) and the job dashboard search were affected. Removing only that element on live restored them, checked with Playwright.
+
+**Options:**
+- Out-specify it in every field and button rule across the form, search, listing and job stylesheets. Fragile, many edits, and its `!important` text colours would remain.
+- Define `base`, `contrast` and `accent-2` presets. Its rules become valid and impose the host's colours.
+- `wp_dequeue_style`. The style is echoed, not enqueued.
+- Buffer `wp_head` and remove the element (chosen).
+
+**Decision:** `tekseries_strip_host_contrast_css()` in the theme's `functions.php` runs on `template_redirect`, so on the front end only. It buffers `wp_head` from priority `PHP_INT_MIN` to `PHP_INT_MAX` and removes that one element by id. It does nothing where the id is absent (LocalWP, wp-env).
+- The host's other injected styles (`site-designer-shared-pattern-classes`, `site-designer-logo-constraints`) and the `data-dsgo-inline-bg` attribute on the header group stay, because they do no harm today.
+- The e2e fixture `specs/fixtures/host-contrast-css.php` is a must-use plugin mapped in `.wp-env.json`. It prints live's two rules verbatim, and `specs/host-css.spec.ts` guards the id, so every e2e run sees what live sees.
+
+**Rationale:** Removing the source fixes every field and button at once, and the theme's own CSS stays simple.
+- If the host renames the id, the problem returns, and the spec's fixture only guards the id we know.
+- Live needs a recheck after host updates (see Future work).
+
 ## Future work
 
+- **Host contrast style on live:** recheck the id and the forms and search fields on live after each host update (ADR-091).
 - **Maker Prize page on live:** the migration plugin 1.3.0 creates `/maker-prize/` before it updates Home. What remains is running it on live after the rehearsal (owner; ADR-082, ADR-059).
 - **Safari focus check:** confirm on WebKit that a focused animated block is shown at once and does not replay (ADR-062, ADR-063).
 - **Intro motion tokens:** when the design system's `animation` tokens match the build's values (ADR-080), map them, and move the 28px distance and 0.15s start of `ts-intro` (and the hero carousel) onto tokens (ADR-063).
