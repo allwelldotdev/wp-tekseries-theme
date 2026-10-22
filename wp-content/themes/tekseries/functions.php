@@ -194,8 +194,9 @@ function tekseries_mark_current_nav_link( string $block_content, array $block ):
 	}
 
 	global $wp;
+	// Page 2 onward of an archive is still that archive: /event_type/webinar/page/2 is /event_type/webinar.
 	$link    = untrailingslashit( (string) wp_parse_url( $url, PHP_URL_PATH ) );
-	$current = untrailingslashit( (string) wp_parse_url( home_url( '/' . $wp->request ), PHP_URL_PATH ) );
+	$current = (string) preg_replace( '#/page/\d+$#', '', untrailingslashit( (string) wp_parse_url( home_url( '/' . $wp->request ), PHP_URL_PATH ) ) );
 	$section = match ( true ) {
 		is_singular( 'event' ) => '/events',
 		is_singular( 'post' )  => '/news',
