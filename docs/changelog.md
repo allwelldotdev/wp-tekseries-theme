@@ -2,6 +2,11 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.25.1] — 2026-10-22
+### Fixed
+- On the live site, form fields no longer lose their borders and backgrounds, and form buttons look as designed again. The web host's own styles had overridden the theme's.
+- This covers the Contact form, the Job Series search filters and Search jobs button, the Post a Job form with its Preview and Save draft buttons, the Events search field, and the job dashboard search.
+
 ## [1.25.0] — 2026-10-22
 ### New
 - Editors can use "Choose or upload a picture" in a video's "Poster frame" panel to pick or upload an image in the Media Library, then "Use as poster" sets it as the video's poster in the Gallery and its viewer.
