@@ -2,6 +2,12 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.25.0] — 2026-10-22
+### New
+- Editors can use "Choose or upload a picture" in a video's "Poster frame" panel to pick or upload an image in the Media Library, then "Use as poster" sets it as the video's poster in the Gallery and its viewer.
+- This also works for a video the browser can't play, and on the video's Edit Media screen.
+- Replacing a poster made from a frame removes that frame image. A picture chosen from the Library is never deleted.
+
 ## [1.24.0] — 2026-10-22
 ### New
 - Visitors can search events by name on the Events page and the event type pages. The search field sits beside the type filters, or above them on tablets and phones.
