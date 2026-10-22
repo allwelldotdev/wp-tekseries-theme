@@ -2,6 +2,15 @@
 
 This file records what visitors and site editors of tekseries.com will notice in each release; versions follow semantic versioning.
 
+## [1.24.0] — 2026-10-22
+### New
+- Visitors can search events by name on the Events page and the event type pages. The search field sits beside the type filters, or above them on tablets and phones.
+- The list follows as visitors type, without reloading the page, and only event titles are searched. Without JavaScript, pressing Enter searches.
+- While searching, a line says how many events match, such as "3 events for “camp” across all events", with a "Clear search" link. On a type page it reads "among Workshop events".
+- The Latest event card and the Happening now card step aside during a search. Matches list from the newest, 12 a page.
+- The type buttons and the Newest/Oldest switch keep the search, and the browser's Back and Forward buttons work.
+- When nothing matches, a card reads "No events match “…”". It suggests Coding, AI, Career and Women, and offers "Clear search", plus "Search all event types" on a type page.
+
 ## [1.23.0] — 2026-10-22
 ### New
 - Editors can mark an event as ongoing with the "Ongoing" switch in the event's Events fields. It reads "Since August 15, 2023" on its page and "Aug 2023 – Now" on cards.
